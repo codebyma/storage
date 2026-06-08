@@ -104,7 +104,7 @@
             font-weight: bold;
         }
 
-        /* ⭐️ 총 보장 금액 합계 노출 구역 */
+        /* ⭐️ 총 요약 대시보드 구역 */
         .total-summary-box {
             background-color: var(--total-bg);
             border: 1px solid var(--total-border);
@@ -113,8 +113,6 @@
             margin-bottom: 24px;
             text-align: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-            display: none;
-            /* 기본적으론 숨김 ('전체'가 아닐 때만 노출) */
             animation: fadeIn 0.3s ease-in-out;
         }
 
@@ -128,6 +126,10 @@
             font-size: 1.4rem;
             font-weight: bold;
             color: #22543d;
+        }
+
+        .total-summary-box .amount.premium {
+            color: var(--primary-color);
         }
 
         @keyframes fadeIn {
@@ -346,7 +348,7 @@
     <div class="container">
         <header>
             <h1>My 보험 보장 비교 관리</h1>
-            <p>보장 분류 버튼을 누르면 중복 보장 확인 및 합산된 총 보장 금액을 보실 수 있습니다.</p>
+            <p>보장 분류 버튼을 누르면 중복 보장 확인 및 합산된 보장 내역을 직관적으로 확인하실 수 있습니다.</p>
         </header>
 
         <div id="filter-buttons" class="filter-container"></div>
@@ -452,9 +454,13 @@
             container.innerHTML = '';
 
             let visibleCardsCount = 0;
-            let sumCoverageAmount = 0; // ⭐️ 선택된 보장 금액 합계를 누적할 변수
+            let sumCoverageAmount = 0;  // 개별 보장금액 합계용 변수
+            let sumTotalPremium = 0;    // 전체 고정 보험료 합계용 변수
 
             insuranceList.forEach(insurance => {
+                // 전체 누적 보험료 상시 누적
+                sumTotalPremium += insurance.total_premium;
+
                 // 현재 선택한 카테고리에 필터링되는 담보 목록 추출
                 const filteredDetails = insurance.coverage_details.filter(detail => {
                     return currentFilter === '전체' || detail.category === currentFilter;
@@ -502,7 +508,7 @@
                 itemsToDisplay.forEach(detail => {
                     const rowClass = currentFilter !== '전체' ? 'highlighted-row' : '';
 
-                    // ⭐️ 현재 필터링된 항목의 보장금액을 모두 더해줌
+                    // 특정 보장내역 버튼이 선택되었을 때만 보장금액 합산
                     if (currentFilter !== '전체' && detail.category === currentFilter) {
                         sumCoverageAmount += detail.coverage_amount;
                     }
@@ -531,13 +537,21 @@
                 container.appendChild(card);
             });
 
-            // ⭐️ 상단 총 보장금액 합계 박스 제어 노출
-            if (currentFilter === '전체' || visibleCardsCount === 0) {
-                summaryBox.style.display = 'none'; // '전체'일 때는 합산액 노출 의미가 없으므로 숨김
+            // ⭐️ [조건부 분기] 상단 대시보드 알림 박스 매핑 제어
+            if (visibleCardsCount === 0) {
+                summaryBox.style.display = 'none';
+            } else if (currentFilter === '전체') {
+                // 1. 전체 화면일 경우 -> 총 매달 나가는 보험료 합계만 노출
+                summaryBox.style.display = 'block';
+                totalTitleElement.innerHTML = `📊 <strong>내가 지출 중인 총 고정 보험료 합계</strong>`;
+                totalAmountElement.innerText = `${sumTotalPremium.toLocaleString()}원`;
+                totalAmountElement.className = "amount premium"; // 파란색 테마 적용
             } else {
-                summaryBox.style.display = 'block'; // 특정 항목 선택 시 박스 표시
-                totalTitleElement.innerHTML = `💵 내가 가진 <strong>[${currentFilter}]</strong> 총 보장 자산 합계`;
+                // 2. 개별 보장내역 버튼인 경우 -> 선택 보장금액들의 합산액만 깔끔하게 노출
+                summaryBox.style.display = 'block';
+                totalTitleElement.innerHTML = `💵 내가 가진 <strong>[${currentFilter}]</strong> 총 보장 금액 합계`;
                 totalAmountElement.innerText = `${sumCoverageAmount.toLocaleString()}원`;
+                totalAmountElement.className = "amount"; // 기존 초록/적색 포인트 테마 적용
             }
 
             if (visibleCardsCount === 0) {
