@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>보험 보장 비교 및 합계 관리</title>
+    <style>
+        :root {
+            --primary-color: #2b6cb0;
+            --primary-light: #ebf8ff;
+            --secondary-color: #2d3748;
+            --background-color: #f7fafc;
+            --card-background: #ffffff;
+            --border-color: #e2e8f0;
+            --text-muted: #718096;
+            --accent-color: #e53e3e;
+            --highlight-bg: #fffaf0;
+            --highlight-border: #feebc8;
+            --total-bg: #f0fff4;
+            --total-border: #c6f6d5;
+            --total-text: #22543d;
+        }
+
+        /* 기본 초기화 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "맑은 고딕", sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            padding: 20px 12px;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            word-break: keep-all;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            word-break: keep-all;
+        }
+
+        /* 필터 버튼 구역 */
+        .filter-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 16px;
+            background: #fff;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-btn {
+            background-color: #edf2f7;
+            color: #4a5568;
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-grow: 1;
+            text-align: center;
+            max-width: calc(50% - 4px);
+        }
+
+        @media (min-width: 480px) {
+            .filter-btn {
+                flex-grow: 0;
+                max-width: none;
+            }
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        /* ⭐️ 총 보장 금액 합계 노출 구역 */
+        .total-summary-box {
+            background-color: var(--total-bg);
+            border: 1px solid var(--total-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            display: none;
+            /* 기본적으론 숨김 ('전체'가 아닐 때만 노출) */
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .total-summary-box .title {
+            font-size: 0.95rem;
+            color: #2f855a;
+            margin-bottom: 4px;
+        }
+
+        .total-summary-box .amount {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #22543d;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 보험 카드 스타일 */
+        .insurance-card {
+            background: var(--card-background);
+            border-radius: 14px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            padding: 20px 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 560px) {
+            .card-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .company-info h2 {
+            font-size: 1.3rem;
+            color: var(--secondary-color);
+            margin-bottom: 4px;
+        }
+
+        .dates {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        @media (min-width: 400px) {
+            .dates {
+                flex-direction: row;
+                gap: 12px;
+            }
+        }
+
+        .premium-info {
+            background: var(--primary-light);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (min-width: 560px) {
+            .premium-info {
+                flex-direction: column;
+                align-items: flex-end;
+                justify-content: center;
+                text-align: right;
+            }
+        }
+
+        .premium-info .label {
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        .premium-info .amount {
+            font-size: 1.15rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .detail-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #4a5568;
+        }
+
+        /* 테이블 기본 구조 (데스크탑) */
+        .table-responsive {
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #f7fafc;
+            color: #4a5568;
+            font-weight: 600;
+            padding: 10px 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .amount-text {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* 📱 모바일 핵심 최적화 브레이크 포인트 (600px 이하) */
+        @media (max-width: 600px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                background: #fff;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                margin-bottom: 12px;
+                padding: 8px 12px;
+            }
+
+            tr.highlighted-row {
+                background-color: var(--highlight-bg);
+                border-color: var(--highlight-border);
+            }
+
+            td {
+                border: none;
+                border-bottom: 1px solid #edf2f7;
+                padding: 8px 0;
+                position: relative;
+                padding-left: 45%;
+                text-align: right;
+                font-size: 0.9rem;
+            }
+
+            td:last-child {
+                border-bottom: none;
+            }
+
+            td::before {
+                position: absolute;
+                left: 6px;
+                width: 40%;
+                text-align: left;
+                font-weight: bold;
+                color: #718096;
+                content: attr(data-label);
+            }
+
+            td.no-premium-row {
+                display: none;
+            }
+        }
+
+        @media (min-width: 601px) {
+            tr.highlighted-row {
+                background-color: var(--highlight-bg);
+            }
+
+            tr.highlighted-row td {
+                border-bottom: 1px solid var(--highlight-border);
+            }
+        }
+
+        .no-data-message {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            background: #fff;
+            border-radius: 12px;
+            border: 1px dashed var(--border-color);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>My 보험 보장 비교 관리</h1>
+            <p>보장 분류 버튼을 누르면 중복 보장 확인 및 합산된 총 보장 금액을 보실 수 있습니다.</p>
+        </header>
+
+        <div id="filter-buttons" class="filter-container"></div>
+
+        <div id="total-summary" class="total-summary-box">
+            <div id="total-title" class="title">보장 합계</div>
+            <div id="total-amount" class="amount">0원</div>
+        </div>
+
+        <div id="insurance-container"></div>
+    </div>
+
+    <script>
+        // 데이터 샘플
+        const insuranceList = [
+            {
+                id: 1,
+                company_name: "A00 화재해상보험",
+                joined_date: "2024-01-15",
+                expiry_date: "2044-01-15",
+                total_premium: 120000,
+                coverage_details: [
+                    { category: "암 진단비", coverage_name: "일반암 진단 확정 시 (최초 1회 한)", coverage_amount: 50000000, allocated_premium: 45000 },
+                    { category: "뇌/심장 질환", coverage_name: "뇌졸중 및 뇌출혈 진단 확정 시", coverage_amount: 30000000, allocated_premium: 35000 },
+                    { category: "실손 의료비", coverage_name: "질병/상해 입원 및 통원 (급여 80%)", coverage_amount: 50000000, allocated_premium: 40000 }
+                ]
+            },
+            {
+                id: 2,
+                company_name: "B00 생명보험",
+                joined_date: "2025-03-10",
+                expiry_date: "2055-03-10",
+                total_premium: 85000,
+                coverage_details: [
+                    { category: "사망 보장", coverage_name: "질병 또는 재해로 인한 종신 사망 시", coverage_amount: 100000000, allocated_premium: 60000 },
+                    { category: "암 진단비", coverage_name: "소액암 제외 일반암 진단 시", coverage_amount: 30000000, allocated_premium: 15000 },
+                    { category: "수술/입원비", coverage_name: "질병 및 재해 수술 시 (1~5종 차등)", coverage_amount: 5000000, allocated_premium: 0 }
+                ]
+            },
+            {
+                id: 3,
+                company_name: "C00 운전자보험",
+                joined_date: "2026-02-20",
+                expiry_date: "2046-02-20",
+                total_premium: 28000,
+                coverage_details: [
+                    { category: "교통/운전자", coverage_name: "교통사고 처리 지원금 (형사합의금)", coverage_amount: 200000000, allocated_premium: 15000 },
+                    { category: "수술/입원비", coverage_name: "상해로 인한 입원일당 (1일 이상)", coverage_amount: 30000, allocated_premium: 8000 },
+                    { category: "교통/운전자", coverage_name: "자동차사고 변호사 선임 비용", coverage_amount: 30000000, allocated_premium: 5000 }
+                ]
+            }
+        ];
+
+        let currentFilter = '전체';
+
+        // 1. 카테고리 버튼 생성
+        function createFilterButtons() {
+            const buttonContainer = document.getElementById('filter-buttons');
+            const categories = new Set();
+
+            insuranceList.forEach(ins => {
+                ins.coverage_details.forEach(det => categories.add(det.category));
+            });
+
+            const categoryList = ['전체', ...Array.from(categories).sort()];
+
+            buttonContainer.innerHTML = categoryList.map(cat => {
+                const isActive = cat === currentFilter ? 'active' : '';
+                return `<button class="filter-btn ${isActive}" onclick="filterCategory('${cat}')">${cat}</button>`;
+            }).join('');
+        }
+
+        // 2. 필터링 변경 함수
+        function filterCategory(category) {
+            currentFilter = category;
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.innerText === category ? btn.classList.add('active') : btn.classList.remove('active');
+            });
+            renderInsuranceData();
+        }
+
+        // 3. 데이터 렌더링 및 금액 합계 계산 로직
+        function renderInsuranceData() {
+            const container = document.getElementById('insurance-container');
+            const summaryBox = document.getElementById('total-summary');
+            const totalTitleElement = document.getElementById('total-title');
+            const totalAmountElement = document.getElementById('total-amount');
+
+            container.innerHTML = '';
+
+            let visibleCardsCount = 0;
+            let sumCoverageAmount = 0; // ⭐️ 선택된 보장 금액 합계를 누적할 변수
+
+            insuranceList.forEach(insurance => {
+                // 현재 선택한 카테고리에 필터링되는 담보 목록 추출
+                const filteredDetails = insurance.coverage_details.filter(detail => {
+                    return currentFilter === '전체' || detail.category === currentFilter;
+                });
+
+                if (filteredDetails.length === 0) return;
+
+                visibleCardsCount++;
+                const card = document.createElement('div');
+                card.className = 'insurance-card';
+
+                let cardHtml = `
+                    <div class="card-header">
+                        <div class="company-info">
+                            <h2>${insurance.company_name}</h2>
+                            <div class="dates">
+                                <span>📅 가입: ${insurance.joined_date}</span>
+                                <span>⏳ 만기: ${insurance.expiry_date}</span>
+                            </div>
+                        </div>
+                        <div class="premium-info">
+                            <span class="label">월 납입금액</span>
+                            <span class="amount">${insurance.total_premium.toLocaleString()}원</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-title">
+                        ${currentFilter === '전체' ? '🔍 전체 보장 항목' : `✨ [${currentFilter}] 중복 보장 확인`}
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>보장 분류</th>
+                                    <th>보장 내역 (조건)</th>
+                                    <th class="text-right">보장 금액</th>
+                                    <th class="text-right">납입금</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                const itemsToDisplay = currentFilter === '전체' ? insurance.coverage_details : filteredDetails;
+
+                itemsToDisplay.forEach(detail => {
+                    const rowClass = currentFilter !== '전체' ? 'highlighted-row' : '';
+
+                    // ⭐️ 현재 필터링된 항목의 보장금액을 모두 더해줌
+                    if (currentFilter !== '전체' && detail.category === currentFilter) {
+                        sumCoverageAmount += detail.coverage_amount;
+                    }
+
+                    const hasPremium = detail.allocated_premium && detail.allocated_premium > 0;
+                    const premiumDisplay = hasPremium ? `${detail.allocated_premium.toLocaleString()}원` : '-';
+                    const mobileClass = hasPremium ? '' : 'no-premium-row';
+
+                    cardHtml += `
+                        <tr class="${rowClass}">
+                            <td data-label="보장 분류"><strong>${detail.category}</strong></td>
+                            <td data-label="보장 내역">${detail.coverage_name}</td>
+                            <td data-label="보장 금액" class="text-right amount-text">${detail.coverage_amount.toLocaleString()}원</td>
+                            <td data-label="납입금" class="text-right ${mobileClass}" style="color: #4a5568;">${premiumDisplay}</td>
+                        </tr>
+                    `;
+                });
+
+                cardHtml += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                card.innerHTML = cardHtml;
+                container.appendChild(card);
+            });
+
+            // ⭐️ 상단 총 보장금액 합계 박스 제어 노출
+            if (currentFilter === '전체' || visibleCardsCount === 0) {
+                summaryBox.style.display = 'none'; // '전체'일 때는 합산액 노출 의미가 없으므로 숨김
+            } else {
+                summaryBox.style.display = 'block'; // 특정 항목 선택 시 박스 표시
+                totalTitleElement.innerHTML = `💵 내가 가진 <strong>[${currentFilter}]</strong> 총 보장 자산 합계`;
+                totalAmountElement.innerText = `${sumCoverageAmount.toLocaleString()}원`;
+            }
+
+            if (visibleCardsCount === 0) {
+                container.innerHTML = `<div class="no-data-message">해당 조건의 보험 상품이 없습니다.</div>`;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            createFilterButtons();
+            renderInsuranceData();
+        });
+    </script>
+</body>
+
+</html>
