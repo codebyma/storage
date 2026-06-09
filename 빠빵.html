@@ -340,6 +340,14 @@
             border-radius: 12px;
             border: 1px dashed var(--border-color);
         }
+
+        /* 🚫 합산 제외 항목용 마크 스타일 (선택사항) */
+        .excluded-text {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: normal;
+            display: block;
+        }
     </style>
 </head>
 
@@ -362,7 +370,6 @@
     </div>
 
     <script>
-        // 데이터 샘플 (요청하신 복수 카테고리 형태 적용 예시)
         const insuranceList = [
             {
                 id: 1,
@@ -379,17 +386,17 @@
                     { category: "교통재해", coverage_name: "등급분류표 중 제6급(교통재해 이외의 재해 시 1/2)", coverage_amount: 12500000 },
                     { category: "입원", coverage_name: "4일이상 계속 입원한 경우(1회당)[교통재해 이외의 재해시 1/2]", coverage_amount: 200000 },
                     { category: "입원", coverage_name: "재해가 발생하고 치료를 목적으로 31일이상 계속 입원한 경우", coverage_amount: 500000 },
-                    { category: "입원", coverage_name: "재해가 발생하고 치료를 목적으로 121일이상 계속 입원한 경우", coverage_amount: 1000000 },
+                    { category: ["입원", "암"], coverage_name: "재해가 발생하고 치료를 목적으로 121일이상 계속 입원한 경우", coverage_amount: 1000000 },
                     { category: "입원", coverage_name: "재해가 발생하고 치료를 목적으로 181일이상 계속 입원한 경우", coverage_amount: 2000000 },
                     { category: "골절", coverage_name: "재해골절 진단 받은 경우(1회당)", coverage_amount: 300000 },
                     { category: "암", coverage_name: "암으로 진단이 확정된 경우(1회)", coverage_amount: 22500000 },
-                    { category: "암", coverage_name: "상피내암으로 진단이 확정된 경우(1회)", coverage_amount: 4500000 },
-                    { category: "암", coverage_name: "경계성 종양으로 진단이 확정된 경우(1회)", coverage_amount: 4500000 },
+                    { category: "암", coverage_name: "상피내암으로 진단이 확정된 경우(1회)", coverage_amount: 4500000, exclude_from_sum: true },
+                    { category: "암", coverage_name: "경계성 종양으로 진단이 확정된 경우(1회)", coverage_amount: 4500000, exclude_from_sum: true },
                     { category: "수술", coverage_name: "암의 치료를 위해 수술을 받는 경우(1회당)", coverage_amount: 3000000 },
-                    { category: ["수술", "암"], coverage_name: "상피내암 또는 경계성 종양의 치료를 위해 수술을 받는 경우(1회당)", coverage_amount: 600000 },
-                    { category: ["입원", "암"], coverage_name: "암의 치료를 목적으로 4일 이상 입원한 경우(3일초과 1일당, 120일 한도)", coverage_amount: 75000 },
-                    { category: ["입원", "암"], coverage_name: "상피내암 또는 경계성 종양의 치료를 목적으로 4일 이상 입원한 경우(3일초과 1일당, 120일 한도)", coverage_amount: 15000 },
-                    { category: ["뇌", "심장"], coverage_name: "뇌졸중 또는 급성심근경색으로 진단을 받은 경우(1회)", coverage_amount: 22500000 },
+                    { category: "수술", coverage_name: "상피내암 또는 경계성 종양의 치료를 위해 수술을 받는 경우(1회당)", coverage_amount: 600000 },
+                    { category: "입원", coverage_name: "암의 치료를 목적으로 4일 이상 입원한 경우(3일초과 1일당, 120일 한도)", coverage_amount: 75000 },
+                    { category: "입원", coverage_name: "상피내암 또는 경계성 종양의 치료를 목적으로 4일 이상 입원한 경우(3일초과 1일당, 120일 한도)", coverage_amount: 15000 },
+                    { category: "뇌", coverage_name: "뇌졸중 또는 급성심근경색으로 진단을 받은 경우(1회)", coverage_amount: 22500000 },
                     { category: "수술", coverage_name: "성인 8대 특정질환의 치료 목적으로 수술을 받은 경우(1회당)", coverage_amount: 3000000 },
                     { category: "입원", coverage_name: "성인 8대 특정질환의 치료 목적으로 4일이상 입원한 경우(3일 초과 1일당, 120일 한도)", coverage_amount: 4500 },
                     { category: "수술", coverage_name: "질병 또는 재해로 수술을 받은 경우(1종)", coverage_amount: 300000 },
@@ -427,7 +434,9 @@
                     { category: "심장", coverage_name: "특정심혈관질환(협심증 등) 진단비", coverage_amount: 10000000, allocated_premium: 8040 },
                     { category: "심장", coverage_name: "허혈성심질환 진단비", coverage_amount: 20000000, allocated_premium: 9600 },
                     { category: "심장", coverage_name: "허혈성심질환 수술비", coverage_amount: 5000000, allocated_premium: 2300 },
-                    { category: "납입면제", coverage_name: "보험료 납입면제대상보장", coverage_amount: 100000, allocated_premium: 66 },
+
+                    // ⭐️ 이 항목도 납입면제라 보장금액 합산에서 제외되도록 임의 지정해 본 예시입니다.
+                    { category: "납입면제", coverage_name: "보험료 납입면제대상보장", coverage_amount: 100000, allocated_premium: 66, exclude_from_sum: true },
                 ]
             },
             {
@@ -438,7 +447,7 @@
                 total_premium: 34800,
                 coverage_details: [
                     { category: "암", coverage_name: "일반암(소액암 제외) 진단비", coverage_amount: 35000000, },
-                    { category: "암", coverage_name: "소액암 진단비", coverage_amount: 10000000 },
+                    { category: "암", coverage_name: "소액암 진단비", coverage_amount: 10000000, exclude_from_sum: true },
                 ]
             },
             {
@@ -455,14 +464,13 @@
 
         let currentFilter = '전체';
 
-        // 1. 카테고리 버튼 생성 (배열 구조 분리 대응)
+        // 1. 카테고리 버튼 생성
         function createFilterButtons() {
             const buttonContainer = document.getElementById('filter-buttons');
             const categories = new Set();
 
             insuranceList.forEach(ins => {
                 ins.coverage_details.forEach(det => {
-                    // 카테고리가 배열인 경우 각 원소를 모두 Set에 삽입, 문자열인 경우 그대로 삽입
                     if (Array.isArray(det.category)) {
                         det.category.forEach(cat => categories.add(cat));
                     } else {
@@ -503,10 +511,8 @@
             let sumTotalPremium = 0;    // 전체 고정 보험료 합계용 변수
 
             insuranceList.forEach(insurance => {
-                // 전체 누적 보험료 상시 누적
                 sumTotalPremium += insurance.total_premium;
 
-                // 현재 선택한 카테고리에 필터링되는 담보 목록 추출 (배열 여부 확인)
                 const filteredDetails = insurance.coverage_details.filter(detail => {
                     if (currentFilter === '전체') return true;
                     if (Array.isArray(detail.category)) {
@@ -552,12 +558,11 @@
                             <tbody>
                 `;
 
-                // 필터링된 항목만 루프를 돌며 렌더링하도록 변경
                 filteredDetails.forEach(detail => {
                     const rowClass = currentFilter !== '전체' ? 'highlighted-row' : '';
 
-                    // 특정 보장내역 버튼이 선택되었을 때만 보장금액 합산
-                    if (currentFilter !== '전체') {
+                    // ⭐️ [핵심 수정] exclude_from_sum 속성이 true가 아닐 때만 합산에 누적시킵니다.
+                    if (currentFilter !== '전체' && !detail.exclude_from_sum) {
                         sumCoverageAmount += detail.coverage_amount;
                     }
 
@@ -565,14 +570,19 @@
                     const premiumDisplay = hasPremium ? `${detail.allocated_premium.toLocaleString()}원` : '-';
                     const mobileClass = hasPremium ? '' : 'no-premium-row';
 
-                    // 화면에 표시할 때는 배열인 경우 쉼표로 연결해서 뿌려줌 (예: 입원, 암)
                     const categoryText = Array.isArray(detail.category) ? detail.category.join(', ') : detail.category;
+
+                    // 합산 제외 항목일 경우 보장금액 밑에 작은 안내 텍스트 추가 (선택사항)
+                    const excludeNotice = detail.exclude_from_sum ? '<span class="excluded-text">(합산 제외)</span>' : '';
 
                     cardHtml += `
                         <tr class="${rowClass}">
                             <td data-label="보장 분류"><strong>${categoryText}</strong></td>
                             <td data-label="보장 내역">${detail.coverage_name}</td>
-                            <td data-label="보장 금액" class="text-right amount-text">${detail.coverage_amount.toLocaleString()}원</td>
+                            <td data-label="보장 금액" class="text-right amount-text">
+                                ${detail.coverage_amount.toLocaleString()}원
+                                ${excludeNotice}
+                            </td>
                             <td data-label="납입금" class="text-right ${mobileClass}" style="color: #4a5568;">${premiumDisplay}</td>
                         </tr>
                     `;
@@ -588,7 +598,6 @@
                 container.appendChild(card);
             });
 
-            // 상단 대시보드 알림 박스 제어
             if (visibleCardsCount === 0) {
                 summaryBox.style.display = 'none';
             } else if (currentFilter === '전체') {
