@@ -104,7 +104,7 @@
             font-weight: bold;
         }
 
-        /* ⭐️ 총 요약 대시보드 구역 */
+        /* 총 요약 대시보드 구역 */
         .total-summary-box {
             background-color: var(--total-bg);
             border: 1px solid var(--total-border);
@@ -229,7 +229,7 @@
             color: #4a5568;
         }
 
-        /* 테이블 기본 구조 (데스크탑) */
+        /* 테이블 구조 */
         .table-responsive {
             width: 100%;
         }
@@ -262,7 +262,7 @@
             font-weight: bold;
         }
 
-        /* 📱 모바일 핵심 최적화 브레이크 포인트 (600px 이하) */
+        /* 모바일 최적화 브레이크 포인트 */
         @media (max-width: 600px) {
 
             table,
@@ -341,7 +341,7 @@
             border: 1px dashed var(--border-color);
         }
 
-        /* 🚫 합산 제외 항목용 마크 스타일 (선택사항) */
+        /* 🚫 합산 제외 항목 안내용 스타일 */
         .excluded-text {
             color: var(--text-muted);
             font-size: 0.8rem;
@@ -434,9 +434,7 @@
                     { category: "심장", coverage_name: "특정심혈관질환(협심증 등) 진단비", coverage_amount: 10000000, allocated_premium: 8040 },
                     { category: "심장", coverage_name: "허혈성심질환 진단비", coverage_amount: 20000000, allocated_premium: 9600 },
                     { category: "심장", coverage_name: "허혈성심질환 수술비", coverage_amount: 5000000, allocated_premium: 2300 },
-
-                    // ⭐️ 이 항목도 납입면제라 보장금액 합산에서 제외되도록 임의 지정해 본 예시입니다.
-                    { category: "납입면제", coverage_name: "보험료 납입면제대상보장", coverage_amount: 100000, allocated_premium: 66, exclude_from_sum: true },
+                    { category: "납입면제", coverage_name: "보험료 납입면제대상보장", coverage_amount: 100000, allocated_premium: 66 },
                 ]
             },
             {
@@ -507,8 +505,8 @@
             container.innerHTML = '';
 
             let visibleCardsCount = 0;
-            let sumCoverageAmount = 0;  // 개별 보장금액 합계용 변수
-            let sumTotalPremium = 0;    // 전체 고정 보험료 합계용 변수
+            let sumCoverageAmount = 0;
+            let sumTotalPremium = 0;
 
             insuranceList.forEach(insurance => {
                 sumTotalPremium += insurance.total_premium;
@@ -561,8 +559,19 @@
                 filteredDetails.forEach(detail => {
                     const rowClass = currentFilter !== '전체' ? 'highlighted-row' : '';
 
-                    // ⭐️ [핵심 수정] exclude_from_sum 속성이 true가 아닐 때만 합산에 누적시킵니다.
-                    if (currentFilter !== '전체' && !detail.exclude_from_sum) {
+                    // 1️⃣ [배열 확인] 카테고리가 배열 구조인 경우, 현재 필터가 첫 번째 원소인지 판별
+                    let isFirstCategory = true;
+                    if (Array.isArray(detail.category)) {
+                        isFirstCategory = detail.category[0] === currentFilter;
+                    }
+
+                    // 2️⃣ [강제 제외 확인] 데이터에 exclude_from_sum: true가 박혀있는지 판별
+                    const isExplicitlyExcluded = detail.exclude_from_sum === true;
+
+                    // ⭐️ [최종 합산 조건] 필터가 '전체'가 아니면서 + 강제 제외가 아니면서 + 첫 번째 카테고리일 때만 누적!
+                    const shouldIncludeInSum = (currentFilter !== '전체') && (!isExplicitlyExcluded) && isFirstCategory;
+
+                    if (shouldIncludeInSum) {
                         sumCoverageAmount += detail.coverage_amount;
                     }
 
@@ -572,8 +581,15 @@
 
                     const categoryText = Array.isArray(detail.category) ? detail.category.join(', ') : detail.category;
 
-                    // 합산 제외 항목일 경우 보장금액 밑에 작은 안내 텍스트 추가 (선택사항)
-                    const excludeNotice = detail.exclude_from_sum ? '<span class="excluded-text">(합산 제외)</span>' : '';
+                    // 🚫 화면 표시용 가이드 텍스트 분기 처리
+                    let excludeNotice = '';
+                    if (currentFilter !== '전체') {
+                        if (isExplicitlyExcluded) {
+                            excludeNotice = '<span class="excluded-text">(합산 제외 설정됨)</span>';
+                        } else if (!isFirstCategory) {
+                            excludeNotice = '<span class="excluded-text">(합산 제외: 주보장 항목 아님)</span>';
+                        }
+                    }
 
                     cardHtml += `
                         <tr class="${rowClass}">
