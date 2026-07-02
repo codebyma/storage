@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -14,10 +15,10 @@
 }
 
 body{
-    max-width:800px;
+    max-width:700px;
     margin:40px auto;
     padding:20px;
-    background:#f7f7f7;
+    background:#f5f5f5;
     color:#333;
 }
 
@@ -28,8 +29,8 @@ h1{
 .tabs{
     display:flex;
     gap:10px;
-    margin-bottom:20px;
     overflow-x:auto;
+    margin-bottom:20px;
 }
 
 .tab{
@@ -57,12 +58,13 @@ h1{
 
 .list{
     background:#fff;
-    border-radius:8px;
+    border-radius:10px;
     overflow:hidden;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
 }
 
 .item{
-    padding:14px 0;
+    padding:14px 16px;
     border-bottom:1px solid #eee;
 }
 
@@ -73,59 +75,48 @@ h1{
 .row{
     display:flex;
     align-items:center;
-    gap:20px;
+}
+
+.left{
+    display:flex;
+    align-items:center;
+    gap:8px;
 }
 
 .name{
-    width:120px;
     font-weight:bold;
+    font-size:16px;
+}
+
+.icon{
+    font-size:15px;
 }
 
 .amount{
-    width:120px;
-}
-
-.visit{
-    width:80px;
-    color:#0a8f4d;
+    margin-left:auto;
     font-weight:bold;
-}
-
-.not-visit{
-    width:80px;
-    color:#d32f2f;
-    font-weight:bold;
+    font-size:15px;
 }
 
 .memo{
     margin-top:6px;
-    margin-left:120px;
-    color:#666;
     font-size:14px;
+    color:#666;
+    line-height:1.5;
 }
 
 @media (max-width:600px){
 
-    .row{
-        gap:10px;
-        font-size:14px;
+    body{
+        padding:15px;
     }
 
     .name{
-        width:90px;
+        font-size:15px;
     }
 
     .amount{
-        width:90px;
-    }
-
-    .visit,
-    .not-visit{
-        width:60px;
-    }
-
-    .memo{
-        margin-left:90px;
+        font-size:14px;
     }
 
 }
@@ -175,7 +166,7 @@ const eventList = [
         name:'최민수',
         amount:50000,
         visited:false,
-        memo:'출장으로 참석 못함'
+        memo:'출장으로 참석하지 못함'
     },
 
     {
@@ -188,57 +179,53 @@ const eventList = [
 ];
 
 // 타입별 그룹화
-const group = eventList.reduce((obj,item)=>{
+const group = eventList.reduce((obj, item) => {
 
-    if(!obj[item.type]){
-        obj[item.type]=[];
-    }
-
-    obj[item.type].push(item);
+    (obj[item.type] ??= []).push(item);
 
     return obj;
 
-},{});
+}, {});
 
-const tabs=document.querySelector('.tabs');
-const contents=document.querySelector('.contents');
+const tabs = document.querySelector('.tabs');
+const contents = document.querySelector('.contents');
 
-Object.keys(group).forEach((type,index)=>{
+Object.keys(group).forEach((type, index) => {
 
-    // 탭 생성
-    const button=document.createElement('button');
-    button.className=`tab ${index===0?'active':''}`;
-    button.dataset.type=type;
-    button.textContent=`${type} (${group[type].length})`;
+    const tab = document.createElement('button');
+    tab.className = `tab ${index === 0 ? 'active' : ''}`;
+    tab.dataset.type = type;
+    tab.textContent = `${type} (${group[type].length})`;
 
-    tabs.appendChild(button);
+    tabs.appendChild(tab);
 
-    // 내용 생성
-    const content=document.createElement('div');
-    content.className=`content ${index===0?'active':''}`;
-    content.dataset.type=type;
+    const content = document.createElement('div');
+    content.className = `content ${index === 0 ? 'active' : ''}`;
+    content.dataset.type = type;
 
-    let html='<div class="list">';
+    let html = '<div class="list">';
 
-    group[type].forEach(item=>{
+    group[type].forEach(item => {
 
-        const visited=item.visited!==false;
+        const visited = item.visited !== false;
 
-        html+=`
+        html += `
             <div class="item">
 
                 <div class="row">
 
-                    <div class="name">
-                        ${item.name}
+                    <div class="left">
+                        <div class="name">${item.name}</div>
+
+                        ${
+                            visited
+                            ? '<span class="icon" title="방문">✅</span>'
+                            : ''
+                        }
                     </div>
 
                     <div class="amount">
                         ${item.amount.toLocaleString()}원
-                    </div>
-
-                    <div class="${visited?'visit':'not-visit'}">
-                        ${visited?'방문':'미방문'}
                     </div>
 
                 </div>
@@ -254,26 +241,25 @@ Object.keys(group).forEach((type,index)=>{
 
     });
 
-    html+='</div>';
+    html += '</div>';
 
-    content.innerHTML=html;
+    content.innerHTML = html;
 
     contents.appendChild(content);
 
 });
 
-// 탭 이벤트
-tabs.addEventListener('click',e=>{
+tabs.addEventListener('click', e => {
 
-    const tab=e.target.closest('.tab');
+    const tab = e.target.closest('.tab');
 
-    if(!tab) return;
+    if (!tab) return;
 
-    document.querySelectorAll('.tab').forEach(el=>{
+    document.querySelectorAll('.tab').forEach(el => {
         el.classList.remove('active');
     });
 
-    document.querySelectorAll('.content').forEach(el=>{
+    document.querySelectorAll('.content').forEach(el => {
         el.classList.remove('active');
     });
 
@@ -289,3 +275,4 @@ tabs.addEventListener('click',e=>{
 
 </body>
 </html>
+```
