@@ -105,8 +105,9 @@
 
         .amount {
             margin-left: auto;
-            font-weight: bold;
+            /* font-weight: bold; */
             font-size: 15px;
+            color: #666;
         }
 
         .memo {
@@ -316,28 +317,18 @@
                 return `
 
                     <div class="item">
-
                         <div class="row">
-
                             <div class="left">
-
                                 <span class="name">${item.name}</span>
-
                                 ${visited ? '<span class="icon">✅</span>' : ''}
-
                             </div>
-
                             <span class="amount">${item.amount.toLocaleString()}원</span>
-
                         </div>
-
                         ${item.memo
                         ? `<div class="memo">비고 : ${item.memo}</div>`
                         : ''
                     }
-
                     </div>
-
                 `;
 
             }).join("")}
