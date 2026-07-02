@@ -1,2 +1,0 @@
-# insurance
-보험
