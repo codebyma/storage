@@ -1,376 +1,402 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
-<title>경조사 관리</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+    <title>경조사 관리</title>
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-font-family: "Pretendard Variable",
-		"Pretendard",
-		-apple-system,
-		BlinkMacSystemFont,
-		"Segoe UI",
-		Roboto,
-		"Helvetica Neue",
-		"Apple SD Gothic Neo",
-		"Noto Sans KR",
-		sans-serif;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Pretendard Variable",
+                "Pretendard",
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                Roboto,
+                "Helvetica Neue",
+                "Apple SD Gothic Neo",
+                "Noto Sans KR",
+                sans-serif;
+        }
 
-body{
-    max-width:700px;
-    margin:40px auto;
-    padding:20px;
-    background:#f5f5f5;
-    color:#333;
-}
+        body {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
 
-h1{
-    margin-bottom:20px;
-}
+        h1 {
+            margin-bottom: 20px;
+        }
 
-.tabs{
-    display:flex;
-    gap:10px;
-    overflow-x:auto;
-    margin-bottom:20px;
-}
+        .tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
 
-.tab{
-    border:none;
-    background:#e5e5e5;
-    padding:10px 18px;
-    border-radius:20px;
-    cursor:pointer;
-    white-space:nowrap;
-    transition:.2s;
-}
+        .tab {
+            border: none;
+            background: #e5e5e5;
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .2s;
+        }
 
-.tab.active{
-    background:#222;
-    color:#fff;
-}
+        .tab.active {
+            background: #222;
+            color: #fff;
+        }
 
-.content{
-    display:none;
-}
+        .content {
+            display: none;
+        }
 
-.content.active{
-    display:block;
-}
+        .content.active {
+            display: block;
+        }
 
-.list{
-    background:#fff;
-    border-radius:10px;
-    overflow:hidden;
-    box-shadow:0 2px 8px rgba(0,0,0,.08);
-}
+        .list {
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
 
-.item{
-    padding:14px 16px;
-    border-bottom:1px solid #eee;
-}
+        .item {
+            padding: 14px 16px;
+            border-bottom: 1px solid #eee;
+        }
 
-.item:last-child{
-    border-bottom:none;
-}
+        .item:last-child {
+            border-bottom: none;
+        }
 
-.row{
-    display:flex;
-    align-items:center;
-}
+        .row {
+            display: flex;
+            align-items: center;
+        }
 
-.left{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
+        .left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.name{
-    font-weight:bold;
-    font-size:16px;
-}
+        .name {
+            font-weight: bold;
+            font-size: 16px;
+        }
 
-.icon{
-    font-size:15px;
-}
+        .icon {
+            font-size: 15px;
+        }
 
-.amount{
-    margin-left:auto;
-    font-weight:bold;
-    font-size:15px;
-}
+        .amount {
+            margin-left: auto;
+            font-weight: bold;
+            font-size: 15px;
+        }
 
-.memo{
-    margin-top:6px;
-    font-size:14px;
-    color:#666;
-    line-height:1.5;
-}
+        .memo {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
 
-@media (max-width:600px){
+        .total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #f8f8f8;
+            border-top: 2px solid #ddd;
+        }
 
-    body{
-        padding:15px;
-    }
+        .total strong {
+            color: #1976d2;
+            font-size: 18px;
+        }
 
-    .name{
-        font-size:15px;
-    }
+        @media (max-width:600px) {
 
-    .amount{
-        font-size:14px;
-    }
+            body {
+                padding: 15px;
+            }
 
-}
-</style>
+            .name {
+                font-size: 15px;
+            }
+
+            .amount {
+                font-size: 14px;
+            }
+
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>📒 경조사 관리</h1>
+    <h1>📒 경조사 관리</h1>
 
-<div class="tabs"></div>
+    <div class="tabs"></div>
 
-<div class="contents"></div>
+    <div class="contents"></div>
 
-<script>
+    <script>
 
-const eventList = [
+        const eventList = [
 
-    {
-        type:'결혼',
-        name:'홍길동',
-        amount:100000,
-        memo:'회사 동료'
-    },
-    {
-        type:'장례',
-        name:'정현석/이슬기',
-        amount:300000
-    },
-    {
-        type:'장례',
-        name:'조치연',
-        amount:200000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'이영희',
-        amount:100000
-    },
-    {
-        type:'장례',
-        name:'허승일 대표이사',
-        amount:200000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'안혁진 부사장',
-        amount:100000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
-    {
-        type:'장례',
-        name:'최민수',
-        amount:50000,
-        visited:false,
-    },
+            {
+                type: '결혼',
+                name: '홍길동',
+                amount: 100000,
+                memo: '회사 동료'
+            },
+            {
+                type: '장례',
+                name: '정현석/이슬기',
+                amount: 300000
+            },
+            {
+                type: '장례',
+                name: '조치연',
+                amount: 200000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                type: '장례',
+                name: '허승일 대표이사',
+                amount: 200000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '안혁진 부사장',
+                amount: 100000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
+            {
+                type: '장례',
+                name: '최민수',
+                amount: 50000,
+                visited: false,
+            },
 
-];
+        ];
 
-// 타입별 그룹화
-const group = eventList.reduce((obj, item) => {
+        // 그룹화
+        const groups = eventList.reduce((obj, item) => {
 
-    (obj[item.type] ??= []).push(item);
+            (obj[item.type] ??= []).push(item);
 
-    return obj;
+            return obj;
 
-}, {});
+        }, {});
 
-const tabs = document.querySelector('.tabs');
-const contents = document.querySelector('.contents');
+        const tabs = document.querySelector(".tabs");
+        const contents = document.querySelector(".contents");
 
-Object.keys(group).forEach((type, index) => {
+        Object.entries(groups).forEach(([type, list], index) => {
 
-    const tab = document.createElement('button');
-    tab.className = `tab ${index === 0 ? 'active' : ''}`;
-    tab.dataset.type = type;
-    tab.textContent = `${type} (${group[type].length})`;
+            // 탭
+            const button = document.createElement("button");
+            button.className = `tab ${index === 0 ? "active" : ""}`;
+            button.dataset.type = type;
+            button.textContent = `${type} (${list.length})`;
 
-    tabs.appendChild(tab);
+            tabs.appendChild(button);
 
-    const content = document.createElement('div');
-    content.className = `content ${index === 0 ? 'active' : ''}`;
-    content.dataset.type = type;
+            // 합계
+            const total = list.reduce((sum, item) => sum + item.amount, 0);
 
-    let html = '<div class="list">';
+            // 내용
+            const content = document.createElement("div");
+            content.className = `content ${index === 0 ? "active" : ""}`;
+            content.dataset.type = type;
 
-    group[type].forEach(item => {
+            content.innerHTML = `
+        <div class="list">
 
-        const visited = item.visited !== false;
+            ${list.map(item => {
 
-        html += `
-            <div class="item">
+                const visited = item.visited !== false;
 
-                <div class="row">
+                return `
 
-                    <div class="left">
-                        <div class="name">${item.name}</div>
+                    <div class="item">
 
-                        ${
-                            visited
-                            ? '<span class="icon" title="방문">✅</span>'
-                            : ''
-                        }
+                        <div class="row">
+
+                            <div class="left">
+
+                                <span class="name">${item.name}</span>
+
+                                ${visited ? '<span class="icon">✅</span>' : ''}
+
+                            </div>
+
+                            <span class="amount">${item.amount.toLocaleString()}원</span>
+
+                        </div>
+
+                        ${item.memo
+                        ? `<div class="memo">비고 : ${item.memo}</div>`
+                        : ''
+                    }
+
                     </div>
 
-                    <div class="amount">
-                        ${item.amount.toLocaleString()}원
-                    </div>
+                `;
 
-                </div>
+            }).join("")}
 
-                ${
-                    item.memo
-                    ? `<div class="memo">비고 : ${item.memo}</div>`
-                    : ''
-                }
-
+            <div class="total">
+                <span>합계</span>
+                <strong>${total.toLocaleString()}원</strong>
             </div>
-        `;
 
-    });
+        </div>
+    `;
 
-    html += '</div>';
+            contents.appendChild(content);
 
-    content.innerHTML = html;
+        });
 
-    contents.appendChild(content);
+        // 탭
+        tabs.addEventListener("click", e => {
 
-});
+            const tab = e.target.closest(".tab");
 
-tabs.addEventListener('click', e => {
+            if (!tab) return;
 
-    const tab = e.target.closest('.tab');
+            document.querySelectorAll(".tab").forEach(el => {
+                el.classList.remove("active");
+            });
 
-    if (!tab) return;
+            document.querySelectorAll(".content").forEach(el => {
+                el.classList.remove("active");
+            });
 
-    document.querySelectorAll('.tab').forEach(el => {
-        el.classList.remove('active');
-    });
+            tab.classList.add("active");
 
-    document.querySelectorAll('.content').forEach(el => {
-        el.classList.remove('active');
-    });
+            document.querySelector(`.content[data-type="${tab.dataset.type}"]`)
+                .classList.add("active");
 
-    tab.classList.add('active');
+        });
 
-    document
-        .querySelector(`.content[data-type="${tab.dataset.type}"]`)
-        .classList.add('active');
-
-});
-
-</script>
+    </script>
 
 </body>
+
 </html>
-```
