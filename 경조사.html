@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>경조사 관리</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Malgun Gothic", sans-serif;
+        }
+
+        body {
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            border: none;
+            background: #ddd;
+            padding: 10px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: .2s;
+        }
+
+        .tab.active {
+            background: #222;
+            color: #fff;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+        }
+
+        .visit {
+            color: #008c4f;
+            font-weight: bold;
+        }
+
+        .not-visit {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        .memo {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>📒 경조사 관리</h1>
+
+    <div class="tabs"></div>
+    <div class="contents"></div>
+
+    <script>
+
+        const eventList = [
+            {
+                id: 1,
+                type: '결혼',
+                name: '홍길동',
+                amount: 100000,
+                memo: '회사 동료'
+            },
+            {
+                id: 2,
+                type: '결혼',
+                name: '김철수',
+                amount: 50000,
+                visited: false,
+                memo: '친구'
+            },
+            {
+                id: 3,
+                type: '장례',
+                name: '이영희',
+                amount: 100000
+            },
+            {
+                id: 4,
+                type: '장례',
+                name: '박민수',
+                amount: 50000,
+                visited: false
+            },
+            {
+                id: 5,
+                type: '돌잔치',
+                name: '최민호',
+                amount: 70000,
+                memo: '조카'
+            }
+        ];
+
+        // 타입별 그룹화
+        const groupList = eventList.reduce((acc, item) => {
+
+            (acc[item.type] ??= []).push(item);
+
+            return acc;
+
+        }, {});
+
+        const tabs = Object.keys(groupList);
+
+        const tabsEl = document.querySelector('.tabs');
+        const contentsEl = document.querySelector('.contents');
+
+        tabs.forEach((type, index) => {
+
+            // 탭
+            const tab = document.createElement('button');
+            tab.className = `tab ${index === 0 ? 'active' : ''}`;
+            tab.dataset.type = type;
+            tab.textContent = `${type} (${groupList[type].length})`;
+
+            tabsEl.appendChild(tab);
+
+            // 내용
+            const content = document.createElement('div');
+            content.className = `content ${index === 0 ? 'active' : ''}`;
+            content.dataset.type = type;
+
+            content.innerHTML = groupList[type].map(item => {
+
+                const visited = item.visited !== false;
+
+                return `
+            <div class="card">
+                <div class="name">${item.name}</div>
+
+                <div class="row">
+                    <span>금액</span>
+                    <strong>${item.amount.toLocaleString()}원</strong>
+                </div>
+
+                <div class="row">
+                    <span>방문 여부</span>
+                    <span class="${visited ? 'visit' : 'not-visit'}">
+                        ${visited ? '방문' : '미방문'}
+                    </span>
+                </div>
+
+                <div class="memo">
+                    비고 : ${item.memo ?? '-'}
+                </div>
+            </div>
+        `;
+
+            }).join('');
+
+            contentsEl.appendChild(content);
+
+        });
+
+        tabsEl.addEventListener('click', e => {
+
+            const tab = e.target.closest('.tab');
+
+            if (!tab) return;
+
+            document.querySelectorAll('.tab').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            document.querySelectorAll('.content').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            tab.classList.add('active');
+
+            document
+                .querySelector(`.content[data-type="${tab.dataset.type}"]`)
+                .classList.add('active');
+
+        });
+
+    </script>
+
+</body>
+
+</html>
+```
