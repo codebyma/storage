@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>캔들 패턴 모음</title>
+
+<style>
+*{
+	box-sizing:border-box;
+	margin:0;
+	padding:0;
+}
+
+body{
+	font-family:Pretendard,Apple SD Gothic Neo,Malgun Gothic,sans-serif;
+	background:#f5f7fa;
+	padding:40px;
+	color:#222;
+}
+
+h1{
+	margin-bottom:30px;
+	font-size:32px;
+}
+
+.grid{
+	display:grid;
+	grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+	gap:20px;
+}
+
+.card{
+	background:#fff;
+	border-radius:16px;
+	padding:20px;
+	box-shadow:0 5px 15px rgba(0,0,0,.08);
+	transition:.25s;
+}
+
+.card:hover{
+	transform:translateY(-4px);
+	box-shadow:0 10px 25px rgba(0,0,0,.12);
+}
+
+.card svg{
+	width:140px;
+	height:90px;
+	display:block;
+	margin:0 auto 15px;
+}
+
+.card h2{
+	font-size:20px;
+	margin-bottom:8px;
+}
+
+.eng{
+	color:#888;
+	font-size:14px;
+	margin-bottom:10px;
+}
+
+.desc{
+	line-height:1.6;
+	font-size:14px;
+	margin-bottom:12px;
+}
+
+.badge{
+	display:inline-block;
+	padding:6px 12px;
+	border-radius:20px;
+	font-size:13px;
+	font-weight:bold;
+	color:#fff;
+}
+
+.up{
+	background:#16a34a;
+}
+
+.down{
+	background:#dc2626;
+}
+
+.keep{
+	background:#2563eb;
+}
+
+.neutral{
+	background:#6b7280;
+}
+</style>
+
+</head>
+<body>
+
+<h1>주식 캔들 패턴</h1>
+
+<div class="grid">
+
+<!-- 망치형 -->
+<div class="card">
+
+<svg viewBox="0 0 100 100">
+<line x1="50" y1="15" x2="50" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="40" y="25" width="20" height="18" fill="#22c55e"/>
+</svg>
+
+<h2>망치형</h2>
+<div class="eng">Hammer</div>
+
+<p class="desc">
+하락 추세 말미에서 자주 등장하는 대표적인 상승 반전 패턴입니다.
+긴 아래꼬리와 작은 몸통이 특징입니다.
+</p>
+
+<span class="badge up">상승 반전</span>
+
+</div>
+
+<!-- 역망치형 -->
+<div class="card">
+
+<svg viewBox="0 0 100 100">
+<line x1="50" y1="10" x2="50" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="40" y="58" width="20" height="18" fill="#22c55e"/>
+</svg>
+
+<h2>역망치형</h2>
+<div class="eng">Inverted Hammer</div>
+
+<p class="desc">
+하락 추세에서 나타나는 상승 반전 후보입니다.
+다음 봉의 확인이 중요합니다.
+</p>
+
+<span class="badge up">상승 반전</span>
+
+</div>
+
+<!-- 교수형 -->
+<div class="card">
+
+<svg viewBox="0 0 100 100">
+<line x1="50" y1="15" x2="50" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="40" y="25" width="20" height="18" fill="#ef4444"/>
+</svg>
+
+<h2>교수형</h2>
+<div class="eng">Hanging Man</div>
+
+<p class="desc">
+상승 추세에서 발생하는 하락 반전 후보입니다.
+망치형과 모양은 같지만 위치가 다릅니다.
+</p>
+
+<span class="badge down">하락 반전</span>
+
+</div>
+
+<!-- 유성형 -->
+<div class="card">
+
+<svg viewBox="0 0 100 100">
+<line x1="50" y1="10" x2="50" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="40" y="58" width="20" height="18" fill="#ef4444"/>
+</svg>
+
+<h2>유성형</h2>
+<div class="eng">Shooting Star</div>
+
+<p class="desc">
+상승 추세의 고점 부근에서 자주 나타나는 하락 반전 패턴입니다.
+</p>
+
+<span class="badge down">하락 반전</span>
+
+</div>
+
+<!-- 도지 -->
+<div class="card">
+
+<svg viewBox="0 0 100 100">
+<line x1="50" y1="15" x2="50" y2="85" stroke="#222" stroke-width="3"/>
+<line x1="38" y1="50" x2="62" y2="50" stroke="#222" stroke-width="4"/>
+</svg>
+
+<h2>도지</h2>
+<div class="eng">Doji</div>
+
+<p class="desc">
+매수와 매도의 힘이 비슷한 상태입니다.
+단독보다는 추세와 함께 해석합니다.
+</p>
+
+<span class="badge neutral">중립</span>
+
+</div>
+
+<!-- 적삼병 -->
+<div class="card">
+
+<svg viewBox="0 0 160 100">
+<line x1="35" y1="15" x2="35" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="27" y="40" width="16" height="28" fill="#22c55e"/>
+<line x1="80" y1="10" x2="80" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="72" y="30" width="16" height="38" fill="#22c55e"/>
+<line x1="125" y1="5" x2="125" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="117" y="20" width="16" height="48" fill="#22c55e"/>
+</svg>
+
+<h2>적삼병</h2>
+<div class="eng">Three White Soldiers</div>
+
+<p class="desc">
+연속된 3개의 강한 양봉입니다.
+상승 추세 시작을 의미하는 대표 패턴입니다.
+</p>
+
+<span class="badge up">강한 상승</span>
+
+</div>
+
+<!-- 흑삼병 -->
+<div class="card">
+
+<svg viewBox="0 0 160 100">
+<line x1="35" y1="15" x2="35" y2="85" stroke="#222" stroke-width="3"/>
+<rect x="27" y="22" width="16" height="28" fill="#ef4444"/>
+<line x1="80" y1="15" x2="80" y2="90" stroke="#222" stroke-width="3"/>
+<rect x="72" y="30" width="16" height="38" fill="#ef4444"/>
+<line x1="125" y1="15" x2="125" y2="95" stroke="#222" stroke-width="3"/>
+<rect x="117" y="40" width="16" height="48" fill="#ef4444"/>
+</svg>
+
+<h2>흑삼병</h2>
+<div class="eng">Three Black Crows</div>
+
+<p class="desc">
+연속된 3개의 긴 음봉입니다.
+강한 하락 전환을 의미하는 대표 패턴입니다.
+</p>
+
+<span class="badge down">강한 하락</span>
+
+</div>
+
+<!-- 상승 장악형 -->
+<div class="card">
+
+<h2>상승 장악형</h2>
+<div class="eng">Bullish Engulfing</div>
+
+<p class="desc">
+큰 양봉이 이전 음봉의 몸통을 완전히 감싸는 형태입니다.
+강한 상승 반전 신호로 해석됩니다.
+</p>
+
+<span class="badge up">상승 반전</span>
+
+</div>
+
+<!-- 하락 장악형 -->
+<div class="card">
+
+<h2>하락 장악형</h2>
+<div class="eng">Bearish Engulfing</div>
+
+<p class="desc">
+큰 음봉이 이전 양봉의 몸통을 완전히 감싸는 형태입니다.
+</p>
+
+<span class="badge down">하락 반전</span>
+
+</div>
+
+<!-- 샛별형 -->
+<div class="card">
+
+<h2>샛별형</h2>
+<div class="eng">Morning Star</div>
+
+<p class="desc">
+3개의 캔들로 이루어진 대표적인 상승 반전 패턴입니다.
+</p>
+
+<span class="badge up">상승 반전</span>
+
+</div>
+
+<!-- 석별형 -->
+<div class="card">
+
+<h2>석별형</h2>
+<div class="eng">Evening Star</div>
+
+<p class="desc">
+3개의 캔들로 이루어진 대표적인 하락 반전 패턴입니다.
+</p>
+
+<span class="badge down">하락 반전</span>
+
+</div>
+
+<!-- 상승 삼법 -->
+<div class="card">
+
+<h2>상승 삼법</h2>
+<div class="eng">Rising Three Methods</div>
+
+<p class="desc">
+큰 양봉 이후 조정이 나타난 뒤 다시 상승하는 추세 지속 패턴입니다.
+</p>
+
+<span class="badge keep">상승 지속</span>
+
+</div>
+
+<!-- 하락 삼법 -->
+<div class="card">
+
+<h2>하락 삼법</h2>
+<div class="eng">Falling Three Methods</div>
+
+<p class="desc">
+큰 음봉 이후 잠시 반등한 뒤 다시 하락하는 추세 지속 패턴입니다.
+</p>
+
+<span class="badge keep">하락 지속</span>
+
+</div>
+
+<!-- 트위저 탑 -->
+<div class="card">
+
+<h2>트위저 탑</h2>
+<div class="eng">Tweezer Top</div>
+
+<p class="desc">
+두 개의 캔들이 비슷한 고가를 형성하며 하락 가능성을 시사합니다.
+</p>
+
+<span class="badge down">하락 반전</span>
+
+</div>
+
+<!-- 트위저 바텀 -->
+<div class="card">
+
+<h2>트위저 바텀</h2>
+<div class="eng">Tweezer Bottom</div>
+
+<p class="desc">
+두 개의 캔들이 비슷한 저가를 형성하며 상승 가능성을 시사합니다.
+</p>
+
+<span class="badge up">상승 반전</span>
+
+</div>
+
+</div>
+
+</body>
+</html>
