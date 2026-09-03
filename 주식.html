@@ -219,13 +219,13 @@
   .form-panel.open{display:block;}
   .form-row{
     display:flex;
-    gap:8px;
-    margin-bottom:8px;
+    gap:14px;
+    margin-bottom:12px;
   }
   .form-row .field{
     display:flex;
     flex-direction:column;
-    gap:4px;
+    gap:6px;
     flex:1;
     min-width:0;
   }
@@ -613,6 +613,7 @@ function renderAccounts(){
     const ownerName = isAll ? (DATA.owners.find(o=>o.id===acc.ownerId)||{}).name : null;
     const card = document.createElement('div');
     card.className = 'account-card' + (isOpen ? ' open':'');
+    card.id = `acccard_${acc.id}`;
     card.innerHTML = `
       <div class="account-head" data-acc="${acc.id}">
         <div>
@@ -624,9 +625,11 @@ function renderAccounts(){
       <div class="account-body" id="body_${acc.id}"></div>
     `;
     card.querySelector('.account-head').onclick = ()=>{
+      const willOpen = !openAccounts.has(acc.id);
       if(openAccounts.has(acc.id)) openAccounts.delete(acc.id);
       else openAccounts.add(acc.id);
       render();
+      if(willOpen) scrollToId(`acccard_${acc.id}`);
     };
     list.appendChild(card);
     if(isOpen){
@@ -660,7 +663,7 @@ function renderAccountBody(acc, bodyEl){
   `;
   bodyEl.innerHTML = html;
   bodyEl.querySelector(`[data-add-stock]`).onclick = ()=>{
-    document.getElementById(`stockForm_${acc.id}`).classList.toggle('open');
+    toggleForm(`stockForm_${acc.id}`);
   };
   const stockListEl = bodyEl.querySelector(`#stockList_${acc.id}`);
   stocks.forEach(s=> stockListEl.appendChild(buildStockRow(s)));
@@ -674,6 +677,7 @@ function buildStockRow(stock){
   const plPct = stockPLPercent(stock);
   const row = document.createElement('div');
   row.className = 'stock-row' + (isOpen ? ' open':'');
+  row.id = `stockrow_${stock.id}`;
   row.innerHTML = `
     <div class="stock-head">
       <div>
@@ -691,9 +695,11 @@ function buildStockRow(stock){
     <div class="stock-body" id="stockbody_${stock.id}"></div>
   `;
   row.querySelector('.stock-head').onclick = ()=>{
+    const willOpen = !openStocks.has(stock.id);
     if(openStocks.has(stock.id)) openStocks.delete(stock.id);
     else openStocks.add(stock.id);
     render();
+    if(willOpen) scrollToId(`stockrow_${stock.id}`);
   };
   if(isOpen){
     renderStockBody(stock, row.querySelector('.stock-body'));
@@ -741,7 +747,7 @@ function renderStockBody(stock, el){
       </div>
     </div>
 
-    <div class="sub-block">
+    <div class="sub-block" id="txsection_${stock.id}_buys">
       <div class="sub-label">
         <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">매수 내역 (${(stock.buys||[]).length}건) ${buysOpen?'▾':'▸'}</span>
         <button class="mini-add" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
@@ -752,7 +758,7 @@ function renderStockBody(stock, el){
       </div>
     </div>
 
-    <div class="sub-block">
+    <div class="sub-block" id="txsection_${stock.id}_sells">
       <div class="sub-label">
         <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">매도 내역 (${(stock.sells||[]).length}건) ${sellsOpen?'▾':'▸'}</span>
         <button class="mini-add" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
@@ -763,7 +769,7 @@ function renderStockBody(stock, el){
       </div>
     </div>
 
-    <div class="sub-block">
+    <div class="sub-block" id="txsection_${stock.id}_dividends">
       <div class="sub-label">
         <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 · 배당률 ${fmtPctPlain(divYield)} ${divsOpen?'▾':'▸'}</span>
         <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
@@ -842,17 +848,35 @@ function txFormHtml(stockId, field){
   `;
 }
 
+function scrollToId(id){
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      const rect = el.getBoundingClientRect();
+      const targetY = window.innerHeight * 0.7;
+      const delta = rect.top - targetY;
+      window.scrollBy({ top: delta, behavior:'smooth' });
+    });
+  });
+}
+
 function toggleForm(id){
-  document.getElementById(id).classList.toggle('open');
+  const el = document.getElementById(id);
+  const willOpen = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if(willOpen) scrollToId(id);
 }
 function closeForm(id){
   document.getElementById(id).classList.remove('open');
 }
 function toggleTxSection(stockId, field){
   const key = stockId+':'+field;
+  const willOpen = !openTxSections.has(key);
   if(openTxSections.has(key)) openTxSections.delete(key);
   else openTxSections.add(key);
   render();
+  if(willOpen) scrollToId(`txsection_${stockId}_${field}`);
 }
 function openPriceForm(stockId){
   const panel = document.getElementById(`priceform_${stockId}`);
@@ -862,6 +886,7 @@ function openPriceForm(stockId){
     const input = document.getElementById(`price_input_${stockId}`);
     input.value = '';
     input.focus();
+    scrollToId(`priceform_${stockId}`);
   }
 }
 
@@ -872,7 +897,7 @@ function escapeHtml(str){
 }
 
 document.getElementById('addAccountBtn').onclick = ()=>{
-  document.getElementById('accountForm').classList.toggle('open');
+  toggleForm('accountForm');
 };
 
 async function submitAccount(){
