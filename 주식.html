@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>주식 현황 정리</title>
 <style>
   :root{
@@ -23,7 +23,7 @@
     --red:#e2635a;
     --red-dim:#3a1e1c;
   }
-  *{box-sizing:border-box;}
+  *{box-sizing:border-box;touch-action:manipulation;}
   body{
     margin:0;
     background:var(--bg);
@@ -188,6 +188,11 @@
     font-size:11px;
   }
   .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
+  .tx-section-label{cursor:pointer;}
+  .tx-list-scroll{
+    max-height:220px;
+    overflow-y:auto;
+  }
 
   .mini-add{
     background:none;
@@ -213,6 +218,17 @@
     gap:8px;
     margin-bottom:8px;
   }
+  .form-row .field{
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    flex:1;
+    min-width:0;
+  }
+  .field-label{
+    font-size:11px;
+    color:var(--text3);
+  }
   .form-row input, .form-row select{
     flex:1;
     background:var(--surface2);
@@ -220,8 +236,9 @@
     color:var(--text1);
     border-radius:7px;
     padding:8px 10px;
-    font-size:13px;
+    font-size:16px;
     min-width:0;
+    width:100%;
   }
   .form-row input::placeholder{color:var(--text3);}
   .form-actions{display:flex;gap:8px;justify-content:flex-end;}
@@ -362,6 +379,7 @@ let DATA = { owners: [], accounts: [], stocks: [] };
 let currentOwner = null;
 let openAccounts = new Set();
 let openStocks = new Set();
+let openTxSections = new Set();
 
 const STORAGE_KEY = 'portfolio-data';
 
@@ -435,13 +453,25 @@ function renderOwnerTabs(){
     btn.onclick = ()=>{ currentOwner = o.id; render(); };
     el.appendChild(btn);
   });
+  if(DATA.owners.length > 1){
+    const allBtn = document.createElement('div');
+    allBtn.className = 'owner-tab' + (currentOwner==='ALL' ? ' active' : '');
+    allBtn.textContent = '합계';
+    allBtn.onclick = ()=>{ currentOwner = 'ALL'; render(); };
+    el.appendChild(allBtn);
+  }
 }
 
 function accountsForOwner(ownerId){
+  if(ownerId==='ALL') return DATA.accounts;
   return DATA.accounts.filter(a=>a.ownerId===ownerId);
 }
 function stocksForAccount(accountId){
   return DATA.stocks.filter(s=>s.accountId===accountId);
+}
+function stocksForOwner(ownerId){
+  const accIds = accountsForOwner(ownerId).map(a=>a.id);
+  return DATA.stocks.filter(s=>accIds.includes(s.accountId));
 }
 function stockTotal(stock){
   return (stock.quantity || 0) * (stock.currentPrice || 0);
@@ -458,6 +488,19 @@ function stockPLPercent(stock){
   const cost = stockCostBasis(stock);
   if(!cost) return null;
   return (stockPL(stock) / cost) * 100;
+}
+function stockDividendTotal(stock){
+  return (stock.dividends||[]).reduce((s,d)=>s+(d.amount||0),0);
+}
+function stockDividendYield(stock){
+  const cost = stockCostBasis(stock);
+  if(!cost) return null;
+  return (stockDividendTotal(stock) / cost) * 100;
+}
+function ownerAvgDividendYield(ownerId){
+  const yields = stocksForOwner(ownerId).map(stockDividendYield).filter(y=>y!==null);
+  if(yields.length===0) return null;
+  return yields.reduce((a,b)=>a+b,0) / yields.length;
 }
 function accountTotal(accountId){
   return stocksForAccount(accountId).reduce((sum,s)=>sum+stockTotal(s),0);
@@ -480,17 +523,19 @@ function fmtPercent(n){
   const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
   return sign + Math.abs(n).toFixed(1) + '%';
 }
+function fmtPctPlain(n){
+  if(n===null) return '-';
+  return n.toFixed(1) + '%';
+}
 function plClass(n){
   return n > 0 ? 'mint' : (n < 0 ? 'redtext' : '');
 }
 function currentMonthDividend(ownerId){
   const ym = new Date().toISOString().slice(0,7);
   let total = 0;
-  accountsForOwner(ownerId).forEach(a=>{
-    stocksForAccount(a.id).forEach(s=>{
-      (s.dividends||[]).forEach(d=>{
-        if(d.month===ym) total += (d.amount||0);
-      });
+  stocksForOwner(ownerId).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if(d.month===ym) total += (d.amount||0);
     });
   });
   return total;
@@ -498,11 +543,9 @@ function currentMonthDividend(ownerId){
 function yearDividend(ownerId){
   const year = new Date().getFullYear().toString();
   let total = 0;
-  accountsForOwner(ownerId).forEach(a=>{
-    stocksForAccount(a.id).forEach(s=>{
-      (s.dividends||[]).forEach(d=>{
-        if((d.month||'').startsWith(year)) total += (d.amount||0);
-      });
+  stocksForOwner(ownerId).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if((d.month||'').startsWith(year)) total += (d.amount||0);
     });
   });
   return total;
@@ -516,6 +559,7 @@ function renderSummary(){
   const plPct = cost ? (pl/cost)*100 : null;
   const monthDiv = currentMonthDividend(currentOwner);
   const yearDiv = yearDividend(currentOwner);
+  const avgYield = ownerAvgDividendYield(currentOwner);
   el.innerHTML = `
     <div class="metric">
       <div class="label">총 평가금액</div>
@@ -541,11 +585,19 @@ function renderSummary(){
       <div class="label">올해 누적 배당</div>
       <div class="value gold num">${fmtWon(yearDiv)}</div>
     </div>
+    <div class="metric" style="grid-column:1 / -1;">
+      <div class="label">종목별 배당률 평균 (누적배당÷투자원금)</div>
+      <div class="value gold num">${fmtPctPlain(avgYield)}</div>
+    </div>
   `;
 }
 
 function renderAccounts(){
   const list = document.getElementById('accountList');
+  const isAll = currentOwner === 'ALL';
+  document.getElementById('addAccountBtn').style.display = isAll ? 'none' : '';
+  document.getElementById('accountsLabel').textContent = isAll ? '전체 계좌 (나+와이프)' : '계좌';
+  if(isAll) closeForm('accountForm');
   const accounts = accountsForOwner(currentOwner);
   if(accounts.length===0){
     list.innerHTML = `<div class="empty-state">아직 등록된 계좌가 없습니다.<br>위 '계좌 추가' 버튼으로 시작해보세요.</div>`;
@@ -554,12 +606,13 @@ function renderAccounts(){
   list.innerHTML = '';
   accounts.forEach(acc=>{
     const isOpen = openAccounts.has(acc.id);
+    const ownerName = isAll ? (DATA.owners.find(o=>o.id===acc.ownerId)||{}).name : null;
     const card = document.createElement('div');
     card.className = 'account-card' + (isOpen ? ' open':'');
     card.innerHTML = `
       <div class="account-head" data-acc="${acc.id}">
         <div>
-          <div class="account-name">${escapeHtml(acc.name)}</div>
+          <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
           <div class="account-total num">${fmtWon(accountTotal(acc.id))}</div>
         </div>
         <span class="chevron">▸</span>
@@ -591,8 +644,8 @@ function renderAccountBody(acc, bodyEl){
         <input type="text" placeholder="티커 (예: VOO)" id="ns_ticker_${acc.id}">
       </div>
       <div class="form-row">
-        <input type="number" placeholder="평균단가 (1주당)" id="ns_avgprice_${acc.id}">
-        <input type="number" placeholder="수량" id="ns_qty_${acc.id}">
+        <input type="number" inputmode="decimal" placeholder="평균단가 (1주당)" id="ns_avgprice_${acc.id}">
+        <input type="number" inputmode="decimal" placeholder="수량" id="ns_qty_${acc.id}">
       </div>
       <div class="form-actions">
         <button class="btn-ghost" onclick="closeForm('stockForm_${acc.id}')">취소</button>
@@ -613,6 +666,8 @@ function buildStockRow(stock){
   const isOpen = openStocks.has(stock.id);
   const qty = stock.quantity || 0;
   const price = stock.currentPrice || 0;
+  const pl = stockPL(stock);
+  const plPct = stockPLPercent(stock);
   const row = document.createElement('div');
   row.className = 'stock-row' + (isOpen ? ' open':'');
   row.innerHTML = `
@@ -622,7 +677,10 @@ function buildStockRow(stock){
         <div class="stock-ticker">${escapeHtml(stock.ticker||'')}${qty ? ' · '+qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
-        <span class="stock-amount num">${fmtWon(stockTotal(stock))}</span>
+        <div style="text-align:right;">
+          <div class="stock-amount num">${fmtWon(stockTotal(stock))}</div>
+          <div class="num ${plClass(pl)}" style="font-size:11.5px;">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
+        </div>
         <span class="chevron">▸</span>
       </div>
     </div>
@@ -644,20 +702,33 @@ function renderStockBody(stock, el){
   const price = stock.currentPrice || 0;
   const cost = stockCostBasis(stock);
   const avgPrice = qty ? Math.round(cost / qty) : 0;
+  const pl = stockPL(stock);
+  const plPct = stockPLPercent(stock);
+  const divTotal = stockDividendTotal(stock);
+  const divYield = stockDividendYield(stock);
+
+  const buysOpen = openTxSections.has(stock.id+':buys');
+  const sellsOpen = openTxSections.has(stock.id+':sells');
+  const divsOpen = openTxSections.has(stock.id+':dividends');
+
   el.innerHTML = `
     <div class="sub-block">
       <div class="sub-label">
         <span>보유 현황</span>
-        <button class="mini-add" onclick="toggleForm('priceform_${stock.id}')">현재가 수정</button>
+        <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
       </div>
       <div class="entry-row"><span>보유수량</span><span class="amt num">${qty.toLocaleString('ko-KR')}주</span></div>
       <div class="entry-row"><span>평균매입단가</span><span class="amt num">${avgPrice.toLocaleString('ko-KR')}원</span></div>
       <div class="entry-row"><span>현재가</span><span class="amt num">${price.toLocaleString('ko-KR')}원</span></div>
       <div class="entry-row"><span>평가금액 (수량×현재가)</span><span class="amt num">${fmtWon(stockTotal(stock))}</span></div>
       <div class="entry-row"><span>매수 총액(투자원금)</span><span class="amt num">${fmtWon(cost)}</span></div>
+      <div class="entry-row"><span>평가손익</span><span class="amt num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
       <div class="form-panel" id="priceform_${stock.id}">
         <div class="form-row">
-          <input type="number" placeholder="새 현재가 (1주당)" id="price_input_${stock.id}" value="${price || ''}">
+          <div class="field">
+            <span class="field-label">새 현재가 (1주당)</span>
+            <input type="number" inputmode="decimal" placeholder="예: 25000" id="price_input_${stock.id}">
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn-ghost" onclick="closeForm('priceform_${stock.id}')">취소</button>
@@ -667,37 +738,49 @@ function renderStockBody(stock, el){
     </div>
 
     <div class="sub-block">
-      <div class="sub-label">
-        <span>매수 내역</span>
-        <button class="mini-add" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
+      <div class="sub-label tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">
+        <span>매수 내역 (${(stock.buys||[]).length}건) ${buysOpen?'▾':'▸'}</span>
       </div>
-      ${entryListHtml(stock.buys, stock.id, 'buys')}
+      ${buysOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.buys, stock.id, 'buys')}</div>` : ''}
+      <div style="margin-top:6px;">
+        <button class="mini-add" onclick="event.stopPropagation();toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
+      </div>
       <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
     </div>
 
     <div class="sub-block">
-      <div class="sub-label">
-        <span>매도 내역</span>
-        <button class="mini-add" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
+      <div class="sub-label tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">
+        <span>매도 내역 (${(stock.sells||[]).length}건) ${sellsOpen?'▾':'▸'}</span>
       </div>
-      ${entryListHtml(stock.sells, stock.id, 'sells')}
+      ${sellsOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.sells, stock.id, 'sells')}</div>` : ''}
+      <div style="margin-top:6px;">
+        <button class="mini-add" onclick="event.stopPropagation();toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
+      </div>
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
     </div>
 
     <div class="sub-block">
-      <div class="sub-label">
-        <span>배당 내역</span>
-        <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
+      <div class="sub-label tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">
+        <span>배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 · 배당률 ${fmtPctPlain(divYield)} ${divsOpen?'▾':'▸'}</span>
       </div>
-      ${dividendListHtml(stock.dividends, stock.id)}
+      ${divsOpen ? `<div class="tx-list-scroll">${dividendListHtml(stock.dividends, stock.id)}</div>` : ''}
+      <div style="margin-top:6px;">
+        <button class="mini-add" onclick="event.stopPropagation();toggleForm('divform_${stock.id}')">+ 배당 추가</button>
+      </div>
       <div class="form-panel" id="divform_${stock.id}">
         <div class="form-row">
-          <input type="month" id="dv_month_${stock.id}">
-          <input type="number" placeholder="분배금" id="dv_amount_${stock.id}">
+          <div class="field">
+            <span class="field-label">배당월</span>
+            <input type="month" id="dv_month_${stock.id}">
+          </div>
+          <div class="field">
+            <span class="field-label">분배금</span>
+            <input type="number" inputmode="decimal" placeholder="예: 5000" id="dv_amount_${stock.id}">
+          </div>
         </div>
         <div class="form-actions">
           <button class="btn-ghost" onclick="closeForm('divform_${stock.id}')">취소</button>
@@ -736,13 +819,23 @@ function dividendListHtml(list, stockId){
 
 function txFormHtml(stockId, field){
   const formId = (field==='buys' ? 'buyform_' : 'sellform_') + stockId;
+  const dateLabel = field==='buys' ? '매수일' : '매도일';
   return `
     <div class="form-row">
-      <input type="date" id="${field}_date_${stockId}">
-      <input type="number" placeholder="수량" id="${field}_qty_${stockId}">
+      <div class="field">
+        <span class="field-label">${dateLabel}</span>
+        <input type="date" id="${field}_date_${stockId}">
+      </div>
+      <div class="field">
+        <span class="field-label">수량</span>
+        <input type="number" inputmode="decimal" placeholder="예: 10" id="${field}_qty_${stockId}">
+      </div>
     </div>
     <div class="form-row">
-      <input type="number" placeholder="1주당 단가" id="${field}_price_${stockId}">
+      <div class="field">
+        <span class="field-label">1주당 단가</span>
+        <input type="number" inputmode="decimal" placeholder="예: 20000" id="${field}_price_${stockId}">
+      </div>
     </div>
     <div class="form-actions">
       <button class="btn-ghost" onclick="closeForm('${formId}')">취소</button>
@@ -756,6 +849,22 @@ function toggleForm(id){
 }
 function closeForm(id){
   document.getElementById(id).classList.remove('open');
+}
+function toggleTxSection(stockId, field){
+  const key = stockId+':'+field;
+  if(openTxSections.has(key)) openTxSections.delete(key);
+  else openTxSections.add(key);
+  render();
+}
+function openPriceForm(stockId){
+  const panel = document.getElementById(`priceform_${stockId}`);
+  const willOpen = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+  if(willOpen){
+    const input = document.getElementById(`price_input_${stockId}`);
+    input.value = '';
+    input.focus();
+  }
 }
 
 function escapeHtml(str){
