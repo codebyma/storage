@@ -170,7 +170,11 @@
     display:flex;
     justify-content:space-between;
     align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
   }
+  .sub-label .tx-section-label{flex:1;min-width:0;}
+  .sub-label .mini-add{flex-shrink:0;}
   .entry-row{
     display:flex;
     justify-content:space-between;
@@ -738,39 +742,33 @@ function renderStockBody(stock, el){
     </div>
 
     <div class="sub-block">
-      <div class="sub-label tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">
-        <span>매수 내역 (${(stock.buys||[]).length}건) ${buysOpen?'▾':'▸'}</span>
+      <div class="sub-label">
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">매수 내역 (${(stock.buys||[]).length}건) ${buysOpen?'▾':'▸'}</span>
+        <button class="mini-add" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
       </div>
       ${buysOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.buys, stock.id, 'buys')}</div>` : ''}
-      <div style="margin-top:6px;">
-        <button class="mini-add" onclick="event.stopPropagation();toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
-      </div>
       <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
     </div>
 
     <div class="sub-block">
-      <div class="sub-label tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">
-        <span>매도 내역 (${(stock.sells||[]).length}건) ${sellsOpen?'▾':'▸'}</span>
+      <div class="sub-label">
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">매도 내역 (${(stock.sells||[]).length}건) ${sellsOpen?'▾':'▸'}</span>
+        <button class="mini-add" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
       </div>
       ${sellsOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.sells, stock.id, 'sells')}</div>` : ''}
-      <div style="margin-top:6px;">
-        <button class="mini-add" onclick="event.stopPropagation();toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
-      </div>
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
     </div>
 
     <div class="sub-block">
-      <div class="sub-label tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">
-        <span>배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 · 배당률 ${fmtPctPlain(divYield)} ${divsOpen?'▾':'▸'}</span>
+      <div class="sub-label">
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 · 배당률 ${fmtPctPlain(divYield)} ${divsOpen?'▾':'▸'}</span>
+        <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
       </div>
       ${divsOpen ? `<div class="tx-list-scroll">${dividendListHtml(stock.dividends, stock.id)}</div>` : ''}
-      <div style="margin-top:6px;">
-        <button class="mini-add" onclick="event.stopPropagation();toggleForm('divform_${stock.id}')">+ 배당 추가</button>
-      </div>
       <div class="form-panel" id="divform_${stock.id}">
         <div class="form-row">
           <div class="field">
