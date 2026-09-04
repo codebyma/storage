@@ -436,7 +436,7 @@ let currentOwner = null;
 let openAccounts = new Set();
 let openStocks = new Set();
 let openTxSections = new Set();
-let breakdownOpen = true;
+let breakdownOpen = false;
 
 const STORAGE_KEY = 'portfolio-data';
 const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
