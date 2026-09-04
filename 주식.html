@@ -87,6 +87,8 @@
   .metric .value.mint{color:var(--mint);}
   .metric .value.gold{color:var(--gold);}
   .metric .value.redtext{color:var(--red);}
+  .redtext{color:var(--red);}
+  .bluetext{color:var(--blue);}
 
   main{padding:20px;}
   .section-title{
@@ -595,7 +597,7 @@ function fmtPctPlain(n){
   return n.toFixed(1) + '%';
 }
 function plClass(n){
-  return n > 0 ? 'mint' : (n < 0 ? 'redtext' : '');
+  return n > 0 ? 'redtext' : (n < 0 ? 'bluetext' : '');
 }
 function currentMonthDividend(ownerId){
   const ym = new Date().toISOString().slice(0,7);
