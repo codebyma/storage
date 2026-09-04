@@ -636,11 +636,11 @@ function fmtPL(n){
 function fmtPercent(n){
   if(n===null) return '';
   const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
-  return sign + Math.abs(n).toFixed(1) + '%';
+  return sign + Math.abs(n).toFixed(2) + '%';
 }
 function fmtPctPlain(n){
   if(n===null) return '-';
-  return n.toFixed(1) + '%';
+  return n.toFixed(2) + '%';
 }
 function plClass(n){
   return n > 0 ? 'redtext' : (n < 0 ? 'bluetext' : '');
@@ -766,7 +766,7 @@ function renderBreakdown(){
           <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">'+escapeHtml(item.ticker)+'</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
           <div class="breakdown-right">
             <span class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span>
-            <span class="breakdown-ratio num">${ratio.toFixed(1)}%</span>
+            <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
           </div>
         </div>
         <div class="breakdown-bar-track">
