@@ -18,19 +18,38 @@
   ],
   "stocks": [
     {
-      "id": "stk_wthrnfo",
+      "id": "stk_ciu0vbl",
       "accountId": "acc_aioddia",
-      "name": "나스닥",
-      "ticker": "ㅂㅂ",
-      "quantity": 50,
-      "currentPrice": 100000,
+      "name": "TIGER S&P500",
+      "ticker": "360750",
+      "quantity": 182,
+      "currentPrice": 25980,
       "buys": [
         {
-          "id": "tx_y1upz6a",
+          "id": "tx_cklblvk",
           "date": "2026-09-04",
-          "quantity": 50,
-          "price": 100000,
-          "amount": 5000000
+          "quantity": 182,
+          "price": 16946,
+          "amount": 3084172
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_j07rhyo",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 나스닥100",
+      "ticker": "133690",
+      "quantity": 32,
+      "currentPrice": 176990,
+      "buys": [
+        {
+          "id": "tx_rlxdg7a",
+          "date": "2026-09-04",
+          "quantity": 32,
+          "price": 101712,
+          "amount": 3254784
         }
       ],
       "sells": [],
