@@ -188,6 +188,82 @@
       ],
       "sells": [],
       "dividends": []
+    },
+    {
+      "id": "stk_ef8wp45",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 골드선물(H)",
+      "ticker": "319640",
+      "quantity": 35,
+      "currentPrice": 26295,
+      "buys": [
+        {
+          "id": "tx_r9efht8",
+          "date": "2026-09-04",
+          "quantity": 35,
+          "price": 21291,
+          "amount": 745185
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_u7qshx8",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 마국배당다우존스타켓데일리커버드콜",
+      "ticker": "0008S0",
+      "quantity": 25,
+      "currentPrice": 9945,
+      "buys": [
+        {
+          "id": "tx_vu0ekl9",
+          "date": "2026-09-04",
+          "quantity": 25,
+          "price": 9723,
+          "amount": 243075
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_l3pjnd0",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 미국MSCI리츠(합성H)",
+      "ticker": "182480",
+      "quantity": 35,
+      "currentPrice": 13585,
+      "buys": [
+        {
+          "id": "tx_0cchxh3",
+          "date": "2026-09-04",
+          "quantity": 35,
+          "price": 13149,
+          "amount": 460215
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_mksk3xo",
+      "accountId": "acc_aioddia",
+      "name": "KODEX 미국30년국채울트라선물(H)",
+      "ticker": "304660",
+      "quantity": 65,
+      "currentPrice": 7275,
+      "buys": [
+        {
+          "id": "tx_z1hnsli",
+          "date": "2026-09-04",
+          "quantity": 65,
+          "price": 8407,
+          "amount": 546455
+        }
+      ],
+      "sells": [],
+      "dividends": []
     }
   ]
 }
