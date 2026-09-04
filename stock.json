@@ -14,6 +14,26 @@
       "id": "acc_aioddia",
       "ownerId": "me",
       "name": "연금저축"
+    },
+    {
+      "id": "acc_1ynxc3d",
+      "ownerId": "wife",
+      "name": "연금저축"
+    },
+    {
+      "id": "acc_5ma36fu",
+      "ownerId": "wife",
+      "name": "IRP"
+    },
+    {
+      "id": "acc_brrccwl",
+      "ownerId": "wife",
+      "name": "ISA"
+    },
+    {
+      "id": "acc_o4bjqgm",
+      "ownerId": "wife",
+      "name": "DC"
     }
   ],
   "stocks": [
