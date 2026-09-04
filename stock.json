@@ -100,7 +100,7 @@
       "name": "TIGER S&P500",
       "ticker": "350750",
       "quantity": 373,
-      "currentPrice": 17178,
+      "currentPrice": 25980,
       "buys": [
         {
           "id": "tx_8botibx",
@@ -108,6 +108,44 @@
           "quantity": 373,
           "price": 17178,
           "amount": 6407394
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_qqdaf6n",
+      "accountId": "acc_1ynxc3d",
+      "name": "TIGER 나스닥100",
+      "ticker": "133690",
+      "quantity": 46,
+      "currentPrice": 176990,
+      "buys": [
+        {
+          "id": "tx_5xugpr5",
+          "date": "2026-09-04",
+          "quantity": 46,
+          "price": 108497,
+          "amount": 4990862
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_2pw5hr7",
+      "accountId": "acc_1ynxc3d",
+      "name": "TIGER 필라델피아반도체나스닥",
+      "ticker": "381180",
+      "quantity": 269,
+      "currentPrice": 40330,
+      "buys": [
+        {
+          "id": "tx_foe90fe",
+          "date": "2026-09-04",
+          "quantity": 269,
+          "price": 16307,
+          "amount": 4386583
         }
       ],
       "sells": [],
