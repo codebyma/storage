@@ -509,8 +509,13 @@ function defaultData(){
       { id:'wife', name:'와이프' }
     ],
     accounts: [],
-    stocks: []
+    stocks: [],
+    targets: {}
   };
+}
+
+function ensureDataShape(){
+  if(!DATA.targets) DATA.targets = {};
 }
 
 async function saveData(){
@@ -527,6 +532,7 @@ async function saveData(){
 }
 
 function render(){
+  ensureDataShape();
   renderOwnerTabs();
   renderSummary();
   renderBreakdown();
@@ -725,11 +731,12 @@ function allItemsBreakdown(){
   DATA.stocks.forEach(s=>{
     const key = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
     if(!map[key]){
-      map[key] = { key, name: s.name, ticker: s.ticker||'', value:0, cost:0, count:0 };
+      map[key] = { key, name: s.name, ticker: s.ticker||'', value:0, cost:0, count:0, quantity:0 };
     }
     map[key].value += stockTotal(s);
     map[key].cost += stockCostBasis(s);
     map[key].count += 1;
+    map[key].quantity += (s.quantity||0);
   });
   return Object.values(map);
 }
@@ -757,11 +764,33 @@ function renderBreakdown(){
 
   const sorted = [...items].sort((a,b)=> b.value - a.value);
 
+  const targetSum = sorted.reduce((s,item)=>{
+    const t = DATA.targets[item.key];
+    return s + (typeof t === 'number' ? t : 0);
+  }, 0);
+
   const rows = sorted.map(item=>{
     const pl = item.value - item.cost;
     const plPct = item.cost ? (pl/item.cost)*100 : null;
     const ratio = grandTotal ? (item.value/grandTotal)*100 : 0;
     const sid = safeId(item.key);
+    const keyEsc = item.key.replace(/'/g,"\\'");
+    const target = DATA.targets[item.key];
+    const hasTarget = typeof target === 'number' && !isNaN(target);
+
+    let rebalanceHtml = '';
+    if(hasTarget){
+      const targetValue = grandTotal * (target/100);
+      const diff = targetValue - item.value;
+      const avgPrice = item.quantity>0 ? (item.value/item.quantity) : null;
+      const diffShares = avgPrice ? (diff/avgPrice) : null;
+      const actionLabel = diff >= 0 ? '매수 필요' : '매도 필요';
+      rebalanceHtml = `
+        <div class="entry-row"><span>목표 금액 (${target}%)</span><span class="amt num">${fmtWon(targetValue)}</span></div>
+        <div class="entry-row"><span>${actionLabel}</span><span class="amt num">${fmtWon(Math.abs(diff))}${diffShares!==null ? ' · 약 '+Math.round(Math.abs(diffShares)).toLocaleString('ko-KR')+'주' : ' (현재가 정보 없음)'}</span></div>
+      `;
+    }
+
     return `
       <div class="breakdown-row">
         <div class="breakdown-top">
@@ -777,8 +806,8 @@ function renderBreakdown(){
         <div class="breakdown-bar-track">
           <div class="breakdown-bar-fill" style="width:${ratio}%;"></div>
         </div>
-        <div style="margin-top:8px;">
-          <button class="mini-add" onclick="openGroupPriceForm('${item.key.replace(/'/g,"\\'")}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
+        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="mini-add" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
         </div>
         <div class="form-panel" id="grpform_${sid}">
           <div class="form-row">
@@ -789,23 +818,47 @@ function renderBreakdown(){
           </div>
           <div class="form-actions">
             <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
-            <button class="btn-primary" onclick="applyGroupPrice('${item.key.replace(/'/g,"\\'")}','${sid}')">전체 계좌에 반영</button>
+            <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
           </div>
+        </div>
+        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+          <div class="form-row" style="margin-bottom:6px;">
+            <div class="field">
+              <span class="field-label">목표비율(%) · 현재 ${ratio.toFixed(2)}%</span>
+              <input type="number" inputmode="decimal" step="0.1" value="${hasTarget ? target : ''}" placeholder="예: 20" onchange="updateTarget('${keyEsc}', this.value)">
+            </div>
+          </div>
+          ${rebalanceHtml}
         </div>
       </div>
     `;
   }).join('');
 
+  const targetSumHint = targetSum > 0
+    ? `<div style="font-size:11.5px;color:var(--text3);padding:8px 4px 2px;">입력된 목표비율 합계: ${targetSum.toFixed(2)}%${Math.abs(targetSum-100) > 0.01 ? ' (100%가 되도록 맞추면 더 정확해요)' : ' ✓'}</div>`
+    : '';
+
   el.innerHTML = `
     <div class="breakdown-wrap">
       <div class="breakdown-title" id="breakdownToggle">전체 포트폴리오 비중 (나+와이프 모든 계좌 통합) · ${items.length}개 종목</div>
-      ${breakdownOpen ? `<div class="breakdown-card">${rows}</div>` : ''}
+      ${breakdownOpen ? `<div class="breakdown-card">${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
   document.getElementById('breakdownToggle').onclick = ()=>{
     breakdownOpen = !breakdownOpen;
     renderBreakdown();
   };
+}
+
+async function updateTarget(key, value){
+  const num = parseFloat(value);
+  if(value==='' || isNaN(num)){
+    delete DATA.targets[key];
+  } else {
+    DATA.targets[key] = num;
+  }
+  await saveData();
+  render();
 }
 
 async function applyGroupPrice(key, sid){
