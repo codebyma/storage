@@ -91,6 +91,49 @@
   .bluetext{color:var(--blue);}
 
   main{padding:20px;}
+
+  .breakdown-wrap{padding:0 20px;}
+  .breakdown-card{
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:6px 14px;
+    margin-bottom:8px;
+  }
+  .breakdown-title{
+    font-size:14px;
+    color:var(--text2);
+    margin:22px 0 10px;
+  }
+  .breakdown-row{
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+  }
+  .breakdown-row:last-child{border-bottom:none;}
+  .breakdown-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:8px;
+    font-size:13.5px;
+    margin-bottom:6px;
+  }
+  .breakdown-name{font-weight:500;color:var(--text1);}
+  .breakdown-right{display:flex;gap:10px;align-items:baseline;flex-shrink:0;}
+  .breakdown-pl{font-size:12.5px;}
+  .breakdown-ratio{font-size:13px;color:var(--text2);min-width:44px;text-align:right;}
+  .breakdown-bar-track{
+    height:5px;
+    background:var(--surface2);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .breakdown-bar-fill{
+    height:100%;
+    background:var(--blue);
+    border-radius:3px;
+  }
+
   .section-title{
     font-size:14px;
     color:var(--text2);
@@ -364,6 +407,8 @@
 
 <div class="summary" id="summary"></div>
 
+<div id="breakdownSection"></div>
+
 <main>
   <div class="section-title">
     <span id="accountsLabel">계좌</span>
@@ -482,6 +527,7 @@ async function saveData(){
 function render(){
   renderOwnerTabs();
   renderSummary();
+  renderBreakdown();
   renderAccounts();
 }
 
@@ -666,6 +712,62 @@ function renderSummary(){
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;">
         <span>③ 최근 12개월 · 현재가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield3)}</span>
+      </div>
+    </div>
+  `;
+}
+
+// 소유자 구분 없이 전체 계좌를 합쳐 종목(항목)별로 그룹핑
+function allItemsBreakdown(){
+  const map = {};
+  DATA.stocks.forEach(s=>{
+    const key = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
+    if(!map[key]){
+      map[key] = { name: s.name, ticker: s.ticker||'', value:0, cost:0 };
+    }
+    map[key].value += stockTotal(s);
+    map[key].cost += stockCostBasis(s);
+  });
+  return Object.values(map);
+}
+
+function renderBreakdown(){
+  const el = document.getElementById('breakdownSection');
+  const items = allItemsBreakdown();
+  const grandTotal = items.reduce((s,i)=>s+i.value,0);
+
+  if(items.length===0){
+    el.innerHTML = '';
+    return;
+  }
+
+  const sorted = [...items].sort((a,b)=> b.value - a.value);
+
+  const rows = sorted.map(item=>{
+    const pl = item.value - item.cost;
+    const plPct = item.cost ? (pl/item.cost)*100 : null;
+    const ratio = grandTotal ? (item.value/grandTotal)*100 : 0;
+    return `
+      <div class="breakdown-row">
+        <div class="breakdown-top">
+          <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">'+escapeHtml(item.ticker)+'</span>' : ''}</span>
+          <div class="breakdown-right">
+            <span class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span>
+            <span class="breakdown-ratio num">${ratio.toFixed(1)}%</span>
+          </div>
+        </div>
+        <div class="breakdown-bar-track">
+          <div class="breakdown-bar-fill" style="width:${ratio}%;"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="breakdown-wrap">
+      <div class="breakdown-title">전체 포트폴리오 비중 (나+와이프 모든 계좌 통합)</div>
+      <div class="breakdown-card">
+        ${rows}
       </div>
     </div>
   `;
