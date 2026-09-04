@@ -54,6 +54,25 @@
       ],
       "sells": [],
       "dividends": []
+    },
+    {
+      "id": "stk_w0rfxnb",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 미국필라델피아반도체나스닥",
+      "ticker": "381180",
+      "quantity": 144,
+      "currentPrice": 40330,
+      "buys": [
+        {
+          "id": "tx_qqb1cg1",
+          "date": "2026-09-04",
+          "quantity": 144,
+          "price": 13897,
+          "amount": 2001168
+        }
+      ],
+      "sells": [],
+      "dividends": []
     }
   ]
 }
