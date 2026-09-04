@@ -331,27 +331,31 @@
 <body>
 
 <header>
-  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
-    <div>
-      <h1>주식 현황 정리</h1>
-      <p>계좌별 보유 종목, 매수·매도, 배당을 기록합니다</p>
-    </div>
+  <h1>주식 현황 정리</h1>
+  <p>계좌별 보유 종목, 매수·매도, 배당을 기록합니다</p>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
     <button class="add-btn" id="toggleJsonBtn" style="white-space:nowrap;">JSON 보기/편집</button>
+    <button class="add-btn" id="reloadJsonBtn" style="white-space:nowrap;">stock.json 새로고침</button>
   </div>
 </header>
 <div class="save-status" id="saveStatus">저장된 데이터 불러오는 중...</div>
 
 <div class="json-panel" id="jsonPanel">
   <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">
-    아래 내용을 복사해두면 백업이 됩니다. 직접 값을 고친 뒤 '적용'을 누르면 그대로 저장돼요.
+    stock.json 파일로 내보내서 보관해두세요. 데이터가 사라지면 그 파일을 다시 가져오면 복원됩니다. 아래 텍스트를 직접 고친 뒤 '적용'을 눌러도 됩니다.
   </div>
   <textarea id="jsonTextarea" spellcheck="false"></textarea>
   <div class="json-error" id="jsonError">JSON 형식이 올바르지 않습니다. 콤마, 괄호를 확인해주세요.</div>
   <div class="json-actions">
-    <button class="btn-primary" onclick="applyJson()">적용하고 저장</button>
-    <button class="btn-ghost" onclick="copyJson()">복사(백업)</button>
+    <button class="btn-primary" onclick="exportJsonFile()">stock.json 내보내기</button>
+    <button class="btn-primary" onclick="triggerImportFile()">stock.json 가져오기</button>
+  </div>
+  <div class="json-actions">
+    <button class="btn-ghost" onclick="applyJson()">텍스트 적용하고 저장</button>
+    <button class="btn-ghost" onclick="copyJson()">복사(클립보드)</button>
     <button class="btn-ghost" onclick="refreshJsonView()">현재 데이터로 새로고침</button>
   </div>
+  <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;">
 </div>
 
 <div class="owner-tabs" id="ownerTabs"></div>
@@ -386,6 +390,8 @@ let openStocks = new Set();
 let openTxSections = new Set();
 
 const STORAGE_KEY = 'portfolio-data';
+const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
+let dataSource = null; // 'server-json' | 'window-storage' | 'new'
 
 function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
 function fmtWon(n){ return (n||0).toLocaleString('ko-KR') + '원'; }
@@ -401,21 +407,48 @@ function setSaveStatus(msg){
   if(el) el.textContent = msg;
 }
 
+function isValidPortfolio(obj){
+  return !!(obj && obj.owners && obj.accounts && obj.stocks);
+}
+
 async function loadData(){
+  // 1순위: 같은 경로의 stock.json (서버에 올린 정적 파일)
   try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    if(res && res.value){
-      DATA = JSON.parse(res.value);
-      setSaveStatus('마지막 저장 데이터를 불러왔습니다 · ' + new Date().toLocaleTimeString('ko-KR'));
-    } else {
-      DATA = defaultData();
-      await saveData();
-      setSaveStatus('새 데이터로 시작합니다');
+    const res = await fetch('./stock.json', { cache:'no-store' });
+    if(res.ok){
+      const parsed = await res.json();
+      if(isValidPortfolio(parsed)){
+        DATA = parsed;
+        dataSource = 'server-json';
+        setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
+        if(DATA.owners.length) currentOwner = DATA.owners[0].id;
+        render();
+        return;
+      }
     }
   }catch(e){
-    DATA = defaultData();
-    setSaveStatus('불러오기 실패 — 새 데이터로 시작합니다 (아래 JSON 편집으로 백업을 복원하세요)');
+    // 정적 서버가 아니거나(file:// 등) stock.json이 아직 없는 경우 — 다음 단계로
   }
+
+  // 2순위: window.storage (미리보기 환경 등에서만 존재)
+  if(hasWindowStorage){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, false);
+      if(res && res.value){
+        DATA = JSON.parse(res.value);
+        dataSource = 'window-storage';
+        setSaveStatus('마지막 저장 데이터를 불러왔습니다 · ' + new Date().toLocaleTimeString('ko-KR'));
+        if(DATA.owners.length) currentOwner = DATA.owners[0].id;
+        render();
+        return;
+      }
+    }catch(e){ /* 무시하고 아래로 */ }
+  }
+
+  // 3순위: 새 데이터
+  DATA = defaultData();
+  dataSource = 'new';
+  setSaveStatus('새 데이터로 시작합니다 · stock.json을 서버에 올리면 자동으로 불러와요');
   if(DATA.owners.length) currentOwner = DATA.owners[0].id;
   render();
 }
@@ -432,12 +465,15 @@ function defaultData(){
 }
 
 async function saveData(){
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
+  if(hasWindowStorage){
+    try{
+      await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
+    }catch(e){ /* 무시 */ }
+  }
+  if(dataSource === 'server-json'){
+    setSaveStatus('임시 반영됨 (브라우저 안에서만) · ' + new Date().toLocaleTimeString('ko-KR') + ' · stock.json 내보내서 서버에 다시 올려야 저장돼요');
+  } else {
     setSaveStatus('저장됨 · ' + new Date().toLocaleTimeString('ko-KR'));
-  }catch(e){
-    setSaveStatus('저장 실패 — JSON 편집에서 복사해 따로 백업해두세요');
-    showToast('저장에 실패했습니다');
   }
 }
 
@@ -1048,9 +1084,32 @@ document.getElementById('toggleJsonBtn').onclick = ()=>{
   if(panel.classList.contains('open')) refreshJsonView();
 };
 
+document.getElementById('reloadJsonBtn').onclick = async ()=>{
+  setSaveStatus('stock.json 다시 불러오는 중...');
+  await loadData();
+  showToast('stock.json을 다시 불러왔어요');
+};
+
 function refreshJsonView(){
   document.getElementById('jsonTextarea').value = JSON.stringify(DATA, null, 2);
   document.getElementById('jsonError').style.display = 'none';
+}
+
+async function applyParsedData(parsed, successMsg){
+  if(!parsed || !parsed.owners || !parsed.accounts || !parsed.stocks){
+    document.getElementById('jsonError').textContent = 'owners, accounts, stocks 세 항목이 모두 있어야 합니다.';
+    document.getElementById('jsonError').style.display = 'block';
+    return false;
+  }
+  document.getElementById('jsonError').style.display = 'none';
+  DATA = parsed;
+  if(!DATA.owners.find(o=>o.id===currentOwner) && currentOwner!=='ALL'){
+    currentOwner = DATA.owners.length ? DATA.owners[0].id : null;
+  }
+  await saveData();
+  render();
+  showToast(successMsg || '데이터를 적용했습니다');
+  return true;
 }
 
 async function applyJson(){
@@ -1062,19 +1121,7 @@ async function applyJson(){
     document.getElementById('jsonError').style.display = 'block';
     return;
   }
-  if(!parsed.owners || !parsed.accounts || !parsed.stocks){
-    document.getElementById('jsonError').textContent = 'owners, accounts, stocks 세 항목이 모두 있어야 합니다.';
-    document.getElementById('jsonError').style.display = 'block';
-    return;
-  }
-  document.getElementById('jsonError').style.display = 'none';
-  DATA = parsed;
-  if(!DATA.owners.find(o=>o.id===currentOwner)){
-    currentOwner = DATA.owners.length ? DATA.owners[0].id : null;
-  }
-  await saveData();
-  render();
-  showToast('JSON 데이터가 적용되었습니다');
+  await applyParsedData(parsed, 'JSON 데이터가 적용되었습니다');
 }
 
 function copyJson(){
@@ -1085,6 +1132,44 @@ function copyJson(){
     showToast('복사에 실패했습니다. 직접 선택해 복사해주세요');
   });
 }
+
+function exportJsonFile(){
+  const text = JSON.stringify(DATA, null, 2);
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'stock.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('stock.json 파일을 내보냈어요');
+}
+
+function triggerImportFile(){
+  document.getElementById('importFileInput').click();
+}
+
+document.getElementById('importFileInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(evt){
+    let parsed;
+    try{
+      parsed = JSON.parse(evt.target.result);
+    }catch(err){
+      showToast('올바른 JSON 파일이 아니에요');
+      e.target.value = '';
+      return;
+    }
+    const ok = await applyParsedData(parsed, 'stock.json을 불러왔어요');
+    if(ok) refreshJsonView();
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
 
 loadData();
 </script>
