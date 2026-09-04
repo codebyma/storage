@@ -41,7 +41,7 @@
       "id": "stk_ciu0vbl",
       "accountId": "acc_aioddia",
       "name": "TIGER S&P500",
-      "ticker": "360750",
+      "ticker": "350750",
       "quantity": 182,
       "currentPrice": 25980,
       "buys": [
@@ -89,6 +89,25 @@
           "quantity": 144,
           "price": 13897,
           "amount": 2001168
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_wj4tpvs",
+      "accountId": "acc_1ynxc3d",
+      "name": "TIGER S&P500",
+      "ticker": "350750",
+      "quantity": 373,
+      "currentPrice": 17178,
+      "buys": [
+        {
+          "id": "tx_8botibx",
+          "date": "2026-09-04",
+          "quantity": 373,
+          "price": 17178,
+          "amount": 6407394
         }
       ],
       "sells": [],
