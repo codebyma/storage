@@ -150,6 +150,44 @@
       ],
       "sells": [],
       "dividends": []
+    },
+    {
+      "id": "stk_ro133ti",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 미국배당다우존스",
+      "ticker": "458730",
+      "quantity": 26,
+      "currentPrice": 14965,
+      "buys": [
+        {
+          "id": "tx_u7t550a",
+          "date": "2026-09-04",
+          "quantity": 26,
+          "price": 15346,
+          "amount": 398996
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_8krljwn",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 미국채10년선물",
+      "ticker": "305080",
+      "quantity": 80,
+      "currentPrice": 11985,
+      "buys": [
+        {
+          "id": "tx_3jbyb3f",
+          "date": "2026-09-04",
+          "quantity": 80,
+          "price": 11930,
+          "amount": 954400
+        }
+      ],
+      "sells": [],
+      "dividends": []
     }
   ]
 }
