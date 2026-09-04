@@ -264,6 +264,25 @@
       ],
       "sells": [],
       "dividends": []
+    },
+    {
+      "id": "stk_193wsro",
+      "accountId": "acc_aioddia",
+      "name": "TIGER 차이나전기차SOLACTIVE",
+      "ticker": "371460",
+      "quantity": 71,
+      "currentPrice": 9750,
+      "buys": [
+        {
+          "id": "tx_pjtgeby",
+          "date": "2026-09-04",
+          "quantity": 71,
+          "price": 12094,
+          "amount": 858674
+        }
+      ],
+      "sells": [],
+      "dividends": []
     }
   ]
 }
