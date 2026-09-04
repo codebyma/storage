@@ -10,12 +10,12 @@
     }
   ],
   "targets": {
-    "350750": 35,
     "133690": 25,
-    "381180":10,
-    "458730":15,
-    "305080":5,
-    "319640":5
+    "305080": 5,
+    "319640": 5,
+    "350750": 35,
+    "381180": 10,
+    "458730": 15
   },
   "plannedCash": 1000000,
   "accounts": [
@@ -288,6 +288,63 @@
           "quantity": 71,
           "price": 12094,
           "amount": 858674
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_6e1w47x",
+      "accountId": "acc_1ynxc3d",
+      "name": "TIGER 차이나전기차SOLACTIVE",
+      "ticker": "371460",
+      "quantity": 39,
+      "currentPrice": 14077,
+      "buys": [
+        {
+          "id": "tx_mn5wfav",
+          "date": "2026-09-04",
+          "quantity": 39,
+          "price": 14077,
+          "amount": 549003
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_ogcsuhq",
+      "accountId": "acc_1ynxc3d",
+      "name": "TIGER 미국채10년선물",
+      "ticker": "305080",
+      "quantity": 86,
+      "currentPrice": 11772,
+      "buys": [
+        {
+          "id": "tx_5b7qtgw",
+          "date": "2026-09-04",
+          "quantity": 86,
+          "price": 11772,
+          "amount": 1012392
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_m53w39l",
+      "accountId": "acc_1ynxc3d",
+      "name": "KODEX 미국30년국채울트라선물(H)",
+      "ticker": "304660",
+      "quantity": 32,
+      "currentPrice": 9671,
+      "buys": [
+        {
+          "id": "tx_77bzllq",
+          "date": "2026-09-04",
+          "quantity": 32,
+          "price": 9671,
+          "amount": 309472
         }
       ],
       "sells": [],
