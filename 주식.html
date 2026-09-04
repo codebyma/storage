@@ -496,13 +496,40 @@ function stockPLPercent(stock){
 function stockDividendTotal(stock){
   return (stock.dividends||[]).reduce((s,d)=>s+(d.amount||0),0);
 }
-function stockDividendYield(stock){
+function isWithinLast12Months(monthStr){
+  if(!monthStr) return false;
+  const parts = monthStr.split('-').map(Number);
+  const y = parts[0], m = parts[1];
+  if(!y || !m) return false;
+  const target = new Date(y, m-1, 1);
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear(), now.getMonth()-11, 1);
+  const upper = new Date(now.getFullYear(), now.getMonth(), 1);
+  return target >= cutoff && target <= upper;
+}
+function stockDividendTTM(stock){
+  return (stock.dividends||[]).filter(d=>isWithinLast12Months(d.month)).reduce((s,d)=>s+(d.amount||0),0);
+}
+// 기준1: 지금까지 받은 배당 총액 ÷ 총 투자원금 (누적 실현 수익률, 연환산 아님)
+function stockYieldOnPrincipal(stock){
   const cost = stockCostBasis(stock);
   if(!cost) return null;
   return (stockDividendTotal(stock) / cost) * 100;
 }
-function ownerAvgDividendYield(ownerId){
-  const yields = stocksForOwner(ownerId).map(stockDividendYield).filter(y=>y!==null);
+// 기준2: 최근 12개월 배당 ÷ 총 투자원금 (=평균매입단가×수량) — 지금 페이스가 앞으로도 이어진다면의 수익률
+function stockYieldOnAvgPrice(stock){
+  const cost = stockCostBasis(stock);
+  if(!cost) return null;
+  return (stockDividendTTM(stock) / cost) * 100;
+}
+// 기준3: 최근 12개월 배당 ÷ 현재 평가금액 — 지금 이 가격에 새로 산다면의 수익률(시장 비교용)
+function stockYieldOnCurrentPrice(stock){
+  const mv = stockTotal(stock);
+  if(!mv) return null;
+  return (stockDividendTTM(stock) / mv) * 100;
+}
+function ownerAvgYield(ownerId, fn){
+  const yields = stocksForOwner(ownerId).map(fn).filter(y=>y!==null);
   if(yields.length===0) return null;
   return yields.reduce((a,b)=>a+b,0) / yields.length;
 }
@@ -563,7 +590,9 @@ function renderSummary(){
   const plPct = cost ? (pl/cost)*100 : null;
   const monthDiv = currentMonthDividend(currentOwner);
   const yearDiv = yearDividend(currentOwner);
-  const avgYield = ownerAvgDividendYield(currentOwner);
+  const avgYield1 = ownerAvgYield(currentOwner, stockYieldOnPrincipal);
+  const avgYield2 = ownerAvgYield(currentOwner, stockYieldOnAvgPrice);
+  const avgYield3 = ownerAvgYield(currentOwner, stockYieldOnCurrentPrice);
   el.innerHTML = `
     <div class="metric">
       <div class="label">총 평가금액</div>
@@ -590,8 +619,16 @@ function renderSummary(){
       <div class="value gold num">${fmtWon(yearDiv)}</div>
     </div>
     <div class="metric" style="grid-column:1 / -1;">
-      <div class="label">종목별 배당률 평균 (누적배당÷투자원금)</div>
-      <div class="value gold num">${fmtPctPlain(avgYield)}</div>
+      <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
+        <span>① 누적 · 총투자원금 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield1)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
+        <span>② 최근 12개월 · 평균매입가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield2)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;">
+        <span>③ 최근 12개월 · 현재가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield3)}</span>
+      </div>
     </div>
   `;
 }
@@ -715,7 +752,10 @@ function renderStockBody(stock, el){
   const pl = stockPL(stock);
   const plPct = stockPLPercent(stock);
   const divTotal = stockDividendTotal(stock);
-  const divYield = stockDividendYield(stock);
+  const divTTM = stockDividendTTM(stock);
+  const y1 = stockYieldOnPrincipal(stock);
+  const y2 = stockYieldOnAvgPrice(stock);
+  const y3 = stockYieldOnCurrentPrice(stock);
 
   const buysOpen = openTxSections.has(stock.id+':buys');
   const sellsOpen = openTxSections.has(stock.id+':sells');
@@ -771,9 +811,12 @@ function renderStockBody(stock, el){
 
     <div class="sub-block" id="txsection_${stock.id}_dividends">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 · 배당률 ${fmtPctPlain(divYield)} ${divsOpen?'▾':'▸'}</span>
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 ${divsOpen?'▾':'▸'}</span>
         <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
       </div>
+      <div class="entry-row"><span>① 누적 · 총투자원금 기준</span><span class="amt gold num">${fmtPctPlain(y1)}</span></div>
+      <div class="entry-row"><span>② 최근 12개월(${divTTM.toLocaleString('ko-KR')}원) · 평균매입가 기준</span><span class="amt gold num">${fmtPctPlain(y2)}</span></div>
+      <div class="entry-row"><span>③ 최근 12개월 · 현재가 기준</span><span class="amt gold num">${fmtPctPlain(y3)}</span></div>
       ${divsOpen ? `<div class="tx-list-scroll">${dividendListHtml(stock.dividends, stock.id)}</div>` : ''}
       <div class="form-panel" id="divform_${stock.id}">
         <div class="form-row">
