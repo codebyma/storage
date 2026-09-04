@@ -104,6 +104,7 @@
     font-size:14px;
     color:var(--text2);
     margin:22px 0 10px;
+    cursor:pointer;
   }
   .breakdown-row{
     padding:10px 0;
@@ -113,14 +114,14 @@
   .breakdown-top{
     display:flex;
     justify-content:space-between;
-    align-items:baseline;
+    align-items:flex-start;
     gap:8px;
     font-size:13.5px;
     margin-bottom:6px;
   }
   .breakdown-name{font-weight:500;color:var(--text1);}
-  .breakdown-right{display:flex;gap:10px;align-items:baseline;flex-shrink:0;}
-  .breakdown-pl{font-size:12.5px;}
+  .breakdown-right{display:flex;gap:10px;align-items:flex-start;flex-shrink:0;}
+  .breakdown-pl{font-size:12.5px;text-align:right;line-height:1.4;}
   .breakdown-ratio{font-size:13px;color:var(--text2);min-width:44px;text-align:right;}
   .breakdown-bar-track{
     height:5px;
@@ -435,6 +436,7 @@ let currentOwner = null;
 let openAccounts = new Set();
 let openStocks = new Set();
 let openTxSections = new Set();
+let breakdownOpen = true;
 
 const STORAGE_KEY = 'portfolio-data';
 const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
@@ -468,7 +470,7 @@ async function loadData(){
         DATA = parsed;
         dataSource = 'server-json';
         setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
-        if(DATA.owners.length) currentOwner = DATA.owners[0].id;
+        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
         render();
         return;
       }
@@ -485,7 +487,7 @@ async function loadData(){
         DATA = JSON.parse(res.value);
         dataSource = 'window-storage';
         setSaveStatus('마지막 저장 데이터를 불러왔습니다 · ' + new Date().toLocaleTimeString('ko-KR'));
-        if(DATA.owners.length) currentOwner = DATA.owners[0].id;
+        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
         render();
         return;
       }
@@ -496,7 +498,7 @@ async function loadData(){
   DATA = defaultData();
   dataSource = 'new';
   setSaveStatus('새 데이터로 시작합니다 · stock.json을 서버에 올리면 자동으로 불러와요');
-  if(DATA.owners.length) currentOwner = DATA.owners[0].id;
+  currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
   render();
 }
 
@@ -534,13 +536,6 @@ function render(){
 function renderOwnerTabs(){
   const el = document.getElementById('ownerTabs');
   el.innerHTML = '';
-  DATA.owners.forEach(o=>{
-    const btn = document.createElement('div');
-    btn.className = 'owner-tab' + (o.id===currentOwner ? ' active' : '');
-    btn.textContent = o.name;
-    btn.onclick = ()=>{ currentOwner = o.id; render(); };
-    el.appendChild(btn);
-  });
   if(DATA.owners.length > 1){
     const allBtn = document.createElement('div');
     allBtn.className = 'owner-tab' + (currentOwner==='ALL' ? ' active' : '');
@@ -548,6 +543,13 @@ function renderOwnerTabs(){
     allBtn.onclick = ()=>{ currentOwner = 'ALL'; render(); };
     el.appendChild(allBtn);
   }
+  DATA.owners.forEach(o=>{
+    const btn = document.createElement('div');
+    btn.className = 'owner-tab' + (o.id===currentOwner ? ' active' : '');
+    btn.textContent = o.name;
+    btn.onclick = ()=>{ currentOwner = o.id; render(); };
+    el.appendChild(btn);
+  });
 }
 
 function accountsForOwner(ownerId){
@@ -765,7 +767,10 @@ function renderBreakdown(){
         <div class="breakdown-top">
           <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">'+escapeHtml(item.ticker)+'</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
           <div class="breakdown-right">
-            <span class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span>
+            <div class="breakdown-pl num ${plClass(pl)}">
+              <div>${fmtPL(pl)}</div>
+              ${plPct!==null ? '<div>('+fmtPercent(plPct)+')</div>' : ''}
+            </div>
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
           </div>
         </div>
@@ -793,12 +798,14 @@ function renderBreakdown(){
 
   el.innerHTML = `
     <div class="breakdown-wrap">
-      <div class="breakdown-title">전체 포트폴리오 비중 (나+와이프 모든 계좌 통합)</div>
-      <div class="breakdown-card">
-        ${rows}
-      </div>
+      <div class="breakdown-title" id="breakdownToggle">전체 포트폴리오 비중 (나+와이프 모든 계좌 통합) · ${items.length}개 종목</div>
+      ${breakdownOpen ? `<div class="breakdown-card">${rows}</div>` : ''}
     </div>
   `;
+  document.getElementById('breakdownToggle').onclick = ()=>{
+    breakdownOpen = !breakdownOpen;
+    renderBreakdown();
+  };
 }
 
 async function applyGroupPrice(key, sid){
@@ -849,7 +856,7 @@ function renderAccounts(){
           <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
           <div class="account-total num">${fmtWon(accountTotal(acc.id))}</div>
         </div>
-        <span class="chevron">▸</span>
+        
       </div>
       <div class="account-body" id="body_${acc.id}"></div>
     `;
@@ -918,7 +925,7 @@ function buildStockRow(stock){
           <div class="stock-amount num">${fmtWon(stockTotal(stock))}</div>
           <div class="num ${plClass(pl)}" style="font-size:11.5px;">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
         </div>
-        <span class="chevron">▸</span>
+        
       </div>
     </div>
     <div class="stock-body" id="stockbody_${stock.id}"></div>
@@ -981,7 +988,7 @@ function renderStockBody(stock, el){
 
     <div class="sub-block" id="txsection_${stock.id}_buys">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">매수 내역 (${(stock.buys||[]).length}건) ${buysOpen?'▾':'▸'}</span>
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">매수 내역 (${(stock.buys||[]).length}건)</span>
         <button class="mini-add" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
       </div>
       ${buysOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.buys, stock.id, 'buys')}</div>` : ''}
@@ -992,7 +999,7 @@ function renderStockBody(stock, el){
 
     <div class="sub-block" id="txsection_${stock.id}_sells">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">매도 내역 (${(stock.sells||[]).length}건) ${sellsOpen?'▾':'▸'}</span>
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">매도 내역 (${(stock.sells||[]).length}건)</span>
         <button class="mini-add" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
       </div>
       ${sellsOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.sells, stock.id, 'sells')}</div>` : ''}
@@ -1003,7 +1010,7 @@ function renderStockBody(stock, el){
 
     <div class="sub-block" id="txsection_${stock.id}_dividends">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원 ${divsOpen?'▾':'▸'}</span>
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
         <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
       </div>
       <div class="entry-row"><span>① 누적 · 총투자원금 기준</span><span class="amt gold num">${fmtPctPlain(y1)}</span></div>
