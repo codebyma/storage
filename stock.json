@@ -1,0 +1,40 @@
+{
+  "owners": [
+    {
+      "id": "me",
+      "name": "나"
+    },
+    {
+      "id": "wife",
+      "name": "와이프"
+    }
+  ],
+  "accounts": [
+    {
+      "id": "acc_aioddia",
+      "ownerId": "me",
+      "name": "연금저축"
+    }
+  ],
+  "stocks": [
+    {
+      "id": "stk_wthrnfo",
+      "accountId": "acc_aioddia",
+      "name": "나스닥",
+      "ticker": "ㅂㅂ",
+      "quantity": 50,
+      "currentPrice": 100000,
+      "buys": [
+        {
+          "id": "tx_y1upz6a",
+          "date": "2026-09-04",
+          "quantity": 50,
+          "price": 100000,
+          "amount": 5000000
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    }
+  ]
+}
