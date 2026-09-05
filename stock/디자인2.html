@@ -222,6 +222,7 @@
     cursor:pointer;
   }
   .stock-name{font-size:14px;font-weight:500;}
+  .stock-ticker-inline{font-size:11px;color:var(--text3);font-weight:400;}
   .stock-ticker{font-size:12px;color:var(--text3);margin-top:1px;}
   .stock-amount{font-size:14px;font-weight:500;color:var(--mint);}
   .stock-body{
@@ -262,6 +263,54 @@
   }
   .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
   .tx-section-label{cursor:pointer;}
+
+  .stat-hero{
+    display:flex;
+    gap:8px;
+    margin-bottom:8px;
+  }
+  .stat-hero-item{
+    flex:1;
+    background:var(--surface2);
+    border-radius:8px;
+    padding:9px 12px;
+    min-width:0;
+  }
+  .stat-hero-label{font-size:10.5px;color:var(--text2);margin-bottom:3px;}
+  .stat-hero-value{font-size:16px;font-weight:600;line-height:1.25;color:var(--text1);}
+  .stat-hero-value.redtext{color:var(--red);}
+  .stat-hero-value.bluetext{color:var(--blue);}
+  .stat-mini-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px 10px;
+    margin-bottom:4px;
+  }
+  .stat-mini{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:4px 0;
+    border-bottom:1px solid var(--border);
+    gap:6px;
+  }
+  .stat-mini-label{font-size:11px;color:var(--text3);}
+  .stat-mini-value{font-size:12px;color:var(--text1);font-weight:500;text-align:right;}
+
+  .yield-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin:6px 0 4px;
+  }
+  .yield-card{
+    background:var(--surface2);
+    border-radius:8px;
+    padding:8px 6px;
+    text-align:center;
+  }
+  .yield-label{font-size:9.5px;color:var(--text3);line-height:1.35;margin-bottom:5px;}
+  .yield-value{font-size:14px;font-weight:600;color:var(--gold);}
   .tx-list-scroll{
     max-height:220px;
     overflow-y:auto;
@@ -719,7 +768,7 @@ function renderSummary(){
     </div>
     <div class="metric">
       <div class="label">평가손익</div>
-      <div class="value ${plClass(pl)} num">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
+      <div class="value ${plClass(pl)} num" style="font-size:19px;">${fmtPL(pl)}${plPct!==null ? '<div style="font-size:13px;font-weight:400;margin-top:2px;">('+fmtPercent(plPct)+')</div>' : ''}</div>
     </div>
     <div class="metric">
       <div class="label">총 투자원금</div>
@@ -739,14 +788,19 @@ function renderSummary(){
     </div>
     <div class="metric" style="grid-column:1 / -1;">
       <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
-        <span>① 누적 · 총투자원금 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield1)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
-        <span>② 최근 12개월 · 평균매입가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield2)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;">
-        <span>③ 최근 12개월 · 현재가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield3)}</span>
+      <div class="yield-grid">
+        <div class="yield-card">
+          <div class="yield-label">① 누적<br>총투자원금 기준</div>
+          <div class="yield-value num">${fmtPctPlain(avgYield1)}</div>
+        </div>
+        <div class="yield-card">
+          <div class="yield-label">② 최근 12개월<br>평균매입가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(avgYield2)}</div>
+        </div>
+        <div class="yield-card">
+          <div class="yield-label">③ 최근 12개월<br>현재가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(avgYield3)}</div>
+        </div>
       </div>
     </div>
   `;
@@ -1030,8 +1084,8 @@ function buildStockRow(stock){
   row.innerHTML = `
     <div class="stock-head">
       <div>
-        <div class="stock-name">${escapeHtml(stock.name)}</div>
-        <div class="stock-ticker">${escapeHtml(stock.ticker||'')}${qty ? ' · '+qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
+        <div class="stock-name">${escapeHtml(stock.name)}${stock.ticker ? ' <span class="stock-ticker-inline">'+escapeHtml(stock.ticker)+'</span>' : ''}</div>
+        <div class="stock-ticker">${qty ? qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <div style="text-align:right;">
@@ -1079,12 +1133,22 @@ function renderStockBody(stock, el){
         <span>보유 현황</span>
         <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
       </div>
-      <div class="entry-row"><span>보유수량</span><span class="amt num">${qty.toLocaleString('ko-KR')}주</span></div>
-      <div class="entry-row"><span>평균매입단가</span><span class="amt num">${avgPrice.toLocaleString('ko-KR')}원</span></div>
-      <div class="entry-row"><span>현재가</span><span class="amt num">${price.toLocaleString('ko-KR')}원</span></div>
-      <div class="entry-row"><span>평가금액 (수량×현재가)</span><span class="amt num">${fmtWon(stockTotal(stock))}</span></div>
-      <div class="entry-row"><span>매수 총액(투자원금)</span><span class="amt num">${fmtWon(cost)}</span></div>
-      <div class="entry-row"><span>평가손익</span><span class="amt num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
+      <div class="stat-hero">
+        <div class="stat-hero-item">
+          <div class="stat-hero-label">평가금액</div>
+          <div class="stat-hero-value num">${fmtWon(stockTotal(stock))}</div>
+        </div>
+        <div class="stat-hero-item">
+          <div class="stat-hero-label">평가손익</div>
+          <div class="stat-hero-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? '<div style="font-size:12px;font-weight:400;margin-top:2px;">('+fmtPercent(plPct)+')</div>' : ''}</div>
+        </div>
+      </div>
+      <div class="stat-mini-grid">
+        <div class="stat-mini"><div class="stat-mini-label">보유수량</div><div class="stat-mini-value num">${qty.toLocaleString('ko-KR')}주</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">평균매입단가</div><div class="stat-mini-value num">${avgPrice.toLocaleString('ko-KR')}원</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">현재가</div><div class="stat-mini-value num">${price.toLocaleString('ko-KR')}원</div></div>
+        <div class="stat-mini"><div class="stat-mini-label">매수총액(투자원금)</div><div class="stat-mini-value num">${fmtWon(cost)}</div></div>
+      </div>
       <div class="form-panel" id="priceform_${stock.id}">
         <div class="form-row">
           <div class="field">
@@ -1126,9 +1190,21 @@ function renderStockBody(stock, el){
         <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
         <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
       </div>
-      <div class="entry-row"><span>① 누적 · 총투자원금 기준</span><span class="amt gold num">${fmtPctPlain(y1)}</span></div>
-      <div class="entry-row"><span>② 최근 12개월(${divTTM.toLocaleString('ko-KR')}원) · 평균매입가 기준</span><span class="amt gold num">${fmtPctPlain(y2)}</span></div>
-      <div class="entry-row"><span>③ 최근 12개월 · 현재가 기준</span><span class="amt gold num">${fmtPctPlain(y3)}</span></div>
+      <div class="yield-grid">
+        <div class="yield-card">
+          <div class="yield-label">① 누적<br>총투자원금 기준</div>
+          <div class="yield-value num">${fmtPctPlain(y1)}</div>
+        </div>
+        <div class="yield-card">
+          <div class="yield-label">② 최근 12개월<br>평균매입가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(y2)}</div>
+        </div>
+        <div class="yield-card">
+          <div class="yield-label">③ 최근 12개월<br>현재가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(y3)}</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin:2px 0 8px;">최근 12개월 배당 합계: ${divTTM.toLocaleString('ko-KR')}원</div>
       ${divsOpen ? `<div class="tx-list-scroll">${dividendListHtml(stock.dividends, stock.id)}</div>` : ''}
       <div class="form-panel" id="divform_${stock.id}">
         <div class="form-row">
