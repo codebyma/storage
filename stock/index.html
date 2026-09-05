@@ -23,6 +23,24 @@
     --red:#e2635a;
     --red-dim:#3a1e1c;
   }
+  body.light-theme{
+    --bg:#f6f5f2;
+    --surface1:#ffffff;
+    --surface2:#eef0f2;
+    --border:#e0e3e7;
+    --border-strong:#c8ccd2;
+    --text1:#1b1f24;
+    --text2:#5b6470;
+    --text3:#8b93a0;
+    --mint:#178a5c;
+    --mint-dim:#dff3ea;
+    --gold:#a8720f;
+    --gold-dim:#faf0da;
+    --blue:#2f6fb0;
+    --blue-dim:#e5f0fa;
+    --red:#c33a2f;
+    --red-dim:#fbe7e5;
+  }
   *{box-sizing:border-box;touch-action:manipulation;}
   body{
     margin:0;
@@ -30,6 +48,7 @@
     color:var(--text1);
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
     -webkit-font-smoothing:antialiased;
+    transition:background .15s, color .15s;
     padding-bottom:60px;
   }
   .num{font-variant-numeric:tabular-nums;}
@@ -94,11 +113,7 @@
 
   .breakdown-wrap{padding:0 20px;}
   .breakdown-card{
-    background:var(--surface1);
-    border:1px solid var(--border);
-    border-radius:12px;
-    padding:6px 14px;
-    margin-bottom:8px;
+    padding:0;
   }
   .breakdown-title{
     font-size:14px;
@@ -107,7 +122,7 @@
     cursor:pointer;
   }
   .breakdown-row{
-    padding:10px 0;
+    padding:14px 0;
     border-bottom:1px solid var(--border);
   }
   .breakdown-row:last-child{border-bottom:none;}
@@ -115,24 +130,36 @@
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
-    gap:8px;
-    font-size:13.5px;
-    margin-bottom:6px;
+    gap:10px;
+    margin-bottom:8px;
   }
-  .breakdown-name{font-weight:500;color:var(--text1);}
-  .breakdown-right{display:flex;gap:10px;align-items:flex-start;flex-shrink:0;}
-  .breakdown-pl{font-size:12.5px;text-align:right;line-height:1.4;}
-  .breakdown-ratio{font-size:13px;color:var(--text2);min-width:44px;text-align:right;}
+  .breakdown-name{font-weight:500;color:var(--text1);font-size:13.5px;}
+  .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
+  .breakdown-ratio{font-size:19px;font-weight:600;color:var(--text1);}
+  .breakdown-pl{font-size:12px;line-height:1.3;}
   .breakdown-bar-track{
-    height:5px;
+    height:6px;
     background:var(--surface2);
     border-radius:3px;
     overflow:hidden;
   }
   .breakdown-bar-fill{
     height:100%;
-    background:var(--blue);
+    background:var(--mint);
     border-radius:3px;
+  }
+  .target-toggle{
+    font-size:11.5px;
+    color:var(--text3);
+    cursor:pointer;
+    margin-top:8px;
+    display:inline-block;
+  }
+  .target-panel{
+    margin-top:10px;
+    padding:10px;
+    background:var(--surface2);
+    border-radius:8px;
   }
 
   .section-title{
@@ -184,17 +211,14 @@
   .account-card.open .chevron{transform:rotate(90deg);}
 
   .stock-row{
-    background:var(--surface2);
-    border:1px solid var(--border);
-    border-radius:10px;
-    margin-top:10px;
-    overflow:hidden;
+    border-bottom:1px solid var(--border);
   }
+  .stock-row:last-child{border-bottom:none;}
   .stock-head{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:12px 14px;
+    padding:12px 8px 12px 4px;
     cursor:pointer;
   }
   .stock-name{font-size:14px;font-weight:500;}
@@ -202,8 +226,7 @@
   .stock-amount{font-size:14px;font-weight:500;color:var(--mint);}
   .stock-body{
     display:none;
-    border-top:1px solid var(--border);
-    padding:12px 14px 14px;
+    padding:2px 8px 16px 4px;
   }
   .stock-row.open .stock-body{display:block;}
   .stock-row.open .chevron{transform:rotate(90deg);}
@@ -382,6 +405,7 @@
   <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
     <button class="add-btn" id="toggleJsonBtn" style="white-space:nowrap;">JSON 보기/편집</button>
     <button class="add-btn" id="reloadJsonBtn" style="white-space:nowrap;">stock.json 새로고침</button>
+    <button class="add-btn" id="themeToggleBtn" style="white-space:nowrap;">라이트 모드</button>
   </div>
 </header>
 <div class="save-status" id="saveStatus">저장된 데이터 불러오는 중...</div>
@@ -437,6 +461,7 @@ let openAccounts = new Set();
 let openStocks = new Set();
 let openTxSections = new Set();
 let breakdownOpen = false;
+let openTargets = new Set();
 
 const STORAGE_KEY = 'portfolio-data';
 const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
@@ -782,6 +807,7 @@ function renderBreakdown(){
     const keyEsc = item.key.replace(/'/g,"\\'");
     const target = DATA.targets[item.key];
     const hasTarget = typeof target === 'number' && !isNaN(target);
+    const targetOpen = openTargets.has(item.key) || hasTarget;
 
     let rebalanceHtml = '';
     if(hasTarget){
@@ -801,32 +827,18 @@ function renderBreakdown(){
         <div class="breakdown-top">
           <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">'+escapeHtml(item.ticker)+'</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
           <div class="breakdown-right">
-            <div class="breakdown-pl num ${plClass(pl)}">
-              <div>${fmtPL(pl)}</div>
-              ${plPct!==null ? '<div>('+fmtPercent(plPct)+')</div>' : ''}
-            </div>
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
+            <div class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
           </div>
         </div>
         <div class="breakdown-bar-track">
           <div class="breakdown-bar-fill" style="width:${ratio}%;"></div>
         </div>
-        <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="mini-add" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
+        <div>
+          <span class="target-toggle" onclick="toggleTargetSection('${keyEsc}')">${hasTarget ? '목표비율 '+target+'% 설정됨 · 수정' : '목표비율 설정'}</span>
         </div>
-        <div class="form-panel" id="grpform_${sid}">
-          <div class="form-row">
-            <div class="field">
-              <span class="field-label">새 현재가 (1주당)</span>
-              <input type="number" inputmode="decimal" placeholder="예: 25000" id="grpprice_${sid}">
-            </div>
-          </div>
-          <div class="form-actions">
-            <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
-            <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
-          </div>
-        </div>
-        <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);">
+        ${targetOpen ? `
+        <div class="target-panel">
           <div class="form-row" style="margin-bottom:6px;">
             <div class="field">
               <span class="field-label">목표비율(%) · 현재 ${ratio.toFixed(2)}%</span>
@@ -834,7 +846,23 @@ function renderBreakdown(){
             </div>
           </div>
           ${rebalanceHtml}
+          <div style="margin-top:8px;">
+            <button class="mini-add" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
+          </div>
+          <div class="form-panel" id="grpform_${sid}">
+            <div class="form-row">
+              <div class="field">
+                <span class="field-label">새 현재가 (1주당)</span>
+                <input type="number" inputmode="decimal" placeholder="예: 25000" id="grpprice_${sid}">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
+              <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
+            </div>
+          </div>
         </div>
+        ` : ''}
       </div>
     `;
   }).join('');
@@ -867,6 +895,12 @@ function renderBreakdown(){
     breakdownOpen = !breakdownOpen;
     renderBreakdown();
   };
+}
+
+function toggleTargetSection(key){
+  if(openTargets.has(key)) openTargets.delete(key);
+  else openTargets.add(key);
+  render();
 }
 
 async function updateTarget(key, value){
@@ -1331,6 +1365,30 @@ document.getElementById('reloadJsonBtn').onclick = async ()=>{
   await loadData();
   showToast('stock.json을 다시 불러왔어요');
 };
+
+let isLightTheme = false;
+function applyTheme(){
+  document.body.classList.toggle('light-theme', isLightTheme);
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.textContent = isLightTheme ? '다크 모드' : '라이트 모드';
+}
+async function loadThemePref(){
+  if(hasWindowStorage){
+    try{
+      const res = await window.storage.get('theme-pref', false);
+      if(res && res.value === 'light') isLightTheme = true;
+    }catch(e){ /* 저장된 값 없음 */ }
+  }
+  applyTheme();
+}
+document.getElementById('themeToggleBtn').onclick = async ()=>{
+  isLightTheme = !isLightTheme;
+  applyTheme();
+  if(hasWindowStorage){
+    try{ await window.storage.set('theme-pref', isLightTheme ? 'light' : 'dark', false); }catch(e){}
+  }
+};
+loadThemePref();
 
 function refreshJsonView(){
   document.getElementById('jsonTextarea').value = JSON.stringify(DATA, null, 2);
