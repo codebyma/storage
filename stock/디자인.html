@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>주식 현황 정리</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --surface1:#171a20;
+    --surface2:#1e232b;
+    --border:#2a3038;
+    --border-strong:#3a4149;
+    --text1:#edf0f3;
+    --text2:#9aa4b2;
+    --text3:#5f6773;
+    --mint:#4ade9a;
+    --mint-dim:#1f3a2c;
+    --gold:#e8b04b;
+    --gold-dim:#3a2f18;
+    --blue:#5b9bd5;
+    --blue-dim:#1c2c3a;
+    --red:#e2635a;
+    --red-dim:#3a1e1c;
+  }
+  body.light-theme{
+    --bg:#f6f5f2;
+    --surface1:#ffffff;
+    --surface2:#eef0f2;
+    --border:#e0e3e7;
+    --border-strong:#c8ccd2;
+    --text1:#1b1f24;
+    --text2:#5b6470;
+    --text3:#8b93a0;
+    --mint:#178a5c;
+    --mint-dim:#dff3ea;
+    --gold:#a8720f;
+    --gold-dim:#faf0da;
+    --blue:#2f6fb0;
+    --blue-dim:#e5f0fa;
+    --red:#c33a2f;
+    --red-dim:#fbe7e5;
+  }
+  *{box-sizing:border-box;touch-action:manipulation;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text1);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    transition:background .15s, color .15s;
+    padding-bottom:60px;
+  }
+  .num{font-variant-numeric:tabular-nums;}
+  header{
+    padding:28px 20px 18px;
+    border-bottom:1px solid var(--border);
+  }
+  header h1{
+    font-size:22px;
+    font-weight:500;
+    margin:0 0 4px;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    margin:0;
+    font-size:13px;
+    color:var(--text2);
+  }
+  .owner-tabs{
+    display:flex;
+    gap:8px;
+    padding:16px 20px 0;
+  }
+  .owner-tab{
+    flex:1;
+    text-align:center;
+    padding:10px 0;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--surface1);
+    color:var(--text2);
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .owner-tab.active{
+    background:var(--mint-dim);
+    border-color:var(--mint);
+    color:var(--mint);
+  }
+  .summary{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    padding:16px 20px 4px;
+  }
+  .metric{
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 14px;
+  }
+  .metric .label{font-size:12px;color:var(--text2);margin-bottom:6px;}
+  .metric .value{font-size:19px;font-weight:500;}
+  .metric .value.mint{color:var(--mint);}
+  .metric .value.gold{color:var(--gold);}
+  .metric .value.redtext{color:var(--red);}
+  .redtext{color:var(--red);}
+  .bluetext{color:var(--blue);}
+
+  main{padding:20px;}
+
+  .breakdown-wrap{padding:0 20px;}
+  .breakdown-card{
+    padding:0;
+  }
+  .breakdown-title{
+    font-size:14px;
+    color:var(--text2);
+    margin:22px 0 10px;
+    cursor:pointer;
+  }
+  .breakdown-row{
+    padding:14px 0 14px 10px;
+    border-bottom:1px solid var(--border);
+    border-left:2px solid var(--border-strong);
+  }
+  .breakdown-row:last-child{border-bottom:none;}
+  .breakdown-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:8px;
+  }
+  .breakdown-name{font-weight:500;color:var(--text1);font-size:13.5px;}
+  .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
+  .breakdown-ratio{font-size:19px;font-weight:600;color:var(--text1);}
+  .breakdown-pl{font-size:12px;line-height:1.3;}
+  .breakdown-bar-track{
+    height:6px;
+    background:var(--surface2);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .breakdown-bar-fill{
+    height:100%;
+    background:var(--mint);
+    border-radius:3px;
+  }
+  .target-toggle{
+    font-size:11.5px;
+    color:var(--text3);
+    cursor:pointer;
+    margin-top:8px;
+    display:inline-block;
+  }
+  .target-panel{
+    margin-top:10px;
+    padding:10px;
+    background:var(--surface2);
+    border-radius:8px;
+  }
+
+  .section-title{
+    font-size:14px;
+    color:var(--text2);
+    margin:22px 0 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .add-btn{
+    background:none;
+    border:1px solid var(--border-strong);
+    color:var(--text1);
+    border-radius:8px;
+    padding:6px 12px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .add-btn:active{transform:scale(0.97);}
+
+  .account-card{
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:12px;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+  .account-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 16px;
+    cursor:pointer;
+  }
+  .account-name{font-size:15px;font-weight:500;}
+  .account-total{font-size:13px;color:var(--text2);margin-top:2px;}
+  .chevron{
+    color:var(--text3);
+    font-size:12px;
+    transition:transform .15s;
+  }
+  .account-body{
+    display:none;
+    border-top:1px solid var(--border);
+    padding:10px 14px 14px;
+  }
+  .account-card.open .account-body{display:block;}
+  .account-card.open .chevron{transform:rotate(90deg);}
+
+  .stock-row{
+    border-bottom:1px solid var(--border);
+    border-left:2px solid var(--border-strong);
+    padding-left:10px;
+  }
+  .stock-row:last-child{border-bottom:none;}
+  .stock-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 8px 12px 4px;
+    cursor:pointer;
+  }
+  .stock-name{font-size:14px;font-weight:500;}
+  .stock-ticker{font-size:12px;color:var(--text3);margin-top:1px;}
+  .stock-amount{font-size:14px;font-weight:500;color:var(--mint);}
+  .stock-body{
+    display:none;
+    padding:2px 8px 16px 4px;
+  }
+  .stock-row.open .stock-body{display:block;}
+  .stock-row.open .chevron{transform:rotate(90deg);}
+
+  .sub-block{margin-bottom:14px;}
+  .sub-label{
+    font-size:12px;
+    color:var(--text2);
+    margin-bottom:6px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .sub-label .tx-section-label{flex:1;min-width:0;}
+  .sub-label .mini-add{flex-shrink:0;}
+  .entry-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
+    padding:6px 0;
+    border-bottom:1px solid var(--border);
+    color:var(--text2);
+  }
+  .entry-row:last-child{border-bottom:none;}
+  .entry-row .amt{color:var(--text1);}
+  .entry-row .del{
+    color:var(--red);
+    cursor:pointer;
+    margin-left:8px;
+    font-size:11px;
+  }
+  .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
+  .tx-section-label{cursor:pointer;}
+  .tx-list-scroll{
+    max-height:220px;
+    overflow-y:auto;
+  }
+
+  .mini-add{
+    background:none;
+    border:1px dashed var(--border-strong);
+    color:var(--text2);
+    border-radius:7px;
+    padding:5px 10px;
+    font-size:11.5px;
+    cursor:pointer;
+  }
+
+  .form-panel{
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px;
+    margin-top:8px;
+    display:none;
+  }
+  .form-panel.open{display:block;}
+  .form-row{
+    display:flex;
+    gap:14px;
+    margin-bottom:12px;
+  }
+  .form-row .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
+    min-width:0;
+  }
+  .field-label{
+    font-size:11px;
+    color:var(--text3);
+  }
+  .form-row input, .form-row select{
+    flex:1;
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    color:var(--text1);
+    border-radius:7px;
+    padding:8px 10px;
+    font-size:16px;
+    min-width:0;
+    width:100%;
+  }
+  .form-row input::placeholder{color:var(--text3);}
+  .form-actions{display:flex;gap:8px;justify-content:flex-end;}
+  .btn-primary{
+    background:var(--mint-dim);
+    border:1px solid var(--mint);
+    color:var(--mint);
+    border-radius:7px;
+    padding:7px 14px;
+    font-size:13px;
+    cursor:pointer;
+  }
+  .btn-ghost{
+    background:none;
+    border:1px solid var(--border-strong);
+    color:var(--text2);
+    border-radius:7px;
+    padding:7px 14px;
+    font-size:13px;
+    cursor:pointer;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:40px 20px;
+    color:var(--text3);
+    font-size:13px;
+  }
+  .json-panel{
+    background:var(--surface1);
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px;
+    margin:0 20px 16px;
+    display:none;
+  }
+  .json-panel.open{display:block;}
+  .json-panel textarea{
+    width:100%;
+    min-height:220px;
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    color:var(--text1);
+    border-radius:8px;
+    padding:10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:12px;
+    line-height:1.5;
+    resize:vertical;
+  }
+  .json-actions{
+    display:flex;
+    gap:8px;
+    margin-top:10px;
+    flex-wrap:wrap;
+  }
+  .json-error{
+    color:var(--red);
+    font-size:12px;
+    margin-top:6px;
+    display:none;
+  }
+  .save-status{
+    font-size:11px;
+    color:var(--text3);
+    padding:4px 20px 0;
+  }
+  .toast{
+    position:fixed;
+    bottom:20px;left:50%;
+    transform:translateX(-50%);
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    color:var(--text1);
+    padding:10px 18px;
+    border-radius:20px;
+    font-size:13px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s;
+    z-index:50;
+  }
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>주식 현황 정리</h1>
+  <p>계좌별 보유 종목, 매수·매도, 배당을 기록합니다</p>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+    <button class="add-btn" id="toggleJsonBtn" style="white-space:nowrap;">JSON 보기/편집</button>
+    <button class="add-btn" id="reloadJsonBtn" style="white-space:nowrap;">stock.json 새로고침</button>
+    <button class="add-btn" id="themeToggleBtn" style="white-space:nowrap;">라이트 모드</button>
+  </div>
+</header>
+<div class="save-status" id="saveStatus">저장된 데이터 불러오는 중...</div>
+
+<div class="json-panel" id="jsonPanel">
+  <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">
+    stock.json 파일로 내보내서 보관해두세요. 데이터가 사라지면 그 파일을 다시 가져오면 복원됩니다. 아래 텍스트를 직접 고친 뒤 '적용'을 눌러도 됩니다.
+  </div>
+  <textarea id="jsonTextarea" spellcheck="false"></textarea>
+  <div class="json-error" id="jsonError">JSON 형식이 올바르지 않습니다. 콤마, 괄호를 확인해주세요.</div>
+  <div class="json-actions">
+    <button class="btn-primary" onclick="exportJsonFile()">stock.json 내보내기</button>
+    <button class="btn-primary" onclick="triggerImportFile()">stock.json 가져오기</button>
+  </div>
+  <div class="json-actions">
+    <button class="btn-ghost" onclick="applyJson()">텍스트 적용하고 저장</button>
+    <button class="btn-ghost" onclick="copyJson()">복사(클립보드)</button>
+    <button class="btn-ghost" onclick="refreshJsonView()">현재 데이터로 새로고침</button>
+  </div>
+  <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;">
+</div>
+
+<div class="owner-tabs" id="ownerTabs"></div>
+
+<div class="summary" id="summary"></div>
+
+<div id="breakdownSection"></div>
+
+<main>
+  <div class="section-title">
+    <span id="accountsLabel">계좌</span>
+    <button class="add-btn" id="addAccountBtn">+ 계좌 추가</button>
+  </div>
+  <div class="form-panel" id="accountForm">
+    <div class="form-row">
+      <input type="text" id="newAccountName" placeholder="계좌 이름 (예: 미래에셋 연금저축)">
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeForm('accountForm')">취소</button>
+      <button class="btn-primary" onclick="submitAccount()">추가</button>
+    </div>
+  </div>
+
+  <div id="accountList"></div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let DATA = { owners: [], accounts: [], stocks: [] };
+let currentOwner = null;
+let openAccounts = new Set();
+let openStocks = new Set();
+let openTxSections = new Set();
+let breakdownOpen = false;
+let openTargets = new Set();
+
+const STORAGE_KEY = 'portfolio-data';
+const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
+let dataSource = null; // 'server-json' | 'window-storage' | 'new'
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+function fmtWon(n){ return (n||0).toLocaleString('ko-KR') + '원'; }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+function setSaveStatus(msg){
+  const el = document.getElementById('saveStatus');
+  if(el) el.textContent = msg;
+}
+
+function isValidPortfolio(obj){
+  return !!(obj && obj.owners && obj.accounts && obj.stocks);
+}
+
+async function loadData(){
+  // 1순위: 같은 경로의 stock.json (서버에 올린 정적 파일)
+  try{
+    const res = await fetch('./stock.json', { cache:'no-store' });
+    if(res.ok){
+      const parsed = await res.json();
+      if(isValidPortfolio(parsed)){
+        DATA = parsed;
+        dataSource = 'server-json';
+        setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
+        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
+        render();
+        return;
+      }
+    }
+  }catch(e){
+    // 정적 서버가 아니거나(file:// 등) stock.json이 아직 없는 경우 — 다음 단계로
+  }
+
+  // 2순위: window.storage (미리보기 환경 등에서만 존재)
+  if(hasWindowStorage){
+    try{
+      const res = await window.storage.get(STORAGE_KEY, false);
+      if(res && res.value){
+        DATA = JSON.parse(res.value);
+        dataSource = 'window-storage';
+        setSaveStatus('마지막 저장 데이터를 불러왔습니다 · ' + new Date().toLocaleTimeString('ko-KR'));
+        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
+        render();
+        return;
+      }
+    }catch(e){ /* 무시하고 아래로 */ }
+  }
+
+  // 3순위: 새 데이터
+  DATA = defaultData();
+  dataSource = 'new';
+  setSaveStatus('새 데이터로 시작합니다 · stock.json을 서버에 올리면 자동으로 불러와요');
+  currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
+  render();
+}
+
+function defaultData(){
+  return {
+    owners: [
+      { id:'me', name:'나' },
+      { id:'wife', name:'와이프' }
+    ],
+    accounts: [],
+    stocks: [],
+    targets: {},
+    plannedCash: 0
+  };
+}
+
+function ensureDataShape(){
+  if(!DATA.targets) DATA.targets = {};
+  if(typeof DATA.plannedCash !== 'number') DATA.plannedCash = 0;
+}
+
+async function saveData(){
+  if(hasWindowStorage){
+    try{
+      await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
+    }catch(e){ /* 무시 */ }
+  }
+  if(dataSource === 'server-json'){
+    setSaveStatus('임시 반영됨 (브라우저 안에서만) · ' + new Date().toLocaleTimeString('ko-KR') + ' · stock.json 내보내서 서버에 다시 올려야 저장돼요');
+  } else {
+    setSaveStatus('저장됨 · ' + new Date().toLocaleTimeString('ko-KR'));
+  }
+}
+
+function render(){
+  ensureDataShape();
+  renderOwnerTabs();
+  renderSummary();
+  renderBreakdown();
+  renderAccounts();
+}
+
+function renderOwnerTabs(){
+  const el = document.getElementById('ownerTabs');
+  el.innerHTML = '';
+  if(DATA.owners.length > 1){
+    const allBtn = document.createElement('div');
+    allBtn.className = 'owner-tab' + (currentOwner==='ALL' ? ' active' : '');
+    allBtn.textContent = '합계';
+    allBtn.onclick = ()=>{ currentOwner = 'ALL'; render(); };
+    el.appendChild(allBtn);
+  }
+  DATA.owners.forEach(o=>{
+    const btn = document.createElement('div');
+    btn.className = 'owner-tab' + (o.id===currentOwner ? ' active' : '');
+    btn.textContent = o.name;
+    btn.onclick = ()=>{ currentOwner = o.id; render(); };
+    el.appendChild(btn);
+  });
+}
+
+function accountsForOwner(ownerId){
+  if(ownerId==='ALL') return DATA.accounts;
+  return DATA.accounts.filter(a=>a.ownerId===ownerId);
+}
+function stocksForAccount(accountId){
+  return DATA.stocks.filter(s=>s.accountId===accountId);
+}
+function stocksForOwner(ownerId){
+  const accIds = accountsForOwner(ownerId).map(a=>a.id);
+  return DATA.stocks.filter(s=>accIds.includes(s.accountId));
+}
+function stockTotal(stock){
+  return (stock.quantity || 0) * (stock.currentPrice || 0);
+}
+function stockCostBasis(stock){
+  const buyTotal = (stock.buys||[]).reduce((s,b)=>s+(b.amount||0),0);
+  const sellTotal = (stock.sells||[]).reduce((s,b)=>s+(b.amount||0),0);
+  return buyTotal - sellTotal;
+}
+function stockPL(stock){
+  return stockTotal(stock) - stockCostBasis(stock);
+}
+function stockPLPercent(stock){
+  const cost = stockCostBasis(stock);
+  if(!cost) return null;
+  return (stockPL(stock) / cost) * 100;
+}
+function stockDividendTotal(stock){
+  return (stock.dividends||[]).reduce((s,d)=>s+(d.amount||0),0);
+}
+function isWithinLast12Months(monthStr){
+  if(!monthStr) return false;
+  const parts = monthStr.split('-').map(Number);
+  const y = parts[0], m = parts[1];
+  if(!y || !m) return false;
+  const target = new Date(y, m-1, 1);
+  const now = new Date();
+  const cutoff = new Date(now.getFullYear(), now.getMonth()-11, 1);
+  const upper = new Date(now.getFullYear(), now.getMonth(), 1);
+  return target >= cutoff && target <= upper;
+}
+function stockDividendTTM(stock){
+  return (stock.dividends||[]).filter(d=>isWithinLast12Months(d.month)).reduce((s,d)=>s+(d.amount||0),0);
+}
+// 기준1: 지금까지 받은 배당 총액 ÷ 총 투자원금 (누적 실현 수익률, 연환산 아님)
+function stockYieldOnPrincipal(stock){
+  const cost = stockCostBasis(stock);
+  if(!cost) return null;
+  return (stockDividendTotal(stock) / cost) * 100;
+}
+// 기준2: 최근 12개월 배당 ÷ 총 투자원금 (=평균매입단가×수량) — 지금 페이스가 앞으로도 이어진다면의 수익률
+function stockYieldOnAvgPrice(stock){
+  const cost = stockCostBasis(stock);
+  if(!cost) return null;
+  return (stockDividendTTM(stock) / cost) * 100;
+}
+// 기준3: 최근 12개월 배당 ÷ 현재 평가금액 — 지금 이 가격에 새로 산다면의 수익률(시장 비교용)
+function stockYieldOnCurrentPrice(stock){
+  const mv = stockTotal(stock);
+  if(!mv) return null;
+  return (stockDividendTTM(stock) / mv) * 100;
+}
+function ownerAvgYield(ownerId, fn){
+  const yields = stocksForOwner(ownerId).map(fn).filter(y=>y!==null);
+  if(yields.length===0) return null;
+  return yields.reduce((a,b)=>a+b,0) / yields.length;
+}
+function accountTotal(accountId){
+  return stocksForAccount(accountId).reduce((sum,s)=>sum+stockTotal(s),0);
+}
+function accountCostBasis(accountId){
+  return stocksForAccount(accountId).reduce((sum,s)=>sum+stockCostBasis(s),0);
+}
+function ownerTotal(ownerId){
+  return accountsForOwner(ownerId).reduce((sum,a)=>sum+accountTotal(a.id),0);
+}
+function ownerCostBasis(ownerId){
+  return accountsForOwner(ownerId).reduce((sum,a)=>sum+accountCostBasis(a.id),0);
+}
+function fmtPL(n){
+  const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
+  return sign + Math.abs(n).toLocaleString('ko-KR') + '원';
+}
+function fmtPercent(n){
+  if(n===null) return '';
+  const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
+  return sign + Math.abs(n).toFixed(2) + '%';
+}
+function fmtPctPlain(n){
+  if(n===null) return '-';
+  return n.toFixed(2) + '%';
+}
+function plClass(n){
+  return n > 0 ? 'redtext' : (n < 0 ? 'bluetext' : '');
+}
+function currentMonthDividend(ownerId){
+  const ym = new Date().toISOString().slice(0,7);
+  let total = 0;
+  stocksForOwner(ownerId).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if(d.month===ym) total += (d.amount||0);
+    });
+  });
+  return total;
+}
+function yearDividend(ownerId){
+  const year = new Date().getFullYear().toString();
+  let total = 0;
+  stocksForOwner(ownerId).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if((d.month||'').startsWith(year)) total += (d.amount||0);
+    });
+  });
+  return total;
+}
+
+function renderSummary(){
+  const el = document.getElementById('summary');
+  const total = ownerTotal(currentOwner);
+  const cost = ownerCostBasis(currentOwner);
+  const pl = total - cost;
+  const plPct = cost ? (pl/cost)*100 : null;
+  const monthDiv = currentMonthDividend(currentOwner);
+  const yearDiv = yearDividend(currentOwner);
+  const avgYield1 = ownerAvgYield(currentOwner, stockYieldOnPrincipal);
+  const avgYield2 = ownerAvgYield(currentOwner, stockYieldOnAvgPrice);
+  const avgYield3 = ownerAvgYield(currentOwner, stockYieldOnCurrentPrice);
+  el.innerHTML = `
+    <div class="metric">
+      <div class="label">총 평가금액</div>
+      <div class="value mint num">${fmtWon(total)}</div>
+    </div>
+    <div class="metric">
+      <div class="label">평가손익</div>
+      <div class="value ${plClass(pl)} num">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
+    </div>
+    <div class="metric">
+      <div class="label">총 투자원금</div>
+      <div class="value num">${fmtWon(cost)}</div>
+    </div>
+    <div class="metric">
+      <div class="label">보유 계좌 수</div>
+      <div class="value num">${accountsForOwner(currentOwner).length}개</div>
+    </div>
+    <div class="metric">
+      <div class="label">이번 달 배당</div>
+      <div class="value gold num">${fmtWon(monthDiv)}</div>
+    </div>
+    <div class="metric">
+      <div class="label">올해 누적 배당</div>
+      <div class="value gold num">${fmtWon(yearDiv)}</div>
+    </div>
+    <div class="metric" style="grid-column:1 / -1;">
+      <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
+        <span>① 누적 · 총투자원금 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield1)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
+        <span>② 최근 12개월 · 평균매입가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield2)}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;">
+        <span>③ 최근 12개월 · 현재가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield3)}</span>
+      </div>
+    </div>
+  `;
+}
+
+// 소유자 구분 없이 전체 계좌를 합쳐 종목(항목)별로 그룹핑
+function allItemsBreakdown(){
+  const map = {};
+  DATA.stocks.forEach(s=>{
+    const key = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
+    if(!map[key]){
+      map[key] = { key, name: s.name, ticker: s.ticker||'', value:0, cost:0, count:0, quantity:0 };
+    }
+    map[key].value += stockTotal(s);
+    map[key].cost += stockCostBasis(s);
+    map[key].count += 1;
+    map[key].quantity += (s.quantity||0);
+  });
+  return Object.values(map);
+}
+
+function stocksMatchingKey(key){
+  return DATA.stocks.filter(s=>{
+    const k = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
+    return k === key;
+  });
+}
+
+function safeId(str){
+  return str.replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+function renderBreakdown(){
+  const el = document.getElementById('breakdownSection');
+  const items = allItemsBreakdown();
+  const grandTotal = items.reduce((s,i)=>s+i.value,0);
+
+  if(items.length===0){
+    el.innerHTML = '';
+    return;
+  }
+
+  const sorted = [...items].sort((a,b)=> b.value - a.value);
+
+  const targetSum = sorted.reduce((s,item)=>{
+    const t = DATA.targets[item.key];
+    return s + (typeof t === 'number' ? t : 0);
+  }, 0);
+
+  const plannedCash = DATA.plannedCash || 0;
+  const projectedTotal = grandTotal + plannedCash;
+
+  const rows = sorted.map(item=>{
+    const pl = item.value - item.cost;
+    const plPct = item.cost ? (pl/item.cost)*100 : null;
+    const ratio = grandTotal ? (item.value/grandTotal)*100 : 0;
+    const sid = safeId(item.key);
+    const keyEsc = item.key.replace(/'/g,"\\'");
+    const target = DATA.targets[item.key];
+    const hasTarget = typeof target === 'number' && !isNaN(target);
+    const targetOpen = openTargets.has(item.key) || hasTarget;
+
+    let rebalanceHtml = '';
+    if(hasTarget){
+      const targetValue = projectedTotal * (target/100);
+      const diff = targetValue - item.value; // 목표금액 - 현재금액 = 추가로 넣어야 할 금액
+      const avgPrice = item.quantity>0 ? (item.value/item.quantity) : null;
+      const diffShares = avgPrice ? (diff/avgPrice) : null;
+      const actionLabel = diff >= 0 ? '추가 매수 필요' : '이미 목표 초과(매도 검토)';
+      rebalanceHtml = `
+        <div class="entry-row"><span>목표 금액 (${target}%, 투입 후 기준)</span><span class="amt num">${fmtWon(targetValue)}</span></div>
+        <div class="entry-row"><span>${actionLabel}</span><span class="amt num">${fmtWon(Math.abs(diff))}${diffShares!==null ? ' · 약 '+Math.round(Math.abs(diffShares)).toLocaleString('ko-KR')+'주' : ' (현재가 정보 없음)'}</span></div>
+      `;
+    }
+
+    return `
+      <div class="breakdown-row">
+        <div class="breakdown-top">
+          <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">'+escapeHtml(item.ticker)+'</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
+          <div class="breakdown-right">
+            <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
+            <div class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
+          </div>
+        </div>
+        <div class="breakdown-bar-track">
+          <div class="breakdown-bar-fill" style="width:${ratio}%;"></div>
+        </div>
+        <div>
+          <span class="target-toggle" onclick="toggleTargetSection('${keyEsc}')">${hasTarget ? '목표비율 '+target+'% 설정됨 · 수정' : '목표비율 설정'}</span>
+        </div>
+        ${targetOpen ? `
+        <div class="target-panel">
+          <div class="form-row" style="margin-bottom:6px;">
+            <div class="field">
+              <span class="field-label">목표비율(%) · 현재 ${ratio.toFixed(2)}%</span>
+              <input type="number" inputmode="decimal" step="0.1" value="${hasTarget ? target : ''}" placeholder="예: 20" onchange="updateTarget('${keyEsc}', this.value)">
+            </div>
+          </div>
+          ${rebalanceHtml}
+          <div style="margin-top:8px;">
+            <button class="mini-add" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
+          </div>
+          <div class="form-panel" id="grpform_${sid}">
+            <div class="form-row">
+              <div class="field">
+                <span class="field-label">새 현재가 (1주당)</span>
+                <input type="number" inputmode="decimal" placeholder="예: 25000" id="grpprice_${sid}">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
+              <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+
+  const targetSumHint = targetSum > 0
+    ? `<div style="font-size:11.5px;color:var(--text3);padding:2px 4px 2px;">입력된 목표비율 합계: ${targetSum.toFixed(2)}%${Math.abs(targetSum-100) > 0.01 ? ' (100%가 되도록 맞추면 더 정확해요)' : ' ✓'}</div>`
+    : '';
+
+  const plannedCashBlock = `
+    <div style="padding:10px 4px 14px;border-bottom:1px solid var(--border);margin-bottom:4px;">
+      <div class="form-row" style="margin-bottom:0;">
+        <div class="field">
+          <span class="field-label">앞으로 추가 투입할 금액 (전체)</span>
+          <input type="number" inputmode="decimal" placeholder="예: 1000000" value="${plannedCash || ''}" onchange="updatePlannedCash(this.value)">
+        </div>
+      </div>
+      <div style="font-size:11.5px;color:var(--text3);margin-top:6px;">
+        현재 총 평가금액 ${fmtWon(grandTotal)} + 투입예정 ${fmtWon(plannedCash)} = 투입 후 총액 ${fmtWon(projectedTotal)} 기준으로 목표금액을 계산해요
+      </div>
+    </div>
+  `;
+
+  el.innerHTML = `
+    <div class="breakdown-wrap">
+      <div class="breakdown-title" id="breakdownToggle">전체 포트폴리오 비중 (나+와이프 모든 계좌 통합) · ${items.length}개 종목</div>
+      ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
+    </div>
+  `;
+  document.getElementById('breakdownToggle').onclick = ()=>{
+    breakdownOpen = !breakdownOpen;
+    renderBreakdown();
+  };
+}
+
+function toggleTargetSection(key){
+  if(openTargets.has(key)) openTargets.delete(key);
+  else openTargets.add(key);
+  render();
+}
+
+async function updateTarget(key, value){
+  const num = parseFloat(value);
+  if(value==='' || isNaN(num)){
+    delete DATA.targets[key];
+  } else {
+    DATA.targets[key] = num;
+  }
+  await saveData();
+  render();
+}
+
+async function updatePlannedCash(value){
+  const num = parseFloat(value);
+  DATA.plannedCash = (value==='' || isNaN(num)) ? 0 : num;
+  await saveData();
+  render();
+}
+
+async function applyGroupPrice(key, sid){
+  const input = document.getElementById(`grpprice_${sid}`);
+  const num = parseFloat(input.value);
+  if(isNaN(num)){ showToast('숫자를 입력해주세요'); return; }
+  const stocks = stocksMatchingKey(key);
+  stocks.forEach(s=>{ s.currentPrice = num; });
+  closeForm(`grpform_${sid}`);
+  await saveData();
+  render();
+  showToast(`${stocks.length}개 계좌의 현재가를 한번에 반영했어요`);
+}
+
+function openGroupPriceForm(key, sid){
+  const panel = document.getElementById(`grpform_${sid}`);
+  const willOpen = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+  if(willOpen){
+    const input = document.getElementById(`grpprice_${sid}`);
+    input.value = '';
+    input.focus();
+    scrollToId(`grpform_${sid}`);
+  }
+}
+
+function renderAccounts(){
+  const list = document.getElementById('accountList');
+  const isAll = currentOwner === 'ALL';
+  document.getElementById('addAccountBtn').style.display = isAll ? 'none' : '';
+  document.getElementById('accountsLabel').textContent = isAll ? '전체 계좌 (나+와이프)' : '계좌';
+  if(isAll) closeForm('accountForm');
+  const accounts = accountsForOwner(currentOwner);
+  if(accounts.length===0){
+    list.innerHTML = `<div class="empty-state">아직 등록된 계좌가 없습니다.<br>위 '계좌 추가' 버튼으로 시작해보세요.</div>`;
+    return;
+  }
+  list.innerHTML = '';
+  accounts.forEach(acc=>{
+    const isOpen = openAccounts.has(acc.id);
+    const ownerName = isAll ? (DATA.owners.find(o=>o.id===acc.ownerId)||{}).name : null;
+    const card = document.createElement('div');
+    card.className = 'account-card' + (isOpen ? ' open':'');
+    card.id = `acccard_${acc.id}`;
+    card.innerHTML = `
+      <div class="account-head" data-acc="${acc.id}">
+        <div>
+          <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
+          <div class="account-total num">${fmtWon(accountTotal(acc.id))}</div>
+        </div>
+        
+      </div>
+      <div class="account-body" id="body_${acc.id}"></div>
+    `;
+    card.querySelector('.account-head').onclick = ()=>{
+      const willOpen = !openAccounts.has(acc.id);
+      if(openAccounts.has(acc.id)) openAccounts.delete(acc.id);
+      else openAccounts.add(acc.id);
+      render();
+      if(willOpen) scrollToId(`acccard_${acc.id}`);
+    };
+    list.appendChild(card);
+    if(isOpen){
+      renderAccountBody(acc, card.querySelector('.account-body'));
+    }
+  });
+}
+
+function renderAccountBody(acc, bodyEl){
+  const stocks = stocksForAccount(acc.id);
+  let html = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+      <span class="empty-hint" style="padding:0;">종목 ${stocks.length}개</span>
+      <button class="mini-add" data-add-stock="${acc.id}">+ 종목 추가</button>
+    </div>
+    <div class="form-panel" id="stockForm_${acc.id}">
+      <div class="form-row">
+        <input type="text" placeholder="종목명 (예: 뱅가드 S&P500)" id="ns_name_${acc.id}">
+        <input type="text" placeholder="티커 (예: VOO)" id="ns_ticker_${acc.id}">
+      </div>
+      <div class="form-row">
+        <input type="number" inputmode="decimal" placeholder="평균단가 (1주당)" id="ns_avgprice_${acc.id}">
+        <input type="number" inputmode="decimal" placeholder="수량" id="ns_qty_${acc.id}">
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeForm('stockForm_${acc.id}')">취소</button>
+        <button class="btn-primary" onclick="submitStock('${acc.id}')">추가</button>
+      </div>
+    </div>
+    <div id="stockList_${acc.id}"></div>
+  `;
+  bodyEl.innerHTML = html;
+  bodyEl.querySelector(`[data-add-stock]`).onclick = ()=>{
+    toggleForm(`stockForm_${acc.id}`);
+  };
+  const stockListEl = bodyEl.querySelector(`#stockList_${acc.id}`);
+  stocks.forEach(s=> stockListEl.appendChild(buildStockRow(s)));
+}
+
+function buildStockRow(stock){
+  const isOpen = openStocks.has(stock.id);
+  const qty = stock.quantity || 0;
+  const price = stock.currentPrice || 0;
+  const pl = stockPL(stock);
+  const plPct = stockPLPercent(stock);
+  const row = document.createElement('div');
+  row.className = 'stock-row' + (isOpen ? ' open':'');
+  row.id = `stockrow_${stock.id}`;
+  row.innerHTML = `
+    <div class="stock-head">
+      <div>
+        <div class="stock-name">${escapeHtml(stock.name)}</div>
+        <div class="stock-ticker">${escapeHtml(stock.ticker||'')}${qty ? ' · '+qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="text-align:right;">
+          <div class="stock-amount num">${fmtWon(stockTotal(stock))}</div>
+          <div class="num ${plClass(pl)}" style="font-size:11.5px;">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
+        </div>
+        
+      </div>
+    </div>
+    <div class="stock-body" id="stockbody_${stock.id}"></div>
+  `;
+  row.querySelector('.stock-head').onclick = ()=>{
+    const willOpen = !openStocks.has(stock.id);
+    if(openStocks.has(stock.id)) openStocks.delete(stock.id);
+    else openStocks.add(stock.id);
+    render();
+    if(willOpen) scrollToId(`stockrow_${stock.id}`);
+  };
+  if(isOpen){
+    renderStockBody(stock, row.querySelector('.stock-body'));
+  }
+  return row;
+}
+
+function renderStockBody(stock, el){
+  const qty = stock.quantity || 0;
+  const price = stock.currentPrice || 0;
+  const cost = stockCostBasis(stock);
+  const avgPrice = qty ? Math.round(cost / qty) : 0;
+  const pl = stockPL(stock);
+  const plPct = stockPLPercent(stock);
+  const divTotal = stockDividendTotal(stock);
+  const divTTM = stockDividendTTM(stock);
+  const y1 = stockYieldOnPrincipal(stock);
+  const y2 = stockYieldOnAvgPrice(stock);
+  const y3 = stockYieldOnCurrentPrice(stock);
+
+  const buysOpen = openTxSections.has(stock.id+':buys');
+  const sellsOpen = openTxSections.has(stock.id+':sells');
+  const divsOpen = openTxSections.has(stock.id+':dividends');
+
+  el.innerHTML = `
+    <div class="sub-block">
+      <div class="sub-label">
+        <span>보유 현황</span>
+        <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
+      </div>
+      <div class="entry-row"><span>보유수량</span><span class="amt num">${qty.toLocaleString('ko-KR')}주</span></div>
+      <div class="entry-row"><span>평균매입단가</span><span class="amt num">${avgPrice.toLocaleString('ko-KR')}원</span></div>
+      <div class="entry-row"><span>현재가</span><span class="amt num">${price.toLocaleString('ko-KR')}원</span></div>
+      <div class="entry-row"><span>평가금액 (수량×현재가)</span><span class="amt num">${fmtWon(stockTotal(stock))}</span></div>
+      <div class="entry-row"><span>매수 총액(투자원금)</span><span class="amt num">${fmtWon(cost)}</span></div>
+      <div class="entry-row"><span>평가손익</span><span class="amt num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
+      <div class="form-panel" id="priceform_${stock.id}">
+        <div class="form-row">
+          <div class="field">
+            <span class="field-label">새 현재가 (1주당)</span>
+            <input type="number" inputmode="decimal" placeholder="예: 25000" id="price_input_${stock.id}">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-ghost" onclick="closeForm('priceform_${stock.id}')">취소</button>
+          <button class="btn-primary" onclick="submitPrice('${stock.id}')">저장</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub-block" id="txsection_${stock.id}_buys">
+      <div class="sub-label">
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">매수 내역 (${(stock.buys||[]).length}건)</span>
+        <button class="mini-add" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
+      </div>
+      ${buysOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.buys, stock.id, 'buys')}</div>` : ''}
+      <div class="form-panel" id="buyform_${stock.id}">
+        ${txFormHtml(stock.id,'buys')}
+      </div>
+    </div>
+
+    <div class="sub-block" id="txsection_${stock.id}_sells">
+      <div class="sub-label">
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">매도 내역 (${(stock.sells||[]).length}건)</span>
+        <button class="mini-add" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
+      </div>
+      ${sellsOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.sells, stock.id, 'sells')}</div>` : ''}
+      <div class="form-panel" id="sellform_${stock.id}">
+        ${txFormHtml(stock.id,'sells')}
+      </div>
+    </div>
+
+    <div class="sub-block" id="txsection_${stock.id}_dividends">
+      <div class="sub-label">
+        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
+        <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
+      </div>
+      <div class="entry-row"><span>① 누적 · 총투자원금 기준</span><span class="amt gold num">${fmtPctPlain(y1)}</span></div>
+      <div class="entry-row"><span>② 최근 12개월(${divTTM.toLocaleString('ko-KR')}원) · 평균매입가 기준</span><span class="amt gold num">${fmtPctPlain(y2)}</span></div>
+      <div class="entry-row"><span>③ 최근 12개월 · 현재가 기준</span><span class="amt gold num">${fmtPctPlain(y3)}</span></div>
+      ${divsOpen ? `<div class="tx-list-scroll">${dividendListHtml(stock.dividends, stock.id)}</div>` : ''}
+      <div class="form-panel" id="divform_${stock.id}">
+        <div class="form-row">
+          <div class="field">
+            <span class="field-label">배당월</span>
+            <input type="month" id="dv_month_${stock.id}">
+          </div>
+          <div class="field">
+            <span class="field-label">분배금</span>
+            <input type="number" inputmode="decimal" placeholder="예: 5000" id="dv_amount_${stock.id}">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-ghost" onclick="closeForm('divform_${stock.id}')">취소</button>
+          <button class="btn-primary" onclick="submitDividend('${stock.id}')">추가</button>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:right;margin-top:6px;">
+      <button class="mini-add" style="border-color:var(--red);color:var(--red);" onclick="deleteStock('${stock.id}')">종목 삭제</button>
+    </div>
+  `;
+}
+
+function entryListHtml(list, stockId, field){
+  if(!list || list.length===0) return `<div class="empty-hint">기록 없음</div>`;
+  const sorted = [...list].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  return sorted.map(item=>`
+    <div class="entry-row">
+      <span>${item.date||''} · ${item.quantity||0}주${item.price ? ' × '+item.price.toLocaleString('ko-KR')+'원' : ''}</span>
+      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','${field}','${item.id}')">삭제</span></span>
+    </div>
+  `).join('');
+}
+
+function dividendListHtml(list, stockId){
+  if(!list || list.length===0) return `<div class="empty-hint">기록 없음</div>`;
+  const sorted = [...list].sort((a,b)=> (b.month||'').localeCompare(a.month||''));
+  return sorted.map(item=>`
+    <div class="entry-row">
+      <span>${item.month||''}</span>
+      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','dividends','${item.id}')">삭제</span></span>
+    </div>
+  `).join('');
+}
+
+function txFormHtml(stockId, field){
+  const formId = (field==='buys' ? 'buyform_' : 'sellform_') + stockId;
+  const dateLabel = field==='buys' ? '매수일' : '매도일';
+  return `
+    <div class="form-row">
+      <div class="field">
+        <span class="field-label">${dateLabel}</span>
+        <input type="date" id="${field}_date_${stockId}">
+      </div>
+      <div class="field">
+        <span class="field-label">수량</span>
+        <input type="number" inputmode="decimal" placeholder="예: 10" id="${field}_qty_${stockId}">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <span class="field-label">1주당 단가</span>
+        <input type="number" inputmode="decimal" placeholder="예: 20000" id="${field}_price_${stockId}">
+      </div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost" onclick="closeForm('${formId}')">취소</button>
+      <button class="btn-primary" onclick="submitTx('${stockId}','${field}')">추가</button>
+    </div>
+  `;
+}
+
+function scrollToId(id){
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      const el = document.getElementById(id);
+      if(!el) return;
+      const rect = el.getBoundingClientRect();
+      const targetY = window.innerHeight * 0.7;
+      const delta = rect.top - targetY;
+      window.scrollBy({ top: delta, behavior:'smooth' });
+    });
+  });
+}
+
+function toggleForm(id){
+  const el = document.getElementById(id);
+  const willOpen = !el.classList.contains('open');
+  el.classList.toggle('open');
+  if(willOpen) scrollToId(id);
+}
+function closeForm(id){
+  document.getElementById(id).classList.remove('open');
+}
+function toggleTxSection(stockId, field){
+  const key = stockId+':'+field;
+  const willOpen = !openTxSections.has(key);
+  if(openTxSections.has(key)) openTxSections.delete(key);
+  else openTxSections.add(key);
+  render();
+  if(willOpen) scrollToId(`txsection_${stockId}_${field}`);
+}
+function openPriceForm(stockId){
+  const panel = document.getElementById(`priceform_${stockId}`);
+  const willOpen = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+  if(willOpen){
+    const input = document.getElementById(`price_input_${stockId}`);
+    input.value = '';
+    input.focus();
+    scrollToId(`priceform_${stockId}`);
+  }
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+document.getElementById('addAccountBtn').onclick = ()=>{
+  toggleForm('accountForm');
+};
+
+async function submitAccount(){
+  const nameEl = document.getElementById('newAccountName');
+  const name = nameEl.value.trim();
+  if(!name){ showToast('계좌 이름을 입력해주세요'); return; }
+  DATA.accounts.push({ id: uid('acc'), ownerId: currentOwner, name });
+  nameEl.value = '';
+  closeForm('accountForm');
+  await saveData();
+  render();
+  showToast('계좌가 추가되었습니다');
+}
+
+async function submitStock(accountId){
+  const name = document.getElementById(`ns_name_${accountId}`).value.trim();
+  const ticker = document.getElementById(`ns_ticker_${accountId}`).value.trim();
+  const avgPrice = parseFloat(document.getElementById(`ns_avgprice_${accountId}`).value) || 0;
+  const qty = parseFloat(document.getElementById(`ns_qty_${accountId}`).value) || 0;
+  if(!name){ showToast('종목명을 입력해주세요'); return; }
+  const today = new Date().toISOString().slice(0,10);
+  const initialBuys = [];
+  if(qty && avgPrice){
+    initialBuys.push({ id: uid('tx'), date: today, quantity: qty, price: avgPrice, amount: qty*avgPrice });
+  }
+  DATA.stocks.push({
+    id: uid('stk'), accountId, name, ticker,
+    quantity: qty, currentPrice: avgPrice,
+    buys: initialBuys, sells:[], dividends:[]
+  });
+  await saveData();
+  render();
+  showToast('종목이 추가되었습니다');
+}
+
+async function submitTx(stockId, field){
+  const date = document.getElementById(`${field}_date_${stockId}`).value;
+  const qty = parseFloat(document.getElementById(`${field}_qty_${stockId}`).value) || 0;
+  const price = parseFloat(document.getElementById(`${field}_price_${stockId}`).value) || 0;
+  if(!date){ showToast('날짜를 입력해주세요'); return; }
+  if(!qty || !price){ showToast('수량과 단가를 입력해주세요'); return; }
+  const amt = qty * price;
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock[field]) stock[field] = [];
+  stock[field].push({ id: uid('tx'), date, quantity: qty, price: price, amount: amt });
+  if(field==='buys'){
+    stock.quantity = (stock.quantity||0) + qty;
+  } else if(field==='sells'){
+    stock.quantity = Math.max(0, (stock.quantity||0) - qty);
+  }
+  await saveData();
+  render();
+  showToast(`${qty}주 × ${price.toLocaleString('ko-KR')}원 = ${amt.toLocaleString('ko-KR')}원 반영했어요`);
+}
+
+async function submitDividend(stockId){
+  const month = document.getElementById(`dv_month_${stockId}`).value;
+  const amount = parseFloat(document.getElementById(`dv_amount_${stockId}`).value) || 0;
+  if(!month){ showToast('월을 선택해주세요'); return; }
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock.dividends) stock.dividends = [];
+  stock.dividends.push({ id: uid('dv'), month, amount });
+  await saveData();
+  render();
+  showToast('배당이 추가되었습니다');
+}
+
+async function deleteEntry(stockId, field, entryId){
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  const entry = (stock[field]||[]).find(e=>e.id===entryId);
+  stock[field] = (stock[field]||[]).filter(e=>e.id!==entryId);
+  if(entry && field==='buys'){
+    stock.quantity = Math.max(0, (stock.quantity||0) - entry.quantity);
+  } else if(entry && field==='sells'){
+    stock.quantity = (stock.quantity||0) + entry.quantity;
+  }
+  await saveData();
+  render();
+  showToast('삭제하고 보유수량도 되돌렸어요');
+}
+
+async function deleteStock(stockId){
+  DATA.stocks = DATA.stocks.filter(s=>s.id!==stockId);
+  openStocks.delete(stockId);
+  await saveData();
+  render();
+  showToast('종목이 삭제되었습니다');
+}
+
+async function submitPrice(stockId){
+  const input = document.getElementById(`price_input_${stockId}`);
+  const num = parseFloat(input.value);
+  if(isNaN(num)){ showToast('숫자를 입력해주세요'); return; }
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  stock.currentPrice = num;
+  closeForm(`priceform_${stockId}`);
+  await saveData();
+  render();
+  showToast('현재가를 반영했어요');
+}
+
+document.getElementById('toggleJsonBtn').onclick = ()=>{
+  const panel = document.getElementById('jsonPanel');
+  panel.classList.toggle('open');
+  if(panel.classList.contains('open')) refreshJsonView();
+};
+
+document.getElementById('reloadJsonBtn').onclick = async ()=>{
+  setSaveStatus('stock.json 다시 불러오는 중...');
+  await loadData();
+  showToast('stock.json을 다시 불러왔어요');
+};
+
+let isLightTheme = false;
+function applyTheme(){
+  document.body.classList.toggle('light-theme', isLightTheme);
+  const btn = document.getElementById('themeToggleBtn');
+  if(btn) btn.textContent = isLightTheme ? '다크 모드' : '라이트 모드';
+}
+async function loadThemePref(){
+  if(hasWindowStorage){
+    try{
+      const res = await window.storage.get('theme-pref', false);
+      if(res && res.value === 'light') isLightTheme = true;
+    }catch(e){ /* 저장된 값 없음 */ }
+  }
+  applyTheme();
+}
+document.getElementById('themeToggleBtn').onclick = async ()=>{
+  isLightTheme = !isLightTheme;
+  applyTheme();
+  if(hasWindowStorage){
+    try{ await window.storage.set('theme-pref', isLightTheme ? 'light' : 'dark', false); }catch(e){}
+  }
+};
+loadThemePref();
+
+function refreshJsonView(){
+  document.getElementById('jsonTextarea').value = JSON.stringify(DATA, null, 2);
+  document.getElementById('jsonError').style.display = 'none';
+}
+
+async function applyParsedData(parsed, successMsg){
+  if(!parsed || !parsed.owners || !parsed.accounts || !parsed.stocks){
+    document.getElementById('jsonError').textContent = 'owners, accounts, stocks 세 항목이 모두 있어야 합니다.';
+    document.getElementById('jsonError').style.display = 'block';
+    return false;
+  }
+  document.getElementById('jsonError').style.display = 'none';
+  DATA = parsed;
+  if(!DATA.owners.find(o=>o.id===currentOwner) && currentOwner!=='ALL'){
+    currentOwner = DATA.owners.length ? DATA.owners[0].id : null;
+  }
+  await saveData();
+  render();
+  showToast(successMsg || '데이터를 적용했습니다');
+  return true;
+}
+
+async function applyJson(){
+  const raw = document.getElementById('jsonTextarea').value;
+  let parsed;
+  try{
+    parsed = JSON.parse(raw);
+  }catch(e){
+    document.getElementById('jsonError').style.display = 'block';
+    return;
+  }
+  await applyParsedData(parsed, 'JSON 데이터가 적용되었습니다');
+}
+
+function copyJson(){
+  const text = document.getElementById('jsonTextarea').value || JSON.stringify(DATA, null, 2);
+  navigator.clipboard.writeText(text).then(()=>{
+    showToast('클립보드에 복사되었습니다');
+  }).catch(()=>{
+    showToast('복사에 실패했습니다. 직접 선택해 복사해주세요');
+  });
+}
+
+function exportJsonFile(){
+  const text = JSON.stringify(DATA, null, 2);
+  const blob = new Blob([text], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'stock.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('stock.json 파일을 내보냈어요');
+}
+
+function triggerImportFile(){
+  document.getElementById('importFileInput').click();
+}
+
+document.getElementById('importFileInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(evt){
+    let parsed;
+    try{
+      parsed = JSON.parse(evt.target.result);
+    }catch(err){
+      showToast('올바른 JSON 파일이 아니에요');
+      e.target.value = '';
+      return;
+    }
+    const ok = await applyParsedData(parsed, 'stock.json을 불러왔어요');
+    if(ok) refreshJsonView();
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+loadData();
+</script>
+</body>
+</html>
