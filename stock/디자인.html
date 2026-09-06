@@ -371,8 +371,18 @@
     font-size:16px;
     min-width:0;
     width:100%;
+    line-height:42px;
+    -webkit-appearance:none;
+    appearance:none;
+    -moz-appearance:textfield;
   }
-  .date-input-wrap{
+  .form-row input[type="number"]::-webkit-outer-spin-button,
+  .form-row input[type="number"]::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+  .date-display-wrap{
+    position:relative;
     background:var(--surface2);
     border:1px solid var(--border-strong);
     border-radius:7px;
@@ -381,21 +391,27 @@
     display:flex;
     align-items:center;
     padding:0 10px;
-    overflow:hidden;
   }
-  .date-input-wrap input[type="date"], .date-input-wrap input[type="month"]{
-    background:transparent;
-    border:none;
-    color:var(--text1);
+  .date-display-text{
     font-size:16px;
-    padding:0;
-    margin:0;
-    width:1px;
-    min-width:100%;
+    color:var(--text3);
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .date-display-text.has-value{color:var(--text1);}
+  .date-native-hidden{
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    width:100%;
     height:100%;
-    box-sizing:border-box;
-    -webkit-appearance:none;
-    appearance:none;
+    margin:0;
+    padding:0;
+    border:none;
+    opacity:0;
+    cursor:pointer;
   }
   .form-row .field{overflow:hidden;}
   .form-row input::placeholder{color:var(--text3);}
@@ -1286,8 +1302,9 @@ function renderStockBody(stock, el){
         <div class="form-row">
           <div class="field">
             <span class="field-label">배당월</span>
-            <div class="date-input-wrap">
-              <input type="month" id="dv_month_${stock.id}">
+            <div class="date-display-wrap">
+              <span class="date-display-text" id="dv_month_${stock.id}_display" data-placeholder="월 선택">월 선택</span>
+              <input type="month" id="dv_month_${stock.id}" class="date-native-hidden" onchange="syncDateDisplay(this)">
             </div>
           </div>
           <div class="field">
@@ -1337,8 +1354,9 @@ function txFormHtml(stockId, field){
     <div class="form-row">
       <div class="field">
         <span class="field-label">${dateLabel}</span>
-        <div class="date-input-wrap">
-          <input type="date" id="${field}_date_${stockId}">
+        <div class="date-display-wrap">
+          <span class="date-display-text" id="${field}_date_${stockId}_display" data-placeholder="날짜 선택">날짜 선택</span>
+          <input type="date" id="${field}_date_${stockId}" class="date-native-hidden" onchange="syncDateDisplay(this)">
         </div>
       </div>
     </div>
@@ -1370,6 +1388,18 @@ function scrollToId(id){
       window.scrollBy({ top: delta, behavior:'smooth' });
     });
   });
+}
+
+function syncDateDisplay(inputEl){
+  const disp = document.getElementById(inputEl.id + '_display');
+  if(!disp) return;
+  if(inputEl.value){
+    disp.textContent = inputEl.value;
+    disp.classList.add('has-value');
+  } else {
+    disp.textContent = disp.dataset.placeholder || '';
+    disp.classList.remove('has-value');
+  }
 }
 
 function toggleForm(id){
