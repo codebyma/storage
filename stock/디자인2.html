@@ -50,6 +50,7 @@
     -webkit-font-smoothing:antialiased;
     transition:background .15s, color .15s;
     padding-bottom:60px;
+    overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;}
   header{
@@ -364,11 +365,62 @@
     border:1px solid var(--border-strong);
     color:var(--text1);
     border-radius:7px;
-    padding:8px 10px;
+    padding:0 10px;
+    height:42px;
+    box-sizing:border-box;
     font-size:16px;
     min-width:0;
     width:100%;
   }
+  .date-input-wrap{
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    border-radius:7px;
+    height:42px;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    overflow:hidden;
+  }
+  .date-input-wrap input[type="date"], .date-input-wrap input[type="month"]{
+    background:transparent;
+    border:none;
+    color:var(--text1);
+    font-size:16px;
+    padding:0;
+    margin:0;
+    width:1px;
+    min-width:100%;
+    height:100%;
+    box-sizing:border-box;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit,
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit-text,
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit-month-field,
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit-day-field,
+  .date-input-wrap input[type="date"]::-webkit-datetime-edit-year-field,
+  .date-input-wrap input[type="month"]::-webkit-datetime-edit,
+  .date-input-wrap input[type="month"]::-webkit-datetime-edit-fields-wrapper,
+  .date-input-wrap input[type="month"]::-webkit-datetime-edit-text,
+  .date-input-wrap input[type="month"]::-webkit-datetime-edit-month-field,
+  .date-input-wrap input[type="month"]::-webkit-datetime-edit-year-field{
+    color:var(--text1);
+    opacity:1;
+  }
+  .date-input-wrap input[type="date"]::-webkit-calendar-picker-indicator,
+  .date-input-wrap input[type="month"]::-webkit-calendar-picker-indicator{
+    filter:invert(0.85);
+    cursor:pointer;
+  }
+  body.light-theme .date-input-wrap input[type="date"]::-webkit-calendar-picker-indicator,
+  body.light-theme .date-input-wrap input[type="month"]::-webkit-calendar-picker-indicator{
+    filter:none;
+  }
+  .form-row .field{overflow:hidden;}
   .form-row input::placeholder{color:var(--text3);}
   .form-actions{display:flex;gap:8px;justify-content:flex-end;}
   .btn-primary{
@@ -451,6 +503,56 @@
     z-index:50;
   }
   .toast.show{opacity:1;}
+
+  .sheet-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+    z-index:200;
+  }
+  .sheet-overlay.open{opacity:1;pointer-events:auto;}
+  .bottom-sheet{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    max-height:75vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--surface1);
+    border-radius:16px 16px 0 0;
+    transform:translateY(100%);
+    transition:transform .25s ease;
+    z-index:201;
+    padding:20px 20px calc(20px + env(safe-area-inset-bottom));
+    box-shadow:0 -8px 24px rgba(0,0,0,0.3);
+  }
+  .bottom-sheet.open{transform:translateY(0);}
+  .sheet-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+    font-size:15px;
+    font-weight:500;
+    color:var(--text1);
+  }
+  .sheet-close-btn{
+    background:none;
+    border:none;
+    color:var(--text2);
+    font-size:24px;
+    line-height:1;
+    padding:0 4px;
+    cursor:pointer;
+  }
+  .sheet-body{
+    overflow-y:auto;
+  }
+  .sheet-body .entry-row{border-bottom:none;}
 </style>
 </head>
 <body>
@@ -507,6 +609,15 @@
 
   <div id="accountList"></div>
 </main>
+
+<div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="bottomSheet">
+  <div class="sheet-header">
+    <span id="sheetTitle"></span>
+    <button class="sheet-close-btn" onclick="closeSheet()" aria-label="닫기">&times;</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -1130,10 +1241,6 @@ function renderStockBody(stock, el){
   const y2 = stockYieldOnAvgPrice(stock);
   const y3 = stockYieldOnCurrentPrice(stock);
 
-  const buysOpen = openTxSections.has(stock.id+':buys');
-  const sellsOpen = openTxSections.has(stock.id+':sells');
-  const divsOpen = openTxSections.has(stock.id+':dividends');
-
   el.innerHTML = `
     <div class="holding-card">
       <div class="sub-label" style="margin-bottom:8px;">
@@ -1158,31 +1265,29 @@ function renderStockBody(stock, el){
       </div>
     </div>
 
-    <div class="sub-block" id="txsection_${stock.id}_buys">
+    <div class="sub-block">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','buys')">매수 내역 (${(stock.buys||[]).length}건)</span>
+        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역 (${(stock.buys||[]).length}건)</span>
         <button class="mini-add" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
       </div>
-      ${buysOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.buys, stock.id, 'buys')}</div>` : ''}
       <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
     </div>
 
-    <div class="sub-block" id="txsection_${stock.id}_sells">
+    <div class="sub-block">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','sells')">매도 내역 (${(stock.sells||[]).length}건)</span>
+        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','sells','매도 내역')">매도 내역 (${(stock.sells||[]).length}건)</span>
         <button class="mini-add" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
       </div>
-      ${sellsOpen ? `<div class="tx-list-scroll">${entryListHtml(stock.sells, stock.id, 'sells')}</div>` : ''}
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
     </div>
 
-    <div class="sub-block" id="txsection_${stock.id}_dividends">
+    <div class="sub-block">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="toggleTxSection('${stock.id}','dividends')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
+        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','dividends','배당 내역')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
         <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
       </div>
       <div class="yield-grid">
@@ -1200,12 +1305,13 @@ function renderStockBody(stock, el){
         </div>
       </div>
       <div style="font-size:11px;color:var(--text3);margin:2px 0 8px;">최근 12개월 배당 합계: ${divTTM.toLocaleString('ko-KR')}원</div>
-      ${divsOpen ? `<div class="tx-list-scroll">${dividendListHtml(stock.dividends, stock.id)}</div>` : ''}
       <div class="form-panel" id="divform_${stock.id}">
         <div class="form-row">
           <div class="field">
             <span class="field-label">배당월</span>
-            <input type="month" id="dv_month_${stock.id}">
+            <div class="date-input-wrap">
+              <input type="month" id="dv_month_${stock.id}">
+            </div>
           </div>
           <div class="field">
             <span class="field-label">분배금</span>
@@ -1254,14 +1360,16 @@ function txFormHtml(stockId, field){
     <div class="form-row">
       <div class="field">
         <span class="field-label">${dateLabel}</span>
-        <input type="date" id="${field}_date_${stockId}">
+        <div class="date-input-wrap">
+          <input type="date" id="${field}_date_${stockId}">
+        </div>
       </div>
+    </div>
+    <div class="form-row">
       <div class="field">
         <span class="field-label">수량</span>
         <input type="number" inputmode="decimal" placeholder="예: 10" id="${field}_qty_${stockId}">
       </div>
-    </div>
-    <div class="form-row">
       <div class="field">
         <span class="field-label">1주당 단가</span>
         <input type="number" inputmode="decimal" placeholder="예: 20000" id="${field}_price_${stockId}">
@@ -1296,13 +1404,23 @@ function toggleForm(id){
 function closeForm(id){
   document.getElementById(id).classList.remove('open');
 }
-function toggleTxSection(stockId, field){
-  const key = stockId+':'+field;
-  const willOpen = !openTxSections.has(key);
-  if(openTxSections.has(key)) openTxSections.delete(key);
-  else openTxSections.add(key);
-  render();
-  if(willOpen) scrollToId(`txsection_${stockId}_${field}`);
+function openSheet(title, bodyHtml){
+  document.getElementById('sheetTitle').textContent = title;
+  document.getElementById('sheetBody').innerHTML = bodyHtml;
+  document.getElementById('sheetOverlay').classList.add('open');
+  document.getElementById('bottomSheet').classList.add('open');
+}
+function closeSheet(){
+  document.getElementById('sheetOverlay').classList.remove('open');
+  document.getElementById('bottomSheet').classList.remove('open');
+}
+function openTxSheet(stockId, field, title){
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock) return;
+  const bodyHtml = field==='dividends'
+    ? dividendListHtml(stock.dividends, stockId)
+    : entryListHtml(stock[field], stockId, field);
+  openSheet(title, bodyHtml);
 }
 function openPriceForm(stockId){
   const panel = document.getElementById(`priceform_${stockId}`);
@@ -1402,6 +1520,12 @@ async function deleteEntry(stockId, field, entryId){
   }
   await saveData();
   render();
+  if(document.getElementById('bottomSheet').classList.contains('open')){
+    const bodyHtml = field==='dividends'
+      ? dividendListHtml(stock.dividends, stockId)
+      : entryListHtml(stock[field], stockId, field);
+    document.getElementById('sheetBody').innerHTML = bodyHtml;
+  }
   showToast('삭제하고 보유수량도 되돌렸어요');
 }
 
