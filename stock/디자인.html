@@ -50,6 +50,7 @@
     -webkit-font-smoothing:antialiased;
     transition:background .15s, color .15s;
     padding-bottom:60px;
+    overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;}
   header{
@@ -369,6 +370,12 @@
     min-width:0;
     width:100%;
   }
+  .form-row input[type="date"], .form-row input[type="month"]{
+    width:1px;
+    min-width:100%;
+    box-sizing:border-box;
+  }
+  .form-row .field{overflow:hidden;}
   .form-row input::placeholder{color:var(--text3);}
   .form-actions{display:flex;gap:8px;justify-content:flex-end;}
   .btn-primary{
@@ -471,34 +478,36 @@
     display:flex;
     flex-direction:column;
     background:var(--surface1);
-    border-top:1px solid var(--border-strong);
     border-radius:16px 16px 0 0;
     transform:translateY(100%);
     transition:transform .25s ease;
     z-index:201;
-    padding:8px 20px calc(20px + env(safe-area-inset-bottom));
+    padding:20px 20px calc(20px + env(safe-area-inset-bottom));
     box-shadow:0 -8px 24px rgba(0,0,0,0.3);
   }
   .bottom-sheet.open{transform:translateY(0);}
-  .sheet-handle{
-    width:36px;
-    height:4px;
-    background:var(--border-strong);
-    border-radius:2px;
-    margin:6px auto 14px;
-  }
   .sheet-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-bottom:10px;
+    margin-bottom:12px;
     font-size:15px;
     font-weight:500;
     color:var(--text1);
   }
+  .sheet-close-btn{
+    background:none;
+    border:none;
+    color:var(--text2);
+    font-size:24px;
+    line-height:1;
+    padding:0 4px;
+    cursor:pointer;
+  }
   .sheet-body{
     overflow-y:auto;
   }
+  .sheet-body .entry-row{border-bottom:none;}
 </style>
 </head>
 <body>
@@ -558,10 +567,9 @@
 
 <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottomSheet">
-  <div class="sheet-handle"></div>
   <div class="sheet-header">
     <span id="sheetTitle"></span>
-    <button class="btn-ghost" onclick="closeSheet()">닫기</button>
+    <button class="sheet-close-btn" onclick="closeSheet()" aria-label="닫기">&times;</button>
   </div>
   <div class="sheet-body" id="sheetBody"></div>
 </div>
@@ -1307,12 +1315,12 @@ function txFormHtml(stockId, field){
         <span class="field-label">${dateLabel}</span>
         <input type="date" id="${field}_date_${stockId}">
       </div>
+    </div>
+    <div class="form-row">
       <div class="field">
         <span class="field-label">수량</span>
         <input type="number" inputmode="decimal" placeholder="예: 10" id="${field}_qty_${stockId}">
       </div>
-    </div>
-    <div class="form-row">
       <div class="field">
         <span class="field-label">1주당 단가</span>
         <input type="number" inputmode="decimal" placeholder="예: 20000" id="${field}_price_${stockId}">
