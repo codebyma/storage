@@ -43,6 +43,11 @@
       "id": "acc_o4bjqgm",
       "ownerId": "wife",
       "name": "DC"
+    },
+    {
+      "id": "acc_1q4nsbn",
+      "ownerId": "me",
+      "name": "ISA"
     }
   ],
   "stocks": [
@@ -459,6 +464,63 @@
           "quantity": 246,
           "price": 12325,
           "amount": 3031950
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_hijgh1z",
+      "accountId": "acc_1q4nsbn",
+      "name": "TIGER 나스닥100",
+      "ticker": "133690",
+      "quantity": 13,
+      "currentPrice": 154390,
+      "buys": [
+        {
+          "id": "tx_slcq0e9",
+          "date": "2026-09-06",
+          "quantity": 13,
+          "price": 154390,
+          "amount": 2007070
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_cq87j5i",
+      "accountId": "acc_1q4nsbn",
+      "name": "TIGER 미국배당다우존스",
+      "ticker": "458730",
+      "quantity": 194,
+      "currentPrice": 12184,
+      "buys": [
+        {
+          "id": "tx_t7dn4i3",
+          "date": "2026-09-06",
+          "quantity": 194,
+          "price": 12184,
+          "amount": 2363696
+        }
+      ],
+      "sells": [],
+      "dividends": []
+    },
+    {
+      "id": "stk_3ahv85y",
+      "accountId": "acc_1q4nsbn",
+      "name": "TIGER 은행고배당플러스TOP10",
+      "ticker": "466940",
+      "quantity": 23,
+      "currentPrice": 21772,
+      "buys": [
+        {
+          "id": "tx_2mxg2v8",
+          "date": "2026-09-06",
+          "quantity": 23,
+          "price": 21772,
+          "amount": 500756
         }
       ],
       "sells": [],
