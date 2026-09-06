@@ -51,7 +51,7 @@
     transition:background .15s, color .15s;
     padding-bottom:60px;
   }
-  .num{font-variant-numeric:tabular-nums;}
+  .num{font-variant-numeric:tabular-nums;white-space:nowrap;}
   header{
     padding:28px 20px 18px;
     border-bottom:1px solid var(--border);
@@ -278,6 +278,8 @@
   }
   .stat-hero-label{font-size:10.5px;color:var(--text2);margin-bottom:3px;}
   .stat-hero-value{font-size:16px;font-weight:600;line-height:1.25;color:var(--text1);}
+  .stat-hero-value.redtext{color:var(--red);}
+  .stat-hero-value.bluetext{color:var(--blue);}
   .stat-mini-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -766,7 +768,7 @@ function renderSummary(){
     </div>
     <div class="metric">
       <div class="label">평가손익</div>
-      <div class="value ${plClass(pl)} num">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
+      <div class="value ${plClass(pl)} num" style="font-size:19px;">${fmtPL(pl)}${plPct!==null ? '<div style="font-size:13px;font-weight:400;margin-top:2px;">('+fmtPercent(plPct)+')</div>' : ''}</div>
     </div>
     <div class="metric">
       <div class="label">총 투자원금</div>
@@ -786,14 +788,19 @@ function renderSummary(){
     </div>
     <div class="metric" style="grid-column:1 / -1;">
       <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
-        <span>① 누적 · 총투자원금 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield1)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;border-bottom:1px solid var(--border);">
-        <span>② 최근 12개월 · 평균매입가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield2)}</span>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:4px 0;">
-        <span>③ 최근 12개월 · 현재가 기준</span><span class="gold num" style="font-weight:500;">${fmtPctPlain(avgYield3)}</span>
+      <div class="yield-grid">
+        <div class="yield-card">
+          <div class="yield-label">누적<br>총투자원금 기준</div>
+          <div class="yield-value num">${fmtPctPlain(avgYield1)}</div>
+        </div>
+        <div class="yield-card">
+          <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(avgYield2)}</div>
+        </div>
+        <div class="yield-card">
+          <div class="yield-label">최근 12개월<br>현재가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(avgYield3)}</div>
+        </div>
       </div>
     </div>
   `;
@@ -1126,20 +1133,8 @@ function renderStockBody(stock, el){
         <span>보유 현황</span>
         <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
       </div>
-      <div class="stat-hero">
-        <div class="stat-hero-item">
-          <div class="stat-hero-label">평가금액</div>
-          <div class="stat-hero-value num">${fmtWon(stockTotal(stock))}</div>
-        </div>
-        <div class="stat-hero-item">
-          <div class="stat-hero-label">평가손익</div>
-          <div class="stat-hero-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? '<br>('+fmtPercent(plPct)+')' : ''}</div>
-        </div>
-      </div>
       <div class="stat-mini-grid">
-        <div class="stat-mini"><div class="stat-mini-label">보유수량</div><div class="stat-mini-value num">${qty.toLocaleString('ko-KR')}주</div></div>
         <div class="stat-mini"><div class="stat-mini-label">평균매입단가</div><div class="stat-mini-value num">${avgPrice.toLocaleString('ko-KR')}원</div></div>
-        <div class="stat-mini"><div class="stat-mini-label">현재가</div><div class="stat-mini-value num">${price.toLocaleString('ko-KR')}원</div></div>
         <div class="stat-mini"><div class="stat-mini-label">매수총액(투자원금)</div><div class="stat-mini-value num">${fmtWon(cost)}</div></div>
       </div>
       <div class="form-panel" id="priceform_${stock.id}">
@@ -1185,15 +1180,15 @@ function renderStockBody(stock, el){
       </div>
       <div class="yield-grid">
         <div class="yield-card">
-          <div class="yield-label">① 누적<br>총투자원금 기준</div>
+          <div class="yield-label">누적<br>총투자원금 기준</div>
           <div class="yield-value num">${fmtPctPlain(y1)}</div>
         </div>
         <div class="yield-card">
-          <div class="yield-label">② 최근 12개월<br>평균매입가 기준</div>
+          <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
           <div class="yield-value num">${fmtPctPlain(y2)}</div>
         </div>
         <div class="yield-card">
-          <div class="yield-label">③ 최근 12개월<br>현재가 기준</div>
+          <div class="yield-label">최근 12개월<br>현재가 기준</div>
           <div class="yield-value num">${fmtPctPlain(y3)}</div>
         </div>
       </div>
