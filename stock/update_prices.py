@@ -69,6 +69,8 @@ def main():
             updated += 1
 
     if updated > 0:
+        kst_now = (datetime.utcnow() + timedelta(hours=9)).strftime("%Y-%m-%d %H:%M")
+        data["lastPriceUpdate"] = kst_now + " (KST)"
         save_data(DATA_PATH, data)
         print(f"{updated}개 종목의 현재가를 갱신했습니다.")
     else:
