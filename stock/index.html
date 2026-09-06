@@ -232,7 +232,14 @@
   .stock-row.open .stock-body{display:block;}
   .stock-row.open .chevron{transform:rotate(90deg);}
 
-  .sub-block{margin-bottom:14px;}
+  .sub-block{margin-bottom:6px;}
+  .holding-card{
+    border-top:1px solid var(--border-strong);
+    border-bottom:1px solid var(--border-strong);
+    padding:12px 0 10px;
+    margin-bottom:14px;
+  }
+  .holding-card .stat-mini{border-bottom:none;}
   .sub-label{
     font-size:12px;
     color:var(--text2);
@@ -879,7 +886,7 @@ function renderBreakdown(){
     return `
       <div class="breakdown-row">
         <div class="breakdown-top">
-          <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">'+escapeHtml(item.ticker)+'</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
+          <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(item.ticker)+')</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
             <div class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
@@ -1084,7 +1091,7 @@ function buildStockRow(stock){
   row.innerHTML = `
     <div class="stock-head">
       <div>
-        <div class="stock-name">${escapeHtml(stock.name)}${stock.ticker ? ' <span class="stock-ticker-inline">'+escapeHtml(stock.ticker)+'</span>' : ''}</div>
+        <div class="stock-name">${escapeHtml(stock.name)}${stock.ticker ? ' <span class="stock-ticker-inline">('+escapeHtml(stock.ticker)+')</span>' : ''}</div>
         <div class="stock-ticker">${qty ? qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -1128,8 +1135,8 @@ function renderStockBody(stock, el){
   const divsOpen = openTxSections.has(stock.id+':dividends');
 
   el.innerHTML = `
-    <div class="sub-block">
-      <div class="sub-label">
+    <div class="holding-card">
+      <div class="sub-label" style="margin-bottom:8px;">
         <span>보유 현황</span>
         <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
       </div>
