@@ -112,71 +112,6 @@
 
   main{padding:20px;}
 
-  .panel-wrap{padding:0 20px;}
-  .panel-title{
-    font-size:14px;
-    color:var(--text2);
-    margin:22px 0 4px;
-  }
-  .panel-caption{font-size:11.5px;color:var(--text3);margin-bottom:10px;}
-  .panel-empty{font-size:12.5px;color:var(--text3);padding:16px 0;}
-
-  .div-chart-scroll{overflow-x:auto;padding-bottom:6px;}
-  .div-chart{
-    display:flex;
-    align-items:flex-end;
-    gap:8px;
-    height:110px;
-    min-width:max-content;
-    padding:0 2px 2px;
-  }
-  .div-bar-col{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    width:32px;
-    flex-shrink:0;
-    justify-content:flex-end;
-    height:100%;
-  }
-  .div-bar-amount{
-    font-size:9px;
-    color:var(--text3);
-    margin-bottom:4px;
-    white-space:nowrap;
-  }
-  .div-bar{
-    width:16px;
-    background:var(--gold);
-    border-radius:3px 3px 0 0;
-    min-height:2px;
-  }
-  .div-bar-label{
-    font-size:10px;
-    color:var(--text3);
-    margin-top:6px;
-    white-space:nowrap;
-  }
-  .div-bar-col.current .div-bar{background:var(--mint);}
-  .div-bar-col.current .div-bar-label{color:var(--text1);font-weight:600;}
-  .div-bar-col.current .div-bar-amount{color:var(--text1);}
-
-  .trend-svg-wrap{width:100%;}
-  .trend-caption-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:11px;
-    color:var(--text3);
-    margin-top:4px;
-  }
-  .trend-latest{
-    font-size:18px;
-    font-weight:600;
-    color:var(--text1);
-    margin-bottom:2px;
-  }
-  .trend-latest-delta{font-size:12px;margin-bottom:8px;}
-
   .breakdown-wrap{padding:0 20px;}
   .breakdown-card{
     padding:0;
@@ -648,8 +583,6 @@
 
 <div class="summary" id="summary"></div>
 
-<div id="dividendCalendarSection"></div>
-<div id="assetTrendSection"></div>
 <div id="breakdownSection"></div>
 
 <main>
@@ -763,15 +696,13 @@ function defaultData(){
     accounts: [],
     stocks: [],
     targets: {},
-    plannedCash: 0,
-    snapshots: []
+    plannedCash: 0
   };
 }
 
 function ensureDataShape(){
   if(!DATA.targets) DATA.targets = {};
   if(typeof DATA.plannedCash !== 'number') DATA.plannedCash = 0;
-  if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
 }
 
 async function saveData(){
@@ -791,8 +722,6 @@ function render(){
   ensureDataShape();
   renderOwnerTabs();
   renderSummary();
-  renderDividendCalendar();
-  renderAssetTrend();
   renderBreakdown();
   renderAccounts();
 }
@@ -988,146 +917,7 @@ function renderSummary(){
   `;
 }
 
-// ===== 월별 배당 캘린더 =====
-function monthlyDividendSeries(ownerId, monthsBack){
-  const now = new Date();
-  const series = [];
-  for(let i=monthsBack-1;i>=0;i--){
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    const ym = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-    series.push({ month: ym, label: (d.getMonth()+1)+'월', amount: 0, isCurrent: i===0 });
-  }
-  const map = {};
-  series.forEach(s=> map[s.month]=s);
-  stocksForOwner(ownerId).forEach(s=>{
-    (s.dividends||[]).forEach(d=>{
-      if(map[d.month]) map[d.month].amount += (d.amount||0);
-    });
-  });
-  return series;
-}
-
-function renderDividendCalendar(){
-  const el = document.getElementById('dividendCalendarSection');
-  const series = monthlyDividendSeries(currentOwner, 12);
-  const total = series.reduce((s,m)=>s+m.amount,0);
-  const maxAmt = Math.max(...series.map(m=>m.amount), 1);
-
-  if(total===0){
-    el.innerHTML = `
-      <div class="panel-wrap">
-        <div class="panel-title">월별 배당 현황 (최근 12개월)</div>
-        <div class="panel-empty">아직 기록된 배당이 없어요. 종목 상세에서 배당을 추가하면 여기 그래프로 나타나요.</div>
-      </div>
-    `;
-    return;
-  }
-
-  const bars = series.map(m=>{
-    const barPx = m.amount>0 ? Math.max(4, Math.round((m.amount/maxAmt)*90)) : 2;
-    return `
-      <div class="div-bar-col${m.isCurrent ? ' current' : ''}">
-        <div class="div-bar-amount num">${m.amount>0 ? m.amount.toLocaleString('ko-KR') : ''}</div>
-        <div class="div-bar" style="height:${barPx}px;"></div>
-        <div class="div-bar-label">${m.label}</div>
-      </div>
-    `;
-  }).join('');
-
-  el.innerHTML = `
-    <div class="panel-wrap">
-      <div class="panel-title">월별 배당 현황 (최근 12개월)</div>
-      <div class="panel-caption">12개월 합계 ${fmtWon(total)}</div>
-      <div class="div-chart-scroll">
-        <div class="div-chart">${bars}</div>
-      </div>
-    </div>
-  `;
-}
-
-// ===== 자산 추이(스냅샷) =====
-function upsertSnapshot(){
-  ensureDataShape();
-  const today = new Date().toISOString().slice(0,10);
-  const totals = {};
-  DATA.owners.forEach(o=>{ totals[o.id] = ownerTotal(o.id); });
-  totals['ALL'] = ownerTotal('ALL');
-  const idx = DATA.snapshots.findIndex(s=>s.date===today);
-  if(idx>=0) DATA.snapshots[idx] = { date: today, totals };
-  else DATA.snapshots.push({ date: today, totals });
-  DATA.snapshots.sort((a,b)=>a.date.localeCompare(b.date));
-}
-
-async function saveSnapshotNow(){
-  upsertSnapshot();
-  await saveData();
-  render();
-  showToast('오늘 자산 스냅샷을 저장했어요');
-}
-
-function renderAssetTrend(){
-  const el = document.getElementById('assetTrendSection');
-  const snaps = (DATA.snapshots||[]).filter(s=> typeof s.totals[currentOwner] === 'number');
-
-  const saveBtnHtml = `<button class="add-btn" onclick="saveSnapshotNow()">오늘 스냅샷 저장</button>`;
-
-  if(snaps.length < 2){
-    el.innerHTML = `
-      <div class="panel-wrap">
-        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>자산 추이</span>
-          ${saveBtnHtml}
-        </div>
-        <div class="panel-empty">스냅샷을 2번 이상 저장하면(예: 매주 한 번씩) 여기에 자산 변화 그래프가 나타나요. 현재가를 업데이트한 날 눌러두시면 좋아요.</div>
-      </div>
-    `;
-    return;
-  }
-
-  const values = snaps.map(s=>s.totals[currentOwner]);
-  const dates = snaps.map(s=>s.date);
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = (max - min) || 1;
-  const w = 600, h = 140, pad = 8;
-
-  const points = values.map((v,i)=>{
-    const x = pad + (values.length===1 ? 0 : (i/(values.length-1))*(w-2*pad));
-    const y = h-pad - ((v-min)/range)*(h-2*pad);
-    return {x, y};
-  });
-  const polyPoints = points.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-  const areaPoints = `${pad},${h-pad} ${polyPoints} ${w-pad},${h-pad}`;
-
-  const first = values[0];
-  const last = values[values.length-1];
-  const delta = last - first;
-  const deltaPct = first ? (delta/first)*100 : null;
-
-  el.innerHTML = `
-    <div class="panel-wrap">
-      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
-        <span>자산 추이</span>
-        ${saveBtnHtml}
-      </div>
-      <div class="trend-latest num">${fmtWon(last)}</div>
-      <div class="trend-latest-delta num ${plClass(delta)}">${fmtPL(delta)}${deltaPct!==null ? ' ('+fmtPercent(deltaPct)+')' : ''} · 첫 기록 대비</div>
-      <div class="trend-svg-wrap">
-        <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
-          <polygon points="${areaPoints}" fill="var(--mint-dim)" opacity="0.6"></polygon>
-          <polyline points="${polyPoints}" fill="none" stroke="var(--mint)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
-        </svg>
-      </div>
-      <div class="trend-caption-row">
-        <span>${dates[0]}</span>
-        <span>${dates[dates.length-1]}</span>
-      </div>
-      <div class="panel-caption" style="margin-top:6px;">스냅샷 ${snaps.length}개 기록됨</div>
-    </div>
-  `;
-}
-
-
+// 소유자 구분 없이 전체 계좌를 합쳐 종목(항목)별로 그룹핑
 function allItemsBreakdown(){
   const map = {};
   DATA.stocks.forEach(s=>{
