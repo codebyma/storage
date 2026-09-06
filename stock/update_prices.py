@@ -1,0 +1,79 @@
+"""
+storage/stock/stock.json 안의 각 종목 currentPrice를 실시간(지연) 시세로 갱신합니다.
+- 데이터 소스: FinanceDataReader (KRX, 무료, API 키 불필요)
+- ticker 필드가 있는 종목만 갱신하고, 없는 종목은 건드리지 않습니다.
+- owners / accounts / targets / plannedCash / snapshots 등 다른 필드는 그대로 둡니다.
+
+이 파일은 storage/stock/update_prices.py 에 위치합니다.
+"""
+
+import json
+import sys
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import FinanceDataReader as fdr
+
+# 이 스크립트 파일과 같은 폴더에 있는 stock.json을 가리킴 (경로 하드코딩 없이 안전하게)
+DATA_PATH = Path(__file__).resolve().parent / "stock.json"
+
+
+def load_data(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_data(path, data):
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+        f.write("\n")
+
+
+def get_latest_close(ticker):
+    """최근 거래일 종가(또는 최신가)를 가져옵니다."""
+    start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+    df = fdr.DataReader(ticker, start)
+    if df.empty:
+        raise ValueError(f"{ticker}: 조회된 데이터가 없습니다")
+    return int(df["Close"].iloc[-1])
+
+
+def main():
+    data = load_data(DATA_PATH)
+    stocks = data.get("stocks", [])
+
+    tickers = sorted({
+        s["ticker"].strip()
+        for s in stocks
+        if s.get("ticker") and s["ticker"].strip()
+    })
+
+    if not tickers:
+        print("갱신할 티커가 없습니다.")
+        return
+
+    prices = {}
+    for ticker in tickers:
+        try:
+            price = get_latest_close(ticker)
+            prices[ticker] = price
+            print(f"{ticker}: {price:,}원")
+        except Exception as e:
+            print(f"[실패] {ticker}: {e}", file=sys.stderr)
+
+    updated = 0
+    for s in stocks:
+        t = (s.get("ticker") or "").strip()
+        if t in prices and s.get("currentPrice") != prices[t]:
+            s["currentPrice"] = prices[t]
+            updated += 1
+
+    if updated > 0:
+        save_data(DATA_PATH, data)
+        print(f"{updated}개 종목의 현재가를 갱신했습니다.")
+    else:
+        print("변경된 가격이 없습니다.")
+
+
+if __name__ == "__main__":
+    main()
