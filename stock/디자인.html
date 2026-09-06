@@ -372,12 +372,30 @@
     min-width:0;
     width:100%;
   }
-  .form-row input[type="date"], .form-row input[type="month"]{
+  .date-input-wrap{
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    border-radius:7px;
+    height:42px;
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    padding:0 10px;
+    overflow:hidden;
+  }
+  .date-input-wrap input[type="date"], .date-input-wrap input[type="month"]{
+    background:transparent;
+    border:none;
+    color:var(--text1);
+    font-size:16px;
+    padding:0;
+    margin:0;
     width:1px;
     min-width:100%;
+    height:100%;
+    box-sizing:border-box;
     -webkit-appearance:none;
     appearance:none;
-    line-height:42px;
   }
   .form-row .field{overflow:hidden;}
   .form-row input::placeholder{color:var(--text3);}
@@ -1268,7 +1286,9 @@ function renderStockBody(stock, el){
         <div class="form-row">
           <div class="field">
             <span class="field-label">배당월</span>
-            <input type="month" id="dv_month_${stock.id}">
+            <div class="date-input-wrap">
+              <input type="month" id="dv_month_${stock.id}">
+            </div>
           </div>
           <div class="field">
             <span class="field-label">분배금</span>
@@ -1317,7 +1337,9 @@ function txFormHtml(stockId, field){
     <div class="form-row">
       <div class="field">
         <span class="field-label">${dateLabel}</span>
-        <input type="date" id="${field}_date_${stockId}">
+        <div class="date-input-wrap">
+          <input type="date" id="${field}_date_${stockId}">
+        </div>
       </div>
     </div>
     <div class="form-row">
