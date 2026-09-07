@@ -1223,8 +1223,9 @@ function renderBreakdown(){
             </div>
           </div>
           ${rebalanceHtml}
-          <div style="margin-top:8px;">
+          <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
             <button class="mini-add" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
+            <button class="mini-add" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
           </div>
           <div class="form-panel" id="grpform_${sid}">
             <div class="form-row">
@@ -1236,6 +1237,25 @@ function renderBreakdown(){
             <div class="form-actions">
               <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
               <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
+            </div>
+          </div>
+          <div class="form-panel" id="divgrpform_${sid}">
+            <div class="form-row">
+              <div class="field">
+                <span class="field-label">배당월</span>
+                <div class="date-display-wrap">
+                  <span class="date-display-text" id="divgrp_month_${sid}_display" data-placeholder="월 선택">월 선택</span>
+                  <input type="month" id="divgrp_month_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)">
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">1주당 배당금</span>
+                <input type="number" inputmode="decimal" placeholder="예: 500" id="divgrp_amount_${sid}">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-ghost" onclick="closeForm('divgrpform_${sid}')">취소</button>
+              <button class="btn-primary" onclick="applyGroupDividend('${keyEsc}','${sid}')">전체 계좌에 반영</button>
             </div>
           </div>
         </div>
@@ -1320,6 +1340,38 @@ function openGroupPriceForm(key, sid){
     input.focus();
     scrollToId(`grpform_${sid}`);
   }
+}
+
+function openGroupDividendForm(key, sid){
+  const panel = document.getElementById(`divgrpform_${sid}`);
+  const willOpen = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+  if(willOpen){
+    document.getElementById(`divgrp_amount_${sid}`).value = '';
+    scrollToId(`divgrpform_${sid}`);
+  }
+}
+
+async function applyGroupDividend(key, sid){
+  const month = document.getElementById(`divgrp_month_${sid}`).value;
+  const perShare = parseFloat(document.getElementById(`divgrp_amount_${sid}`).value) || 0;
+  if(!month){ showToast('배당월을 선택해주세요'); return; }
+  if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
+  const stocks = stocksMatchingKey(key);
+  let totalApplied = 0, count = 0;
+  stocks.forEach(s=>{
+    const qty = s.quantity || 0;
+    if(qty<=0) return;
+    const amount = perShare * qty;
+    if(!s.dividends) s.dividends = [];
+    s.dividends.push({ id: uid('dv'), month, perShare, amount });
+    totalApplied += amount;
+    count++;
+  });
+  closeForm(`divgrpform_${sid}`);
+  await saveData();
+  render();
+  showToast(`${count}개 계좌에 총 ${totalApplied.toLocaleString('ko-KR')}원 반영했어요`);
 }
 
 function renderAccounts(){
@@ -1677,9 +1729,9 @@ function openMonthDividendSheet(month){
   `).join('');
 
   const bodyHtml = `
-    <div class="entry-row" style="font-weight:600;border-bottom:1px solid var(--border-strong);padding-bottom:8px;margin-bottom:4px;">
-      <span>합계</span>
-      <span class="amt num gold">${fmtWon(total)}</span>
+    <div class="stat-hero-item" style="margin-bottom:14px;">
+      <div class="stat-hero-label">합계</div>
+      <div class="stat-hero-value num" style="font-size:22px;color:var(--gold);">${fmtWon(total)}</div>
     </div>
     ${listHtml}
   `;
