@@ -76,7 +76,7 @@
       "name": "TIGER 나스닥100",
       "ticker": "133690",
       "quantity": 32,
-      "currentPrice": 176162,
+      "currentPrice": 176195,
       "buys": [
         {
           "id": "tx_rlxdg7a",
@@ -95,7 +95,7 @@
       "name": "TIGER 미국필라델피아반도체나스닥",
       "ticker": "381180",
       "quantity": 144,
-      "currentPrice": 41275,
+      "currentPrice": 41280,
       "buys": [
         {
           "id": "tx_qqb1cg1",
@@ -133,7 +133,7 @@
       "name": "TIGER 나스닥100",
       "ticker": "133690",
       "quantity": 46,
-      "currentPrice": 176162,
+      "currentPrice": 176195,
       "buys": [
         {
           "id": "tx_5xugpr5",
@@ -152,7 +152,7 @@
       "name": "TIGER 필라델피아반도체나스닥",
       "ticker": "381180",
       "quantity": 269,
-      "currentPrice": 41275,
+      "currentPrice": 41280,
       "buys": [
         {
           "id": "tx_foe90fe",
@@ -171,7 +171,7 @@
       "name": "TIGER 미국배당다우존스",
       "ticker": "458730",
       "quantity": 26,
-      "currentPrice": 14720,
+      "currentPrice": 14725,
       "buys": [
         {
           "id": "tx_u7t550a",
@@ -247,7 +247,7 @@
       "name": "TIGER 미국MSCI리츠(합성H)",
       "ticker": "182480",
       "quantity": 35,
-      "currentPrice": 13500,
+      "currentPrice": 13490,
       "buys": [
         {
           "id": "tx_0cchxh3",
@@ -285,7 +285,7 @@
       "name": "TIGER 차이나전기차SOLACTIVE",
       "ticker": "371460",
       "quantity": 71,
-      "currentPrice": 9665,
+      "currentPrice": 9660,
       "buys": [
         {
           "id": "tx_pjtgeby",
@@ -304,7 +304,7 @@
       "name": "TIGER 차이나전기차SOLACTIVE",
       "ticker": "371460",
       "quantity": 39,
-      "currentPrice": 9665,
+      "currentPrice": 9660,
       "buys": [
         {
           "id": "tx_mn5wfav",
@@ -380,7 +380,7 @@
       "name": "TIGER 나스닥100",
       "ticker": "133690",
       "quantity": 34,
-      "currentPrice": 176162,
+      "currentPrice": 176195,
       "buys": [
         {
           "id": "tx_g6624qg",
@@ -437,7 +437,7 @@
       "name": "TIGER 미국나스닥100",
       "ticker": "133690",
       "quantity": 13,
-      "currentPrice": 176162,
+      "currentPrice": 176195,
       "buys": [
         {
           "id": "tx_ct4h1o2",
@@ -456,7 +456,7 @@
       "name": "TIGER 미국배당다우존스",
       "ticker": "458730",
       "quantity": 246,
-      "currentPrice": 14720,
+      "currentPrice": 14725,
       "buys": [
         {
           "id": "tx_ct20jx9",
@@ -475,7 +475,7 @@
       "name": "TIGER 나스닥100",
       "ticker": "133690",
       "quantity": 13,
-      "currentPrice": 176162,
+      "currentPrice": 176195,
       "buys": [
         {
           "id": "tx_slcq0e9",
@@ -494,7 +494,7 @@
       "name": "TIGER 미국배당다우존스",
       "ticker": "458730",
       "quantity": 194,
-      "currentPrice": 14720,
+      "currentPrice": 14725,
       "buys": [
         {
           "id": "tx_t7dn4i3",
@@ -513,7 +513,7 @@
       "name": "TIGER 은행고배당플러스TOP10",
       "ticker": "466940",
       "quantity": 23,
-      "currentPrice": 27310,
+      "currentPrice": 27305,
       "buys": [
         {
           "id": "tx_2mxg2v8",
@@ -527,5 +527,5 @@
       "dividends": []
     }
   ],
-  "lastPriceUpdate": "2026-09-07 14:13 (KST)"
+  "lastPriceUpdate": "2026-09-07 14:15 (KST)"
 }
