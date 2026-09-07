@@ -112,13 +112,81 @@
 
   main{padding:20px;}
 
+  .panel-wrap{padding:0 20px;}
+  .panel-title{
+    font-size:17px;
+    font-weight:700;
+    color:var(--text1);
+    margin:22px 0 4px;
+  }
+  .panel-caption{font-size:11.5px;color:var(--text3);margin-bottom:10px;}
+  .panel-empty{font-size:12.5px;color:var(--text3);padding:16px 0;}
+
+  .div-chart-scroll{overflow-x:auto;padding-bottom:6px;}
+  .div-chart{
+    display:flex;
+    align-items:flex-end;
+    gap:18px;
+    height:110px;
+    min-width:max-content;
+    padding:0 2px 2px;
+  }
+  .div-bar-col{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    width:32px;
+    flex-shrink:0;
+    justify-content:flex-end;
+    height:100%;
+    cursor:pointer;
+  }
+  .div-bar-amount{
+    font-size:9px;
+    color:var(--text3);
+    margin-bottom:6px;
+    white-space:nowrap;
+  }
+  .div-bar{
+    width:16px;
+    background:var(--text1);
+    border-radius:3px 3px 0 0;
+    min-height:2px;
+  }
+  .div-bar-label{
+    font-size:10px;
+    color:var(--text3);
+    margin-top:6px;
+    white-space:nowrap;
+  }
+  .div-bar-col.current .div-bar{background:var(--mint);}
+  .div-bar-col.current .div-bar-label{color:var(--text1);font-weight:600;}
+  .div-bar-col.current .div-bar-amount{color:var(--text1);font-weight:600;}
+
+  .trend-svg-wrap{width:100%;}
+  .trend-caption-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:11px;
+    color:var(--text3);
+    margin-top:4px;
+  }
+  .trend-latest{
+    font-size:18px;
+    font-weight:600;
+    color:var(--text1);
+    margin-bottom:2px;
+  }
+  .trend-latest-delta{font-size:12px;margin-bottom:8px;}
+
   .breakdown-wrap{padding:0 20px;}
   .breakdown-card{
     padding:0;
   }
   .breakdown-title{
-    font-size:14px;
-    color:var(--text2);
+    font-size:17px;
+    font-weight:700;
+    color:var(--text1);
     margin:22px 0 10px;
     cursor:pointer;
   }
@@ -164,8 +232,9 @@
   }
 
   .section-title{
-    font-size:14px;
-    color:var(--text2);
+    font-size:17px;
+    font-weight:700;
+    color:var(--text1);
     margin:22px 0 10px;
     display:flex;
     align-items:center;
@@ -333,6 +402,32 @@
     font-size:11.5px;
     cursor:pointer;
   }
+  .action-btn-prominent{
+    flex:1;
+    min-width:110px;
+    background:var(--surface2);
+    border:1.5px solid var(--mint);
+    color:var(--mint);
+    border-radius:7px;
+    padding:8px 10px;
+    font-size:12px;
+    font-weight:600;
+    text-align:center;
+    cursor:pointer;
+  }
+  .action-btn-prominent:active{transform:scale(0.98);}
+  .inline-num-input{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--border-strong);
+    color:var(--text1);
+    font-size:12.5px;
+    text-align:right;
+    padding:2px 2px;
+    width:72px;
+    font-variant-numeric:tabular-nums;
+  }
+  .inline-num-input:focus{outline:none;border-bottom-color:var(--mint);}
 
   .form-panel{
     background:var(--surface1);
@@ -371,6 +466,15 @@
     font-size:16px;
     min-width:0;
     width:100%;
+    line-height:42px;
+    -webkit-appearance:none;
+    appearance:none;
+    -moz-appearance:textfield;
+  }
+  .form-row input[type="number"]::-webkit-outer-spin-button,
+  .form-row input[type="number"]::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
   }
   .date-display-wrap{
     position:relative;
@@ -574,6 +678,8 @@
 
 <div class="summary" id="summary"></div>
 
+<div id="dividendCalendarSection"></div>
+<div id="assetTrendSection"></div>
 <div id="breakdownSection"></div>
 
 <main>
@@ -645,7 +751,8 @@ async function loadData(){
       if(isValidPortfolio(parsed)){
         DATA = parsed;
         dataSource = 'server-json';
-        setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
+        const priceUpdateNote = DATA.lastPriceUpdate ? (' · 시세 갱신: ' + DATA.lastPriceUpdate) : '';
+        setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + priceUpdateNote + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
         currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
         render();
         return;
@@ -687,13 +794,15 @@ function defaultData(){
     accounts: [],
     stocks: [],
     targets: {},
-    plannedCash: 0
+    plannedCash: 0,
+    snapshots: []
   };
 }
 
 function ensureDataShape(){
   if(!DATA.targets) DATA.targets = {};
   if(typeof DATA.plannedCash !== 'number') DATA.plannedCash = 0;
+  if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
 }
 
 async function saveData(){
@@ -713,6 +822,8 @@ function render(){
   ensureDataShape();
   renderOwnerTabs();
   renderSummary();
+  renderDividendCalendar();
+  renderAssetTrend();
   renderBreakdown();
   renderAccounts();
 }
@@ -908,7 +1019,148 @@ function renderSummary(){
   `;
 }
 
-// 소유자 구분 없이 전체 계좌를 합쳐 종목(항목)별로 그룹핑
+// ===== 월별 배당 캘린더 =====
+function monthlyDividendSeries(ownerId, monthsBack){
+  const now = new Date();
+  const series = [];
+  for(let i=monthsBack-1;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    const ym = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    series.push({ month: ym, label: (d.getMonth()+1)+'월', amount: 0, isCurrent: i===0 });
+  }
+  const map = {};
+  series.forEach(s=> map[s.month]=s);
+  stocksForOwner(ownerId).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if(map[d.month]) map[d.month].amount += (d.amount||0);
+    });
+  });
+  return series;
+}
+
+function renderDividendCalendar(){
+  const el = document.getElementById('dividendCalendarSection');
+  const series = monthlyDividendSeries(currentOwner, 12);
+  const total = series.reduce((s,m)=>s+m.amount,0);
+  const maxAmt = Math.max(...series.map(m=>m.amount), 1);
+
+  if(total===0){
+    el.innerHTML = `
+      <div class="panel-wrap">
+        <div class="panel-title">월별 배당 현황 (최근 12개월)</div>
+        <div class="panel-empty">아직 기록된 배당이 없어요. 종목 상세에서 배당을 추가하면 여기 그래프로 나타나요.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const bars = series.map(m=>{
+    const barPx = m.amount>0 ? Math.max(4, Math.round((m.amount/maxAmt)*90)) : 2;
+    return `
+      <div class="div-bar-col${m.isCurrent ? ' current' : ''}" onclick="openMonthDividendSheet('${m.month}')">
+        <div class="div-bar-amount num">${m.amount>0 ? m.amount.toLocaleString('ko-KR') : ''}</div>
+        <div class="div-bar" style="height:${barPx}px;"></div>
+        <div class="div-bar-label">${m.label}</div>
+      </div>
+    `;
+  }).join('');
+
+  el.innerHTML = `
+    <div class="panel-wrap">
+      <div class="panel-title">월별 배당 현황 (최근 12개월)</div>
+      <div class="panel-caption">12개월 합계 ${fmtWon(total)}</div>
+      <div class="div-chart-scroll" id="divChartScroll">
+        <div class="div-chart">${bars}</div>
+      </div>
+    </div>
+  `;
+  const scrollEl = document.getElementById('divChartScroll');
+  if(scrollEl) scrollEl.scrollLeft = scrollEl.scrollWidth;
+}
+
+// ===== 자산 추이(스냅샷) =====
+function upsertSnapshot(){
+  ensureDataShape();
+  const today = new Date().toISOString().slice(0,10);
+  const totals = {};
+  DATA.owners.forEach(o=>{ totals[o.id] = ownerTotal(o.id); });
+  totals['ALL'] = ownerTotal('ALL');
+  const idx = DATA.snapshots.findIndex(s=>s.date===today);
+  if(idx>=0) DATA.snapshots[idx] = { date: today, totals };
+  else DATA.snapshots.push({ date: today, totals });
+  DATA.snapshots.sort((a,b)=>a.date.localeCompare(b.date));
+}
+
+async function saveSnapshotNow(){
+  upsertSnapshot();
+  await saveData();
+  render();
+  showToast('오늘 자산 스냅샷을 저장했어요');
+}
+
+function renderAssetTrend(){
+  const el = document.getElementById('assetTrendSection');
+  const snaps = (DATA.snapshots||[]).filter(s=> typeof s.totals[currentOwner] === 'number');
+
+  const saveBtnHtml = `<button class="add-btn" onclick="saveSnapshotNow()">오늘 스냅샷 저장</button>`;
+
+  if(snaps.length < 2){
+    el.innerHTML = `
+      <div class="panel-wrap">
+        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>자산 추이</span>
+          ${saveBtnHtml}
+        </div>
+        <div class="panel-empty">스냅샷을 2번 이상 저장하면(예: 매주 한 번씩) 여기에 자산 변화 그래프가 나타나요. 현재가를 업데이트한 날 눌러두시면 좋아요.</div>
+      </div>
+    `;
+    return;
+  }
+
+  const values = snaps.map(s=>s.totals[currentOwner]);
+  const dates = snaps.map(s=>s.date);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = (max - min) || 1;
+  const w = 600, h = 140, pad = 8;
+
+  const points = values.map((v,i)=>{
+    const x = pad + (values.length===1 ? 0 : (i/(values.length-1))*(w-2*pad));
+    const y = h-pad - ((v-min)/range)*(h-2*pad);
+    return {x, y};
+  });
+  const polyPoints = points.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const areaPoints = `${pad},${h-pad} ${polyPoints} ${w-pad},${h-pad}`;
+
+  const first = values[0];
+  const last = values[values.length-1];
+  const delta = last - first;
+  const deltaPct = first ? (delta/first)*100 : null;
+
+  el.innerHTML = `
+    <div class="panel-wrap">
+      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <span>자산 추이</span>
+        ${saveBtnHtml}
+      </div>
+      <div class="trend-latest num">${fmtWon(last)}</div>
+      <div class="trend-latest-delta num ${plClass(delta)}">${fmtPL(delta)}${deltaPct!==null ? ' ('+fmtPercent(deltaPct)+')' : ''} · 첫 기록 대비</div>
+      <div class="trend-svg-wrap">
+        <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
+          <polygon points="${areaPoints}" fill="var(--mint-dim)" opacity="0.6"></polygon>
+          <polyline points="${polyPoints}" fill="none" stroke="var(--mint)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"></polyline>
+        </svg>
+      </div>
+      <div class="trend-caption-row">
+        <span>${dates[0]}</span>
+        <span>${dates[dates.length-1]}</span>
+      </div>
+      <div class="panel-caption" style="margin-top:6px;">스냅샷 ${snaps.length}개 기록됨</div>
+    </div>
+  `;
+}
+
+
 function allItemsBreakdown(){
   const map = {};
   DATA.stocks.forEach(s=>{
@@ -995,15 +1247,11 @@ function renderBreakdown(){
         </div>
         ${targetOpen ? `
         <div class="target-panel">
-          <div class="form-row" style="margin-bottom:6px;">
-            <div class="field">
-              <span class="field-label">목표비율(%) · 현재 ${ratio.toFixed(2)}%</span>
-              <input type="number" inputmode="decimal" step="0.1" value="${hasTarget ? target : ''}" placeholder="예: 20" onchange="updateTarget('${keyEsc}', this.value)">
-            </div>
-          </div>
+          <div class="entry-row"><span>목표비율(%) · 현재 ${ratio.toFixed(2)}%</span><input type="number" inputmode="decimal" step="0.1" class="inline-num-input" value="${hasTarget ? target : ''}" placeholder="예: 20" onchange="updateTarget('${keyEsc}', this.value)"></div>
           ${rebalanceHtml}
-          <div style="margin-top:8px;">
-            <button class="mini-add" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정${item.count>1 ? ' ('+item.count+'개 계좌 동시)' : ''}</button>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
+            <button class="action-btn-prominent" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력</button>
           </div>
           <div class="form-panel" id="grpform_${sid}">
             <div class="form-row">
@@ -1015,6 +1263,25 @@ function renderBreakdown(){
             <div class="form-actions">
               <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
               <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
+            </div>
+          </div>
+          <div class="form-panel" id="divgrpform_${sid}">
+            <div class="form-row">
+              <div class="field">
+                <span class="field-label">배당월</span>
+                <div class="date-display-wrap">
+                  <span class="date-display-text" id="divgrp_month_${sid}_display" data-placeholder="월 선택">월 선택</span>
+                  <input type="month" id="divgrp_month_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)">
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">1주당 배당금</span>
+                <input type="number" inputmode="decimal" placeholder="예: 500" id="divgrp_amount_${sid}">
+              </div>
+            </div>
+            <div class="form-actions">
+              <button class="btn-ghost" onclick="closeForm('divgrpform_${sid}')">취소</button>
+              <button class="btn-primary" onclick="applyGroupDividend('${keyEsc}','${sid}')">전체 계좌에 반영</button>
             </div>
           </div>
         </div>
@@ -1101,6 +1368,38 @@ function openGroupPriceForm(key, sid){
   }
 }
 
+function openGroupDividendForm(key, sid){
+  const panel = document.getElementById(`divgrpform_${sid}`);
+  const willOpen = !panel.classList.contains('open');
+  panel.classList.toggle('open');
+  if(willOpen){
+    document.getElementById(`divgrp_amount_${sid}`).value = '';
+    scrollToId(`divgrpform_${sid}`);
+  }
+}
+
+async function applyGroupDividend(key, sid){
+  const month = document.getElementById(`divgrp_month_${sid}`).value;
+  const perShare = parseFloat(document.getElementById(`divgrp_amount_${sid}`).value) || 0;
+  if(!month){ showToast('배당월을 선택해주세요'); return; }
+  if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
+  const stocks = stocksMatchingKey(key);
+  let totalApplied = 0, count = 0;
+  stocks.forEach(s=>{
+    const qty = s.quantity || 0;
+    if(qty<=0) return;
+    const amount = perShare * qty;
+    if(!s.dividends) s.dividends = [];
+    s.dividends.push({ id: uid('dv'), month, perShare, amount });
+    totalApplied += amount;
+    count++;
+  });
+  closeForm(`divgrpform_${sid}`);
+  await saveData();
+  render();
+  showToast(`${count}개 계좌에 총 ${totalApplied.toLocaleString('ko-KR')}원 반영했어요`);
+}
+
 function renderAccounts(){
   const list = document.getElementById('accountList');
   const isAll = currentOwner === 'ALL';
@@ -1116,6 +1415,10 @@ function renderAccounts(){
   accounts.forEach(acc=>{
     const isOpen = openAccounts.has(acc.id);
     const ownerName = isAll ? (DATA.owners.find(o=>o.id===acc.ownerId)||{}).name : null;
+    const accTotal = accountTotal(acc.id);
+    const accCost = accountCostBasis(acc.id);
+    const accPL = accTotal - accCost;
+    const accPLPct = accCost ? (accPL/accCost)*100 : null;
     const card = document.createElement('div');
     card.className = 'account-card' + (isOpen ? ' open':'');
     card.id = `acccard_${acc.id}`;
@@ -1123,9 +1426,12 @@ function renderAccounts(){
       <div class="account-head" data-acc="${acc.id}">
         <div>
           <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
-          <div class="account-total num">${fmtWon(accountTotal(acc.id))}</div>
+          <div class="account-total num">${fmtWon(accTotal)}</div>
         </div>
-        
+        <div style="text-align:right;flex-shrink:0;">
+          <div class="num ${plClass(accPL)}" style="font-size:12.5px;font-weight:500;">${fmtPL(accPL)}</div>
+          ${accPLPct!==null ? '<div class="num '+plClass(accPL)+'" style="font-size:11px;">('+fmtPercent(accPLPct)+')</div>' : ''}
+        </div>
       </div>
       <div class="account-body" id="body_${acc.id}"></div>
     `;
@@ -1299,8 +1605,8 @@ function renderStockBody(stock, el){
             </div>
           </div>
           <div class="field">
-            <span class="field-label">분배금</span>
-            <input type="number" inputmode="decimal" placeholder="예: 5000" id="dv_amount_${stock.id}">
+            <span class="field-label">1주당 배당금 (보유 ${qty.toLocaleString('ko-KR')}주)</span>
+            <input type="number" inputmode="decimal" placeholder="예: 500" id="dv_amount_${stock.id}">
           </div>
         </div>
         <div class="form-actions">
@@ -1332,7 +1638,7 @@ function dividendListHtml(list, stockId){
   const sorted = [...list].sort((a,b)=> (b.month||'').localeCompare(a.month||''));
   return sorted.map(item=>`
     <div class="entry-row">
-      <span>${item.month||''}</span>
+      <span>${item.month||''}${item.perShare ? ' · 주당 '+item.perShare.toLocaleString('ko-KR')+'원' : ''}</span>
       <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','dividends','${item.id}')">삭제</span></span>
     </div>
   `).join('');
@@ -1402,6 +1708,12 @@ function toggleForm(id){
 function closeForm(id){
   document.getElementById(id).classList.remove('open');
 }
+function toggleInlineAccordion(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+}
+
 function openSheet(title, bodyHtml){
   document.getElementById('sheetTitle').textContent = title;
   document.getElementById('sheetBody').innerHTML = bodyHtml;
@@ -1420,6 +1732,68 @@ function openTxSheet(stockId, field, title){
     : entryListHtml(stock[field], stockId, field);
   openSheet(title, bodyHtml);
 }
+
+function openMonthDividendSheet(month){
+  const groups = {};
+  stocksForOwner(currentOwner).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if(d.month===month){
+        const key = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
+        if(!groups[key]) groups[key] = { name:s.name, ticker:s.ticker||'', total:0, perShare:d.perShare||null, rows:[] };
+        const acc = DATA.accounts.find(a=>a.id===s.accountId);
+        const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+        groups[key].rows.push({
+          accountName: acc ? acc.name : '(알 수 없는 계좌)',
+          ownerName: owner ? owner.name : '',
+          quantity: s.quantity||0,
+          amount: d.amount||0
+        });
+        groups[key].total += (d.amount||0);
+      }
+    });
+  });
+
+  const [y,m] = month.split('-');
+  const title = `${y}년 ${parseInt(m,10)}월 배당`;
+  const groupList = Object.values(groups);
+
+  if(groupList.length===0){
+    openSheet(title, `<div class="empty-hint">이 달엔 받은 배당이 없어요</div>`);
+    return;
+  }
+
+  groupList.sort((a,b)=> b.total - a.total);
+  const total = groupList.reduce((s,g)=>s+g.total,0);
+
+  const groupsHtml = groupList.map((g, idx)=>{
+    const gid = `divgrpacc_${idx}`;
+    const accountRows = g.rows.map(r=>`
+      <div class="entry-row" style="padding-left:10px;font-size:11.5px;">
+        <span>${escapeHtml(r.accountName)}${r.ownerName ? ' · '+escapeHtml(r.ownerName) : ''} · ${r.quantity.toLocaleString('ko-KR')}주</span>
+        <span class="amt num">${fmtWon(r.amount)}</span>
+      </div>
+    `).join('');
+    return `
+      <div style="margin-bottom:2px;">
+        <div class="entry-row" style="font-weight:500;color:var(--text1);cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
+          <span>${escapeHtml(g.name)}${g.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(g.ticker)+')</span>' : ''}${g.perShare ? ' <span style="color:var(--text3);font-weight:400;">· 주당 '+g.perShare.toLocaleString('ko-KR')+'원</span>' : ''}</span>
+          <span class="amt num">${fmtWon(g.total)}</span>
+        </div>
+        <div id="${gid}" style="display:none;">${accountRows}</div>
+      </div>
+    `;
+  }).join('');
+
+  const bodyHtml = `
+    <div class="stat-hero-item" style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+      <div class="stat-hero-label" style="margin-bottom:0;font-size:16px;font-weight:700;color:var(--text1);">합계</div>
+      <div class="stat-hero-value num" style="font-size:20px;color:var(--gold);">${fmtWon(total)}</div>
+    </div>
+    ${groupsHtml}
+  `;
+  openSheet(title, bodyHtml);
+}
+
 function openPriceForm(stockId){
   const panel = document.getElementById(`priceform_${stockId}`);
   const willOpen = !panel.classList.contains('open');
@@ -1497,14 +1871,17 @@ async function submitTx(stockId, field){
 
 async function submitDividend(stockId){
   const month = document.getElementById(`dv_month_${stockId}`).value;
-  const amount = parseFloat(document.getElementById(`dv_amount_${stockId}`).value) || 0;
+  const perShare = parseFloat(document.getElementById(`dv_amount_${stockId}`).value) || 0;
   if(!month){ showToast('월을 선택해주세요'); return; }
+  if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const stock = DATA.stocks.find(s=>s.id===stockId);
+  const qty = stock.quantity || 0;
+  const amount = perShare * qty;
   if(!stock.dividends) stock.dividends = [];
-  stock.dividends.push({ id: uid('dv'), month, amount });
+  stock.dividends.push({ id: uid('dv'), month, perShare, amount });
   await saveData();
   render();
-  showToast('배당이 추가되었습니다');
+  showToast(`주당 ${perShare.toLocaleString('ko-KR')}원 × ${qty.toLocaleString('ko-KR')}주 = ${amount.toLocaleString('ko-KR')}원 반영했어요`);
 }
 
 async function deleteEntry(stockId, field, entryId){
