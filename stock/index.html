@@ -709,6 +709,9 @@
   <div class="sheet-body" id="sheetBody"></div>
 </div>
 
+<datalist id="stockCatalogTickers"></datalist>
+<datalist id="stockCatalogNames"></datalist>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -792,17 +795,38 @@ function defaultData(){
       { id:'wife', name:'와이프' }
     ],
     accounts: [],
+    stockCatalog: [],
     stocks: [],
     targets: {},
     plannedCash: 0,
-    snapshots: []
+    snapshots: [],
+    dividends: []
   };
+}
+
+function migrateStockCatalog(){
+  if(!Array.isArray(DATA.stockCatalog)) DATA.stockCatalog = [];
+  (DATA.stocks||[]).forEach(s=>{
+    if(s.key) return; // 이미 마이그레이션됨
+    const key = makeKeyFrom(s.ticker, s.name);
+    let cat = catalogByKey(key);
+    if(!cat){
+      cat = { key, ticker: s.ticker||'', name: s.name||'(이름없음)', currentPrice: s.currentPrice||0 };
+      DATA.stockCatalog.push(cat);
+    }
+    s.key = key;
+    delete s.name;
+    delete s.ticker;
+    delete s.currentPrice;
+  });
 }
 
 function ensureDataShape(){
   if(!DATA.targets) DATA.targets = {};
   if(typeof DATA.plannedCash !== 'number') DATA.plannedCash = 0;
   if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
+  if(!Array.isArray(DATA.dividends)) DATA.dividends = [];
+  migrateStockCatalog();
 }
 
 async function saveData(){
@@ -826,6 +850,28 @@ function render(){
   renderAssetTrend();
   renderBreakdown();
   renderAccounts();
+  renderCatalogDatalists();
+}
+
+function renderCatalogDatalists(){
+  const tickerList = document.getElementById('stockCatalogTickers');
+  const nameList = document.getElementById('stockCatalogNames');
+  if(!tickerList || !nameList) return;
+  const cats = DATA.stockCatalog || [];
+  tickerList.innerHTML = cats.filter(c=>c.ticker).map(c=>`<option value="${escapeHtml(c.ticker)}">${escapeHtml(c.name)}</option>`).join('');
+  nameList.innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}"></option>`).join('');
+}
+
+function prefillFromCatalog(accId){
+  const tickerInput = document.getElementById(`ns_ticker_${accId}`);
+  const nameInput = document.getElementById(`ns_name_${accId}`);
+  const ticker = tickerInput.value.trim();
+  if(!ticker) return;
+  const cat = (DATA.stockCatalog||[]).find(c=>c.ticker && c.ticker.toUpperCase()===ticker.toUpperCase());
+  if(cat){
+    nameInput.value = cat.name;
+    showToast(`기존 종목 "${cat.name}" · 현재가 ${cat.currentPrice.toLocaleString('ko-KR')}원`);
+  }
 }
 
 function renderOwnerTabs(){
@@ -858,8 +904,30 @@ function stocksForOwner(ownerId){
   const accIds = accountsForOwner(ownerId).map(a=>a.id);
   return DATA.stocks.filter(s=>accIds.includes(s.accountId));
 }
+function catalogByKey(key){
+  return (DATA.stockCatalog||[]).find(c=>c.key===key);
+}
+function catalogFor(stock){
+  return catalogByKey(stock.key) || { key: stock.key, name:'(알 수 없는 종목)', ticker:'', currentPrice:0 };
+}
+function stockName(stock){ return catalogFor(stock).name; }
+function stockTicker(stock){ return catalogFor(stock).ticker; }
+function makeKeyFrom(ticker, name){
+  return (ticker && ticker.trim()) ? ticker.trim().toUpperCase() : ('name:'+name);
+}
+function getOrCreateCatalog(ticker, name, initialPrice){
+  const key = makeKeyFrom(ticker, name);
+  if(!DATA.stockCatalog) DATA.stockCatalog = [];
+  let cat = catalogByKey(key);
+  if(!cat){
+    cat = { key, ticker: (ticker||'').trim(), name: name, currentPrice: initialPrice||0 };
+    DATA.stockCatalog.push(cat);
+    return { cat, isNew: true };
+  }
+  return { cat, isNew: false };
+}
 function stockTotal(stock){
-  return (stock.quantity || 0) * (stock.currentPrice || 0);
+  return (stock.quantity || 0) * (catalogFor(stock).currentPrice || 0);
 }
 function stockCostBasis(stock){
   const buyTotal = (stock.buys||[]).reduce((s,b)=>s+(b.amount||0),0);
@@ -874,8 +942,81 @@ function stockPLPercent(stock){
   if(!cost) return null;
   return (stockPL(stock) / cost) * 100;
 }
+function stockKey(stock){
+  return stock.key || makeKeyFrom(stock.ticker, stock.name);
+}
+function findDividendRecord(key, month){
+  return (DATA.dividends||[]).find(d=>d.key===key && d.month===month);
+}
+// 한 계좌(종목)의 배당을 등록/수정 — 같은 종목의 다른 계좌 perShare도 함께 갱신됨
+function upsertDividendAccountEntry(key, month, name, ticker, accountId, quantity, perShare){
+  if(!DATA.dividends) DATA.dividends = [];
+  let rec = findDividendRecord(key, month);
+  if(!rec){
+    rec = { id: uid('divrec'), key, name, ticker, month, perShare, accounts: [] };
+    DATA.dividends.push(rec);
+  } else {
+    rec.perShare = perShare;
+    rec.accounts.forEach(a=>{ a.amount = a.quantity * perShare; });
+  }
+  const idx = rec.accounts.findIndex(a=>a.accountId===accountId);
+  const amount = quantity * perShare;
+  if(idx>=0) rec.accounts[idx] = { accountId, quantity, amount };
+  else rec.accounts.push({ accountId, quantity, amount });
+  return rec;
+}
+// 같은 종목의 여러 계좌에 한 번에 등록(일괄 입력)
+function upsertDividendGroupBulk(key, month, name, ticker, perShare, stockList){
+  if(!DATA.dividends) DATA.dividends = [];
+  let rec = findDividendRecord(key, month);
+  if(!rec){
+    rec = { id: uid('divrec'), key, name, ticker, month, perShare, accounts: [] };
+    DATA.dividends.push(rec);
+  } else {
+    rec.perShare = perShare;
+  }
+  stockList.forEach(s=>{
+    if(s.quantity<=0) return;
+    const amount = s.quantity * perShare;
+    const idx = rec.accounts.findIndex(a=>a.accountId===s.accountId);
+    if(idx>=0) rec.accounts[idx] = { accountId:s.accountId, quantity:s.quantity, amount };
+    else rec.accounts.push({ accountId:s.accountId, quantity:s.quantity, amount });
+  });
+  return rec;
+}
+function deleteDividendRecord(key, month){
+  DATA.dividends = (DATA.dividends||[]).filter(d=>!(d.key===key && d.month===month));
+}
+function removeAccountFromDividendRecord(key, month, accountId){
+  const rec = findDividendRecord(key, month);
+  if(!rec) return;
+  rec.accounts = rec.accounts.filter(a=>a.accountId!==accountId);
+  if(rec.accounts.length===0) deleteDividendRecord(key, month);
+}
+function recordsForKey(key){
+  return (DATA.dividends||[]).filter(d=>d.key===key).sort((a,b)=>b.month.localeCompare(a.month));
+}
+function recordsForStock(stock){
+  const key = stockKey(stock);
+  return (DATA.dividends||[])
+    .filter(rec=>rec.key===key)
+    .map(rec=>{
+      const acc = rec.accounts.find(a=>a.accountId===stock.accountId);
+      if(!acc) return null;
+      return { month:rec.month, perShare:rec.perShare, quantity:acc.quantity, amount:acc.amount };
+    })
+    .filter(Boolean);
+}
+function recordsForOwner(ownerId){
+  const accIds = accountsForOwner(ownerId).map(a=>a.id);
+  return (DATA.dividends||[]).map(rec=>{
+    const accounts = rec.accounts.filter(a=>accIds.includes(a.accountId));
+    const total = accounts.reduce((s,a)=>s+a.amount,0);
+    return { ...rec, accounts, total };
+  }).filter(rec=>rec.accounts.length>0);
+}
 function stockDividendTotal(stock){
-  return (stock.dividends||[]).reduce((s,d)=>s+(d.amount||0),0);
+  return recordsForStock(stock).reduce((s,r)=>s+(r.amount||0),0);
 }
 function isWithinLast12Months(monthStr){
   if(!monthStr) return false;
@@ -889,7 +1030,7 @@ function isWithinLast12Months(monthStr){
   return target >= cutoff && target <= upper;
 }
 function stockDividendTTM(stock){
-  return (stock.dividends||[]).filter(d=>isWithinLast12Months(d.month)).reduce((s,d)=>s+(d.amount||0),0);
+  return recordsForStock(stock).filter(r=>isWithinLast12Months(r.month)).reduce((s,r)=>s+(r.amount||0),0);
 }
 // 기준1: 지금까지 받은 배당 총액 ÷ 총 투자원금 (누적 실현 수익률, 연환산 아님)
 function stockYieldOnPrincipal(stock){
@@ -944,23 +1085,11 @@ function plClass(n){
 }
 function currentMonthDividend(ownerId){
   const ym = new Date().toISOString().slice(0,7);
-  let total = 0;
-  stocksForOwner(ownerId).forEach(s=>{
-    (s.dividends||[]).forEach(d=>{
-      if(d.month===ym) total += (d.amount||0);
-    });
-  });
-  return total;
+  return recordsForOwner(ownerId).filter(r=>r.month===ym).reduce((s,r)=>s+r.total,0);
 }
 function yearDividend(ownerId){
   const year = new Date().getFullYear().toString();
-  let total = 0;
-  stocksForOwner(ownerId).forEach(s=>{
-    (s.dividends||[]).forEach(d=>{
-      if((d.month||'').startsWith(year)) total += (d.amount||0);
-    });
-  });
-  return total;
+  return recordsForOwner(ownerId).filter(r=>(r.month||'').startsWith(year)).reduce((s,r)=>s+r.total,0);
 }
 
 function renderSummary(){
@@ -1030,10 +1159,8 @@ function monthlyDividendSeries(ownerId, monthsBack){
   }
   const map = {};
   series.forEach(s=> map[s.month]=s);
-  stocksForOwner(ownerId).forEach(s=>{
-    (s.dividends||[]).forEach(d=>{
-      if(map[d.month]) map[d.month].amount += (d.amount||0);
-    });
+  recordsForOwner(ownerId).forEach(rec=>{
+    if(map[rec.month]) map[rec.month].amount += rec.total;
   });
   return series;
 }
@@ -1164,9 +1291,10 @@ function renderAssetTrend(){
 function allItemsBreakdown(){
   const map = {};
   DATA.stocks.forEach(s=>{
-    const key = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
+    const key = s.key;
     if(!map[key]){
-      map[key] = { key, name: s.name, ticker: s.ticker||'', value:0, cost:0, count:0, quantity:0 };
+      const cat = catalogFor(s);
+      map[key] = { key, name: cat.name, ticker: cat.ticker||'', value:0, cost:0, count:0, quantity:0 };
     }
     map[key].value += stockTotal(s);
     map[key].cost += stockCostBasis(s);
@@ -1177,10 +1305,7 @@ function allItemsBreakdown(){
 }
 
 function stocksMatchingKey(key){
-  return DATA.stocks.filter(s=>{
-    const k = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
-    return k === key;
-  });
+  return DATA.stocks.filter(s=>s.key===key);
 }
 
 function safeId(str){
@@ -1348,12 +1473,14 @@ async function applyGroupPrice(key, sid){
   const input = document.getElementById(`grpprice_${sid}`);
   const num = parseFloat(input.value);
   if(isNaN(num)){ showToast('숫자를 입력해주세요'); return; }
-  const stocks = stocksMatchingKey(key);
-  stocks.forEach(s=>{ s.currentPrice = num; });
+  const cat = catalogByKey(key);
+  if(!cat){ showToast('종목 정보를 찾을 수 없어요'); return; }
+  cat.currentPrice = num;
+  const count = stocksMatchingKey(key).length;
   closeForm(`grpform_${sid}`);
   await saveData();
   render();
-  showToast(`${stocks.length}개 계좌의 현재가를 한번에 반영했어요`);
+  showToast(`현재가를 반영했어요 (${count}개 계좌에 자동 적용)`);
 }
 
 function openGroupPriceForm(key, sid){
@@ -1383,21 +1510,14 @@ async function applyGroupDividend(key, sid){
   const perShare = parseFloat(document.getElementById(`divgrp_amount_${sid}`).value) || 0;
   if(!month){ showToast('배당월을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
-  const stocks = stocksMatchingKey(key);
-  let totalApplied = 0, count = 0;
-  stocks.forEach(s=>{
-    const qty = s.quantity || 0;
-    if(qty<=0) return;
-    const amount = perShare * qty;
-    if(!s.dividends) s.dividends = [];
-    s.dividends.push({ id: uid('dv'), month, perShare, amount });
-    totalApplied += amount;
-    count++;
-  });
+  const cat = catalogByKey(key);
+  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity:s.quantity||0 }));
+  const rec = upsertDividendGroupBulk(key, month, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
+  const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
   closeForm(`divgrpform_${sid}`);
   await saveData();
   render();
-  showToast(`${count}개 계좌에 총 ${totalApplied.toLocaleString('ko-KR')}원 반영했어요`);
+  showToast(`${rec.accounts.length}개 계좌에 총 ${total.toLocaleString('ko-KR')}원 반영했어요`);
 }
 
 function renderAccounts(){
@@ -1458,9 +1578,10 @@ function renderAccountBody(acc, bodyEl){
     </div>
     <div class="form-panel" id="stockForm_${acc.id}">
       <div class="form-row">
-        <input type="text" placeholder="종목명 (예: 뱅가드 S&P500)" id="ns_name_${acc.id}">
-        <input type="text" placeholder="티커 (예: VOO)" id="ns_ticker_${acc.id}">
+        <input type="text" placeholder="종목명 (예: 뱅가드 S&P500)" id="ns_name_${acc.id}" list="stockCatalogNames">
+        <input type="text" placeholder="티커 (예: VOO)" id="ns_ticker_${acc.id}" list="stockCatalogTickers" onchange="prefillFromCatalog('${acc.id}')">
       </div>
+      <div class="panel-caption" style="margin:0 0 8px;">이미 등록한 종목이면 티커나 이름을 입력하면 자동완성돼요. 현재가는 처음 등록할 때만 입력하고, 이후엔 종목 하나만 고치면 모든 계좌에 반영돼요.</div>
       <div class="form-row">
         <input type="number" inputmode="decimal" placeholder="평균단가 (1주당)" id="ns_avgprice_${acc.id}">
         <input type="number" inputmode="decimal" placeholder="수량" id="ns_qty_${acc.id}">
@@ -1482,8 +1603,9 @@ function renderAccountBody(acc, bodyEl){
 
 function buildStockRow(stock){
   const isOpen = openStocks.has(stock.id);
+  const cat = catalogFor(stock);
   const qty = stock.quantity || 0;
-  const price = stock.currentPrice || 0;
+  const price = cat.currentPrice || 0;
   const pl = stockPL(stock);
   const plPct = stockPLPercent(stock);
   const row = document.createElement('div');
@@ -1492,7 +1614,7 @@ function buildStockRow(stock){
   row.innerHTML = `
     <div class="stock-head">
       <div>
-        <div class="stock-name">${escapeHtml(stock.name)}${stock.ticker ? ' <span class="stock-ticker-inline">('+escapeHtml(stock.ticker)+')</span>' : ''}</div>
+        <div class="stock-name">${escapeHtml(cat.name)}${cat.ticker ? ' <span class="stock-ticker-inline">('+escapeHtml(cat.ticker)+')</span>' : ''}</div>
         <div class="stock-ticker">${qty ? qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
@@ -1520,7 +1642,7 @@ function buildStockRow(stock){
 
 function renderStockBody(stock, el){
   const qty = stock.quantity || 0;
-  const price = stock.currentPrice || 0;
+  const price = catalogFor(stock).currentPrice || 0;
   const cost = stockCostBasis(stock);
   const avgPrice = qty ? Math.round(cost / qty) : 0;
   const pl = stockPL(stock);
@@ -1577,7 +1699,7 @@ function renderStockBody(stock, el){
 
     <div class="sub-block">
       <div class="sub-label">
-        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','dividends','배당 내역')">배당 내역 (${(stock.dividends||[]).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
+        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','dividends','배당 내역')">배당 내역 (${recordsForStock(stock).length}건) · 누적 ${divTotal.toLocaleString('ko-KR')}원</span>
         <button class="mini-add" onclick="toggleForm('divform_${stock.id}')">+ 배당 추가</button>
       </div>
       <div class="yield-grid">
@@ -1633,13 +1755,14 @@ function entryListHtml(list, stockId, field){
   `).join('');
 }
 
-function dividendListHtml(list, stockId){
-  if(!list || list.length===0) return `<div class="empty-hint">기록 없음</div>`;
-  const sorted = [...list].sort((a,b)=> (b.month||'').localeCompare(a.month||''));
+function dividendListHtmlForStock(stock){
+  const records = recordsForStock(stock);
+  if(records.length===0) return `<div class="empty-hint">기록 없음</div>`;
+  const sorted = [...records].sort((a,b)=> (b.month||'').localeCompare(a.month||''));
   return sorted.map(item=>`
     <div class="entry-row">
       <span>${item.month||''}${item.perShare ? ' · 주당 '+item.perShare.toLocaleString('ko-KR')+'원' : ''}</span>
-      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','dividends','${item.id}')">삭제</span></span>
+      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteStockDividend('${stock.id}','${item.month}')">삭제</span></span>
     </div>
   `).join('');
 }
@@ -1728,56 +1851,55 @@ function openTxSheet(stockId, field, title){
   const stock = DATA.stocks.find(s=>s.id===stockId);
   if(!stock) return;
   const bodyHtml = field==='dividends'
-    ? dividendListHtml(stock.dividends, stockId)
+    ? dividendListHtmlForStock(stock)
     : entryListHtml(stock[field], stockId, field);
   openSheet(title, bodyHtml);
 }
 
+async function deleteStockDividend(stockId, month){
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock) return;
+  removeAccountFromDividendRecord(stock.key, month, stock.accountId);
+  await saveData();
+  render();
+  if(document.getElementById('bottomSheet').classList.contains('open')){
+    document.getElementById('sheetBody').innerHTML = dividendListHtmlForStock(stock);
+  }
+  showToast('배당 기록을 삭제했어요');
+}
+
 function openMonthDividendSheet(month){
-  const groups = {};
-  stocksForOwner(currentOwner).forEach(s=>{
-    (s.dividends||[]).forEach(d=>{
-      if(d.month===month){
-        const key = (s.ticker && s.ticker.trim()) ? s.ticker.trim().toUpperCase() : ('name:'+s.name);
-        if(!groups[key]) groups[key] = { name:s.name, ticker:s.ticker||'', total:0, perShare:d.perShare||null, rows:[] };
-        const acc = DATA.accounts.find(a=>a.id===s.accountId);
-        const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
-        groups[key].rows.push({
-          accountName: acc ? acc.name : '(알 수 없는 계좌)',
-          ownerName: owner ? owner.name : '',
-          quantity: s.quantity||0,
-          amount: d.amount||0
-        });
-        groups[key].total += (d.amount||0);
-      }
-    });
-  });
+  const records = recordsForOwner(currentOwner).filter(r=>r.month===month);
 
   const [y,m] = month.split('-');
   const title = `${y}년 ${parseInt(m,10)}월 배당`;
-  const groupList = Object.values(groups);
 
-  if(groupList.length===0){
+  if(records.length===0){
     openSheet(title, `<div class="empty-hint">이 달엔 받은 배당이 없어요</div>`);
     return;
   }
 
-  groupList.sort((a,b)=> b.total - a.total);
-  const total = groupList.reduce((s,g)=>s+g.total,0);
+  const sorted = [...records].sort((a,b)=> b.total - a.total);
+  const total = sorted.reduce((s,r)=>s+r.total,0);
 
-  const groupsHtml = groupList.map((g, idx)=>{
+  const groupsHtml = sorted.map((rec, idx)=>{
     const gid = `divgrpacc_${idx}`;
-    const accountRows = g.rows.map(r=>`
-      <div class="entry-row" style="padding-left:10px;font-size:11.5px;">
-        <span>${escapeHtml(r.accountName)}${r.ownerName ? ' · '+escapeHtml(r.ownerName) : ''} · ${r.quantity.toLocaleString('ko-KR')}주</span>
-        <span class="amt num">${fmtWon(r.amount)}</span>
-      </div>
-    `).join('');
+    const accountRows = rec.accounts.map(a=>{
+      const acc = DATA.accounts.find(x=>x.id===a.accountId);
+      const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+      return `
+        <div class="entry-row" style="padding-left:10px;font-size:11.5px;">
+          <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
+          <span class="amt num">${fmtWon(a.amount)}</span>
+        </div>
+      `;
+    }).join('');
+    const keyEsc = rec.key.replace(/'/g,"\\'");
     return `
       <div style="margin-bottom:2px;">
-        <div class="entry-row" style="font-weight:500;color:var(--text1);cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
-          <span>${escapeHtml(g.name)}${g.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(g.ticker)+')</span>' : ''}${g.perShare ? ' <span style="color:var(--text3);font-weight:400;">· 주당 '+g.perShare.toLocaleString('ko-KR')+'원</span>' : ''}</span>
-          <span class="amt num">${fmtWon(g.total)}</span>
+        <div class="entry-row" style="font-weight:500;color:var(--text1);">
+          <span style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">${escapeHtml(rec.name)}${rec.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(rec.ticker)+')</span>' : ''}${rec.perShare ? ' <span style="color:var(--text3);font-weight:400;">· 주당 '+rec.perShare.toLocaleString('ko-KR')+'원</span>' : ''}</span>
+          <span><span class="amt num">${fmtWon(rec.total)}</span><span class="del" onclick="deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
         </div>
         <div id="${gid}" style="display:none;">${accountRows}</div>
       </div>
@@ -1792,6 +1914,16 @@ function openMonthDividendSheet(month){
     ${groupsHtml}
   `;
   openSheet(title, bodyHtml);
+}
+
+async function deleteMonthRecord(key, month){
+  deleteDividendRecord(key, month);
+  await saveData();
+  render();
+  if(document.getElementById('bottomSheet').classList.contains('open')){
+    openMonthDividendSheet(month);
+  }
+  showToast('이 종목의 해당 월 배당 기록을 전체 삭제했어요');
 }
 
 function openPriceForm(stockId){
@@ -1834,19 +1966,20 @@ async function submitStock(accountId){
   const avgPrice = parseFloat(document.getElementById(`ns_avgprice_${accountId}`).value) || 0;
   const qty = parseFloat(document.getElementById(`ns_qty_${accountId}`).value) || 0;
   if(!name){ showToast('종목명을 입력해주세요'); return; }
+  const { cat, isNew } = getOrCreateCatalog(ticker, name, avgPrice);
   const today = new Date().toISOString().slice(0,10);
   const initialBuys = [];
   if(qty && avgPrice){
     initialBuys.push({ id: uid('tx'), date: today, quantity: qty, price: avgPrice, amount: qty*avgPrice });
   }
   DATA.stocks.push({
-    id: uid('stk'), accountId, name, ticker,
-    quantity: qty, currentPrice: avgPrice,
-    buys: initialBuys, sells:[], dividends:[]
+    id: uid('stk'), accountId, key: cat.key,
+    quantity: qty,
+    buys: initialBuys, sells: []
   });
   await saveData();
   render();
-  showToast('종목이 추가되었습니다');
+  showToast(isNew ? '새 종목이 등록되었습니다' : '기존 종목에 계좌를 추가했어요 (현재가는 기존 값을 그대로 씁니다)');
 }
 
 async function submitTx(stockId, field){
@@ -1876,12 +2009,11 @@ async function submitDividend(stockId){
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const stock = DATA.stocks.find(s=>s.id===stockId);
   const qty = stock.quantity || 0;
-  const amount = perShare * qty;
-  if(!stock.dividends) stock.dividends = [];
-  stock.dividends.push({ id: uid('dv'), month, perShare, amount });
+  const cat = catalogFor(stock);
+  upsertDividendAccountEntry(stock.key, month, cat.name, cat.ticker, stock.accountId, qty, perShare);
   await saveData();
   render();
-  showToast(`주당 ${perShare.toLocaleString('ko-KR')}원 × ${qty.toLocaleString('ko-KR')}주 = ${amount.toLocaleString('ko-KR')}원 반영했어요`);
+  showToast(`주당 ${perShare.toLocaleString('ko-KR')}원 × ${qty.toLocaleString('ko-KR')}주 = ${(perShare*qty).toLocaleString('ko-KR')}원 반영했어요`);
 }
 
 async function deleteEntry(stockId, field, entryId){
@@ -1896,15 +2028,22 @@ async function deleteEntry(stockId, field, entryId){
   await saveData();
   render();
   if(document.getElementById('bottomSheet').classList.contains('open')){
-    const bodyHtml = field==='dividends'
-      ? dividendListHtml(stock.dividends, stockId)
-      : entryListHtml(stock[field], stockId, field);
+    const bodyHtml = entryListHtml(stock[field], stockId, field);
     document.getElementById('sheetBody').innerHTML = bodyHtml;
   }
   showToast('삭제하고 보유수량도 되돌렸어요');
 }
 
 async function deleteStock(stockId){
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(stock){
+    (DATA.dividends||[]).forEach(rec=>{
+      if(rec.key===stock.key){
+        rec.accounts = rec.accounts.filter(a=>a.accountId!==stock.accountId);
+      }
+    });
+    DATA.dividends = (DATA.dividends||[]).filter(rec=>rec.accounts.length>0);
+  }
   DATA.stocks = DATA.stocks.filter(s=>s.id!==stockId);
   openStocks.delete(stockId);
   await saveData();
@@ -1917,11 +2056,13 @@ async function submitPrice(stockId){
   const num = parseFloat(input.value);
   if(isNaN(num)){ showToast('숫자를 입력해주세요'); return; }
   const stock = DATA.stocks.find(s=>s.id===stockId);
-  stock.currentPrice = num;
+  const cat = catalogFor(stock);
+  cat.currentPrice = num;
+  const count = stocksMatchingKey(stock.key).length;
   closeForm(`priceform_${stockId}`);
   await saveData();
   render();
-  showToast('현재가를 반영했어요');
+  showToast(count>1 ? `현재가를 반영했어요 (같은 종목 ${count}개 계좌에 자동 적용)` : '현재가를 반영했어요');
 }
 
 document.getElementById('toggleJsonBtn').onclick = ()=>{
