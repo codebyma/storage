@@ -202,7 +202,10 @@
     gap:10px;
     margin-bottom:8px;
   }
+  .breakdown-name-block{min-width:0;flex:1;}
   .breakdown-name{font-weight:500;color:var(--text1);font-size:13.5px;}
+  .breakdown-price-line{font-size:11.5px;color:var(--text3);margin-top:3px;}
+  .breakdown-price{color:var(--mint);font-weight:600;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
   .breakdown-ratio{font-size:19px;font-weight:600;color:var(--text1);}
   .breakdown-pl{font-size:12px;line-height:1.3;}
@@ -230,6 +233,7 @@
     background:var(--surface2);
     border-radius:8px;
   }
+  .target-panel .entry-row{border-bottom:none;padding:5px 0;}
 
   .section-title{
     font-size:17px;
@@ -1355,10 +1359,16 @@ function renderBreakdown(){
       `;
     }
 
+    const cat = catalogByKey(item.key);
+    const currentPrice = cat ? (cat.currentPrice||0) : 0;
+
     return `
       <div class="breakdown-row">
         <div class="breakdown-top">
-          <span class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(item.ticker)+')</span>' : ''}${item.count>1 ? ' <span style="color:var(--text3);font-weight:400;">· '+item.count+'개 계좌</span>' : ''}</span>
+          <div class="breakdown-name-block">
+            <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
+            <div class="breakdown-price-line">현재가 <span class="breakdown-price">${currentPrice.toLocaleString('ko-KR')}원</span>${item.count>1 ? ' <span style="color:var(--text3);">· '+item.count+'개 계좌</span>' : ''}</div>
+          </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
             <div class="breakdown-pl num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
@@ -1602,14 +1612,13 @@ function renderAccountBody(acc, bodyEl){
 }
 
 function buildStockRow(stock){
-  const isOpen = openStocks.has(stock.id);
   const cat = catalogFor(stock);
   const qty = stock.quantity || 0;
   const price = cat.currentPrice || 0;
   const pl = stockPL(stock);
   const plPct = stockPLPercent(stock);
   const row = document.createElement('div');
-  row.className = 'stock-row' + (isOpen ? ' open':'');
+  row.className = 'stock-row';
   row.id = `stockrow_${stock.id}`;
   row.innerHTML = `
     <div class="stock-head">
@@ -1622,25 +1631,31 @@ function buildStockRow(stock){
           <div class="stock-amount num">${fmtWon(stockTotal(stock))}</div>
           <div class="num ${plClass(pl)}" style="font-size:11.5px;">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
         </div>
-        
       </div>
     </div>
-    <div class="stock-body" id="stockbody_${stock.id}"></div>
   `;
   row.querySelector('.stock-head').onclick = ()=>{
-    const willOpen = !openStocks.has(stock.id);
-    if(openStocks.has(stock.id)) openStocks.delete(stock.id);
-    else openStocks.add(stock.id);
-    render();
-    if(willOpen) scrollToId(`stockrow_${stock.id}`);
+    openStockDetailSheet(stock.id);
   };
-  if(isOpen){
-    renderStockBody(stock, row.querySelector('.stock-body'));
-  }
   return row;
 }
 
-function renderStockBody(stock, el){
+function openStockDetailSheet(stockId){
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock) return;
+  const cat = catalogFor(stock);
+  const title = cat.name + (cat.ticker ? ` (${cat.ticker})` : '');
+  openSheet(title, buildStockDetailHtml(stock));
+}
+
+function refreshStockDetailSheetIfOpen(stockId){
+  if(document.getElementById('bottomSheet').classList.contains('open')){
+    const stock = DATA.stocks.find(s=>s.id===stockId);
+    if(stock) document.getElementById('sheetBody').innerHTML = buildStockDetailHtml(stock);
+  }
+}
+
+function buildStockDetailHtml(stock){
   const qty = stock.quantity || 0;
   const price = catalogFor(stock).currentPrice || 0;
   const cost = stockCostBasis(stock);
@@ -1653,7 +1668,7 @@ function renderStockBody(stock, el){
   const y2 = stockYieldOnAvgPrice(stock);
   const y3 = stockYieldOnCurrentPrice(stock);
 
-  el.innerHTML = `
+  return `
     <div class="holding-card">
       <div class="sub-label" style="margin-bottom:8px;">
         <span>보유 현황</span>
@@ -1999,6 +2014,7 @@ async function submitTx(stockId, field){
   }
   await saveData();
   render();
+  refreshStockDetailSheetIfOpen(stockId);
   showToast(`${qty}주 × ${price.toLocaleString('ko-KR')}원 = ${amt.toLocaleString('ko-KR')}원 반영했어요`);
 }
 
@@ -2013,6 +2029,7 @@ async function submitDividend(stockId){
   upsertDividendAccountEntry(stock.key, month, cat.name, cat.ticker, stock.accountId, qty, perShare);
   await saveData();
   render();
+  refreshStockDetailSheetIfOpen(stockId);
   showToast(`주당 ${perShare.toLocaleString('ko-KR')}원 × ${qty.toLocaleString('ko-KR')}주 = ${(perShare*qty).toLocaleString('ko-KR')}원 반영했어요`);
 }
 
@@ -2046,6 +2063,7 @@ async function deleteStock(stockId){
   }
   DATA.stocks = DATA.stocks.filter(s=>s.id!==stockId);
   openStocks.delete(stockId);
+  closeSheet();
   await saveData();
   render();
   showToast('종목이 삭제되었습니다');
@@ -2062,6 +2080,7 @@ async function submitPrice(stockId){
   closeForm(`priceform_${stockId}`);
   await saveData();
   render();
+  refreshStockDetailSheetIfOpen(stockId);
   showToast(count>1 ? `현재가를 반영했어요 (같은 종목 ${count}개 계좌에 자동 적용)` : '현재가를 반영했어요');
 }
 
