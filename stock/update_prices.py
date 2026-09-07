@@ -1,10 +1,10 @@
 """
-storage/stock/stock.json 안의 각 종목 currentPrice를 실시간(지연) 시세로 갱신합니다.
+stock 폴더 안의 stock.json에 있는 각 종목 currentPrice를 실시간(지연) 시세로 갱신합니다.
 - 데이터 소스: FinanceDataReader (KRX, 무료, API 키 불필요)
 - ticker 필드가 있는 종목만 갱신하고, 없는 종목은 건드리지 않습니다.
 - owners / accounts / targets / plannedCash / snapshots 등 다른 필드는 그대로 둡니다.
 
-이 파일은 storage/stock/update_prices.py 에 위치합니다.
+이 파일은 stock/update_prices.py 에 위치합니다 (stock.json과 같은 폴더).
 """
 
 import json
