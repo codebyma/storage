@@ -138,6 +138,7 @@
     flex-shrink:0;
     justify-content:flex-end;
     height:100%;
+    cursor:pointer;
   }
   .div-bar-amount{
     font-size:9px;
@@ -1027,7 +1028,7 @@ function renderDividendCalendar(){
   const bars = series.map(m=>{
     const barPx = m.amount>0 ? Math.max(4, Math.round((m.amount/maxAmt)*90)) : 2;
     return `
-      <div class="div-bar-col${m.isCurrent ? ' current' : ''}">
+      <div class="div-bar-col${m.isCurrent ? ' current' : ''}" onclick="openMonthDividendSheet('${m.month}')">
         <div class="div-bar-amount num">${m.amount>0 ? m.amount.toLocaleString('ko-KR') : ''}</div>
         <div class="div-bar" style="height:${barPx}px;"></div>
         <div class="div-bar-label">${m.label}</div>
@@ -1647,6 +1648,44 @@ function openTxSheet(stockId, field, title){
     : entryListHtml(stock[field], stockId, field);
   openSheet(title, bodyHtml);
 }
+
+function openMonthDividendSheet(month){
+  const rows = [];
+  stocksForOwner(currentOwner).forEach(s=>{
+    (s.dividends||[]).forEach(d=>{
+      if(d.month===month){
+        rows.push({ name:s.name, ticker:s.ticker||'', amount:d.amount||0 });
+      }
+    });
+  });
+  const [y,m] = month.split('-');
+  const title = `${y}년 ${parseInt(m,10)}월 배당`;
+
+  if(rows.length===0){
+    openSheet(title, `<div class="empty-hint">이 달엔 받은 배당이 없어요</div>`);
+    return;
+  }
+
+  rows.sort((a,b)=> b.amount - a.amount);
+  const total = rows.reduce((s,r)=>s+r.amount,0);
+
+  const listHtml = rows.map(r=>`
+    <div class="entry-row">
+      <span>${escapeHtml(r.name)}${r.ticker ? ' <span style="color:var(--text3);">('+escapeHtml(r.ticker)+')</span>' : ''}</span>
+      <span class="amt num">${fmtWon(r.amount)}</span>
+    </div>
+  `).join('');
+
+  const bodyHtml = `
+    <div class="entry-row" style="font-weight:600;border-bottom:1px solid var(--border-strong);padding-bottom:8px;margin-bottom:4px;">
+      <span>합계</span>
+      <span class="amt num gold">${fmtWon(total)}</span>
+    </div>
+    ${listHtml}
+  `;
+  openSheet(title, bodyHtml);
+}
+
 function openPriceForm(stockId){
   const panel = document.getElementById(`priceform_${stockId}`);
   const willOpen = !panel.classList.contains('open');
