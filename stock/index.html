@@ -1527,8 +1527,8 @@ function renderStockBody(stock, el){
             </div>
           </div>
           <div class="field">
-            <span class="field-label">분배금</span>
-            <input type="number" inputmode="decimal" placeholder="예: 5000" id="dv_amount_${stock.id}">
+            <span class="field-label">1주당 배당금 (보유 ${qty.toLocaleString('ko-KR')}주)</span>
+            <input type="number" inputmode="decimal" placeholder="예: 500" id="dv_amount_${stock.id}">
           </div>
         </div>
         <div class="form-actions">
@@ -1560,7 +1560,7 @@ function dividendListHtml(list, stockId){
   const sorted = [...list].sort((a,b)=> (b.month||'').localeCompare(a.month||''));
   return sorted.map(item=>`
     <div class="entry-row">
-      <span>${item.month||''}</span>
+      <span>${item.month||''}${item.perShare ? ' · 주당 '+item.perShare.toLocaleString('ko-KR')+'원' : ''}</span>
       <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','dividends','${item.id}')">삭제</span></span>
     </div>
   `).join('');
@@ -1654,7 +1654,7 @@ function openMonthDividendSheet(month){
   stocksForOwner(currentOwner).forEach(s=>{
     (s.dividends||[]).forEach(d=>{
       if(d.month===month){
-        rows.push({ name:s.name, ticker:s.ticker||'', amount:d.amount||0 });
+        rows.push({ name:s.name, ticker:s.ticker||'', amount:d.amount||0, perShare:d.perShare||null });
       }
     });
   });
@@ -1671,7 +1671,7 @@ function openMonthDividendSheet(month){
 
   const listHtml = rows.map(r=>`
     <div class="entry-row">
-      <span>${escapeHtml(r.name)}${r.ticker ? ' <span style="color:var(--text3);">('+escapeHtml(r.ticker)+')</span>' : ''}</span>
+      <span>${escapeHtml(r.name)}${r.ticker ? ' <span style="color:var(--text3);">('+escapeHtml(r.ticker)+')</span>' : ''}${r.perShare ? ' <span style="color:var(--text3);">· 주당 '+r.perShare.toLocaleString('ko-KR')+'원</span>' : ''}</span>
       <span class="amt num">${fmtWon(r.amount)}</span>
     </div>
   `).join('');
@@ -1763,14 +1763,17 @@ async function submitTx(stockId, field){
 
 async function submitDividend(stockId){
   const month = document.getElementById(`dv_month_${stockId}`).value;
-  const amount = parseFloat(document.getElementById(`dv_amount_${stockId}`).value) || 0;
+  const perShare = parseFloat(document.getElementById(`dv_amount_${stockId}`).value) || 0;
   if(!month){ showToast('월을 선택해주세요'); return; }
+  if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const stock = DATA.stocks.find(s=>s.id===stockId);
+  const qty = stock.quantity || 0;
+  const amount = perShare * qty;
   if(!stock.dividends) stock.dividends = [];
-  stock.dividends.push({ id: uid('dv'), month, amount });
+  stock.dividends.push({ id: uid('dv'), month, perShare, amount });
   await saveData();
   render();
-  showToast('배당이 추가되었습니다');
+  showToast(`주당 ${perShare.toLocaleString('ko-KR')}원 × ${qty.toLocaleString('ko-KR')}주 = ${amount.toLocaleString('ko-KR')}원 반영했어요`);
 }
 
 async function deleteEntry(stockId, field, entryId){
