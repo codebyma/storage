@@ -1336,6 +1336,10 @@ function renderAccounts(){
   accounts.forEach(acc=>{
     const isOpen = openAccounts.has(acc.id);
     const ownerName = isAll ? (DATA.owners.find(o=>o.id===acc.ownerId)||{}).name : null;
+    const accTotal = accountTotal(acc.id);
+    const accCost = accountCostBasis(acc.id);
+    const accPL = accTotal - accCost;
+    const accPLPct = accCost ? (accPL/accCost)*100 : null;
     const card = document.createElement('div');
     card.className = 'account-card' + (isOpen ? ' open':'');
     card.id = `acccard_${acc.id}`;
@@ -1343,9 +1347,12 @@ function renderAccounts(){
       <div class="account-head" data-acc="${acc.id}">
         <div>
           <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
-          <div class="account-total num">${fmtWon(accountTotal(acc.id))}</div>
+          <div class="account-total num">${fmtWon(accTotal)}</div>
         </div>
-        
+        <div style="text-align:right;flex-shrink:0;">
+          <div class="num ${plClass(accPL)}" style="font-size:12.5px;font-weight:500;">${fmtPL(accPL)}</div>
+          ${accPLPct!==null ? '<div class="num '+plClass(accPL)+'" style="font-size:11px;">('+fmtPercent(accPLPct)+')</div>' : ''}
+        </div>
       </div>
       <div class="account-body" id="body_${acc.id}"></div>
     `;
