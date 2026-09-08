@@ -54,7 +54,7 @@
     {
       "id": "stk_ciu0vbl",
       "accountId": "acc_aioddia",
-      "quantity": 182,
+      "quantity": 198,
       "buys": [
         {
           "id": "tx_cklblvk",
@@ -62,6 +62,13 @@
           "quantity": 182,
           "price": 16946,
           "amount": 3084172
+        },
+        {
+          "id": "tx_bd1bcj2",
+          "date": "2026-09-08",
+          "quantity": 16,
+          "price": 25655,
+          "amount": 410480
         }
       ],
       "sells": [],
@@ -495,7 +502,38 @@
   ],
   "lastPriceUpdate": "2026-09-08 12:36 (KST)",
   "snapshots": [],
-  "dividends": [],
+  "dividends": [
+    {
+      "id": "divrec_xl0ulp7",
+      "key": "360750",
+      "name": "TIGER S&P500",
+      "ticker": "360750",
+      "month": "2026-07",
+      "perShare": 66,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 182,
+          "amount": 12012
+        },
+        {
+          "accountId": "acc_1ynxc3d",
+          "quantity": 373,
+          "amount": 24618
+        },
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 245,
+          "amount": 16170
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 37,
+          "amount": 2442
+        }
+      ]
+    }
+  ],
   "stockCatalog": [
     {
       "key": "360750",
