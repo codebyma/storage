@@ -475,6 +475,22 @@
       "sells": [],
       "dividends": [],
       "key": "466940"
+    },
+    {
+      "id": "stk_62x7lgg",
+      "accountId": "acc_1q4nsbn",
+      "key": "441640",
+      "quantity": 10,
+      "buys": [
+        {
+          "id": "tx_j7xick0",
+          "date": "2026-09-08",
+          "quantity": 10,
+          "price": 12861,
+          "amount": 128610
+        }
+      ],
+      "sells": []
     }
   ],
   "lastPriceUpdate": "2026-09-07 17:55 (KST)",
@@ -552,6 +568,12 @@
       "ticker": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
       "currentPrice": 27370
+    },
+    {
+      "key": "441640",
+      "ticker": "441640",
+      "name": "KODEX 미국배당커버드콜",
+      "currentPrice": 12861
     }
   ]
 }
