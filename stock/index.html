@@ -22,6 +22,7 @@
     --blue-dim:#1c2c3a;
     --red:#e2635a;
     --red-dim:#3a1e1c;
+    --lime:#a3e635;
   }
   body.light-theme{
     --bg:#f6f5f2;
@@ -40,6 +41,7 @@
     --blue-dim:#e5f0fa;
     --red:#c33a2f;
     --red-dim:#fbe7e5;
+    --lime:#65a30d;
   }
   *{box-sizing:border-box;touch-action:manipulation;}
   body{
@@ -205,7 +207,8 @@
   .breakdown-name-block{min-width:0;flex:1;}
   .breakdown-name{font-weight:600;color:var(--text1);font-size:16px;}
   .breakdown-price-line{font-size:11.5px;color:var(--text3);margin-top:3px;}
-  .breakdown-price{color:var(--mint);font-weight:600;}
+  .breakdown-price{color:var(--lime);font-weight:600;}
+  .price-highlight{color:var(--lime);font-weight:600;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
   .breakdown-ratio{font-size:14px;font-weight:600;color:var(--text1);}
   .breakdown-pl{font-size:12px;line-height:1.3;}
@@ -314,6 +317,7 @@
   .stock-stat-value{color:var(--text1);font-weight:500;}
   .stock-stat-value.redtext{color:var(--red);}
   .stock-stat-value.bluetext{color:var(--blue);}
+  .stock-stat-value.price-highlight{color:var(--lime);}
 
   .sub-block{margin-bottom:6px;}
   .holding-card{
@@ -1709,7 +1713,7 @@ function buildStockRow(stock){
       <div class="stock-stat"><span class="stock-stat-label">자산가치</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">구매가</span><span class="stock-stat-value num">${avgPrice.toLocaleString('ko-KR')}원</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num">${price.toLocaleString('ko-KR')}원</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight">${price.toLocaleString('ko-KR')}원</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">투자배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
     </div>
@@ -2003,6 +2007,7 @@ function openMonthDividendSheet(month){
 
   const groupsHtml = sorted.map((rec, idx)=>{
     const gid = `divgrpacc_${idx}`;
+    const totalQty = rec.accounts.reduce((s,a)=>s+(a.quantity||0),0);
     const accountRows = rec.accounts.map(a=>{
       const acc = DATA.accounts.find(x=>x.id===a.accountId);
       const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
@@ -2015,10 +2020,16 @@ function openMonthDividendSheet(month){
     }).join('');
     const keyEsc = rec.key.replace(/'/g,"\\'");
     return `
-      <div style="margin-bottom:2px;">
-        <div class="entry-row" style="font-weight:500;color:var(--text1);">
-          <span style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">${escapeHtml(rec.name)}${rec.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(rec.ticker)+')</span>' : ''}${rec.perShare ? ' <span style="color:var(--text3);font-weight:400;">· 주당 '+rec.perShare.toLocaleString('ko-KR')+'원</span>' : ''}</span>
-          <span><span class="amt num">${fmtWon(rec.total)}</span><span class="del" onclick="deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+      <div style="margin-bottom:8px;">
+        <div style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
+          <div class="entry-row" style="font-weight:600;color:var(--text1);border-bottom:none;padding-bottom:2px;">
+            <span>${escapeHtml(rec.name)}${rec.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(rec.ticker)+')</span>' : ''}</span>
+            <span><span class="amt num">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+          </div>
+          <div class="entry-row" style="font-size:11.5px;color:var(--text3);padding-top:0;">
+            <span>총 ${totalQty.toLocaleString('ko-KR')}주 보유${rec.perShare ? ' · 주당 '+rec.perShare.toLocaleString('ko-KR')+'원' : ''}</span>
+            <span></span>
+          </div>
         </div>
         <div id="${gid}" style="display:none;">${accountRows}</div>
       </div>
