@@ -532,6 +532,61 @@
           "amount": 2442
         }
       ]
+    },
+    {
+      "id": "divrec_ye6bmfw",
+      "key": "133690",
+      "name": "TIGER 나스닥100",
+      "ticker": "133690",
+      "month": "2026-07",
+      "perShare": 255,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 32,
+          "amount": 8160
+        },
+        {
+          "accountId": "acc_1ynxc3d",
+          "quantity": 46,
+          "amount": 11730
+        },
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 34,
+          "amount": 8670
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 13,
+          "amount": 3315
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 13,
+          "amount": 3315
+        }
+      ]
+    },
+    {
+      "id": "divrec_d94srmp",
+      "key": "381180",
+      "name": "TIGER 미국필라델피아반도체나스닥",
+      "ticker": "381180",
+      "month": "2026-07",
+      "perShare": 49,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 144,
+          "amount": 7056
+        },
+        {
+          "accountId": "acc_1ynxc3d",
+          "quantity": 269,
+          "amount": 13181
+        }
+      ]
     }
   ],
   "stockCatalog": [
