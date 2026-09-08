@@ -286,25 +286,43 @@
 
   .stock-row{
     border-bottom:1px solid var(--border);
+    cursor:pointer;
+    padding:12px 8px 14px 4px;
   }
   .stock-row:last-child{border-bottom:none;}
-  .stock-head{
+  .stock-card-head{
     display:flex;
-    justify-content:space-between;
     align-items:center;
-    padding:12px 8px 12px 4px;
-    cursor:pointer;
+    gap:10px;
+    margin-bottom:10px;
   }
-  .stock-name{font-size:14px;font-weight:500;}
-  .stock-ticker-inline{font-size:11px;color:var(--text3);font-weight:400;}
-  .stock-ticker{font-size:12px;color:var(--text3);margin-top:1px;}
-  .stock-amount{font-size:14px;font-weight:500;color:var(--mint);}
-  .stock-body{
-    display:none;
-    padding:2px 8px 16px 4px;
+  .stock-avatar{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    background:var(--gold);
+    color:var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10.5px;
+    font-weight:700;
+    flex-shrink:0;
   }
-  .stock-row.open .stock-body{display:block;}
-  .stock-row.open .chevron{transform:rotate(90deg);}
+  .stock-card-title{flex:1;min-width:0;}
+  .stock-card-name{font-size:15px;font-weight:700;color:var(--gold);}
+  .stock-card-ticker{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
+  .stock-card-qty{font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;white-space:nowrap;}
+  .stock-card-qty b{color:var(--text1);font-weight:600;}
+  .stock-stat-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:7px 16px;
+    padding:0 2px;
+  }
+  .stock-stat{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;gap:8px;}
+  .stock-stat-label{color:var(--text3);flex-shrink:0;}
+  .stock-stat-value{color:var(--text1);font-weight:500;text-align:right;}
 
   .sub-block{margin-bottom:6px;}
   .holding-card{
@@ -765,7 +783,6 @@ let openAccounts = new Set();
 let openStocks = new Set();
 let openTxSections = new Set();
 let breakdownOpen = false;
-let openTargets = new Set();
 
 const STORAGE_KEY = 'portfolio-data';
 const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
@@ -904,18 +921,6 @@ function renderCatalogDatalists(){
   const cats = DATA.stockCatalog || [];
   tickerList.innerHTML = cats.filter(c=>c.ticker).map(c=>`<option value="${escapeHtml(c.ticker)}">${escapeHtml(c.name)}</option>`).join('');
   nameList.innerHTML = cats.map(c=>`<option value="${escapeHtml(c.name)}"></option>`).join('');
-}
-
-function prefillFromCatalog(accId){
-  const tickerInput = document.getElementById(`ns_ticker_${accId}`);
-  const nameInput = document.getElementById(`ns_name_${accId}`);
-  const ticker = tickerInput.value.trim();
-  if(!ticker) return;
-  const cat = (DATA.stockCatalog||[]).find(c=>c.ticker && c.ticker.toUpperCase()===ticker.toUpperCase());
-  if(cat){
-    nameInput.value = cat.name;
-    showToast(`기존 종목 "${cat.name}" · 현재가 ${cat.currentPrice.toLocaleString('ko-KR')}원`);
-  }
 }
 
 function renderOwnerTabs(){
@@ -1384,20 +1389,6 @@ function renderBreakdown(){
     const keyEsc = item.key.replace(/'/g,"\\'");
     const target = DATA.targets[item.key];
     const hasTarget = typeof target === 'number' && !isNaN(target);
-    const targetOpen = openTargets.has(item.key) || hasTarget;
-
-    let rebalanceHtml = '';
-    if(hasTarget){
-      const targetValue = projectedTotal * (target/100);
-      const diff = targetValue - item.value; // 목표금액 - 현재금액 = 추가로 넣어야 할 금액
-      const avgPrice = item.quantity>0 ? (item.value/item.quantity) : null;
-      const diffShares = avgPrice ? (diff/avgPrice) : null;
-      const actionLabel = diff >= 0 ? '추가 매수 필요' : '이미 목표 초과(매도 검토)';
-      rebalanceHtml = `
-        <div class="entry-row"><span>목표 금액 (${target}%, 투입 후 기준)</span><span class="amt num">${fmtWon(targetValue)}</span></div>
-        <div class="entry-row"><span>${actionLabel}</span><span class="amt num">${fmtWon(Math.abs(diff))}${diffShares!==null ? ' · 약 '+Math.round(Math.abs(diffShares)).toLocaleString('ko-KR')+'주' : ' (현재가 정보 없음)'}</span></div>
-      `;
-    }
 
     const cat = catalogByKey(item.key);
     const currentPrice = cat ? (cat.currentPrice||0) : 0;
@@ -1418,49 +1409,8 @@ function renderBreakdown(){
           <div class="breakdown-bar-fill" style="width:${ratio}%;"></div>
         </div>
         <div>
-          <span class="target-toggle" onclick="toggleTargetSection('${keyEsc}')">${hasTarget ? '목표비율 '+target+'% 설정됨 · 수정' : '목표비율 설정'}</span>
+          <span class="target-toggle" onclick="openTargetSheet('${keyEsc}','${sid}')">목표/배당 관리${hasTarget ? ' · 목표 '+target+'%' : ''}</span>
         </div>
-        ${targetOpen ? `
-        <div class="target-panel">
-          <div class="entry-row"><span>목표비율(%) · 현재 ${ratio.toFixed(2)}%</span><input type="number" inputmode="decimal" step="0.1" class="inline-num-input" value="${hasTarget ? target : ''}" placeholder="예: 20" onchange="updateTarget('${keyEsc}', this.value)"></div>
-          ${rebalanceHtml}
-          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
-            <button class="action-btn-prominent" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력</button>
-          </div>
-          <div class="form-panel" id="grpform_${sid}">
-            <div class="form-row">
-              <div class="field">
-                <span class="field-label">새 현재가 (1주당)</span>
-                <input type="number" inputmode="decimal" placeholder="예: 25000" id="grpprice_${sid}">
-              </div>
-            </div>
-            <div class="form-actions">
-              <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
-              <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
-            </div>
-          </div>
-          <div class="form-panel" id="divgrpform_${sid}">
-            <div class="form-row">
-              <div class="field">
-                <span class="field-label">배당월</span>
-                <div class="date-display-wrap">
-                  <span class="date-display-text" id="divgrp_month_${sid}_display" data-placeholder="월 선택">월 선택</span>
-                  <input type="month" id="divgrp_month_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)">
-                </div>
-              </div>
-              <div class="field">
-                <span class="field-label">1주당 배당금</span>
-                <input type="number" inputmode="decimal" placeholder="예: 500" id="divgrp_amount_${sid}">
-              </div>
-            </div>
-            <div class="form-actions">
-              <button class="btn-ghost" onclick="closeForm('divgrpform_${sid}')">취소</button>
-              <button class="btn-primary" onclick="applyGroupDividend('${keyEsc}','${sid}')">전체 계좌에 반영</button>
-            </div>
-          </div>
-        </div>
-        ` : ''}
       </div>
     `;
   }).join('');
@@ -1495,21 +1445,72 @@ function renderBreakdown(){
   };
 }
 
-function toggleTargetSection(key){
-  if(openTargets.has(key)) openTargets.delete(key);
-  else openTargets.add(key);
-  render();
-}
+function openTargetSheet(key, sid){
+  const items = allItemsBreakdown();
+  const grandTotal = items.reduce((s,i)=>s+i.value,0);
+  const plannedCash = DATA.plannedCash || 0;
+  const projectedTotal = grandTotal + plannedCash;
+  const item = items.find(i=>i.key===key);
+  if(!item) return;
 
-async function updateTarget(key, value){
-  const num = parseFloat(value);
-  if(value==='' || isNaN(num)){
-    delete DATA.targets[key];
-  } else {
-    DATA.targets[key] = num;
+  const ratio = grandTotal ? (item.value/grandTotal)*100 : 0;
+  const target = DATA.targets[key];
+  const hasTarget = typeof target === 'number' && !isNaN(target);
+  const keyEsc = key.replace(/'/g,"\\'");
+
+  let rebalanceHtml = `<div class="entry-row"><span>목표비율</span><span class="amt num">미설정 (JSON의 targets에서 설정)</span></div>`;
+  if(hasTarget){
+    const targetValue = projectedTotal * (target/100);
+    const diff = targetValue - item.value;
+    const avgPrice = item.quantity>0 ? (item.value/item.quantity) : null;
+    const diffShares = avgPrice ? (diff/avgPrice) : null;
+    const actionLabel = diff >= 0 ? '추가 매수 필요' : '이미 목표 초과(매도 검토)';
+    rebalanceHtml = `
+      <div class="entry-row"><span>목표비율 · 현재 ${ratio.toFixed(2)}%</span><span class="amt num">${target}%</span></div>
+      <div class="entry-row"><span>목표 금액 (투입 후 기준)</span><span class="amt num">${fmtWon(targetValue)}</span></div>
+      <div class="entry-row"><span>${actionLabel}</span><span class="amt num">${fmtWon(Math.abs(diff))}${diffShares!==null ? ' · 약 '+Math.round(Math.abs(diffShares)).toLocaleString('ko-KR')+'주' : ' (현재가 정보 없음)'}</span></div>
+    `;
   }
-  await saveData();
-  render();
+
+  const bodyHtml = `
+    ${rebalanceHtml}
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
+      <button class="action-btn-prominent" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력</button>
+    </div>
+    <div class="form-panel" id="grpform_${sid}">
+      <div class="form-row">
+        <div class="field">
+          <span class="field-label">새 현재가 (1주당)</span>
+          <input type="number" inputmode="decimal" placeholder="예: 25000" id="grpprice_${sid}">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeForm('grpform_${sid}')">취소</button>
+        <button class="btn-primary" onclick="applyGroupPrice('${keyEsc}','${sid}')">전체 계좌에 반영</button>
+      </div>
+    </div>
+    <div class="form-panel" id="divgrpform_${sid}">
+      <div class="form-row">
+        <div class="field">
+          <span class="field-label">배당월</span>
+          <div class="date-display-wrap">
+            <span class="date-display-text" id="divgrp_month_${sid}_display" data-placeholder="월 선택">월 선택</span>
+            <input type="month" id="divgrp_month_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)">
+          </div>
+        </div>
+        <div class="field">
+          <span class="field-label">1주당 배당금</span>
+          <input type="number" inputmode="decimal" placeholder="예: 500" id="divgrp_amount_${sid}">
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-ghost" onclick="closeForm('divgrpform_${sid}')">취소</button>
+        <button class="btn-primary" onclick="applyGroupDividend('${keyEsc}','${sid}')">전체 계좌에 반영</button>
+      </div>
+    </div>
+  `;
+  openSheet(`${escapeHtml(item.name)} · 목표/배당 관리`, bodyHtml);
 }
 
 async function updatePlannedCash(value){
@@ -1626,55 +1627,105 @@ function renderAccountBody(acc, bodyEl){
       <span class="empty-hint" style="padding:0;">종목 ${stocks.length}개</span>
       <button class="mini-add" data-add-stock="${acc.id}">+ 종목 추가</button>
     </div>
-    <div class="form-panel" id="stockForm_${acc.id}">
-      <div class="form-row">
-        <input type="text" placeholder="종목명 (예: 뱅가드 S&P500)" id="ns_name_${acc.id}" list="stockCatalogNames">
-        <input type="text" placeholder="티커 (예: VOO)" id="ns_ticker_${acc.id}" list="stockCatalogTickers" onchange="prefillFromCatalog('${acc.id}')">
-      </div>
-      <div class="panel-caption" style="margin:0 0 8px;">이미 등록한 종목이면 티커나 이름을 입력하면 자동완성돼요. 현재가는 처음 등록할 때만 입력하고, 이후엔 종목 하나만 고치면 모든 계좌에 반영돼요.</div>
-      <div class="form-row">
-        <input type="number" inputmode="decimal" placeholder="평균단가 (1주당)" id="ns_avgprice_${acc.id}">
-        <input type="number" inputmode="decimal" placeholder="수량" id="ns_qty_${acc.id}">
-      </div>
-      <div class="form-actions">
-        <button class="btn-ghost" onclick="closeForm('stockForm_${acc.id}')">취소</button>
-        <button class="btn-primary" onclick="submitStock('${acc.id}')">추가</button>
-      </div>
-    </div>
     <div id="stockList_${acc.id}"></div>
   `;
   bodyEl.innerHTML = html;
   bodyEl.querySelector(`[data-add-stock]`).onclick = ()=>{
-    toggleForm(`stockForm_${acc.id}`);
+    openStockPickerSheet(acc.id);
   };
   const stockListEl = bodyEl.querySelector(`#stockList_${acc.id}`);
   stocks.forEach(s=> stockListEl.appendChild(buildStockRow(s)));
+}
+
+function openStockPickerSheet(accountId){
+  const cats = [...(DATA.stockCatalog||[])].sort((a,b)=>a.name.localeCompare(b.name));
+  const rows = cats.map(c=>{
+    const keyEsc = c.key.replace(/'/g,"\\'");
+    return `
+      <div class="entry-row" style="cursor:pointer;" onclick="addHoldingFromCatalog('${accountId}','${keyEsc}')">
+        <span>${escapeHtml(c.name)}${c.ticker ? ' <span style="color:var(--text3);">('+escapeHtml(c.ticker)+')</span>' : ''}</span>
+        <span class="amt num">${(c.currentPrice||0).toLocaleString('ko-KR')}원</span>
+      </div>
+    `;
+  }).join('');
+
+  const bodyHtml = `
+    ${cats.length ? rows : '<div class="empty-hint">아직 등록된 종목이 없어요. 아래에서 새로 등록해보세요.</div>'}
+    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+      <div class="panel-caption" style="margin:0 0 8px;">목록에 없는 종목이면 새로 등록하세요 (현재가·수량·매수내역은 등록 후에 채우면 돼요)</div>
+      <div class="form-row">
+        <input type="text" placeholder="종목명 (예: 뱅가드 S&P500)" id="newcat_name_${accountId}" list="stockCatalogNames">
+        <input type="text" placeholder="티커 (선택)" id="newcat_ticker_${accountId}" list="stockCatalogTickers">
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary" onclick="createCatalogAndAdd('${accountId}')">새 종목으로 추가</button>
+      </div>
+    </div>
+  `;
+  openSheet('종목 선택', bodyHtml);
+}
+
+async function addHoldingFromCatalog(accountId, key){
+  const cat = catalogByKey(key);
+  if(!cat) return;
+  const newStock = { id: uid('stk'), accountId, key, quantity:0, buys:[], sells:[] };
+  DATA.stocks.push(newStock);
+  await saveData();
+  closeSheet();
+  render();
+  showToast(`${cat.name} 추가됨 · 매수 내역을 등록해주세요`);
+  setTimeout(()=>openStockDetailSheet(newStock.id), 300);
+}
+
+async function createCatalogAndAdd(accountId){
+  const name = document.getElementById(`newcat_name_${accountId}`).value.trim();
+  const ticker = document.getElementById(`newcat_ticker_${accountId}`).value.trim();
+  if(!name){ showToast('종목명을 입력해주세요'); return; }
+  const { cat } = getOrCreateCatalog(ticker, name, 0);
+  const newStock = { id: uid('stk'), accountId, key: cat.key, quantity:0, buys:[], sells:[] };
+  DATA.stocks.push(newStock);
+  await saveData();
+  closeSheet();
+  render();
+  showToast(`${cat.name} 새로 등록됨 · 현재가와 매수 내역을 등록해주세요`);
+  setTimeout(()=>openStockDetailSheet(newStock.id), 300);
 }
 
 function buildStockRow(stock){
   const cat = catalogFor(stock);
   const qty = stock.quantity || 0;
   const price = cat.currentPrice || 0;
+  const cost = stockCostBasis(stock);
+  const avgPrice = qty ? Math.round(cost / qty) : 0;
   const pl = stockPL(stock);
   const plPct = stockPLPercent(stock);
+  const divMonths = [...new Set(recordsForStock(stock).map(r=>parseInt(r.month.split('-')[1],10)))].sort((a,b)=>a-b);
+  const divMonthsStr = divMonths.length ? divMonths.join(', ') : '-';
+  const divYield = stockYieldOnPrincipal(stock);
+  const divTotal = stockDividendTotal(stock);
+  const avatarText = (cat.ticker ? cat.ticker.slice(0,2) : cat.name.slice(0,2)).toUpperCase();
+
   const row = document.createElement('div');
   row.className = 'stock-row';
   row.id = `stockrow_${stock.id}`;
   row.innerHTML = `
-    <div class="stock-head">
-      <div>
-        <div class="stock-name">${escapeHtml(cat.name)}${cat.ticker ? ' <span class="stock-ticker-inline">('+escapeHtml(cat.ticker)+')</span>' : ''}</div>
-        <div class="stock-ticker">${qty ? qty+'주 · 현재가 '+price.toLocaleString('ko-KR')+'원' : ''}</div>
+    <div class="stock-card-head">
+      <div class="stock-avatar">${escapeHtml(avatarText)}</div>
+      <div class="stock-card-title">
+        <span class="stock-card-name">${escapeHtml(cat.name)}</span>${cat.ticker ? '<span class="stock-card-ticker">('+escapeHtml(cat.ticker)+')</span>' : ''}
       </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <div style="text-align:right;">
-          <div class="stock-amount num">${fmtWon(stockTotal(stock))}</div>
-          <div class="num ${plClass(pl)}" style="font-size:11.5px;">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</div>
-        </div>
-      </div>
+      <div class="stock-card-qty">수량 <b class="num">${qty.toLocaleString('ko-KR')}</b></div>
+    </div>
+    <div class="stock-stat-grid">
+      <div class="stock-stat"><span class="stock-stat-label">자산가치</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">구매가</span><span class="stock-stat-value num">${avgPrice.toLocaleString('ko-KR')}원</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num">${price.toLocaleString('ko-KR')}원</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">투자배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
     </div>
   `;
-  row.querySelector('.stock-head').onclick = ()=>{
+  row.onclick = ()=>{
     openStockDetailSheet(stock.id);
   };
   return row;
@@ -2037,28 +2088,6 @@ async function submitAccount(){
   await saveData();
   render();
   showToast('계좌가 추가되었습니다');
-}
-
-async function submitStock(accountId){
-  const name = document.getElementById(`ns_name_${accountId}`).value.trim();
-  const ticker = document.getElementById(`ns_ticker_${accountId}`).value.trim();
-  const avgPrice = parseFloat(document.getElementById(`ns_avgprice_${accountId}`).value) || 0;
-  const qty = parseFloat(document.getElementById(`ns_qty_${accountId}`).value) || 0;
-  if(!name){ showToast('종목명을 입력해주세요'); return; }
-  const { cat, isNew } = getOrCreateCatalog(ticker, name, avgPrice);
-  const today = new Date().toISOString().slice(0,10);
-  const initialBuys = [];
-  if(qty && avgPrice){
-    initialBuys.push({ id: uid('tx'), date: today, quantity: qty, price: avgPrice, amount: qty*avgPrice });
-  }
-  DATA.stocks.push({
-    id: uid('stk'), accountId, key: cat.key,
-    quantity: qty,
-    buys: initialBuys, sells: []
-  });
-  await saveData();
-  render();
-  showToast(isNew ? '새 종목이 등록되었습니다' : '기존 종목에 계좌를 추가했어요 (현재가는 기존 값을 그대로 씁니다)');
 }
 
 async function submitTx(stockId, field){
