@@ -483,7 +483,7 @@
       "sells": []
     }
   ],
-  "lastPriceUpdate": "2026-09-08 12:36 (KST)",
+  "lastPriceUpdate": "2026-09-08 15:35 (KST)",
   "snapshots": [],
   "dividends": [
     {
@@ -662,37 +662,37 @@
       "key": "360750",
       "ticker": "360750",
       "name": "TIGER S&P500",
-      "currentPrice": 25980
+      "currentPrice": 25660
     },
     {
       "key": "133690",
       "ticker": "133690",
       "name": "TIGER 나스닥100",
-      "currentPrice": 176147
+      "currentPrice": 176020
     },
     {
       "key": "381180",
       "ticker": "381180",
       "name": "TIGER 미국필라델피아반도체나스닥",
-      "currentPrice": 41780
+      "currentPrice": 41480
     },
     {
       "key": "458730",
       "ticker": "458730",
       "name": "TIGER 미국배당다우존스",
-      "currentPrice": 14645
+      "currentPrice": 14655
     },
     {
       "key": "305080",
       "ticker": "305080",
       "name": "TIGER 미국채10년선물",
-      "currentPrice": 11855
+      "currentPrice": 11890
     },
     {
       "key": "319640",
       "ticker": "319640",
       "name": "TIGER 골드선물(H)",
-      "currentPrice": 26045
+      "currentPrice": 25880
     },
     {
       "key": "0008S0",
@@ -704,19 +704,19 @@
       "key": "182480",
       "ticker": "182480",
       "name": "TIGER 미국MSCI리츠(합성H)",
-      "currentPrice": 13492
+      "currentPrice": 13490
     },
     {
       "key": "304660",
       "ticker": "304660",
       "name": "KODEX 미국30년국채울트라선물(H)",
-      "currentPrice": 7270
+      "currentPrice": 7235
     },
     {
       "key": "371460",
       "ticker": "371460",
       "name": "TIGER 차이나전기차SOLACTIVE",
-      "currentPrice": 9515
+      "currentPrice": 9500
     },
     {
       "key": "329650",
@@ -728,13 +728,13 @@
       "key": "466940",
       "ticker": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
-      "currentPrice": 27290
+      "currentPrice": 27180
     },
     {
       "key": "441640",
       "ticker": "441640",
       "name": "KODEX 미국배당커버드콜",
-      "currentPrice": 12380
+      "currentPrice": 12410
     }
   ]
 }
