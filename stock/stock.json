@@ -587,6 +587,76 @@
           "amount": 13181
         }
       ]
+    },
+    {
+      "id": "divrec_53nrg5f",
+      "key": "458730",
+      "name": "TIGER 미국배당다우존스",
+      "ticker": "458730",
+      "month": "2026-08",
+      "perShare": 30,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 26,
+          "amount": 780
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 246,
+          "amount": 7380
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 194,
+          "amount": 5820
+        }
+      ]
+    },
+    {
+      "id": "divrec_av1jb6a",
+      "key": "466940",
+      "name": "TIGER 은행고배당플러스TOP10",
+      "ticker": "466940",
+      "month": "2026-08",
+      "perShare": 100,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 23,
+          "amount": 2300
+        }
+      ]
+    },
+    {
+      "id": "divrec_3lboqho",
+      "key": "182480",
+      "name": "TIGER 미국MSCI리츠(합성H)",
+      "ticker": "182480",
+      "month": "2026-08",
+      "perShare": 20,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 35,
+          "amount": 700
+        }
+      ]
+    },
+    {
+      "id": "divrec_8na87mq",
+      "key": "441640",
+      "name": "KODEX 미국배당커버드콜",
+      "ticker": "441640",
+      "month": "2026-08",
+      "perShare": 102,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 10,
+          "amount": 1020
+        }
+      ]
     }
   ],
   "stockCatalog": [
