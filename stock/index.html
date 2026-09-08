@@ -643,8 +643,39 @@
   }
   .sheet-body{
     overflow-y:auto;
+    scrollbar-width:none;
+    -ms-overflow-style:none;
   }
+  .sheet-body::-webkit-scrollbar{display:none;}
   .sheet-body .entry-row{border-bottom:none;}
+
+  .sheet-overlay2{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+    z-index:210;
+  }
+  .sheet-overlay2.open{opacity:1;pointer-events:auto;}
+  .bottom-sheet2{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    max-height:75vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--surface1);
+    border-radius:16px 16px 0 0;
+    transform:translateY(100%);
+    transition:transform .25s ease;
+    z-index:211;
+    padding:20px 20px calc(20px + env(safe-area-inset-bottom));
+    box-shadow:0 -8px 24px rgba(0,0,0,0.4);
+  }
+  .bottom-sheet2.open{transform:translateY(0);}
 </style>
 </head>
 <body>
@@ -711,6 +742,15 @@
     <button class="sheet-close-btn" onclick="closeSheet()" aria-label="닫기">&times;</button>
   </div>
   <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<div class="sheet-overlay2" id="sheetOverlay2" onclick="closeSheet2()"></div>
+<div class="bottom-sheet2" id="bottomSheet2">
+  <div class="sheet-header">
+    <span id="sheetTitle2"></span>
+    <button class="sheet-close-btn" onclick="closeSheet2()" aria-label="닫기">&times;</button>
+  </div>
+  <div class="sheet-body" id="sheetBody2"></div>
 </div>
 
 <datalist id="stockCatalogTickers"></datalist>
@@ -1817,6 +1857,18 @@ function scrollToId(id){
     requestAnimationFrame(()=>{
       const el = document.getElementById(id);
       if(!el) return;
+      const sheetBody2 = document.getElementById('sheetBody2');
+      const sheetBody = document.getElementById('sheetBody');
+      const container = (sheetBody2 && sheetBody2.contains(el)) ? sheetBody2
+        : (sheetBody && sheetBody.contains(el)) ? sheetBody
+        : null;
+      if(container){
+        const cRect = container.getBoundingClientRect();
+        const eRect = el.getBoundingClientRect();
+        const delta = eRect.top - cRect.top - (cRect.height * 0.15);
+        container.scrollBy({ top: delta, behavior:'smooth' });
+        return;
+      }
       const rect = el.getBoundingClientRect();
       const targetY = window.innerHeight * 0.5;
       const delta = rect.top - targetY;
@@ -1861,6 +1913,17 @@ function openSheet(title, bodyHtml){
 function closeSheet(){
   document.getElementById('sheetOverlay').classList.remove('open');
   document.getElementById('bottomSheet').classList.remove('open');
+  closeSheet2();
+}
+function openSheet2(title, bodyHtml){
+  document.getElementById('sheetTitle2').textContent = title;
+  document.getElementById('sheetBody2').innerHTML = bodyHtml;
+  document.getElementById('sheetOverlay2').classList.add('open');
+  document.getElementById('bottomSheet2').classList.add('open');
+}
+function closeSheet2(){
+  document.getElementById('sheetOverlay2').classList.remove('open');
+  document.getElementById('bottomSheet2').classList.remove('open');
 }
 function openTxSheet(stockId, field, title){
   const stock = DATA.stocks.find(s=>s.id===stockId);
@@ -1868,7 +1931,7 @@ function openTxSheet(stockId, field, title){
   const bodyHtml = field==='dividends'
     ? dividendListHtmlForStock(stock)
     : entryListHtml(stock[field], stockId, field);
-  openSheet(title, bodyHtml);
+  openSheet2(title, bodyHtml);
 }
 
 async function deleteStockDividend(stockId, month){
@@ -1877,9 +1940,10 @@ async function deleteStockDividend(stockId, month){
   removeAccountFromDividendRecord(stock.key, month, stock.accountId);
   await saveData();
   render();
-  if(document.getElementById('bottomSheet').classList.contains('open')){
-    document.getElementById('sheetBody').innerHTML = dividendListHtmlForStock(stock);
+  if(document.getElementById('bottomSheet2').classList.contains('open')){
+    document.getElementById('sheetBody2').innerHTML = dividendListHtmlForStock(stock);
   }
+  refreshStockDetailSheetIfOpen(stockId);
   showToast('배당 기록을 삭제했어요');
 }
 
@@ -2044,10 +2108,11 @@ async function deleteEntry(stockId, field, entryId){
   }
   await saveData();
   render();
-  if(document.getElementById('bottomSheet').classList.contains('open')){
+  if(document.getElementById('bottomSheet2').classList.contains('open')){
     const bodyHtml = entryListHtml(stock[field], stockId, field);
-    document.getElementById('sheetBody').innerHTML = bodyHtml;
+    document.getElementById('sheetBody2').innerHTML = bodyHtml;
   }
+  refreshStockDetailSheetIfOpen(stockId);
   showToast('삭제하고 보유수량도 되돌렸어요');
 }
 
