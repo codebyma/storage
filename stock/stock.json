@@ -634,7 +634,7 @@
       "name": "TIGER 미국MSCI리츠(합성H)",
       "ticker": "182480",
       "month": "2026-08",
-      "perShare": 46,
+      "perShare": 20,
       "accounts": [
         {
           "accountId": "acc_aioddia",
@@ -655,6 +655,36 @@
           "accountId": "acc_1q4nsbn",
           "quantity": 10,
           "amount": 1020
+        }
+      ]
+    },
+    {
+      "id": "divrec_6slqxiy",
+      "key": "329650",
+      "name": "KODEX TRF3070",
+      "ticker": "329650",
+      "month": "2026-08",
+      "perShare": 31,
+      "accounts": [
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 387,
+          "amount": 11997
+        }
+      ]
+    },
+    {
+      "id": "divrec_wous1po",
+      "key": "0008S0",
+      "name": "TIGER 마국배당다우존스타켓데일리커버드콜",
+      "ticker": "0008S0",
+      "month": "2026-08",
+      "perShare": 106,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 25,
+          "amount": 2650
         }
       ]
     }
