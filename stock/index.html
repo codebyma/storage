@@ -143,13 +143,13 @@
   }
   .div-bar-amount{
     font-size:9px;
-    color:var(--text3);
+    color:var(--text1);
     margin-bottom:6px;
     white-space:nowrap;
   }
   .div-bar{
     width:16px;
-    background:var(--text1);
+    background:var(--gold);
     border-radius:3px 3px 0 0;
     min-height:2px;
   }
@@ -203,11 +203,11 @@
     margin-bottom:8px;
   }
   .breakdown-name-block{min-width:0;flex:1;}
-  .breakdown-name{font-weight:500;color:var(--text1);font-size:13.5px;}
+  .breakdown-name{font-weight:600;color:var(--text1);font-size:16px;}
   .breakdown-price-line{font-size:11.5px;color:var(--text3);margin-top:3px;}
   .breakdown-price{color:var(--mint);font-weight:600;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
-  .breakdown-ratio{font-size:19px;font-weight:600;color:var(--text1);}
+  .breakdown-ratio{font-size:14px;font-weight:600;color:var(--text1);}
   .breakdown-pl{font-size:12px;line-height:1.3;}
   .breakdown-bar-track{
     height:6px;
@@ -296,19 +296,6 @@
     gap:10px;
     margin-bottom:10px;
   }
-  .stock-avatar{
-    width:36px;
-    height:36px;
-    border-radius:50%;
-    background:var(--gold);
-    color:var(--bg);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:10.5px;
-    font-weight:700;
-    flex-shrink:0;
-  }
   .stock-card-title{flex:1;min-width:0;}
   .stock-card-name{font-size:15px;font-weight:700;color:var(--gold);}
   .stock-card-ticker{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
@@ -320,9 +307,13 @@
     gap:7px 16px;
     padding:0 2px;
   }
-  .stock-stat{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;gap:8px;}
-  .stock-stat-label{color:var(--text3);flex-shrink:0;}
-  .stock-stat-value{color:var(--text1);font-weight:500;text-align:right;}
+  .stock-stat{font-size:12.5px;}
+  .stock-stat:nth-child(odd){text-align:left;}
+  .stock-stat:nth-child(even){text-align:right;}
+  .stock-stat-label{color:var(--text3);margin-right:6px;}
+  .stock-stat-value{color:var(--text1);font-weight:500;}
+  .stock-stat-value.redtext{color:var(--red);}
+  .stock-stat-value.bluetext{color:var(--blue);}
 
   .sub-block{margin-bottom:6px;}
   .holding-card{
@@ -1398,7 +1389,7 @@ function renderBreakdown(){
         <div class="breakdown-top">
           <div class="breakdown-name-block">
             <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
-            <div class="breakdown-price-line">현재가 <span class="breakdown-price">${currentPrice.toLocaleString('ko-KR')}원</span>${item.count>1 ? ' <span style="color:var(--text3);">· '+item.count+'개 계좌</span>' : ''}</div>
+            <div class="breakdown-price-line">현재가 <span class="breakdown-price">${currentPrice.toLocaleString('ko-KR')}원</span>${item.count>1 ? ' <span style="color:var(--text3);">· '+item.count+'개 계좌</span>' : ''} <span style="color:var(--text3);">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
           </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
@@ -1703,14 +1694,12 @@ function buildStockRow(stock){
   const divMonthsStr = divMonths.length ? divMonths.join(', ') : '-';
   const divYield = stockYieldOnPrincipal(stock);
   const divTotal = stockDividendTotal(stock);
-  const avatarText = (cat.ticker ? cat.ticker.slice(0,2) : cat.name.slice(0,2)).toUpperCase();
 
   const row = document.createElement('div');
   row.className = 'stock-row';
   row.id = `stockrow_${stock.id}`;
   row.innerHTML = `
     <div class="stock-card-head">
-      <div class="stock-avatar">${escapeHtml(avatarText)}</div>
       <div class="stock-card-title">
         <span class="stock-card-name">${escapeHtml(cat.name)}</span>${cat.ticker ? '<span class="stock-card-ticker">('+escapeHtml(cat.ticker)+')</span>' : ''}
       </div>
