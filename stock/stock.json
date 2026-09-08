@@ -493,7 +493,7 @@
       "sells": []
     }
   ],
-  "lastPriceUpdate": "2026-09-07 17:55 (KST)",
+  "lastPriceUpdate": "2026-09-08 10:52 (KST)",
   "snapshots": [],
   "dividends": [],
   "stockCatalog": [
@@ -507,73 +507,73 @@
       "key": "133690",
       "ticker": "133690",
       "name": "TIGER 나스닥100",
-      "currentPrice": 175920
+      "currentPrice": 175800
     },
     {
       "key": "381180",
       "ticker": "381180",
       "name": "TIGER 미국필라델피아반도체나스닥",
-      "currentPrice": 41210
+      "currentPrice": 41660
     },
     {
       "key": "458730",
       "ticker": "458730",
       "name": "TIGER 미국배당다우존스",
-      "currentPrice": 14680
+      "currentPrice": 14635
     },
     {
       "key": "305080",
       "ticker": "305080",
       "name": "TIGER 미국채10년선물",
-      "currentPrice": 11860
+      "currentPrice": 11845
     },
     {
       "key": "319640",
       "ticker": "319640",
       "name": "TIGER 골드선물(H)",
-      "currentPrice": 25850
+      "currentPrice": 26070
     },
     {
       "key": "0008S0",
       "ticker": "0008S0",
       "name": "TIGER 마국배당다우존스타켓데일리커버드콜",
-      "currentPrice": 9765
+      "currentPrice": 9735
     },
     {
       "key": "182480",
       "ticker": "182480",
       "name": "TIGER 미국MSCI리츠(합성H)",
-      "currentPrice": 13500
+      "currentPrice": 13535
     },
     {
       "key": "304660",
       "ticker": "304660",
       "name": "KODEX 미국30년국채울트라선물(H)",
-      "currentPrice": 7235
+      "currentPrice": 7265
     },
     {
       "key": "371460",
       "ticker": "371460",
       "name": "TIGER 차이나전기차SOLACTIVE",
-      "currentPrice": 9660
+      "currentPrice": 9515
     },
     {
       "key": "329650",
       "ticker": "329650",
       "name": "KODEX TRF3070",
-      "currentPrice": 14010
+      "currentPrice": 13990
     },
     {
       "key": "466940",
       "ticker": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
-      "currentPrice": 27370
+      "currentPrice": 27245
     },
     {
       "key": "441640",
       "ticker": "441640",
       "name": "KODEX 미국배당커버드콜",
-      "currentPrice": 12861
+      "currentPrice": 12365
     }
   ]
 }
