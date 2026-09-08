@@ -634,7 +634,7 @@
       "name": "TIGER 미국MSCI리츠(합성H)",
       "ticker": "182480",
       "month": "2026-08",
-      "perShare": 20,
+      "perShare": 46,
       "accounts": [
         {
           "accountId": "acc_aioddia",
