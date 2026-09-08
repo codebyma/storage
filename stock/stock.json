@@ -212,23 +212,6 @@
       "key": "319640"
     },
     {
-      "id": "stk_u7qshx8",
-      "accountId": "acc_aioddia",
-      "quantity": 25,
-      "buys": [
-        {
-          "id": "tx_vu0ekl9",
-          "date": "2026-09-04",
-          "quantity": 25,
-          "price": 9723,
-          "amount": 243075
-        }
-      ],
-      "sells": [],
-      "dividends": [],
-      "key": "0008S0"
-    },
-    {
       "id": "stk_l3pjnd0",
       "accountId": "acc_aioddia",
       "quantity": 35,
@@ -670,21 +653,6 @@
           "accountId": "acc_5ma36fu",
           "quantity": 387,
           "amount": 11997
-        }
-      ]
-    },
-    {
-      "id": "divrec_wous1po",
-      "key": "0008S0",
-      "name": "TIGER 마국배당다우존스타켓데일리커버드콜",
-      "ticker": "0008S0",
-      "month": "2026-08",
-      "perShare": 106,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 25,
-          "amount": 2650
         }
       ]
     }
