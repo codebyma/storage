@@ -261,6 +261,7 @@
   .account-card{
     margin:0 -20px;
     padding:0;
+    border-bottom:1px solid var(--border);
   }
   .account-card:last-child{border-bottom:none;}
   .account-head{
@@ -270,7 +271,7 @@
     padding:18px 20px;
     cursor:pointer;
   }
-  .account-name{font-size:16px;font-weight:600;color:var(--text1);font-weight:400;}
+  .account-name{font-size:16px;font-weight:600;color:var(--text1);}
   .account-total{font-size:12px;color:var(--text3);margin-top:3px;}
   .chevron{
     color:var(--text3);
@@ -288,7 +289,6 @@
     border-bottom:1px solid var(--border);
     cursor:pointer;
     padding:12px 8px 14px 4px;
-    padding:12px 0 14px 0;
   }
   .stock-row:last-child{border-bottom:none;}
   .stock-card-head{
@@ -298,10 +298,10 @@
     margin-bottom:10px;
   }
   .stock-card-title{flex:1;min-width:0;}
-  .stock-card-name{font-size:15px;font-weight:600;color:var(--text1);}
+  .stock-card-name{font-size:15px;font-weight:700;color:var(--gold);}
   .stock-card-ticker{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
   .stock-card-qty{font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;white-space:nowrap;}
-  .stock-card-qty b{color:var(--text1);font-weight:400;}
+  .stock-card-qty b{color:var(--text1);font-weight:600;}
   .stock-stat-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -312,7 +312,7 @@
   .stock-stat:nth-child(odd){text-align:left;}
   .stock-stat:nth-child(even){text-align:right;}
   .stock-stat-label{color:var(--text3);margin-right:6px;}
-  .stock-stat-value{color:var(--text1);font-weight:400;}
+  .stock-stat-value{color:var(--text1);font-weight:500;}
   .stock-stat-value.redtext{color:var(--red);}
   .stock-stat-value.bluetext{color:var(--blue);}
   .stock-stat-value.price-highlight{color:var(--lime);}
@@ -1635,7 +1635,8 @@ async function applyGroupPrice(key, sid){
 function openGroupPriceForm(key, sid){
   const panel = document.getElementById(`grpform_${sid}`);
   const willOpen = !panel.classList.contains('open');
-  panel.classList.toggle('open');
+  closeForm(`divgrpform_${sid}`);
+  panel.classList.toggle('open', willOpen);
   if(willOpen){
     const input = document.getElementById(`grpprice_${sid}`);
     input.value = '';
@@ -1647,7 +1648,8 @@ function openGroupPriceForm(key, sid){
 function openGroupDividendForm(key, sid){
   const panel = document.getElementById(`divgrpform_${sid}`);
   const willOpen = !panel.classList.contains('open');
-  panel.classList.toggle('open');
+  closeForm(`grpform_${sid}`);
+  panel.classList.toggle('open', willOpen);
   if(willOpen){
     document.getElementById(`divgrp_amount_${sid}`).value = '';
     scrollToId(`divgrpform_${sid}`);
