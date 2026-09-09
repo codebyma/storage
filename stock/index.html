@@ -274,7 +274,7 @@
     padding:18px 20px;
     cursor:pointer;
   }
-  .account-name{font-size:16px;font-weight:400;color:var(--text1);}
+  .account-name{font-size:16px;font-weight:500;color:var(--text1);}
   .account-total{font-size:12px;color:var(--text3);margin-top:3px;}
   .chevron{
     color:var(--text3);
@@ -1703,7 +1703,7 @@ function renderAccounts(){
         </div>
         <div style="text-align:right;flex-shrink:0;">
           <div class="num" style="font-size:17px;font-weight:500;color:var(--text1);">${Math.abs(accPL).toLocaleString('ko-KR')}원</div>
-          ${accPLPct!==null ? '<div class="num '+plClass(accPL)+'" style="font-size:11px;">('+fmtPercent(accPLPct)+')</div>' : ''}
+          ${accPLPct!==null ? '<div class="num '+plClass(accPL)+'" style="font-size:14px;">('+fmtPercent(accPLPct)+')</div>' : ''}
         </div>
       </div>
       <div class="account-body" id="body_${acc.id}"></div>
