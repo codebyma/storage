@@ -1683,7 +1683,7 @@ function renderAccounts(){
   const list = document.getElementById('accountList');
   const isAll = currentOwner === 'ALL';
   document.getElementById('addAccountBtn').style.display = isAll ? 'none' : '';
-  document.getElementById('accountsLabel').textContent = isAll ? '전체 계좌 (나+와이프)' : '계좌';
+  document.getElementById('accountsLabel').textContent = isAll ? '전체 계좌' : '계좌';
   if(isAll) closeForm('accountForm');
   const accounts = accountsForOwner(currentOwner);
   if(accounts.length===0){
