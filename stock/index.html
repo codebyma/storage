@@ -1699,11 +1699,11 @@ function renderAccounts(){
       <div class="account-head" data-acc="${acc.id}">
         <div>
           <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
-          <div class="account-total num">${fmtWon(accTotal)}</div>
+          <div class="account-total num">${Math.abs(accPL).toLocaleString('ko-KR')}원</div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
-          <div class="num" style="font-size:17px;font-weight:500;color:var(--text1);">${Math.abs(accPL).toLocaleString('ko-KR')}원</div>
-          ${accPLPct!==null ? '<div class="num '+plClass(accPL)+'" style="font-size:14px;">('+fmtPercent(accPLPct)+')</div>' : ''}
+          <div class="num" style="font-size:17px;font-weight:500;color:var(--text1);">${fmtWon(accTotal)}</div>
+          ${accPLPct!==null ? '<div class="num '+plClass(accPL)+'" style="font-size:13px;">('+fmtPercent(accPLPct)+')</div>' : ''}
         </div>
       </div>
       <div class="account-body" id="body_${acc.id}"></div>
