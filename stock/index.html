@@ -303,12 +303,12 @@
   .stock-card-qty{font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;white-space:nowrap;}
   .stock-card-qty b{color:var(--text1);font-weight:600;}
   .stock-stat-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
+    display:flex;
+    flex-wrap:wrap;
     gap:7px 16px;
     padding:0 2px;
   }
-  .stock-stat{font-size:12.5px;}
+  .stock-stat{font-size:12.5px;flex:auto;min-width:45%;}
   .stock-stat:nth-child(odd){text-align:left;}
   .stock-stat:nth-child(even){text-align:right;}
   .stock-stat-label{color:var(--text3);margin-right:6px;}
