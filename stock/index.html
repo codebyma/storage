@@ -273,7 +273,7 @@
     padding:18px 20px;
     cursor:pointer;
   }
-  .account-name{font-size:16px;font-weight:600;color:var(--text1);}
+  .account-name{font-size:16px;font-weight:400;color:var(--text1);}
   .account-total{font-size:12px;color:var(--text3);margin-top:3px;}
   .chevron{
     color:var(--text3);
@@ -1397,7 +1397,7 @@ function renderBreakdown(){
       <div class="breakdown-row" style="cursor:pointer;" onclick="openTargetSheet('${keyEsc}','${sid}')">
         <div class="breakdown-top">
           <div class="breakdown-name-block">
-            <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
+            <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
             <div class="breakdown-price-line">현재가 <span class="breakdown-price">${currentPrice.toLocaleString('ko-KR')}원</span>${item.count>1 ? ' <span style="color:var(--text3);">· '+item.count+'개 계좌</span>' : ''} <span style="color:var(--text3);">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
           </div>
           <div class="breakdown-right">
@@ -1707,7 +1707,7 @@ function renderAccounts(){
           <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
-          <div class="account-total num" style="font-size:16px;color:var(--text1);">${fmtWon(accTotal)}</div>
+          <div class="account-total num" style="font-size:17px;color:var(--text1);">${fmtWon(accTotal)}</div>
           <div style="font-size:13px;">
             <span class="num ${plClass(accPL)}">${Math.abs(accPL).toLocaleString('ko-KR')}원</span>${accPLPct!==null ? ' <span class="num '+plClass(accPL)+'">('+fmtPercent(accPLPct)+')</span>' : ''}
           </div>
