@@ -1393,7 +1393,7 @@ function renderBreakdown(){
       <div class="breakdown-row" style="cursor:pointer;" onclick="openTargetSheet('${keyEsc}','${sid}')">
         <div class="breakdown-top">
           <div class="breakdown-name-block">
-            <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;font-family: 'Roboto', sans-serif;font-size:12px;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
+            <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text3);font-weight:400;font-family: Roboto, sans-serif;font-size:12px;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
             <div class="breakdown-price-line">현재가 <span class="breakdown-price">${currentPrice.toLocaleString('ko-KR')}원</span>${item.count>1 ? ' <span style="color:var(--text3);">· '+item.count+'개 계좌</span>' : ''} <span style="color:var(--text3);">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
           </div>
           <div class="breakdown-right">
