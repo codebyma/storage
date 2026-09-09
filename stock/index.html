@@ -352,7 +352,11 @@
     color:var(--red);
     cursor:pointer;
     margin-left:8px;
-    font-size:11px;
+    font-size:10.5px;
+    border:1px solid var(--red);
+    border-radius:6px;
+    padding:2px 6px;
+    display:inline-block;
   }
   .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
   .tx-section-label{cursor:pointer;}
@@ -2118,12 +2122,12 @@ function openMonthDividendSheet(month){
     return `
       <div style="margin-bottom:8px;">
         <div style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
-          <div class="entry-row" style="font-weight:600;color:var(--text1);border-bottom:none;padding-bottom:2px;">
+          <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:2px;">
             <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
             <span><span class="amt num" style="font-size:16.5px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
           </div>
-          <div class="entry-row" style="font-size:11.5px;color:var(--text3);padding-top:0;">
-            <span>총 <span class="num" style="color:var(--text1);">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="num" style="color:var(--text1);">'+rec.perShare.toLocaleString('ko-KR')+'</span>원' : ''}</span>
+          <div class="entry-row" style="font-size:11.5px;color:var(--text2);padding-top:0;">
+            <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>원' : ''}</span>
             <span></span>
           </div>
         </div>
