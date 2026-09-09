@@ -483,7 +483,7 @@
       "sells": []
     }
   ],
-  "lastPriceUpdate": "2026-09-08 15:35 (KST)",
+  "lastPriceUpdate": "2026-09-09 09:57 (KST)",
   "snapshots": [],
   "dividends": [
     {
@@ -662,79 +662,79 @@
       "key": "360750",
       "ticker": "360750",
       "name": "TIGER S&P500",
-      "currentPrice": 25660
+      "currentPrice": 25505
     },
     {
       "key": "133690",
       "ticker": "133690",
       "name": "TIGER 나스닥100",
-      "currentPrice": 176020
+      "currentPrice": 175125
     },
     {
       "key": "381180",
       "ticker": "381180",
       "name": "TIGER 미국필라델피아반도체나스닥",
-      "currentPrice": 41480
+      "currentPrice": 41490
     },
     {
       "key": "458730",
       "ticker": "458730",
       "name": "TIGER 미국배당다우존스",
-      "currentPrice": 14655
+      "currentPrice": 14550
     },
     {
       "key": "305080",
       "ticker": "305080",
       "name": "TIGER 미국채10년선물",
-      "currentPrice": 11890
+      "currentPrice": 11830
     },
     {
       "key": "319640",
       "ticker": "319640",
       "name": "TIGER 골드선물(H)",
-      "currentPrice": 25880
+      "currentPrice": 25600
     },
     {
       "key": "0008S0",
       "ticker": "0008S0",
       "name": "TIGER 마국배당다우존스타켓데일리커버드콜",
-      "currentPrice": 9740
+      "currentPrice": 9670
     },
     {
       "key": "182480",
       "ticker": "182480",
       "name": "TIGER 미국MSCI리츠(합성H)",
-      "currentPrice": 13490
+      "currentPrice": 13435
     },
     {
       "key": "304660",
       "ticker": "304660",
       "name": "KODEX 미국30년국채울트라선물(H)",
-      "currentPrice": 7235
+      "currentPrice": 7265
     },
     {
       "key": "371460",
       "ticker": "371460",
       "name": "TIGER 차이나전기차SOLACTIVE",
-      "currentPrice": 9500
+      "currentPrice": 9495
     },
     {
       "key": "329650",
       "ticker": "329650",
       "name": "KODEX TRF3070",
-      "currentPrice": 13990
+      "currentPrice": 13970
     },
     {
       "key": "466940",
       "ticker": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
-      "currentPrice": 27180
+      "currentPrice": 26705
     },
     {
       "key": "441640",
       "ticker": "441640",
       "name": "KODEX 미국배당커버드콜",
-      "currentPrice": 12410
+      "currentPrice": 12300
     }
   ]
 }
