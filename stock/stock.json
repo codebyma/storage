@@ -591,32 +591,6 @@
       ]
     },
     {
-      "id": "divrec_53nrg5f",
-      "key": "458730",
-      "name": "TIGER 미국배당다우존스",
-      "ticker": "458730",
-      "month": "2026-07",
-      "date": "2026-07-30",
-      "perShare": 37,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 26,
-          "amount": 780
-        },
-        {
-          "accountId": "acc_brrccwl",
-          "quantity": 246,
-          "amount": 7380
-        },
-        {
-          "accountId": "acc_1q4nsbn",
-          "quantity": 194,
-          "amount": 5820
-        }
-      ]
-    },
-    {
       "id": "divrec_av1jb6a",
       "key": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
@@ -681,32 +655,6 @@
       ]
     },
     {
-      "id": "divrec_35g3lxv",
-      "key": "458730",
-      "name": "TIGER 미국배당다우존스",
-      "ticker": "458730",
-      "month": "2026-08",
-      "date": "2026-08-28",
-      "perShare": 30,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 26,
-          "amount": 780
-        },
-        {
-          "accountId": "acc_brrccwl",
-          "quantity": 246,
-          "amount": 7380
-        },
-        {
-          "accountId": "acc_1q4nsbn",
-          "quantity": 194,
-          "amount": 5820
-        }
-      ]
-    },
-    {
       "id": "divrec_ecknywt",
       "key": "329650",
       "name": "KODEX TRF3070",
@@ -767,6 +715,58 @@
           "accountId": "acc_1q4nsbn",
           "quantity": 10,
           "amount": 1020
+        }
+      ]
+    },
+    {
+      "id": "divrec_rkw31fa",
+      "key": "458730",
+      "name": "TIGER 미국배당다우존스",
+      "ticker": "458730",
+      "month": "2026-07",
+      "date": "2026-07-30",
+      "perShare": 37,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 26,
+          "amount": 962
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 246,
+          "amount": 9102
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 194,
+          "amount": 7178
+        }
+      ]
+    },
+    {
+      "id": "divrec_4uil22l",
+      "key": "458730",
+      "name": "TIGER 미국배당다우존스",
+      "ticker": "458730",
+      "month": "2026-08",
+      "date": "2026-08-28",
+      "perShare": 30,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 26,
+          "amount": 780
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 246,
+          "amount": 7380
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 194,
+          "amount": 5820
         }
       ]
     }
