@@ -124,6 +124,11 @@
 
   main{padding:20px;}
 
+  .section-divider-gray{
+    height:8px;
+    background:var(--border-strong);
+  }
+
   .panel-wrap{padding:0 20px;}
   .panel-title{
     font-size:22px;
@@ -747,7 +752,8 @@
 <div id="breakdownSection"></div>
 
 <main>
-  <div class="section-title">
+  <div class="section-divider-gray" style="margin:20px -20px 0;"></div>
+  <div class="section-title" style="margin-top:40px;">
     <span id="accountsLabel">계좌</span>
     <button class="add-btn" id="addAccountBtn">+ 계좌 추가</button>
   </div>
@@ -1293,8 +1299,9 @@ function renderAssetTrend(){
 
   if(snaps.length < 2){
     el.innerHTML = `
+      <div class="section-divider-gray" style="margin:40px 0 0;"></div>
       <div class="panel-wrap">
-        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;">
           <span>자산 추이</span>
           ${saveBtnHtml}
         </div>
@@ -1325,8 +1332,9 @@ function renderAssetTrend(){
   const deltaPct = first ? (delta/first)*100 : null;
 
   el.innerHTML = `
+    <div class="section-divider-gray" style="margin:40px 0 0;"></div>
     <div class="panel-wrap">
-      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;">
         <span>자산 추이</span>
         ${saveBtnHtml}
       </div>
@@ -1445,8 +1453,9 @@ function renderBreakdown(){
   `;
 
   el.innerHTML = `
+    <div class="section-divider-gray" style="margin:40px 0 0;"></div>
     <div class="breakdown-wrap">
-      <div class="breakdown-title" id="breakdownToggle">포트폴리오 비중</div>
+      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 비중</div>
       ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
@@ -1827,16 +1836,26 @@ async function createCatalogAndAdd(accountId){
 function stockEmoji(name, ticker){
   const n = (name||'') + ' ' + (ticker||'');
   const rules = [
-    [/반도체|semiconductor/i, '⚡'],
-    [/나스닥|nasdaq/i, '🚀'],
+    [/반도체|semiconductor/i, '💾'],
+    [/나스닥|nasdaq/i, '📈'],
     [/s&?p\s?500|에스앤피/i, '🇺🇸'],
-    [/리츠|reit/i, '🏠'],
-    [/골드/i, '🥇'],
-    [/국채/i, '🏛️'],
+    [/리츠|reit/i, '🏢'],
+    [/금|gold/i, '🥇'],
+    [/은(?!행)|silver/i, '🥈'],
+    [/원유|oil|에너지|energy/i, '🛢️'],
     [/배당|dividend/i, '💰'],
+    [/테슬라|tesla/i, '🚗'],
+    [/애플|apple/i, '🍎'],
     [/차이나|중국|china/i, '🇨🇳'],
+    [/일본|japan/i, '🇯🇵'],
+    [/인도|india/i, '🇮🇳'],
+    [/코스피|kospi|코스닥|국내/i, '🇰🇷'],
     [/채권|bond/i, '📜'],
+    [/바이오|bio|제약|헬스케어|health/i, '🧬'],
     [/은행|금융|financial|증권/i, '🏦'],
+    [/부동산|부동산/i, '🏠'],
+    [/원자재|commodity/i, '⛏️'],
+    [/암호화폐|비트코인|bitcoin|crypto/i, '₿'],
   ];
   for(const [re, emoji] of rules){ if(re.test(n)) return emoji; }
   return '📊';
