@@ -507,7 +507,8 @@
       "key": "360750",
       "name": "TIGER S&P500",
       "ticker": "360750",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-30",
       "perShare": 66,
       "accounts": [
         {
@@ -537,7 +538,8 @@
       "key": "133690",
       "name": "TIGER 나스닥100",
       "ticker": "133690",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-30",
       "perShare": 255,
       "accounts": [
         {
@@ -572,7 +574,8 @@
       "key": "381180",
       "name": "TIGER 미국필라델피아반도체나스닥",
       "ticker": "381180",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-30",
       "perShare": 49,
       "accounts": [
         {
@@ -592,7 +595,8 @@
       "key": "458730",
       "name": "TIGER 미국배당다우존스",
       "ticker": "458730",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-30",
       "perShare": 37,
       "accounts": [
         {
@@ -617,7 +621,8 @@
       "key": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
       "ticker": "466940",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-30",
       "perShare": 100,
       "accounts": [
         {
@@ -632,7 +637,8 @@
       "key": "182480",
       "name": "TIGER 미국MSCI리츠(합성H)",
       "ticker": "182480",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-30",
       "perShare": 46,
       "accounts": [
         {
@@ -662,7 +668,8 @@
       "key": "329650",
       "name": "KODEX TRF3070",
       "ticker": "329650",
-      "month": "2026-08",
+      "month": "2026-07",
+      "date": "2026-07-14",
       "perShare": 31,
       "accounts": [
         {
