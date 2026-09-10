@@ -481,6 +481,22 @@
         }
       ],
       "sells": []
+    },
+    {
+      "id": "stk_nvssojl",
+      "accountId": "acc_1q4nsbn",
+      "key": "360750",
+      "quantity": 6,
+      "buys": [
+        {
+          "id": "tx_3wjxhud",
+          "date": "2026-09-10",
+          "quantity": 6,
+          "price": 25392,
+          "amount": 152352
+        }
+      ],
+      "sells": []
     }
   ],
   "lastPriceUpdate": "2026-09-09 16:50 (KST)",
