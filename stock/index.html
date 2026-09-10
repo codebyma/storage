@@ -1548,6 +1548,10 @@ function buildTargetSheetContent(key, sid){
   const y3 = item.value ? (divTTM/item.value)*100 : null;
 
   const bodyHtml = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <div style="color:var(--text1);font-weight:400;font-size:16px;">${escapeHtml(item.name)}</div>
+      <button class="mini-add" onclick="openDividendLink('${keyEsc}')">배당확인</button>
+    </div>
     ${rebalanceHtml}
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
@@ -1605,7 +1609,16 @@ function buildTargetSheetContent(key, sid){
       ${dividendListHtmlForKey(key)}
     </div>
   `;
-  return { title: `${escapeHtml(item.name)} · 목표/배당 관리`, bodyHtml };
+  return { title: '목표/배당 관리', bodyHtml };
+}
+
+function openDividendLink(key){
+  const cat = catalogByKey(key);
+  if(cat && cat.dividendUrl){
+    window.open(cat.dividendUrl, '_blank', 'noopener');
+  } else {
+    showToast('배당확인 링크가 아직 설정되지 않았어요 (stockCatalog의 dividendUrl 필드에 추가해주세요)');
+  }
 }
 
 function openTargetSheet(key, sid){
@@ -1808,12 +1821,12 @@ async function createCatalogAndAdd(accountId){
 function stockEmoji(name, ticker){
   const n = (name||'') + ' ' + (ticker||'');
   const rules = [
-    [/반도체|semiconductor/i, '⚡'],
-    [/나스닥|nasdaq/i, '🚀'],
+    [/반도체|semiconductor/i, '💾'],
+    [/나스닥|nasdaq/i, '📈'],
     [/s&?p\s?500|에스앤피/i, '🇺🇸'],
-    [/리츠|reit/i, '🏠'],
-    [/골드|gold/i, '🥇'],
-    [/국채/i, '🏛️'],
+    [/리츠|reit/i, '🏢'],
+    [/금|gold/i, '🥇'],
+    [/은(?!행)|silver/i, '🥈'],
     [/원유|oil|에너지|energy/i, '🛢️'],
     [/배당|dividend/i, '💰'],
     [/테슬라|tesla/i, '🚗'],
