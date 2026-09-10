@@ -64,7 +64,7 @@
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
-  .won-sign{font-size:1em;}
+  .won-sign{font-size:calc(1em - 1px);}
   header{
     padding:28px 20px 18px;
     border-bottom:1px solid var(--border);
@@ -1511,15 +1511,51 @@ function dividendListHtmlForKey(key){
   }).join('');
 }
 
+function holdingsListHtmlForKey(key){
+  const stocks = stocksMatchingKey(key);
+  if(stocks.length===0) return `<div class="empty-hint">보유 계좌 없음</div>`;
+  return stocks.map(s=>{
+    const acc = DATA.accounts.find(a=>a.id===s.accountId);
+    const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+    return `
+      <div class="entry-row">
+        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
+        <span class="amt num">${fmtWon(stockTotal(s))}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function dividendFlatListHtmlForKey(key){
+  const records = recordsForKey(key);
+  if(records.length===0) return `<div class="empty-hint">기록 없음</div>`;
+  return records.map(rec=>{
+    const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
+    const dateLabel = rec.date || rec.month;
+    const keyEsc = key.replace(/'/g,"\\'");
+    return `
+      <div class="entry-row">
+        <span>${dateLabel}${rec.perShare ? ' · 주당 <span class="won-sign">₩</span>'+rec.perShare.toLocaleString('ko-KR') : ''}</span>
+        <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
+      </div>
+    `;
+  }).join('');
+}
+
+function openKeyDividendSheet(key){
+  openSheet2('배당현황', dividendFlatListHtmlForKey(key));
+}
+
 let openTargetSheetLayer = { key: null, layer: null };
 
 async function deleteKeyDividendRecord(key, month){
   deleteDividendRecord(key, month);
   await saveData();
   render();
-  if(openTargetSheetLayer.key === key){
-    refreshOpenTargetSheet();
+  if(document.getElementById('bottomSheet2').classList.contains('open')){
+    document.getElementById('sheetBody2').innerHTML = dividendFlatListHtmlForKey(key);
   }
+  refreshOpenTargetSheet();
   showToast('배당 기록을 삭제했어요');
 }
 
@@ -1572,6 +1608,11 @@ function buildTargetSheetContent(key, sid){
       <div style="color:var(--text1);font-weight:400;font-size:16px;">${escapeHtml(item.name)}</div>
       <button class="mini-add" onclick="openDividendLink('${keyEsc}')">배당확인</button>
     </div>
+
+    <div class="panel-title" style="font-size:14px;margin:0 0 8px;">보유현황</div>
+    ${holdingsListHtmlForKey(key)}
+
+    <div class="panel-title" style="font-size:14px;margin:20px 0 8px;">목표관리</div>
     ${rebalanceHtml}
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
@@ -1610,7 +1651,7 @@ function buildTargetSheetContent(key, sid){
     </div>
 
     <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
-      <div class="panel-title" style="font-size:14px;margin:0 0 8px;">배당 현황</div>
+      <div class="panel-title" style="font-size:14px;margin:0 0 8px;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
       <div class="yield-grid">
         <div class="yield-card">
           <div class="yield-label">누적<br>총투자원금 기준</div>
@@ -1625,8 +1666,7 @@ function buildTargetSheetContent(key, sid){
           <div class="yield-value num">${fmtPctPlain(y3)}</div>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text3);margin:6px 0 10px;">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
-      ${dividendListHtmlForKey(key)}
+      <div style="font-size:11px;color:var(--text3);margin:6px 0 2px;">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
     </div>
   `;
   return { title: '목표/배당 관리', bodyHtml };
