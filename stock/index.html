@@ -46,6 +46,10 @@
     --red-dim:#fbe7e5;
     --lime:#65a30d;
   }
+  html{
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
   *{box-sizing:border-box;touch-action:manipulation;}
   body{
     margin:0;
@@ -53,6 +57,8 @@
     color:var(--text1);
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
     -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
     transition:background .15s, color .15s;
     padding-bottom:60px;
     overflow-x:hidden;
@@ -2092,11 +2098,13 @@ function unlockBodyScroll(){
 }
 
 function openSheet(title, bodyHtml){
+  const sheetEl = document.getElementById('bottomSheet');
+  const wasOpen = sheetEl.classList.contains('open');
   document.getElementById('sheetTitle').textContent = title;
   document.getElementById('sheetBody').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay').classList.add('open');
-  document.getElementById('bottomSheet').classList.add('open');
-  lockBodyScroll();
+  sheetEl.classList.add('open');
+  if(!wasOpen) lockBodyScroll();
 }
 function closeSheet(){
   const wasOpen = document.getElementById('bottomSheet').classList.contains('open');
@@ -2107,11 +2115,13 @@ function closeSheet(){
   closeSheet2();
 }
 function openSheet2(title, bodyHtml){
+  const sheetEl = document.getElementById('bottomSheet2');
+  const wasOpen = sheetEl.classList.contains('open');
   document.getElementById('sheetTitle2').textContent = title;
   document.getElementById('sheetBody2').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay2').classList.add('open');
-  document.getElementById('bottomSheet2').classList.add('open');
-  lockBodyScroll();
+  sheetEl.classList.add('open');
+  if(!wasOpen) lockBodyScroll();
 }
 function closeSheet2(){
   const wasOpen = document.getElementById('bottomSheet2').classList.contains('open');
