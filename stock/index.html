@@ -1827,26 +1827,16 @@ async function createCatalogAndAdd(accountId){
 function stockEmoji(name, ticker){
   const n = (name||'') + ' ' + (ticker||'');
   const rules = [
-    [/반도체|semiconductor/i, '💾'],
-    [/나스닥|nasdaq/i, '📈'],
+    [/반도체|semiconductor/i, '⚡'],
+    [/나스닥|nasdaq/i, '🚀'],
     [/s&?p\s?500|에스앤피/i, '🇺🇸'],
-    [/리츠|reit/i, '🏢'],
-    [/금|gold/i, '🥇'],
-    [/은(?!행)|silver/i, '🥈'],
-    [/원유|oil|에너지|energy/i, '🛢️'],
+    [/리츠|reit/i, '🏠'],
+    [/골드/i, '🥇'],
+    [/국채/i, '🏛️'],
     [/배당|dividend/i, '💰'],
-    [/테슬라|tesla/i, '🚗'],
-    [/애플|apple/i, '🍎'],
     [/차이나|중국|china/i, '🇨🇳'],
-    [/일본|japan/i, '🇯🇵'],
-    [/인도|india/i, '🇮🇳'],
-    [/코스피|kospi|코스닥|국내/i, '🇰🇷'],
     [/채권|bond/i, '📜'],
-    [/바이오|bio|제약|헬스케어|health/i, '🧬'],
     [/은행|금융|financial|증권/i, '🏦'],
-    [/부동산|부동산/i, '🏠'],
-    [/원자재|commodity/i, '⛏️'],
-    [/암호화폐|비트코인|bitcoin|crypto/i, '₿'],
   ];
   for(const [re, emoji] of rules){ if(re.test(n)) return emoji; }
   return '📊';
