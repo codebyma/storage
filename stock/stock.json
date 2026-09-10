@@ -679,6 +679,96 @@
           "amount": 11997
         }
       ]
+    },
+    {
+      "id": "divrec_35g3lxv",
+      "key": "458730",
+      "name": "TIGER 미국배당다우존스",
+      "ticker": "458730",
+      "month": "2026-08",
+      "date": "2026-08-28",
+      "perShare": 30,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 26,
+          "amount": 780
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 246,
+          "amount": 7380
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 194,
+          "amount": 5820
+        }
+      ]
+    },
+    {
+      "id": "divrec_ecknywt",
+      "key": "329650",
+      "name": "KODEX TRF3070",
+      "ticker": "329650",
+      "month": "2026-08",
+      "date": "2026-08-13",
+      "perShare": 31,
+      "accounts": [
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 387,
+          "amount": 11997
+        }
+      ]
+    },
+    {
+      "id": "divrec_gz5pzn9",
+      "key": "466940",
+      "name": "TIGER 은행고배당플러스TOP10",
+      "ticker": "466940",
+      "month": "2026-08",
+      "date": "2026-08-28",
+      "perShare": 100,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 23,
+          "amount": 2300
+        }
+      ]
+    },
+    {
+      "id": "divrec_l7r1ecz",
+      "key": "182480",
+      "name": "TIGER 미국MSCI리츠(합성H)",
+      "ticker": "182480",
+      "month": "2026-08",
+      "date": "2026-08-28",
+      "perShare": 20,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 35,
+          "amount": 700
+        }
+      ]
+    },
+    {
+      "id": "divrec_c5ohz0s",
+      "key": "441640",
+      "name": "KODEX 미국배당커버드콜",
+      "ticker": "441640",
+      "month": "2026-08",
+      "date": "2026-08-13",
+      "perShare": 102,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 10,
+          "amount": 1020
+        }
+      ]
     }
   ],
   "stockCatalog": [
@@ -717,7 +807,7 @@
       "currentPrice": 7220,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/304660/analysis"
     },
-        {
+    {
       "key": "458730",
       "ticker": "458730",
       "name": "TIGER 미국배당다우존스",
@@ -752,7 +842,6 @@
       "currentPrice": 9350,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/371460/analysis"
     },
-
     {
       "key": "466940",
       "ticker": "466940",
@@ -767,7 +856,7 @@
       "currentPrice": 12257,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/441640/analysis"
     },
-        {
+    {
       "key": "329650",
       "ticker": "329650",
       "name": "KODEX TRF3070",
