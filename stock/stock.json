@@ -564,7 +564,16 @@
     }
   ],
   "lastPriceUpdate": "2026-09-11 12:36 (KST)",
-  "snapshots": [],
+  "snapshots": [
+    {
+      "date": "2026-09-11",
+      "totals": {
+        "me": 26125430,
+        "wife": 82028870,
+        "ALL": 108154300
+      }
+    }
+  ],
   "dividends": [
     {
       "id": "divrec_xl0ulp7",
@@ -650,22 +659,6 @@
       ]
     },
     {
-      "id": "divrec_8na87mq",
-      "key": "441640",
-      "name": "KODEX 미국배당커버드콜",
-      "ticker": "441640",
-      "month": "2026-07",
-      "date": "2026-07-14",
-      "perShare": 103,
-      "accounts": [
-        {
-          "accountId": "acc_1q4nsbn",
-          "quantity": 10,
-          "amount": 1020
-        }
-      ]
-    },
-    {
       "id": "divrec_6slqxiy",
       "key": "329650",
       "name": "KODEX TRF3070",
@@ -710,22 +703,6 @@
           "accountId": "acc_1q4nsbn",
           "quantity": 23,
           "amount": 2300
-        }
-      ]
-    },
-    {
-      "id": "divrec_c5ohz0s",
-      "key": "441640",
-      "name": "KODEX 미국배당커버드콜",
-      "ticker": "441640",
-      "month": "2026-08",
-      "date": "2026-08-13",
-      "perShare": 102,
-      "accounts": [
-        {
-          "accountId": "acc_1q4nsbn",
-          "quantity": 10,
-          "amount": 1020
         }
       ]
     },
@@ -862,6 +839,38 @@
           "accountId": "acc_o4bjqgm",
           "quantity": 83,
           "amount": 1660
+        }
+      ]
+    },
+    {
+      "id": "divrec_s2kbn9o",
+      "key": "441640",
+      "name": "KODEX 미국배당커버드콜",
+      "ticker": "441640",
+      "month": "2026-07",
+      "date": "2026-07-14",
+      "perShare": 103,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 10,
+          "amount": 1030
+        }
+      ]
+    },
+    {
+      "id": "divrec_upj6wco",
+      "key": "441640",
+      "name": "KODEX 미국배당커버드콜",
+      "ticker": "441640",
+      "month": "2026-08",
+      "date": "2026-08-13",
+      "perShare": 102,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 10,
+          "amount": 1020
         }
       ]
     }
