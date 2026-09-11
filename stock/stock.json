@@ -634,27 +634,6 @@
       ]
     },
     {
-      "id": "divrec_d94srmp",
-      "key": "381180",
-      "name": "TIGER 미국필라델피아반도체나스닥",
-      "ticker": "381180",
-      "month": "2026-07",
-      "date": "2026-07-30",
-      "perShare": 49,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 144,
-          "amount": 7056
-        },
-        {
-          "accountId": "acc_1ynxc3d",
-          "quantity": 269,
-          "amount": 13181
-        }
-      ]
-    },
-    {
       "id": "divrec_av1jb6a",
       "key": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
@@ -667,22 +646,6 @@
           "accountId": "acc_1q4nsbn",
           "quantity": 23,
           "amount": 2300
-        }
-      ]
-    },
-    {
-      "id": "divrec_3lboqho",
-      "key": "182480",
-      "name": "TIGER 미국MSCI리츠(합성H)",
-      "ticker": "182480",
-      "month": "2026-07",
-      "date": "2026-07-30",
-      "perShare": 46,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 35,
-          "amount": 700
         }
       ]
     },
@@ -747,22 +710,6 @@
           "accountId": "acc_1q4nsbn",
           "quantity": 23,
           "amount": 2300
-        }
-      ]
-    },
-    {
-      "id": "divrec_l7r1ecz",
-      "key": "182480",
-      "name": "TIGER 미국MSCI리츠(합성H)",
-      "ticker": "182480",
-      "month": "2026-08",
-      "date": "2026-08-28",
-      "perShare": 20,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 35,
-          "amount": 700
         }
       ]
     },
@@ -847,6 +794,74 @@
           "accountId": "acc_o4bjqgm",
           "quantity": 140,
           "amount": 18480
+        }
+      ]
+    },
+    {
+      "id": "divrec_wzn9vsw",
+      "key": "381180",
+      "name": "TIGER 미국필라델피아반도체나스닥",
+      "ticker": "381180",
+      "month": "2026-07",
+      "date": "2026-07-30",
+      "perShare": 49,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 144,
+          "amount": 7056
+        },
+        {
+          "accountId": "acc_1ynxc3d",
+          "quantity": 269,
+          "amount": 13181
+        },
+        {
+          "accountId": "acc_o4bjqgm",
+          "quantity": 525,
+          "amount": 25725
+        }
+      ]
+    },
+    {
+      "id": "divrec_dmx6yyy",
+      "key": "182480",
+      "name": "TIGER 미국MSCI리츠(합성H)",
+      "ticker": "182480",
+      "month": "2026-07",
+      "date": "2026-07-30",
+      "perShare": 46,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 35,
+          "amount": 1610
+        },
+        {
+          "accountId": "acc_o4bjqgm",
+          "quantity": 83,
+          "amount": 3818
+        }
+      ]
+    },
+    {
+      "id": "divrec_m79tynp",
+      "key": "182480",
+      "name": "TIGER 미국MSCI리츠(합성H)",
+      "ticker": "182480",
+      "month": "2026-08",
+      "date": "2026-08-28",
+      "perShare": 20,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 35,
+          "amount": 700
+        },
+        {
+          "accountId": "acc_o4bjqgm",
+          "quantity": 83,
+          "amount": 1660
         }
       ]
     }
