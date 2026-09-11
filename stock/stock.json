@@ -497,6 +497,70 @@
         }
       ],
       "sells": []
+    },
+    {
+      "id": "stk_dsjmytl",
+      "accountId": "acc_o4bjqgm",
+      "key": "381180",
+      "quantity": 525,
+      "buys": [
+        {
+          "id": "tx_yn57kda",
+          "date": "2026-09-04",
+          "quantity": 525,
+          "price": 15535,
+          "amount": 8155875
+        }
+      ],
+      "sells": []
+    },
+    {
+      "id": "stk_t0xfyur",
+      "accountId": "acc_o4bjqgm",
+      "key": "379800",
+      "quantity": 140,
+      "buys": [
+        {
+          "id": "tx_gb9qgk3",
+          "date": "2026-09-04",
+          "quantity": 140,
+          "price": 21085,
+          "amount": 2951900
+        }
+      ],
+      "sells": []
+    },
+    {
+      "id": "stk_yykf2no",
+      "accountId": "acc_o4bjqgm",
+      "key": "371460",
+      "quantity": 258,
+      "buys": [
+        {
+          "id": "tx_5t74gta",
+          "date": "2026-09-04",
+          "quantity": 258,
+          "price": 10056,
+          "amount": 2594448
+        }
+      ],
+      "sells": []
+    },
+    {
+      "id": "stk_9oh0bpy",
+      "accountId": "acc_o4bjqgm",
+      "key": "182480",
+      "quantity": 83,
+      "buys": [
+        {
+          "id": "tx_8d4harm",
+          "date": "2026-09-04",
+          "quantity": 83,
+          "price": 13037,
+          "amount": 1082071
+        }
+      ],
+      "sells": []
     }
   ],
   "lastPriceUpdate": "2026-09-10 17:44 (KST)",
@@ -862,6 +926,12 @@
       "name": "KODEX TRF3070",
       "currentPrice": 13900,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/329650/analysis"
+    },
+    {
+      "key": "379800",
+      "ticker": "379800",
+      "name": "KODEX 미국S&P500",
+      "currentPrice": 0
     }
   ]
 }
