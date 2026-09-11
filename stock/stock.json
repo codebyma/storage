@@ -563,7 +563,7 @@
       "sells": []
     }
   ],
-  "lastPriceUpdate": "2026-09-11 10:46 (KST)",
+  "lastPriceUpdate": "2026-09-10 17:44 (KST)",
   "snapshots": [],
   "dividends": [
     {
@@ -833,6 +833,22 @@
           "amount": 5820
         }
       ]
+    },
+    {
+      "id": "divrec_vmixqwi",
+      "key": "379800",
+      "name": "KODEX 미국S&P500",
+      "ticker": "379800",
+      "month": "2026-07",
+      "date": "2026-07-30",
+      "perShare": 132,
+      "accounts": [
+        {
+          "accountId": "acc_o4bjqgm",
+          "quantity": 140,
+          "amount": 18480
+        }
+      ]
     }
   ],
   "stockCatalog": [
@@ -840,98 +856,98 @@
       "key": "360750",
       "ticker": "360750",
       "name": "TIGER S&P500",
-      "currentPrice": 25420,
+      "currentPrice": 25425,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/360750/analysis"
     },
     {
       "key": "133690",
       "ticker": "133690",
       "name": "TIGER 나스닥100",
-      "currentPrice": 173600,
+      "currentPrice": 174540,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/133690/analysis"
     },
     {
       "key": "381180",
       "ticker": "381180",
       "name": "TIGER 미국필라델피아반도체나스닥",
-      "currentPrice": 40605,
+      "currentPrice": 41390,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/381180/analysis"
     },
     {
       "key": "305080",
       "ticker": "305080",
       "name": "TIGER 미국채10년선물",
-      "currentPrice": 11805,
+      "currentPrice": 11810,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/305080/analysis"
     },
     {
       "key": "304660",
       "ticker": "304660",
       "name": "KODEX 미국30년국채울트라선물(H)",
-      "currentPrice": 7115,
+      "currentPrice": 7230,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/304660/analysis"
     },
     {
       "key": "458730",
       "ticker": "458730",
       "name": "TIGER 미국배당다우존스",
-      "currentPrice": 14505,
+      "currentPrice": 14445,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/458730/analysis"
     },
     {
       "key": "319640",
       "ticker": "319640",
       "name": "TIGER 골드선물(H)",
-      "currentPrice": 25425,
+      "currentPrice": 25975,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/319640/analysis"
     },
     {
       "key": "0008S0",
       "ticker": "0008S0",
       "name": "TIGER 마국배당다우존스타켓데일리커버드콜",
-      "currentPrice": 9645,
+      "currentPrice": 9590,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/0008S0/analysis"
     },
     {
       "key": "182480",
       "ticker": "182480",
       "name": "TIGER 미국MSCI리츠(합성H)",
-      "currentPrice": 13250,
+      "currentPrice": 13245,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/182480/analysis"
     },
     {
       "key": "371460",
       "ticker": "371460",
       "name": "TIGER 차이나전기차SOLACTIVE",
-      "currentPrice": 9225,
+      "currentPrice": 9340,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/371460/analysis"
     },
     {
       "key": "466940",
       "ticker": "466940",
       "name": "TIGER 은행고배당플러스TOP10",
-      "currentPrice": 27370,
+      "currentPrice": 26860,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/466940/analysis"
     },
     {
       "key": "441640",
       "ticker": "441640",
       "name": "KODEX 미국배당커버드콜",
-      "currentPrice": 12275,
+      "currentPrice": 12270,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/441640/analysis"
     },
     {
       "key": "329650",
       "ticker": "329650",
       "name": "KODEX TRF3070",
-      "currentPrice": 13895,
+      "currentPrice": 13900,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/329650/analysis"
     },
     {
       "key": "379800",
       "ticker": "379800",
       "name": "KODEX 미국S&P500",
-      "currentPrice": 23110,
+      "currentPrice": 0,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/379800/analysis"
     }
   ]
