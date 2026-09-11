@@ -64,7 +64,7 @@
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
-  .won-sign{margin-right:2px;}
+  .won-sign{font-size:calc(1em - 1px);}
   header{
     padding:28px 20px 18px;
     border-bottom:1px solid var(--border);
@@ -251,7 +251,7 @@
     background:var(--surface2);
     border-radius:8px;
   }
-  .target-panel .entry-row{border-bottom:none;padding:3px 0;}
+  .target-panel .entry-row{border-bottom:none;padding:5px 0;}
 
   .section-title{
     font-size:22px;
@@ -1604,11 +1604,6 @@ function buildTargetSheetContent(key, sid){
   const y3 = item.value ? (divTTM/item.value)*100 : null;
 
   const bodyHtml = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
-      <div style="color:var(--text1);font-weight:400;font-size:16px;">${escapeHtml(item.name)}</div>
-      <button class="mini-add" onclick="openDividendLink('${keyEsc}')">배당확인</button>
-    </div>
-
     <div class="panel-title" style="font-size:14px;margin:0 0 8px;">보유현황</div>
     ${holdingsListHtmlForKey(key)}
 
@@ -1669,7 +1664,7 @@ function buildTargetSheetContent(key, sid){
       <div style="font-size:11px;color:var(--text3);margin:6px 0 2px;">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
     </div>
   `;
-  return { title: '목표/배당 관리', bodyHtml };
+  return { title: item.name, bodyHtml };
 }
 
 function openDividendLink(key){
@@ -1685,14 +1680,14 @@ function openTargetSheet(key, sid){
   const content = buildTargetSheetContent(key, sid);
   if(!content) return;
   openTargetSheetLayer = { key, layer: 1 };
-  openSheet(content.title, content.bodyHtml);
+  openSheet(content.title, content.bodyHtml, ()=>openDividendLink(key));
 }
 
 function openTargetSheetNested(key, sid){
   const content = buildTargetSheetContent(key, sid);
   if(!content) return;
   openTargetSheetLayer = { key, layer: 2 };
-  openSheet2(content.title, content.bodyHtml);
+  openSheet2(content.title, content.bodyHtml, ()=>openDividendLink(key));
 }
 
 async function updatePlannedCash(value){
@@ -2151,10 +2146,13 @@ function unlockBodyScroll(){
   }
 }
 
-function openSheet(title, bodyHtml){
+function openSheet(title, bodyHtml, onTitleClick){
   const sheetEl = document.getElementById('bottomSheet');
   const wasOpen = sheetEl.classList.contains('open');
-  document.getElementById('sheetTitle').textContent = title;
+  const titleEl = document.getElementById('sheetTitle');
+  titleEl.textContent = title;
+  titleEl.style.cursor = onTitleClick ? 'pointer' : '';
+  titleEl.onclick = onTitleClick || null;
   document.getElementById('sheetBody').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay').classList.add('open');
   sheetEl.classList.add('open');
@@ -2168,10 +2166,13 @@ function closeSheet(){
   if(wasOpen) unlockBodyScroll();
   closeSheet2();
 }
-function openSheet2(title, bodyHtml){
+function openSheet2(title, bodyHtml, onTitleClick){
   const sheetEl = document.getElementById('bottomSheet2');
   const wasOpen = sheetEl.classList.contains('open');
-  document.getElementById('sheetTitle2').textContent = title;
+  const titleEl = document.getElementById('sheetTitle2');
+  titleEl.textContent = title;
+  titleEl.style.cursor = onTitleClick ? 'pointer' : '';
+  titleEl.onclick = onTitleClick || null;
   document.getElementById('sheetBody2').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay2').classList.add('open');
   sheetEl.classList.add('open');
