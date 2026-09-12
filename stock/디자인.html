@@ -46,6 +46,10 @@
     --red-dim:#fbe7e5;
     --lime:#65a30d;
   }
+  html{
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
   *{box-sizing:border-box;touch-action:manipulation;}
   body{
     margin:0;
@@ -53,11 +57,14 @@
     color:var(--text1);
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Segoe UI",sans-serif;
     -webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
     transition:background .15s, color .15s;
     padding-bottom:60px;
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
+  .won-sign{font-size:calc(1em - 1px);}
   header{
     padding:28px 20px 18px;
     border-bottom:1px solid var(--border);
@@ -116,6 +123,11 @@
   .bluetext{color:var(--blue);}
 
   main{padding:20px;}
+
+  .section-divider-gray{
+    height:8px;
+    background:var(--border-strong);
+  }
 
   .panel-wrap{padding:0 20px;}
   .panel-title{
@@ -740,7 +752,8 @@
 <div id="breakdownSection"></div>
 
 <main>
-  <div class="section-title">
+  <div class="section-divider-gray" style="margin:20px -20px 0;"></div>
+  <div class="section-title" style="margin-top:40px;">
     <span id="accountsLabel">계좌</span>
     <button class="add-btn" id="addAccountBtn">+ 계좌 추가</button>
   </div>
@@ -793,7 +806,7 @@ const hasWindowStorage = (typeof window !== 'undefined') && window.storage && ty
 let dataSource = null; // 'server-json' | 'window-storage' | 'new'
 
 function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
-function fmtWon(n){ return (n||0).toLocaleString('ko-KR') + '원'; }
+function fmtWon(n){ return '<span class="won-sign">₩</span>' + (n||0).toLocaleString('ko-KR'); }
 function showToast(msg){
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1002,13 +1015,16 @@ function findDividendRecord(key, month){
   return (DATA.dividends||[]).find(d=>d.key===key && d.month===month);
 }
 // 한 계좌(종목)의 배당을 등록/수정 — 같은 종목의 다른 계좌 perShare도 함께 갱신됨
-function upsertDividendAccountEntry(key, month, name, ticker, accountId, quantity, perShare){
+// date: 'YYYY-MM-DD' 전체 날짜. month는 집계용으로 date에서 파생해서 같이 저장.
+function upsertDividendAccountEntry(key, date, name, ticker, accountId, quantity, perShare){
+  const month = date.slice(0,7);
   if(!DATA.dividends) DATA.dividends = [];
   let rec = findDividendRecord(key, month);
   if(!rec){
-    rec = { id: uid('divrec'), key, name, ticker, month, perShare, accounts: [] };
+    rec = { id: uid('divrec'), key, name, ticker, month, date, perShare, accounts: [] };
     DATA.dividends.push(rec);
   } else {
+    rec.date = date;
     rec.perShare = perShare;
     rec.accounts.forEach(a=>{ a.amount = a.quantity * perShare; });
   }
@@ -1019,13 +1035,15 @@ function upsertDividendAccountEntry(key, month, name, ticker, accountId, quantit
   return rec;
 }
 // 같은 종목의 여러 계좌에 한 번에 등록(일괄 입력)
-function upsertDividendGroupBulk(key, month, name, ticker, perShare, stockList){
+function upsertDividendGroupBulk(key, date, name, ticker, perShare, stockList){
+  const month = date.slice(0,7);
   if(!DATA.dividends) DATA.dividends = [];
   let rec = findDividendRecord(key, month);
   if(!rec){
-    rec = { id: uid('divrec'), key, name, ticker, month, perShare, accounts: [] };
+    rec = { id: uid('divrec'), key, name, ticker, month, date, perShare, accounts: [] };
     DATA.dividends.push(rec);
   } else {
+    rec.date = date;
     rec.perShare = perShare;
   }
   stockList.forEach(s=>{
@@ -1122,7 +1140,7 @@ function ownerCostBasis(ownerId){
 }
 function fmtPL(n){
   const sign = n > 0 ? '+' : (n < 0 ? '-' : '');
-  return sign + Math.abs(n).toLocaleString('ko-KR') + '원';
+  return sign + '<span class="won-sign">₩</span>' + Math.abs(n).toLocaleString('ko-KR');
 }
 function fmtPercent(n){
   if(n===null) return '';
@@ -1286,8 +1304,9 @@ function renderAssetTrend(){
 
   if(snaps.length < 2){
     el.innerHTML = `
+      <div class="section-divider-gray" style="margin:40px 0 0;"></div>
       <div class="panel-wrap">
-        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;">
           <span>자산 추이</span>
           ${saveBtnHtml}
         </div>
@@ -1318,8 +1337,9 @@ function renderAssetTrend(){
   const deltaPct = first ? (delta/first)*100 : null;
 
   el.innerHTML = `
+    <div class="section-divider-gray" style="margin:40px 0 0;"></div>
     <div class="panel-wrap">
-      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;">
         <span>자산 추이</span>
         ${saveBtnHtml}
       </div>
@@ -1402,7 +1422,7 @@ function renderBreakdown(){
         <div class="breakdown-top">
           <div class="breakdown-name-block">
             <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text2);font-weight:400;font-size:12px;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
-            <div class="breakdown-price-line">현재가 <span class="breakdown-price">${currentPrice.toLocaleString('ko-KR')}원</span>${item.count>1 ? ' <span style="color:var(--text2);">· '+item.count+'개 계좌</span>' : ''} <span style="color:var(--text3);">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
+            <div class="breakdown-price-line">현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span>${item.count>1 ? ' <span style="color:var(--text2);">· '+item.count+'개 계좌</span>' : ''} <span style="color:var(--text3);">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
           </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
@@ -1438,8 +1458,9 @@ function renderBreakdown(){
   `;
 
   el.innerHTML = `
+    <div class="section-divider-gray" style="margin:40px 0 0;"></div>
     <div class="breakdown-wrap">
-      <div class="breakdown-title" id="breakdownToggle">포트폴리오 비중</div>
+      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 비중</div>
       ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
@@ -1477,11 +1498,11 @@ function dividendListHtmlForKey(key){
       <div style="margin-bottom:6px;">
         <div style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
           <div class="entry-row" style="border-bottom:none;padding-bottom:2px;">
-            <span>${rec.month}</span>
+            <span>${rec.date || rec.month}</span>
             <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="event.stopPropagation();deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
           </div>
           <div class="entry-row" style="font-size:11px;color:var(--text3);padding-top:0;">
-            <span>총 ${totalQty.toLocaleString('ko-KR')}주 · 주당 ${(rec.perShare||0).toLocaleString('ko-KR')}원</span><span></span>
+            <span>총 ${totalQty.toLocaleString('ko-KR')}주 · 주당 <span class="won-sign">₩</span>${(rec.perShare||0).toLocaleString('ko-KR')}</span><span></span>
           </div>
         </div>
         <div id="${gid}" style="display:none;">${accountRows}</div>
@@ -1490,15 +1511,51 @@ function dividendListHtmlForKey(key){
   }).join('');
 }
 
+function holdingsListHtmlForKey(key){
+  const stocks = stocksMatchingKey(key);
+  if(stocks.length===0) return `<div class="empty-hint">보유 계좌 없음</div>`;
+  return stocks.map(s=>{
+    const acc = DATA.accounts.find(a=>a.id===s.accountId);
+    const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+    return `
+      <div class="entry-row">
+        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
+        <span class="amt num">${fmtWon(stockTotal(s))}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+function dividendFlatListHtmlForKey(key){
+  const records = recordsForKey(key);
+  if(records.length===0) return `<div class="empty-hint">기록 없음</div>`;
+  return records.map(rec=>{
+    const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
+    const dateLabel = rec.date || rec.month;
+    const keyEsc = key.replace(/'/g,"\\'");
+    return `
+      <div class="entry-row">
+        <span>${dateLabel}${rec.perShare ? ' · 주당 <span class="won-sign">₩</span>'+rec.perShare.toLocaleString('ko-KR') : ''}</span>
+        <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
+      </div>
+    `;
+  }).join('');
+}
+
+function openKeyDividendSheet(key){
+  openSheet2('배당현황', dividendFlatListHtmlForKey(key));
+}
+
 let openTargetSheetLayer = { key: null, layer: null };
 
 async function deleteKeyDividendRecord(key, month){
   deleteDividendRecord(key, month);
   await saveData();
   render();
-  if(openTargetSheetLayer.key === key){
-    refreshOpenTargetSheet();
+  if(document.getElementById('bottomSheet2').classList.contains('open')){
+    document.getElementById('sheetBody2').innerHTML = dividendFlatListHtmlForKey(key);
   }
+  refreshOpenTargetSheet();
   showToast('배당 기록을 삭제했어요');
 }
 
@@ -1547,6 +1604,10 @@ function buildTargetSheetContent(key, sid){
   const y3 = item.value ? (divTTM/item.value)*100 : null;
 
   const bodyHtml = `
+    <div class="panel-title" style="font-size:14px;margin:0 0 8px;">보유현황</div>
+    ${holdingsListHtmlForKey(key)}
+
+    <div class="panel-title" style="font-size:14px;margin:20px 0 8px;">목표관리</div>
     ${rebalanceHtml}
     <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
       <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
@@ -1567,10 +1628,10 @@ function buildTargetSheetContent(key, sid){
     <div class="form-panel" id="divgrpform_${sid}">
       <div class="form-row">
         <div class="field">
-          <span class="field-label">배당월</span>
+          <span class="field-label">배당일</span>
           <div class="date-display-wrap">
-            <span class="date-display-text" id="divgrp_month_${sid}_display" data-placeholder="월 선택">월 선택</span>
-            <input type="month" id="divgrp_month_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)">
+            <span class="date-display-text" id="divgrp_date_${sid}_display" data-placeholder="날짜 선택">날짜 선택</span>
+            <input type="date" id="divgrp_date_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)">
           </div>
         </div>
         <div class="field">
@@ -1585,7 +1646,7 @@ function buildTargetSheetContent(key, sid){
     </div>
 
     <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
-      <div class="panel-title" style="font-size:14px;margin:0 0 8px;">배당 현황</div>
+      <div class="panel-title" style="font-size:14px;margin:0 0 8px;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
       <div class="yield-grid">
         <div class="yield-card">
           <div class="yield-label">누적<br>총투자원금 기준</div>
@@ -1600,25 +1661,33 @@ function buildTargetSheetContent(key, sid){
           <div class="yield-value num">${fmtPctPlain(y3)}</div>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text3);margin:6px 0 10px;">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
-      ${dividendListHtmlForKey(key)}
+      <div style="font-size:11px;color:var(--text3);margin:6px 0 2px;">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
     </div>
   `;
-  return { title: `${escapeHtml(item.name)} · 목표/배당 관리`, bodyHtml };
+  return { title: item.name, bodyHtml };
+}
+
+function openDividendLink(key){
+  const cat = catalogByKey(key);
+  if(cat && cat.dividendUrl){
+    window.open(cat.dividendUrl, '_blank', 'noopener');
+  } else {
+    showToast('배당확인 링크가 아직 설정되지 않았어요 (stockCatalog의 dividendUrl 필드에 추가해주세요)');
+  }
 }
 
 function openTargetSheet(key, sid){
   const content = buildTargetSheetContent(key, sid);
   if(!content) return;
   openTargetSheetLayer = { key, layer: 1 };
-  openSheet(content.title, content.bodyHtml);
+  openSheet(content.title, content.bodyHtml, ()=>openDividendLink(key));
 }
 
 function openTargetSheetNested(key, sid){
   const content = buildTargetSheetContent(key, sid);
   if(!content) return;
   openTargetSheetLayer = { key, layer: 2 };
-  openSheet2(content.title, content.bodyHtml);
+  openSheet2(content.title, content.bodyHtml, ()=>openDividendLink(key));
 }
 
 async function updatePlannedCash(value){
@@ -1668,19 +1737,19 @@ function openGroupDividendForm(key, sid){
 }
 
 async function applyGroupDividend(key, sid){
-  const month = document.getElementById(`divgrp_month_${sid}`).value;
+  const date = document.getElementById(`divgrp_date_${sid}`).value;
   const perShare = parseFloat(document.getElementById(`divgrp_amount_${sid}`).value) || 0;
-  if(!month){ showToast('배당월을 선택해주세요'); return; }
+  if(!date){ showToast('배당일을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const cat = catalogByKey(key);
   const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity:s.quantity||0 }));
-  const rec = upsertDividendGroupBulk(key, month, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
+  const rec = upsertDividendGroupBulk(key, date, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
   const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
   closeForm(`divgrpform_${sid}`);
   await saveData();
   render();
   refreshOpenTargetSheet();
-  showToast(`${rec.accounts.length}개 계좌에 총 ${total.toLocaleString('ko-KR')}원 반영했어요`);
+  showToast(`${rec.accounts.length}개 계좌에 총 ₩${total.toLocaleString('ko-KR')} 반영했어요`);
 }
 
 function renderAccounts(){
@@ -1713,7 +1782,7 @@ function renderAccounts(){
         <div style="text-align:right;flex-shrink:0;">
           <div class="account-total num" style="font-size:17px;color:var(--text1);">${fmtWon(accTotal)}</div>
           <div style="font-size:13px;">
-            <span class="num ${plClass(accPL)}">${Math.abs(accPL).toLocaleString('ko-KR')}원</span>${accPLPct!==null ? ' <span class="num '+plClass(accPL)+'">('+fmtPercent(accPLPct)+')</span>' : ''}
+            <span class="num ${plClass(accPL)}">${fmtPL(accPL)}</span>${accPLPct!==null ? ' <span class="num '+plClass(accPL)+'">('+fmtPercent(accPLPct)+')</span>' : ''}
           </div>
         </div>
       </div>
@@ -1757,7 +1826,7 @@ function openStockPickerSheet(accountId){
     return `
       <div class="entry-row" style="cursor:pointer;" onclick="addHoldingFromCatalog('${accountId}','${keyEsc}')">
         <span>${escapeHtml(c.name)}${c.ticker ? ' <span style="color:var(--text3);">('+escapeHtml(c.ticker)+')</span>' : ''}</span>
-        <span class="amt num">${(c.currentPrice||0).toLocaleString('ko-KR')}원</span>
+        <span class="amt num"><span class="won-sign">₩</span>${(c.currentPrice||0).toLocaleString('ko-KR')}</span>
       </div>
     `;
   }).join('');
@@ -1852,14 +1921,16 @@ function buildStockRow(stock){
     <div class="stock-card-head">
       <div class="stock-card-title">
         <span class="stock-card-name">${stockEmoji(cat.name, cat.ticker)} ${escapeHtml(cat.name)}</span>${cat.ticker ? '<span class="stock-card-ticker">('+escapeHtml(cat.ticker)+')</span>' : ''}
+        <div class="stock-ticker">현재가 <span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</div>
       </div>
-      <div class="stock-card-qty">수량 <b class="num">${qty.toLocaleString('ko-KR')}</b></div>
     </div>
     <div class="stock-stat-grid">
+      <div class="stock-stat"><span class="stock-stat-label">수량</span><span class="stock-stat-value num">${qty.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">자산가치</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">구매가</span><span class="stock-stat-value num">${avgPrice.toLocaleString('ko-KR')}원</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">평균매입단가</span><span class="stock-stat-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight">${price.toLocaleString('ko-KR')}원</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight"><span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">투자배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
     </div>
@@ -1886,37 +1957,7 @@ function refreshStockDetailSheetIfOpen(stockId){
 }
 
 function buildStockDetailHtml(stock){
-  const qty = stock.quantity || 0;
-  const price = catalogFor(stock).currentPrice || 0;
-  const cost = stockCostBasis(stock);
-  const avgPrice = qty ? Math.round(cost / qty) : 0;
-  const pl = stockPL(stock);
-  const plPct = stockPLPercent(stock);
-
   return `
-    <div class="holding-card">
-      <div class="sub-label" style="margin-bottom:8px;">
-        <span>보유 현황</span>
-        <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
-      </div>
-      <div class="stat-mini-grid">
-        <div class="stat-mini"><div class="stat-mini-label">평균매입단가</div><div class="stat-mini-value num">${avgPrice.toLocaleString('ko-KR')}원</div></div>
-        <div class="stat-mini"><div class="stat-mini-label">투자원금</div><div class="stat-mini-value num">${fmtWon(cost)}</div></div>
-      </div>
-      <div class="form-panel" id="priceform_${stock.id}">
-        <div class="form-row">
-          <div class="field">
-            <span class="field-label">새 현재가 (1주당)</span>
-            <input type="number" inputmode="decimal" placeholder="예: 25000" id="price_input_${stock.id}">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-ghost" onclick="closeForm('priceform_${stock.id}')">취소</button>
-          <button class="btn-primary" onclick="submitPrice('${stock.id}')">저장</button>
-        </div>
-      </div>
-    </div>
-
     <div class="sub-block">
       <div class="sub-label">
         <span class="tx-section-label" onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역 (${(stock.buys||[]).length}건)</span>
@@ -1952,7 +1993,7 @@ function entryListHtml(list, stockId, field){
   const sorted = [...list].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   return sorted.map(item=>`
     <div class="entry-row">
-      <span>${item.date||''} · ${item.quantity||0}주${item.price ? ' × '+item.price.toLocaleString('ko-KR')+'원' : ''}</span>
+      <span>${item.date||''} · ${item.quantity||0}주${item.price ? ' × <span class="won-sign">₩</span>'+item.price.toLocaleString('ko-KR') : ''}</span>
       <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','${field}','${item.id}')">삭제</span></span>
     </div>
   `).join('');
@@ -1964,7 +2005,7 @@ function dividendListHtmlForStock(stock){
   const sorted = [...records].sort((a,b)=> (b.month||'').localeCompare(a.month||''));
   return sorted.map(item=>`
     <div class="entry-row">
-      <span>${item.month||''}${item.perShare ? ' · 주당 '+item.perShare.toLocaleString('ko-KR')+'원' : ''}</span>
+      <span>${item.month||''}${item.perShare ? ' · 주당 <span class="won-sign">₩</span>'+item.perShare.toLocaleString('ko-KR') : ''}</span>
       <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteStockDividend('${stock.id}','${item.month}')">삭제</span></span>
     </div>
   `).join('');
@@ -2077,12 +2118,17 @@ function unlockBodyScroll(){
   }
 }
 
-function openSheet(title, bodyHtml){
-  document.getElementById('sheetTitle').textContent = title;
+function openSheet(title, bodyHtml, onTitleClick){
+  const sheetEl = document.getElementById('bottomSheet');
+  const wasOpen = sheetEl.classList.contains('open');
+  const titleEl = document.getElementById('sheetTitle');
+  titleEl.textContent = title;
+  titleEl.style.cursor = onTitleClick ? 'pointer' : '';
+  titleEl.onclick = onTitleClick || null;
   document.getElementById('sheetBody').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay').classList.add('open');
-  document.getElementById('bottomSheet').classList.add('open');
-  lockBodyScroll();
+  sheetEl.classList.add('open');
+  if(!wasOpen) lockBodyScroll();
 }
 function closeSheet(){
   const wasOpen = document.getElementById('bottomSheet').classList.contains('open');
@@ -2092,12 +2138,17 @@ function closeSheet(){
   if(wasOpen) unlockBodyScroll();
   closeSheet2();
 }
-function openSheet2(title, bodyHtml){
-  document.getElementById('sheetTitle2').textContent = title;
+function openSheet2(title, bodyHtml, onTitleClick){
+  const sheetEl = document.getElementById('bottomSheet2');
+  const wasOpen = sheetEl.classList.contains('open');
+  const titleEl = document.getElementById('sheetTitle2');
+  titleEl.textContent = title;
+  titleEl.style.cursor = onTitleClick ? 'pointer' : '';
+  titleEl.onclick = onTitleClick || null;
   document.getElementById('sheetBody2').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay2').classList.add('open');
-  document.getElementById('bottomSheet2').classList.add('open');
-  lockBodyScroll();
+  sheetEl.classList.add('open');
+  if(!wasOpen) lockBodyScroll();
 }
 function closeSheet2(){
   const wasOpen = document.getElementById('bottomSheet2').classList.contains('open');
@@ -2156,6 +2207,11 @@ function openMonthDividendSheet(month){
       `;
     }).join('');
     const keyEsc = rec.key.replace(/'/g,"\\'");
+    let dayLabel = '';
+    if(rec.date){
+      const parts = rec.date.split('-');
+      if(parts.length===3) dayLabel = ` · ${parseInt(parts[1],10)}월 ${parseInt(parts[2],10)}일`;
+    }
     return `
       <div style="margin-bottom:8px;">
         <div style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
@@ -2164,7 +2220,7 @@ function openMonthDividendSheet(month){
             <span><span class="amt num" style="font-size:16.5px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
           </div>
           <div class="entry-row" style="font-size:11.5px;color:var(--text2);padding-top:0;">
-            <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>원' : ''}</span>
+            <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
             <span></span>
           </div>
         </div>
@@ -2244,7 +2300,7 @@ async function submitTx(stockId, field){
   await saveData();
   render();
   refreshStockDetailSheetIfOpen(stockId);
-  showToast(`${qty}주 × ${price.toLocaleString('ko-KR')}원 = ${amt.toLocaleString('ko-KR')}원 반영했어요`);
+  showToast(`${qty}주 × ₩${price.toLocaleString('ko-KR')} = ₩${amt.toLocaleString('ko-KR')} 반영했어요`);
 }
 
 async function submitDividend(stockId){
@@ -2259,7 +2315,7 @@ async function submitDividend(stockId){
   await saveData();
   render();
   refreshStockDetailSheetIfOpen(stockId);
-  showToast(`주당 ${perShare.toLocaleString('ko-KR')}원 × ${qty.toLocaleString('ko-KR')}주 = ${(perShare*qty).toLocaleString('ko-KR')}원 반영했어요`);
+  showToast(`주당 ₩${perShare.toLocaleString('ko-KR')} × ${qty.toLocaleString('ko-KR')}주 = ₩${(perShare*qty).toLocaleString('ko-KR')} 반영했어요`);
 }
 
 async function deleteEntry(stockId, field, entryId){
