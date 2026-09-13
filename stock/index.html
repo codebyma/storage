@@ -2226,6 +2226,22 @@ function openMonthDividendSheet(month){
   openSheet(title, bodyHtml);
 }
 
+function openDividendAccountDetail(key, month){
+  const rec = findDividendRecord(key, month);
+  if(!rec){ return; }
+  const accountRows = rec.accounts.map(a=>{
+    const acc = DATA.accounts.find(x=>x.id===a.accountId);
+    const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+    return `
+      <div class="entry-row">
+        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
+        <span class="amt num">${fmtWon(a.amount)}</span>
+      </div>
+    `;
+  }).join('');
+  openSheet2('계좌별 상세 내역', accountRows);
+}
+
 async function deleteMonthRecord(key, month){
   deleteDividendRecord(key, month);
   await saveData();
