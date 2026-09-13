@@ -1782,7 +1782,7 @@ function renderAccounts(){
         <div style="text-align:right;flex-shrink:0;">
           <div class="account-total num" style="font-size:17px;color:var(--text1);">${fmtWon(accTotal)}</div>
           <div style="font-size:13px;">
-            <span class="num ${plClass(accPL)}"><span class="won-sign">₩</span>${Math.abs(accPL).toLocaleString('ko-KR')}</span>${accPLPct!==null ? ' <span class="num '+plClass(accPL)+'">('+fmtPercent(accPLPct)+')</span>' : ''}
+            <span class="num ${plClass(accPL)}">${fmtPL(accPL)}</span>${accPLPct!==null ? ' <span class="num '+plClass(accPL)+'">('+fmtPercent(accPLPct)+')</span>' : ''}
           </div>
         </div>
       </div>
@@ -1921,14 +1921,16 @@ function buildStockRow(stock){
     <div class="stock-card-head">
       <div class="stock-card-title">
         <span class="stock-card-name">${stockEmoji(cat.name, cat.ticker)} ${escapeHtml(cat.name)}</span>${cat.ticker ? '<span class="stock-card-ticker">('+escapeHtml(cat.ticker)+')</span>' : ''}
+        <div class="stock-ticker">현재가 <span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</div>
       </div>
-      <div class="stock-card-qty">수량 <b class="num">${qty.toLocaleString('ko-KR')}</b></div>
     </div>
     <div class="stock-stat-grid">
+      <div class="stock-stat"><span class="stock-stat-label">수량</span><span class="stock-stat-value num">${qty.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">자산가치</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">구매가</span><span class="stock-stat-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">평균매입단가</span><span class="stock-stat-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight"><span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">투자배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
     </div>
@@ -1955,37 +1957,7 @@ function refreshStockDetailSheetIfOpen(stockId){
 }
 
 function buildStockDetailHtml(stock){
-  const qty = stock.quantity || 0;
-  const price = catalogFor(stock).currentPrice || 0;
-  const cost = stockCostBasis(stock);
-  const avgPrice = qty ? Math.round(cost / qty) : 0;
-  const pl = stockPL(stock);
-  const plPct = stockPLPercent(stock);
-
   return `
-    <div class="holding-card">
-      <div class="sub-label" style="margin-bottom:8px;">
-        <span>보유 현황</span>
-        <button class="mini-add" onclick="openPriceForm('${stock.id}')">현재가 수정</button>
-      </div>
-      <div class="stat-mini-grid">
-        <div class="stat-mini"><div class="stat-mini-label">평균매입단가</div><div class="stat-mini-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</div></div>
-        <div class="stat-mini"><div class="stat-mini-label">투자원금</div><div class="stat-mini-value num">${fmtWon(cost)}</div></div>
-      </div>
-      <div class="form-panel" id="priceform_${stock.id}">
-        <div class="form-row">
-          <div class="field">
-            <span class="field-label">새 현재가 (1주당)</span>
-            <input type="number" inputmode="decimal" placeholder="예: 25000" id="price_input_${stock.id}">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button class="btn-ghost" onclick="closeForm('priceform_${stock.id}')">취소</button>
-          <button class="btn-primary" onclick="submitPrice('${stock.id}')">저장</button>
-        </div>
-      </div>
-    </div>
-
     <div class="sub-block">
       <div class="sub-label">
         <span class="tx-section-label" onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역 (${(stock.buys||[]).length}건)</span>
@@ -2221,19 +2193,8 @@ function openMonthDividendSheet(month){
   const sorted = [...records].sort((a,b)=> b.total - a.total);
   const total = sorted.reduce((s,r)=>s+r.total,0);
 
-  const groupsHtml = sorted.map((rec, idx)=>{
-    const gid = `divgrpacc_${idx}`;
+  const groupsHtml = sorted.map((rec)=>{
     const totalQty = rec.accounts.reduce((s,a)=>s+(a.quantity||0),0);
-    const accountRows = rec.accounts.map(a=>{
-      const acc = DATA.accounts.find(x=>x.id===a.accountId);
-      const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
-      return `
-        <div class="entry-row" style="padding-left:10px;font-size:11.5px;">
-          <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
-          <span class="amt num">${fmtWon(a.amount)}</span>
-        </div>
-      `;
-    }).join('');
     const keyEsc = rec.key.replace(/'/g,"\\'");
     let dayLabel = '';
     if(rec.date){
@@ -2242,7 +2203,7 @@ function openMonthDividendSheet(month){
     }
     return `
       <div style="margin-bottom:8px;">
-        <div style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
+        <div style="cursor:pointer;" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
           <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:2px;">
             <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
             <span><span class="amt num" style="font-size:16.5px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
@@ -2252,7 +2213,6 @@ function openMonthDividendSheet(month){
             <span></span>
           </div>
         </div>
-        <div id="${gid}" style="display:none;">${accountRows}</div>
       </div>
     `;
   }).join('');
