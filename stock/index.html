@@ -1112,12 +1112,20 @@ function lastDayOfMonthStr(monthStr){
 function recalcAllDividendQuantities(){
   (DATA.dividends||[]).forEach(rec=>{
     const asOfDate = rec.date || lastDayOfMonthStr(rec.month);
+    // 이미 있는 계좌 항목: 매수/매도 기록이 있는 종목만 날짜 기준으로 다시 계산
     (rec.accounts||[]).forEach(a=>{
       const stock = DATA.stocks.find(s=>s.key===rec.key && s.accountId===a.accountId);
       if(!stock || !stockHasTxLog(stock)) return;
       const qty = stockQuantityAsOf(stock, asOfDate);
       a.quantity = qty;
       a.amount = qty * (rec.perShare||0);
+    });
+    // 매수/매도 기록은 있는데 이 배당 기록에는 아직 계좌 항목이 없는 경우
+    // (예전에 0주로 계산되어 통째로 빠졌던 경우 등) 이제라도 채워넣어요
+    DATA.stocks.filter(s=>s.key===rec.key && stockHasTxLog(s)).forEach(stock=>{
+      if(rec.accounts.find(a=>a.accountId===stock.accountId)) return;
+      const qty = stockQuantityAsOf(stock, asOfDate);
+      rec.accounts.push({ accountId: stock.accountId, quantity: qty, amount: qty * (rec.perShare||0) });
     });
   });
 }
@@ -1156,6 +1164,9 @@ function upsertDividendAccountEntry(key, date, name, ticker, accountId, quantity
   return rec;
 }
 // 같은 종목의 여러 계좌에 한 번에 등록(일괄 입력)
+// 0주로 계산되는 계좌도 일단 기록을 남겨둬요 — 나중에 매수 기록이 추가되면
+// recalcAllDividendQuantities가 이 기록을 찾아서 수량을 채워넣을 수 있도록.
+// (여기서 0주라고 그냥 건너뛰면, 나중에 매수를 입력해도 고칠 기록 자체가 없어서 영영 반영이 안 돼요)
 function upsertDividendGroupBulk(key, date, name, ticker, perShare, stockList){
   const month = date.slice(0,7);
   if(!DATA.dividends) DATA.dividends = [];
@@ -1168,7 +1179,6 @@ function upsertDividendGroupBulk(key, date, name, ticker, perShare, stockList){
     rec.perShare = perShare;
   }
   stockList.forEach(s=>{
-    if(s.quantity<=0) return;
     const amount = s.quantity * perShare;
     const idx = rec.accounts.findIndex(a=>a.accountId===s.accountId);
     if(idx>=0) rec.accounts[idx] = { accountId:s.accountId, quantity:s.quantity, amount };
