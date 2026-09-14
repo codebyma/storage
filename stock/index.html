@@ -467,10 +467,10 @@
   }
   .cta-btn{
     flex:1;
-    background:var(--mint);
+    background:var(--red);
     color:var(--bg);
     border:none;
-    border-radius:10px;
+    border-radius:4px;
     padding:14px 12px;
     font-size:14px;
     font-weight:700;
@@ -2036,7 +2036,7 @@ function buildStockDetailHtml(stock){
       </div>
     </div>
 
-    <div style="display:flex;justify-content:center;gap:24px;margin-top:18px;">
+    <div style="display:flex;justify-content:center;gap:8px;margin-top:18px;">
       <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">배당</button>
       <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">삭제</button>
     </div>
