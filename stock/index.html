@@ -2017,12 +2017,12 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-      <div class="entry-row">
-        <span onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역</span>
+      <div class="entry-row" onclick="openTxSheet('${stock.id}','buys','매수 내역')">
+        <span>매수 내역</span>
         <span class="amt num">${(stock.buys||[]).length}건</span>
       </div>
-    <div class="entry-row">
-        <span onclick="openTxSheet('${stock.id}','sells','매도 내역')">매도 내역</span>
+    <div class="entry-row" onclick="openTxSheet('${stock.id}','sells','매도 내역')>
+        <span">매도 내역</span>
         <span class="amt num">${(stock.sells||[]).length}건</span>
       </div>
 
