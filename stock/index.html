@@ -468,7 +468,7 @@
   .cta-btn{
     flex:1;
     background:var(--red);
-    color:var(--bg);
+    color:var(--text1);
     border:none;
     border-radius:4px;
     padding:14px 12px;
@@ -2041,9 +2041,9 @@ function buildStockDetailHtml(stock){
       <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">삭제</button>
     </div>
 
-    <div style="display:flex;gap:10px;margin-top:14px;">
-      <button class="cta-btn" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
-      <button class="cta-btn" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="cta-btn" onclick="toggleForm('buyform_${stock.id}')">매수</button>
+      <button class="cta-btn" onclick="toggleForm('sellform_${stock.id}')">매도</button>
     </div>
   `;
 }
