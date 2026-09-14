@@ -1884,7 +1884,7 @@ async function applyGroupDividend(key, sid){
   if(!date){ showToast('배당일을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const cat = catalogByKey(key);
-  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity: s.quantity||0 }));
+  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity:s.quantity||0 }));
   const rec = upsertDividendGroupBulk(key, date, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
   const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
   closeForm(`divgrpform_${sid}`);
@@ -2363,36 +2363,17 @@ function openMonthDividendSheet(month){
 function openDividendAccountDetail(key, month){
   const rec = findDividendRecord(key, month);
   if(!rec){ return; }
-  const keyEsc = key.replace(/'/g,"\\'");
   const accountRows = rec.accounts.map(a=>{
     const acc = DATA.accounts.find(x=>x.id===a.accountId);
     const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
     return `
       <div class="entry-row">
-        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''}</span>
-        <span style="display:flex;align-items:center;gap:6px;">
-          <input type="number" inputmode="numeric" class="inline-num-input" value="${a.quantity||0}" onchange="updateDividendAccountQuantity('${keyEsc}','${month}','${a.accountId}', this.value)">주
-          <span class="amt num">${fmtWon(a.amount)}</span>
-        </span>
+        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
+        <span class="amt num">${fmtWon(a.amount)}</span>
       </div>
     `;
   }).join('');
-  openSheet2('계좌별 상세 내역', accountRows + `<div style="font-size:11px;color:var(--text3);margin-top:10px;">수량을 직접 고치면 배당금이 그 자리에서 다시 계산돼요</div>`);
-}
-
-async function updateDividendAccountQuantity(key, month, accountId, value){
-  const qty = parseFloat(value);
-  if(isNaN(qty) || qty<0){ showToast('올바른 수량을 입력해주세요'); return; }
-  const rec = findDividendRecord(key, month);
-  if(!rec) return;
-  const idx = rec.accounts.findIndex(a=>a.accountId===accountId);
-  if(idx<0) return;
-  rec.accounts[idx].quantity = qty;
-  rec.accounts[idx].amount = qty * (rec.perShare||0);
-  await saveData();
-  render();
-  openDividendAccountDetail(key, month);
-  showToast('수량을 수정했어요');
+  openSheet2('계좌별 상세 내역', accountRows);
 }
 
 async function deleteMonthRecord(key, month){
