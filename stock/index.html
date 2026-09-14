@@ -989,9 +989,11 @@ function ensureDataShape(){
   if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
   if(!Array.isArray(DATA.dividends)) DATA.dividends = [];
   migrateStockCatalog();
+  recalcAllDividendQuantities();
 }
 
 async function saveData(){
+  recalcAllDividendQuantities();
   if(hasWindowStorage){
     try{
       await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
@@ -1083,6 +1085,37 @@ function stockCostBasis(stock){
   const buyTotal = (stock.buys||[]).reduce((s,b)=>s+(b.amount||0),0);
   const sellTotal = (stock.sells||[]).reduce((s,b)=>s+(b.amount||0),0);
   return buyTotal - sellTotal;
+}
+// 특정 날짜(dateStr, 'YYYY-MM-DD') 기준으로 그 계좌가 실제 보유하고 있었을 수량
+// 매수/매도가 어떤 순서로 입력되었는지와 상관없이, 각 거래의 '날짜'만 보고 계산해요
+function stockQuantityAsOf(stock, dateStr){
+  if(!dateStr) return stock.quantity || 0;
+  const buys = (stock.buys||[]).filter(b=>b.date && b.date<=dateStr).reduce((s,b)=>s+(b.quantity||0),0);
+  const sells = (stock.sells||[]).filter(s=>s.date && s.date<=dateStr).reduce((s,s2)=>s+(s2.quantity||0),0);
+  return Math.max(0, buys - sells);
+}
+function lastDayOfMonthStr(monthStr){
+  if(!monthStr) return null;
+  const parts = monthStr.split('-').map(Number);
+  const y = parts[0], m = parts[1];
+  if(!y || !m) return null;
+  const d = new Date(y, m, 0);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+// 배당 기록들을 실제 매수/매도 날짜 기준 보유수량으로 다시 계산해요.
+// 배당을 먼저 입력하고 매수/매도를 나중에 입력하는 등 순서가 뒤바뀌어도,
+// 저장/렌더링될 때마다 항상 날짜 기준으로 다시 맞춰줘요.
+function recalcAllDividendQuantities(){
+  (DATA.dividends||[]).forEach(rec=>{
+    const asOfDate = rec.date || lastDayOfMonthStr(rec.month);
+    (rec.accounts||[]).forEach(a=>{
+      const stock = DATA.stocks.find(s=>s.key===rec.key && s.accountId===a.accountId);
+      if(!stock) return;
+      const qty = stockQuantityAsOf(stock, asOfDate);
+      a.quantity = qty;
+      a.amount = qty * (rec.perShare||0);
+    });
+  });
 }
 function stockPL(stock){
   return stockTotal(stock) - stockCostBasis(stock);
@@ -1884,7 +1917,7 @@ async function applyGroupDividend(key, sid){
   if(!date){ showToast('배당일을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const cat = catalogByKey(key);
-  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity:s.quantity||0 }));
+  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity: stockQuantityAsOf(s, date) }));
   const rec = upsertDividendGroupBulk(key, date, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
   const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
   closeForm(`divgrpform_${sid}`);
