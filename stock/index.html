@@ -2251,7 +2251,7 @@ function openMonthDividendSheet(month){
     return `
       <div style="margin-bottom:8px;">
         <div style="cursor:pointer;" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
-          <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:2px;">
+          <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:0;">
             <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
             <span><span class="amt num" style="font-size:14px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
           </div>
