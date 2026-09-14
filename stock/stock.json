@@ -95,7 +95,7 @@
     {
       "id": "stk_w0rfxnb",
       "accountId": "acc_aioddia",
-      "quantity": 244,
+      "quantity": 144,
       "buys": [
         {
           "id": "tx_qqb1cg1",
@@ -103,13 +103,6 @@
           "quantity": 144,
           "price": 13897,
           "amount": 2001168
-        },
-        {
-          "id": "tx_hx8yy0o",
-          "date": "2026-09-08",
-          "quantity": 100,
-          "price": 1000,
-          "amount": 100000
         }
       ],
       "sells": [],
@@ -886,32 +879,6 @@
           "accountId": "acc_1q4nsbn",
           "quantity": 10,
           "amount": 1020
-        }
-      ]
-    },
-    {
-      "id": "divrec_9zzv3md",
-      "key": "381180",
-      "name": "TIGER 미국필라델피아반도체나스닥",
-      "ticker": "381180",
-      "month": "2026-09",
-      "date": "2026-09-14",
-      "perShare": 100,
-      "accounts": [
-        {
-          "accountId": "acc_aioddia",
-          "quantity": 144,
-          "amount": 14400
-        },
-        {
-          "accountId": "acc_1ynxc3d",
-          "quantity": 269,
-          "amount": 26900
-        },
-        {
-          "accountId": "acc_o4bjqgm",
-          "quantity": 525,
-          "amount": 52500
         }
       ]
     }
