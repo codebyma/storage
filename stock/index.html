@@ -2017,23 +2017,18 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-    <div class="sub-block">
-      <div class="sub-label">
-        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역 (${(stock.buys||[]).length}건)</span>
+      <div class="entry-row">
+        <span onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역</span>
+        <span class="amt num">${(stock.buys||[]).length}건</span>
       </div>
-      <div class="form-panel" id="buyform_${stock.id}">
-        ${txFormHtml(stock.id,'buys')}
+    <div class="entry-row">
+        <span onclick="openTxSheet('${stock.id}','sells','매도 내역')">매도 내역</span>
+        <span class="amt num">${(stock.sells||[]).length}건</span>
       </div>
-    </div>
 
-    <div class="sub-block">
-      <div class="sub-label">
-        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','sells','매도 내역')">매도 내역 (${(stock.sells||[]).length}건)</span>
-      </div>
-      <div class="form-panel" id="sellform_${stock.id}">
-        ${txFormHtml(stock.id,'sells')}
-      </div>
-    </div>
+
+
+   
 
     <div style="display:flex;justify-content:center;gap:8px;margin-top:18px;">
       <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">종목 상세</button>
