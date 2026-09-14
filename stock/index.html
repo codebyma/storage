@@ -119,6 +119,7 @@
   .metric .value.mint{color:var(--mint);}
   .metric .value.gold{color:var(--gold);}
   .metric .value.redtext{color:var(--red);}
+  .metric.none{display:none;}
   .redtext{color:var(--red);}
   .bluetext{color:var(--blue);}
 
@@ -1239,14 +1240,14 @@ function renderSummary(){
       <div class="label">총 투자원금</div>
       <div class="value num">${fmtWon(cost)}</div>
     </div>
-   /*  <div class="metric">
+   <div class="metric none">
       <div class="label">보유 계좌 수</div>
       <div class="value num">${accountsForOwner(currentOwner).length}개</div>
     </div>
-    <div class="metric">
+    <div class="metric none">
       <div class="label">이번 달 배당</div>
       <div class="value gold num">${fmtWon(monthDiv)}</div>
-    </div> */
+    </div>
     <div class="metric">
       <div class="label">올해 누적 배당</div>
       <div class="value gold num">${fmtWon(yearDiv)}</div>
