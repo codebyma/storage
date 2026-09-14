@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>주식 현황 정리</title>
+<title>주식 현황</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -64,7 +64,7 @@
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
-  .won-sign{font-size:calc(1em - 1px);}
+  .won-sign{font-size:1em;margin-right:1px;}
   header{
     padding:28px 20px 18px;
     border-bottom:1px solid var(--border);
@@ -119,6 +119,7 @@
   .metric .value.mint{color:var(--mint);}
   .metric .value.gold{color:var(--gold);}
   .metric .value.redtext{color:var(--red);}
+  .metric.none{display:none;}
   .redtext{color:var(--red);}
   .bluetext{color:var(--blue);}
 
@@ -220,10 +221,10 @@
     margin-bottom:8px;
   }
   .breakdown-name-block{min-width:0;flex:1;}
-  .breakdown-name{font-weight:600;color:var(--text1);font-size:16px;}
+  .breakdown-name{font-weight:400;color:var(--text1);font-size:16px;}
   .breakdown-price-line{font-size:11.5px;color:var(--text2);margin-top:3px;}
-  .breakdown-price{color:var(--lime);font-weight:600;}
-  .price-highlight{color:var(--lime);font-weight:600;}
+  .breakdown-price{color:var(--mint);font-weight:400;}
+  .price-highlight{color:var(--mint);font-weight:400;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
   .breakdown-ratio{font-size:14px;font-weight:600;color:var(--text1);font-family:'Roboto',sans-serif;}
   .breakdown-pl{font-size:12px;line-height:1.3;font-family:'Roboto',sans-serif;}
@@ -251,7 +252,7 @@
     background:var(--surface2);
     border-radius:8px;
   }
-  .target-panel .entry-row{border-bottom:none;padding:5px 0;}
+  .target-panel .entry-row{border-bottom:none;padding:2px 0;}
 
   .section-title{
     font-size:22px;
@@ -317,7 +318,7 @@
     margin-bottom:10px;
   }
   .stock-card-title{flex:1;min-width:0;}
-  .stock-card-name{font-size:16px;font-weight:600;color:var(--text1);}
+  .stock-card-name{font-size:16px;font-weight:400;color:var(--text1);}
   .stock-card-ticker{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
   .stock-card-qty{font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;white-space:nowrap;}
   .stock-card-qty b{color:var(--text1);font-weight:600;}
@@ -334,7 +335,7 @@
   .stock-stat-value{color:var(--text1);}
   .stock-stat-value.redtext{color:var(--red);}
   .stock-stat-value.bluetext{color:var(--blue);}
-  .stock-stat-value.price-highlight{color:var(--lime);}
+  .stock-stat-value.price-highlight{color:var(--mint);}
 
   .sub-block{margin-bottom:6px;}
   .holding-card{
@@ -360,7 +361,7 @@
     display:flex;
     justify-content:space-between;
     font-size:12.5px;
-    padding:6px 0;
+    padding:3px 0;
     border-bottom:1px solid var(--border);
     color:var(--text2);
   }
@@ -423,9 +424,40 @@
     border-radius:8px;
     padding:8px 6px;
     text-align:center;
+    cursor:pointer;
+    position:relative;
   }
+  .yield-card:active{background:var(--border);}
   .yield-label{font-size:9.5px;color:var(--text2);line-height:1.35;margin-bottom:5px;}
   .yield-value{font-size:14px;font-weight:600;color:var(--gold);}
+  .yield-tooltip{
+    position:fixed;
+    max-width:230px;
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    color:var(--text1);
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:11.5px;
+    line-height:1.55;
+    text-align:left;
+    z-index:300;
+    box-shadow:0 6px 20px rgba(0,0,0,0.35);
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .12s ease, transform .12s ease;
+  }
+  .yield-tooltip.show{opacity:1;transform:translateY(0);}
+  .yield-tooltip-title{font-weight:600;color:var(--gold);margin-bottom:4px;font-size:11.5px;}
+  .yield-tooltip-arrow{
+    position:absolute;
+    width:9px;height:9px;
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    transform:rotate(45deg);
+  }
+  .yield-tooltip-arrow.arrow-down{bottom:-5.5px;border-top:none;border-left:none;}
+  .yield-tooltip-arrow.arrow-up{top:-5.5px;border-bottom:none;border-right:none;}
   .tx-list-scroll{
     max-height:220px;
     overflow-y:auto;
@@ -446,7 +478,7 @@
     background:var(--surface2);
     border:1.5px solid var(--mint);
     color:var(--mint);
-    border-radius:7px;
+    border-radius:4px;
     padding:8px 10px;
     font-size:12px;
     font-weight:600;
@@ -467,17 +499,16 @@
   }
   .cta-btn{
     flex:1;
-    background:var(--mint);
-    color:var(--bg);
-    border:none;
-    border-radius:10px;
-    padding:14px 12px;
-    font-size:14px;
+background: var(--surface2);
+    border: 1px solid var(--mint);
+    color: var(--mint);
+    border-radius:4px;
+    padding:10px 12px;
+    font-size:16px;
     font-weight:700;
     cursor:pointer;
     text-align:center;
   }
-  .cta-btn:active{transform:scale(0.98);}
   .inline-num-input{
     background:transparent;
     border:none;
@@ -794,7 +825,7 @@
   <div id="accountList"></div>
 </main>
 
-<div class="section-divider-gray" style="margin:40px -20px 0;"></div>
+<div class="section-divider-gray" style="margin:40px 0 0;"></div>
 <div class="panel-wrap" style="padding-bottom:40px;">
   <div class="panel-title" style="margin-top:40px;">GitHub 저장</div>
   <div class="panel-caption">현재 데이터를 GitHub 저장소의 stock.json에 바로 커밋해요. 최초 1회만 아래 설정을 입력하면, 이후엔 이 브라우저에서 버튼 한 번으로 저장돼요.</div>
@@ -852,7 +883,7 @@ let currentOwner = null;
 let openAccounts = new Set();
 let openStocks = new Set();
 let openTxSections = new Set();
-let breakdownOpen = false;
+let breakdownOpen = true;
 
 const STORAGE_KEY = 'portfolio-data';
 const hasWindowStorage = (typeof window !== 'undefined') && window.storage && typeof window.storage.get === 'function';
@@ -1174,6 +1205,58 @@ function stockYieldOnCurrentPrice(stock){
   if(!mv) return null;
   return (stockDividendTTM(stock) / mv) * 100;
 }
+const YIELD_TOOLTIP_INFO = {
+  1: { title:'누적 총투자원금 기준', desc:'지금까지 받은 누적 배당금을 총 투자원금으로 나눈 값이에요. 연환산이 아닌, 처음 투자한 이후 지금까지의 누적 실현 수익률이에요.' },
+  2: { title:'최근 12개월 · 평균매입가 기준', desc:'최근 12개월 배당금을 총 투자원금(평균매입단가 × 수량)으로 나눈 값이에요. 지금의 배당 페이스가 앞으로도 이어진다고 가정했을 때의 수익률이에요.' },
+  3: { title:'최근 12개월 · 현재가 기준', desc:'최근 12개월 배당금을 현재 평가금액으로 나눈 값이에요. 지금 이 가격에 새로 매수한다면 기대할 수 있는 수익률로, 다른 종목과 비교할 때 참고하기 좋아요.' }
+};
+
+function showYieldTooltip(evt, type){
+  evt.stopPropagation();
+  closeYieldTooltip();
+  const card = evt.currentTarget;
+  const info = YIELD_TOOLTIP_INFO[type];
+  if(!info) return;
+  const rect = card.getBoundingClientRect();
+  const tip = document.createElement('div');
+  tip.className = 'yield-tooltip';
+  tip.id = 'yieldTooltip';
+  tip.innerHTML = `<div class="yield-tooltip-title">${info.title}</div><div>${info.desc}</div>`;
+  document.body.appendChild(tip);
+
+  const tipRect = tip.getBoundingClientRect();
+  const margin = 10;
+  let left = rect.left + rect.width/2 - tipRect.width/2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - tipRect.width - margin));
+
+  let top = rect.top - tipRect.height - margin;
+  let arrowCls = 'arrow-down';
+  if(top < margin){
+    top = rect.bottom + margin;
+    arrowCls = 'arrow-up';
+  }
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+
+  const arrow = document.createElement('div');
+  arrow.className = 'yield-tooltip-arrow ' + arrowCls;
+  const arrowLeft = Math.max(12, Math.min(rect.left + rect.width/2 - left, tipRect.width - 12));
+  arrow.style.left = arrowLeft + 'px';
+  arrow.style.marginLeft = '-4.5px';
+  tip.appendChild(arrow);
+
+  requestAnimationFrame(()=> tip.classList.add('show'));
+  setTimeout(()=>{
+    document.addEventListener('click', closeYieldTooltip, { once:true });
+    document.addEventListener('scroll', closeYieldTooltip, { once:true, capture:true });
+  }, 0);
+}
+
+function closeYieldTooltip(){
+  const el = document.getElementById('yieldTooltip');
+  if(el) el.remove();
+}
+
 function ownerAvgYield(ownerId, fn){
   const yields = stocksForOwner(ownerId).map(fn).filter(y=>y!==null);
   if(yields.length===0) return null;
@@ -1240,11 +1323,11 @@ function renderSummary(){
       <div class="label">총 투자원금</div>
       <div class="value num">${fmtWon(cost)}</div>
     </div>
-    <div class="metric">
+   <div class="metric none">
       <div class="label">보유 계좌 수</div>
       <div class="value num">${accountsForOwner(currentOwner).length}개</div>
     </div>
-    <div class="metric">
+    <div class="metric none">
       <div class="label">이번 달 배당</div>
       <div class="value gold num">${fmtWon(monthDiv)}</div>
     </div>
@@ -1255,15 +1338,15 @@ function renderSummary(){
     <div class="metric" style="grid-column:1 / -1;">
       <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
       <div class="yield-grid">
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
           <div class="yield-value num">${fmtPctPlain(avgYield1)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,2)">
           <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
           <div class="yield-value num">${fmtPctPlain(avgYield2)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,3)">
           <div class="yield-label">최근 12개월<br>현재가 기준</div>
           <div class="yield-value num">${fmtPctPlain(avgYield3)}</div>
         </div>
@@ -1519,7 +1602,7 @@ function renderBreakdown(){
   el.innerHTML = `
     <div class="section-divider-gray" style="margin:40px 0 0;"></div>
     <div class="breakdown-wrap">
-      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 비중</div>
+      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 모음</div>
       ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
@@ -1707,15 +1790,15 @@ function buildTargetSheetContent(key, sid){
     <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
       <div class="panel-title" style="font-size:14px;margin:0 0 8px;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
       <div class="yield-grid">
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
           <div class="yield-value num">${fmtPctPlain(y1)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,2)">
           <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
           <div class="yield-value num">${fmtPctPlain(y2)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,3)">
           <div class="yield-label">최근 12개월<br>현재가 기준</div>
           <div class="yield-value num">${fmtPctPlain(y3)}</div>
         </div>
@@ -1934,27 +2017,17 @@ async function createCatalogAndAdd(accountId){
 
 function stockEmoji(name, ticker){
   const n = (name||'') + ' ' + (ticker||'');
-  const rules = [
-    [/반도체|semiconductor/i, '💾'],
-    [/나스닥|nasdaq/i, '📈'],
+ const rules = [
+    [/반도체|semiconductor/i, '⚡'],
+    [/나스닥|nasdaq/i, '🚀'],
     [/s&?p\s?500|에스앤피/i, '🇺🇸'],
-    [/리츠|reit/i, '🏢'],
-    [/금|gold/i, '🥇'],
-    [/은(?!행)|silver/i, '🥈'],
-    [/원유|oil|에너지|energy/i, '🛢️'],
+    [/리츠|reit/i, '🏠'],
+    [/골드/i, '🥇'],
+    [/국채/i, '🏛️'],
     [/배당|dividend/i, '💰'],
-    [/테슬라|tesla/i, '🚗'],
-    [/애플|apple/i, '🍎'],
     [/차이나|중국|china/i, '🇨🇳'],
-    [/일본|japan/i, '🇯🇵'],
-    [/인도|india/i, '🇮🇳'],
-    [/코스피|kospi|코스닥|국내/i, '🇰🇷'],
     [/채권|bond/i, '📜'],
-    [/바이오|bio|제약|헬스케어|health/i, '🧬'],
     [/은행|금융|financial|증권/i, '🏦'],
-    [/부동산|부동산/i, '🏠'],
-    [/원자재|commodity/i, '⛏️'],
-    [/암호화폐|비트코인|bitcoin|crypto/i, '₿'],
   ];
   for(const [re, emoji] of rules){ if(re.test(n)) return emoji; }
   return '📊';
@@ -1980,18 +2053,17 @@ function buildStockRow(stock){
     <div class="stock-card-head">
       <div class="stock-card-title">
         <span class="stock-card-name">${stockEmoji(cat.name, cat.ticker)} ${escapeHtml(cat.name)}</span>${cat.ticker ? '<span class="stock-card-ticker">('+escapeHtml(cat.ticker)+')</span>' : ''}
-        <div class="stock-ticker">현재가 <span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</div>
       </div>
     </div>
     <div class="stock-stat-grid">
+      <div class="stock-stat"><span class="stock-stat-label">원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수량</span><span class="stock-stat-value num">${qty.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">자산가치</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">평균매입단가</span><span class="stock-stat-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">평균단가</span><span class="stock-stat-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight"><span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">투자배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
     </div>
   `;
   row.onclick = ()=>{
@@ -2004,7 +2076,8 @@ function openStockDetailSheet(stockId){
   const stock = DATA.stocks.find(s=>s.id===stockId);
   if(!stock) return;
   const cat = catalogFor(stock);
-  const title = cat.name + (cat.ticker ? ` (${cat.ticker})` : '');
+  // const title = cat.name + (cat.ticker ? ` (${cat.ticker})` : '');
+  const title = cat.name;
   openSheet(title, buildStockDetailHtml(stock));
 }
 
@@ -2018,32 +2091,28 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-    <div class="sub-block">
-      <div class="sub-label">
-        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','buys','매수 내역')">매수 내역 (${(stock.buys||[]).length}건)</span>
+     <div class="entry-row" onclick="openTxSheet('${stock.id}','buys','매수 내역')">
+        <span>매수 내역</span>
+        <span class="amt num">${(stock.buys||[]).length}건</span>
       </div>
-      <div class="form-panel" id="buyform_${stock.id}">
+    <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
-    </div>
-
-    <div class="sub-block">
-      <div class="sub-label">
-        <span class="tx-section-label" onclick="openTxSheet('${stock.id}','sells','매도 내역')">매도 내역 (${(stock.sells||[]).length}건)</span>
+    <div class="entry-row" onclick="openTxSheet('${stock.id}','sells','매도 내역')>
+        <span">매도 내역</span>
+        <span class="amt num">${(stock.sells||[]).length}건</span>
       </div>
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:18px;">
+      <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">종목 상세</button>
+      <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">종목 삭제</button>
     </div>
 
-    <div style="display:flex;justify-content:center;gap:24px;margin-top:18px;">
-      <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">배당</button>
-      <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">삭제</button>
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:14px;">
-      <button class="cta-btn" onclick="toggleForm('buyform_${stock.id}')">+ 매수 추가</button>
-      <button class="cta-btn" onclick="toggleForm('sellform_${stock.id}')">+ 매도 추가</button>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="cta-btn" onclick="toggleForm('buyform_${stock.id}')">매수</button>
+      <button class="cta-btn" onclick="toggleForm('sellform_${stock.id}')">매도</button>
     </div>
   `;
 }
@@ -2199,6 +2268,7 @@ function closeSheet(){
   document.getElementById('bottomSheet').classList.remove('open');
   if(openTargetSheetLayer.layer===1) openTargetSheetLayer = { key:null, layer:null };
   if(wasOpen) unlockBodyScroll();
+  closeYieldTooltip();
   closeSheet2();
 }
 function openSheet2(title, bodyHtml, onTitleClick){
@@ -2219,6 +2289,7 @@ function closeSheet2(){
   document.getElementById('bottomSheet2').classList.remove('open');
   if(openTargetSheetLayer.layer===2) openTargetSheetLayer = { key:null, layer:null };
   if(wasOpen) unlockBodyScroll();
+  closeYieldTooltip();
 }
 function openTxSheet(stockId, field, title){
   const stock = DATA.stocks.find(s=>s.id===stockId);
@@ -2267,9 +2338,9 @@ function openMonthDividendSheet(month){
     return `
       <div style="margin-bottom:8px;">
         <div style="cursor:pointer;" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
-          <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:2px;">
+          <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:0;">
             <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
-            <span><span class="amt num" style="font-size:16.5px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+            <span><span class="amt num" style="font-size:14px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
           </div>
           <div class="entry-row" style="font-size:11.5px;color:var(--text2);padding-top:0;">
             <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
@@ -2282,7 +2353,7 @@ function openMonthDividendSheet(month){
 
   const bodyHtml = `
     <div style="margin-bottom:16px;">
-      <div class="num" style="font-size:22px;font-weight:700;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
+      <div class="num" style="font-size:24px;font-weight:500;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
     </div>
     ${groupsHtml}
   `;
