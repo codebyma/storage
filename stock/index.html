@@ -64,7 +64,7 @@
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
-  .won-sign{font-size:calc(1em - 1px);}
+  .won-sign{font-size:1em;margin-right:1px;}
   header{
     padding:28px 20px 18px;
     border-bottom:1px solid var(--border);
@@ -220,10 +220,10 @@
     margin-bottom:8px;
   }
   .breakdown-name-block{min-width:0;flex:1;}
-  .breakdown-name{font-weight:600;color:var(--text1);font-size:16px;}
+  .breakdown-name{font-weight:400;color:var(--text1);font-size:16px;}
   .breakdown-price-line{font-size:11.5px;color:var(--text2);margin-top:3px;}
-  .breakdown-price{color:var(--lime);font-weight:600;}
-  .price-highlight{color:var(--lime);font-weight:600;}
+  .breakdown-price{color:var(--mint);font-weight:600;}
+  .price-highlight{color:var(--mint);font-weight:600;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
   .breakdown-ratio{font-size:14px;font-weight:600;color:var(--text1);font-family:'Roboto',sans-serif;}
   .breakdown-pl{font-size:12px;line-height:1.3;font-family:'Roboto',sans-serif;}
@@ -317,7 +317,7 @@
     margin-bottom:10px;
   }
   .stock-card-title{flex:1;min-width:0;}
-  .stock-card-name{font-size:16px;font-weight:600;color:var(--text1);}
+  .stock-card-name{font-size:16px;font-weight:400;color:var(--text1);}
   .stock-card-ticker{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
   .stock-card-qty{font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;white-space:nowrap;}
   .stock-card-qty b{color:var(--text1);font-weight:600;}
@@ -334,7 +334,7 @@
   .stock-stat-value{color:var(--text1);}
   .stock-stat-value.redtext{color:var(--red);}
   .stock-stat-value.bluetext{color:var(--blue);}
-  .stock-stat-value.price-highlight{color:var(--lime);}
+  .stock-stat-value.price-highlight{color:var(--mint);}
 
   .sub-block{margin-bottom:6px;}
   .holding-card{
@@ -360,7 +360,7 @@
     display:flex;
     justify-content:space-between;
     font-size:12.5px;
-    padding:6px 0;
+    padding:3px 0;
     border-bottom:1px solid var(--border);
     color:var(--text2);
   }
@@ -471,7 +471,7 @@ background: var(--surface2);
     border: 1px solid var(--mint);
     color: var(--mint);
     border-radius:4px;
-    padding:14px 12px;
+    padding:10px 12px;
     font-size:16px;
     font-weight:700;
     cursor:pointer;
@@ -1518,7 +1518,7 @@ function renderBreakdown(){
   el.innerHTML = `
     <div class="section-divider-gray" style="margin:40px 0 0;"></div>
     <div class="breakdown-wrap">
-      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 비중</div>
+      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 모음</div>
       ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
@@ -1933,27 +1933,17 @@ async function createCatalogAndAdd(accountId){
 
 function stockEmoji(name, ticker){
   const n = (name||'') + ' ' + (ticker||'');
-  const rules = [
-    [/반도체|semiconductor/i, '💾'],
-    [/나스닥|nasdaq/i, '📈'],
+ const rules = [
+    [/반도체|semiconductor/i, '⚡'],
+    [/나스닥|nasdaq/i, '🚀'],
     [/s&?p\s?500|에스앤피/i, '🇺🇸'],
-    [/리츠|reit/i, '🏢'],
-    [/금|gold/i, '🥇'],
-    [/은(?!행)|silver/i, '🥈'],
-    [/원유|oil|에너지|energy/i, '🛢️'],
+    [/리츠|reit/i, '🏠'],
+    [/골드/i, '🥇'],
+    [/국채/i, '🏛️'],
     [/배당|dividend/i, '💰'],
-    [/테슬라|tesla/i, '🚗'],
-    [/애플|apple/i, '🍎'],
     [/차이나|중국|china/i, '🇨🇳'],
-    [/일본|japan/i, '🇯🇵'],
-    [/인도|india/i, '🇮🇳'],
-    [/코스피|kospi|코스닥|국내/i, '🇰🇷'],
     [/채권|bond/i, '📜'],
-    [/바이오|bio|제약|헬스케어|health/i, '🧬'],
     [/은행|금융|financial|증권/i, '🏦'],
-    [/부동산|부동산/i, '🏠'],
-    [/원자재|commodity/i, '⛏️'],
-    [/암호화폐|비트코인|bitcoin|crypto/i, '₿'],
   ];
   for(const [re, emoji] of rules){ if(re.test(n)) return emoji; }
   return '📊';
@@ -2016,7 +2006,7 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-      <div class="entry-row" onclick="openTxSheet('${stock.id}','buys','매수 내역')">
+     <div class="entry-row" onclick="openTxSheet('${stock.id}','buys','매수 내역')">
         <span>매수 내역</span>
         <span class="amt num">${(stock.buys||[]).length}건</span>
       </div>
@@ -2030,12 +2020,7 @@ function buildStockDetailHtml(stock){
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
-
-
-
-   
-
-    <div style="display:flex;justify-content:center;gap:8px;margin-top:18px;">
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:18px;">
       <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">종목 상세</button>
       <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">종목 삭제</button>
     </div>
@@ -2268,7 +2253,7 @@ function openMonthDividendSheet(month){
         <div style="cursor:pointer;" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
           <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:2px;">
             <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
-            <span><span class="amt num" style="font-size:16.5px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+            <span><span class="amt num" style="font-size:16px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
           </div>
           <div class="entry-row" style="font-size:11.5px;color:var(--text2);padding-top:0;">
             <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
@@ -2281,7 +2266,7 @@ function openMonthDividendSheet(month){
 
   const bodyHtml = `
     <div style="margin-bottom:16px;">
-      <div class="num" style="font-size:22px;font-weight:700;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
+      <div class="num" style="font-size:24px;font-weight:500;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
     </div>
     ${groupsHtml}
   `;
