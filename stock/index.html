@@ -1993,7 +1993,8 @@ function openStockDetailSheet(stockId){
   const stock = DATA.stocks.find(s=>s.id===stockId);
   if(!stock) return;
   const cat = catalogFor(stock);
-  const title = cat.name + (cat.ticker ? ` (${cat.ticker})` : '');
+  // const title = cat.name + (cat.ticker ? ` (${cat.ticker})` : '');
+  const title = cat.name;
   openSheet(title, buildStockDetailHtml(stock));
 }
 
