@@ -424,9 +424,40 @@
     border-radius:8px;
     padding:8px 6px;
     text-align:center;
+    cursor:pointer;
+    position:relative;
   }
+  .yield-card:active{background:var(--border);}
   .yield-label{font-size:9.5px;color:var(--text2);line-height:1.35;margin-bottom:5px;}
   .yield-value{font-size:14px;font-weight:600;color:var(--gold);}
+  .yield-tooltip{
+    position:fixed;
+    max-width:230px;
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    color:var(--text1);
+    padding:10px 12px;
+    border-radius:10px;
+    font-size:11.5px;
+    line-height:1.55;
+    text-align:left;
+    z-index:300;
+    box-shadow:0 6px 20px rgba(0,0,0,0.35);
+    opacity:0;
+    transform:translateY(4px);
+    transition:opacity .12s ease, transform .12s ease;
+  }
+  .yield-tooltip.show{opacity:1;transform:translateY(0);}
+  .yield-tooltip-title{font-weight:600;color:var(--gold);margin-bottom:4px;font-size:11.5px;}
+  .yield-tooltip-arrow{
+    position:absolute;
+    width:9px;height:9px;
+    background:var(--surface2);
+    border:1px solid var(--border-strong);
+    transform:rotate(45deg);
+  }
+  .yield-tooltip-arrow.arrow-down{bottom:-5.5px;border-top:none;border-left:none;}
+  .yield-tooltip-arrow.arrow-up{top:-5.5px;border-bottom:none;border-right:none;}
   .tx-list-scroll{
     max-height:220px;
     overflow-y:auto;
@@ -1174,6 +1205,58 @@ function stockYieldOnCurrentPrice(stock){
   if(!mv) return null;
   return (stockDividendTTM(stock) / mv) * 100;
 }
+const YIELD_TOOLTIP_INFO = {
+  1: { title:'누적 총투자원금 기준', desc:'지금까지 받은 누적 배당금을 총 투자원금으로 나눈 값이에요. 연환산이 아닌, 처음 투자한 이후 지금까지의 누적 실현 수익률이에요.' },
+  2: { title:'최근 12개월 · 평균매입가 기준', desc:'최근 12개월 배당금을 총 투자원금(평균매입단가 × 수량)으로 나눈 값이에요. 지금의 배당 페이스가 앞으로도 이어진다고 가정했을 때의 수익률이에요.' },
+  3: { title:'최근 12개월 · 현재가 기준', desc:'최근 12개월 배당금을 현재 평가금액으로 나눈 값이에요. 지금 이 가격에 새로 매수한다면 기대할 수 있는 수익률로, 다른 종목과 비교할 때 참고하기 좋아요.' }
+};
+
+function showYieldTooltip(evt, type){
+  evt.stopPropagation();
+  closeYieldTooltip();
+  const card = evt.currentTarget;
+  const info = YIELD_TOOLTIP_INFO[type];
+  if(!info) return;
+  const rect = card.getBoundingClientRect();
+  const tip = document.createElement('div');
+  tip.className = 'yield-tooltip';
+  tip.id = 'yieldTooltip';
+  tip.innerHTML = `<div class="yield-tooltip-title">${info.title}</div><div>${info.desc}</div>`;
+  document.body.appendChild(tip);
+
+  const tipRect = tip.getBoundingClientRect();
+  const margin = 10;
+  let left = rect.left + rect.width/2 - tipRect.width/2;
+  left = Math.max(margin, Math.min(left, window.innerWidth - tipRect.width - margin));
+
+  let top = rect.top - tipRect.height - margin;
+  let arrowCls = 'arrow-down';
+  if(top < margin){
+    top = rect.bottom + margin;
+    arrowCls = 'arrow-up';
+  }
+  tip.style.left = left + 'px';
+  tip.style.top = top + 'px';
+
+  const arrow = document.createElement('div');
+  arrow.className = 'yield-tooltip-arrow ' + arrowCls;
+  const arrowLeft = Math.max(12, Math.min(rect.left + rect.width/2 - left, tipRect.width - 12));
+  arrow.style.left = arrowLeft + 'px';
+  arrow.style.marginLeft = '-4.5px';
+  tip.appendChild(arrow);
+
+  requestAnimationFrame(()=> tip.classList.add('show'));
+  setTimeout(()=>{
+    document.addEventListener('click', closeYieldTooltip, { once:true });
+    document.addEventListener('scroll', closeYieldTooltip, { once:true, capture:true });
+  }, 0);
+}
+
+function closeYieldTooltip(){
+  const el = document.getElementById('yieldTooltip');
+  if(el) el.remove();
+}
+
 function ownerAvgYield(ownerId, fn){
   const yields = stocksForOwner(ownerId).map(fn).filter(y=>y!==null);
   if(yields.length===0) return null;
@@ -1255,15 +1338,15 @@ function renderSummary(){
     <div class="metric" style="grid-column:1 / -1;">
       <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
       <div class="yield-grid">
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
           <div class="yield-value num">${fmtPctPlain(avgYield1)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,2)">
           <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
           <div class="yield-value num">${fmtPctPlain(avgYield2)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,3)">
           <div class="yield-label">최근 12개월<br>현재가 기준</div>
           <div class="yield-value num">${fmtPctPlain(avgYield3)}</div>
         </div>
@@ -1707,15 +1790,15 @@ function buildTargetSheetContent(key, sid){
     <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
       <div class="panel-title" style="font-size:14px;margin:0 0 8px;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
       <div class="yield-grid">
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
           <div class="yield-value num">${fmtPctPlain(y1)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,2)">
           <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
           <div class="yield-value num">${fmtPctPlain(y2)}</div>
         </div>
-        <div class="yield-card">
+        <div class="yield-card" onclick="showYieldTooltip(event,3)">
           <div class="yield-label">최근 12개월<br>현재가 기준</div>
           <div class="yield-value num">${fmtPctPlain(y3)}</div>
         </div>
@@ -2185,6 +2268,7 @@ function closeSheet(){
   document.getElementById('bottomSheet').classList.remove('open');
   if(openTargetSheetLayer.layer===1) openTargetSheetLayer = { key:null, layer:null };
   if(wasOpen) unlockBodyScroll();
+  closeYieldTooltip();
   closeSheet2();
 }
 function openSheet2(title, bodyHtml, onTitleClick){
@@ -2205,6 +2289,7 @@ function closeSheet2(){
   document.getElementById('bottomSheet2').classList.remove('open');
   if(openTargetSheetLayer.layer===2) openTargetSheetLayer = { key:null, layer:null };
   if(wasOpen) unlockBodyScroll();
+  closeYieldTooltip();
 }
 function openTxSheet(stockId, field, title){
   const stock = DATA.stocks.find(s=>s.id===stockId);
