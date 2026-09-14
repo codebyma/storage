@@ -989,11 +989,9 @@ function ensureDataShape(){
   if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
   if(!Array.isArray(DATA.dividends)) DATA.dividends = [];
   migrateStockCatalog();
-  recalcAllDividendQuantities();
 }
 
 async function saveData(){
-  recalcAllDividendQuantities();
   if(hasWindowStorage){
     try{
       await window.storage.set(STORAGE_KEY, JSON.stringify(DATA), false);
@@ -1114,20 +1112,25 @@ function lastDayOfMonthStr(monthStr){
   const d = new Date(y, m, 0);
   return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
-// 배당 기록들을 실제 매수/매도 날짜 기준 보유수량으로 다시 계산해요.
-// 배당을 먼저 입력하고 매수/매도를 나중에 입력하는 등 순서가 뒤바뀌어도,
-// 저장/렌더링될 때마다 항상 날짜 기준으로 다시 맞춰줘요.
-function recalcAllDividendQuantities(){
-  (DATA.dividends||[]).forEach(rec=>{
+// 배당 기록 하나를, 그 종목의 매수/매도 "날짜" 기준 보유수량으로 다시 계산해요.
+// 자동으로는 실행되지 않고, 사용자가 '날짜 기준으로 다시 계산' 버튼을 눌렀을 때만 실행돼요.
+// 매수/매도 기록이 불완전한 계좌는 안전하게 건너뛰고 그대로 둬요.
+function recalcDividendsForKey(key){
+  let updated = 0, skipped = 0;
+  (DATA.dividends||[]).filter(rec=>rec.key===key).forEach(rec=>{
     const asOfDate = rec.date || lastDayOfMonthStr(rec.month);
     (rec.accounts||[]).forEach(a=>{
-      const stock = DATA.stocks.find(s=>s.key===rec.key && s.accountId===a.accountId);
-      if(!stock) return;
+      const stock = DATA.stocks.find(s=>s.key===key && s.accountId===a.accountId);
+      if(!stock || !hasReliableTxLog(stock)){ skipped++; return; }
       const qty = stockQuantityAsOf(stock, asOfDate);
-      a.quantity = qty;
-      a.amount = qty * (rec.perShare||0);
+      if(qty !== a.quantity){
+        a.quantity = qty;
+        a.amount = qty * (rec.perShare||0);
+        updated++;
+      }
     });
   });
+  return { updated, skipped };
 }
 function stockPL(stock){
   return stockTotal(stock) - stockCostBasis(stock);
@@ -1833,7 +1836,10 @@ function buildTargetSheetContent(key, sid){
     </div>
 
     <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
-      <div class="panel-title" style="font-size:14px;margin:0 0 8px;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div class="panel-title" style="font-size:14px;margin:0;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
+        <span style="font-size:11px;color:var(--text2);cursor:pointer;text-decoration:underline;text-underline-offset:2px;" onclick="recalcDividendsForKeyUI('${keyEsc}')">날짜 기준 재계산</span>
+      </div>
       <div class="yield-grid">
         <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
@@ -1929,7 +1935,7 @@ async function applyGroupDividend(key, sid){
   if(!date){ showToast('배당일을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const cat = catalogByKey(key);
-  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity: stockQuantityAsOf(s, date) }));
+  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity: s.quantity||0 }));
   const rec = upsertDividendGroupBulk(key, date, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
   const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
   closeForm(`divgrpform_${sid}`);
@@ -1937,6 +1943,23 @@ async function applyGroupDividend(key, sid){
   render();
   refreshOpenTargetSheet();
   showToast(`${rec.accounts.length}개 계좌에 총 ₩${total.toLocaleString('ko-KR')} 반영했어요`);
+}
+
+// 사용자가 직접 눌렀을 때만 실행되는, 날짜 기준 재계산 버튼 핸들러
+async function recalcDividendsForKeyUI(key){
+  const { updated, skipped } = recalcDividendsForKey(key);
+  if(updated===0 && skipped===0){
+    showToast('이 종목에는 배당 기록이 없어요');
+    return;
+  }
+  await saveData();
+  render();
+  refreshOpenTargetSheet();
+  if(updated===0){
+    showToast(`매수/매도 기록이 충분하지 않아 다시 계산하지 못했어요 (${skipped}건은 그대로 둠)`);
+  } else {
+    showToast(`${updated}건을 매수/매도 날짜 기준으로 다시 계산했어요${skipped ? ` · 기록 부족 ${skipped}건은 그대로 둠` : ''}`);
+  }
 }
 
 function renderAccounts(){
