@@ -2244,7 +2244,7 @@ function openMonthDividendSheet(month){
         <div style="cursor:pointer;" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
           <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:2px;">
             <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
-            <span><span class="amt num" style="font-size:18px;font-weight:600">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+            <span><span class="amt num" style="font-size:19px;font-weight:500">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
           </div>
           <div class="entry-row" style="font-size:11.5px;color:var(--text2);padding-top:0;">
             <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
@@ -2257,7 +2257,7 @@ function openMonthDividendSheet(month){
 
   const bodyHtml = `
     <div style="margin-bottom:16px;">
-      <div class="num" style="font-size:26px;font-weight:700;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
+      <div class="num" style="font-size:26px;font-weight:400;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
     </div>
     ${groupsHtml}
   `;
