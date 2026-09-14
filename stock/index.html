@@ -467,8 +467,9 @@
   }
   .cta-btn{
     flex:1;
-    background:var(--red);
-    color:var(--text1);
+background: var(--surface2);
+    border: 1px solid var(--mint);
+    color: var(--mint);
     border:none;
     border-radius:4px;
     padding:14px 12px;
@@ -477,7 +478,6 @@
     cursor:pointer;
     text-align:center;
   }
-  .cta-btn:active{transform:scale(0.98);}
   .inline-num-input{
     background:transparent;
     border:none;
@@ -2037,8 +2037,8 @@ function buildStockDetailHtml(stock){
     </div>
 
     <div style="display:flex;justify-content:center;gap:8px;margin-top:18px;">
-      <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">배당</button>
-      <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">삭제</button>
+      <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">종목 상세</button>
+      <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">종목 삭제</button>
     </div>
 
     <div style="display:flex;gap:8px;margin-top:12px;">
