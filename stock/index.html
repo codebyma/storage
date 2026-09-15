@@ -827,6 +827,7 @@ background: var(--surface2);
   .fs-16{font-size:16px;}
   .fs-24{font-size:24px;}
   .fw-500{font-weight:500;}
+  .fw-400{font-weight:400;}
 
   .mt-0{margin-top:0;}
   .mt-2{margin-top:2px;}
@@ -1508,7 +1509,7 @@ function renderDividendCalendar(){
   if(total===0){
     el.innerHTML = `
       <div class="panel-wrap">
-        <div class="panel-title sub-title text-faint">월별 배당 현황 (최근 12개월)</div>
+        <div class="panel-title">월별 배당 현황 <span class="fs-13 fw-400 text-faint">(최근 12개월)</span></div>
         <div class="panel-empty">아직 기록된 배당이 없어요. 종목 상세에서 배당을 추가하면 여기 그래프로 나타나요.</div>
       </div>
     `;
@@ -1529,7 +1530,7 @@ function renderDividendCalendar(){
 
   el.innerHTML = `
     <div class="panel-wrap">
-      <div class="panel-title sub-title text-faint">월별 배당 현황 (최근 12개월)</div>
+      <div class="panel-title">월별 배당 현황 <span class="fs-13 fw-400 text-faint">(최근 12개월)</span></div>
       <div class="fs-16 mb-8"><span class="text-dim">12개월 합계</span> <span class="text-mint">${fmtWon(total)}</span></div>
       <div class="div-chart-scroll" id="divChartScroll">
         <div class="div-chart">${bars}</div>
