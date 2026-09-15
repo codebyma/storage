@@ -2421,7 +2421,7 @@ function openMonthDividendSheet(month){
         <div class="cursor-pointer" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
           <div class="entry-row text-strong no-border-bottom pb-0">
             <span class="amt-lg">${escapeHtml(rec.name)}</span>
-            <span><span class="amt num amt-md">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+            <span class="amt num amt-md">${fmtWon(rec.total)}</span>
           </div>
           <div class="entry-row fs-11-5 text-dim pt-0">
             <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
@@ -2444,6 +2444,7 @@ function openMonthDividendSheet(month){
 function openDividendAccountDetail(key, month){
   const rec = findDividendRecord(key, month);
   if(!rec){ return; }
+  const keyEsc = key.replace(/'/g,"\\'");
   const accountRows = rec.accounts.map(a=>{
     const acc = DATA.accounts.find(x=>x.id===a.accountId);
     const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
@@ -2454,7 +2455,13 @@ function openDividendAccountDetail(key, month){
       </div>
     `;
   }).join('');
-  openSheet2(`${rec.name} 상세내역`, accountRows);
+  const bodyHtml = `
+    ${accountRows}
+    <div class="button-row center mt-18">
+      <button class="text-link-btn danger" onclick="deleteMonthRecord('${keyEsc}','${month}');closeSheet2();">이 기록 삭제</button>
+    </div>
+  `;
+  openSheet2(`${rec.name} 상세내역`, bodyHtml);
 }
 
 async function deleteMonthRecord(key, month){
