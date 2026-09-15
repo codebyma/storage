@@ -144,7 +144,7 @@
   .div-chart{
     display:flex;
     align-items:flex-end;
-    gap:18px;
+    justify-content:space-between;
     height:110px;
     min-width:max-content;
     padding:0 2px 2px;
@@ -153,7 +153,6 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    width:32px;
     flex-shrink:0;
     justify-content:flex-end;
     height:100%;
@@ -167,6 +166,7 @@
   }
   .div-bar{
     width:16px;
+    height:var(--h, 2px);
     background:var(--gold);
     border-radius:3px 3px 0 0;
     min-height:2px;
@@ -195,7 +195,8 @@
     color:var(--text1);
     margin-bottom:2px;
   }
-  .trend-latest-delta{font-size:12px;margin-bottom:8px;}
+  .trend-latest-delta{font-size:12px;margin-bottom:2px;}
+  .trend-first-delta{font-size:11px;color:var(--text3);margin-bottom:8px;}
 
   .breakdown-wrap{padding:0 20px;}
   .breakdown-card{
@@ -210,9 +211,7 @@
   }
   .breakdown-row{
     padding:14px 0;
-    border-bottom:1px solid var(--border);
   }
-  .breakdown-row:last-child{border-bottom:none;}
   .breakdown-top{
     display:flex;
     justify-content:space-between;
@@ -223,6 +222,7 @@
   .breakdown-name-block{min-width:0;flex:1;}
   .breakdown-name{font-weight:400;color:var(--text1);font-size:16px;}
   .breakdown-price-line{font-size:11.5px;color:var(--text2);margin-top:3px;}
+  .breakdown-name + .breakdown-price-line{margin-top:7px;}
   .breakdown-price{color:var(--mint);font-weight:400;}
   .price-highlight{color:var(--mint);font-weight:400;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
@@ -236,15 +236,9 @@
   }
   .breakdown-bar-fill{
     height:100%;
+    width:var(--w, 0%);
     background:var(--mint);
     border-radius:3px;
-  }
-  .target-toggle{
-    font-size:11.5px;
-    color:var(--text2);
-    cursor:pointer;
-    margin-top:8px;
-    display:inline-block;
   }
   .target-panel{
     margin-top:10px;
@@ -452,6 +446,7 @@
   .yield-tooltip-arrow{
     position:absolute;
     width:9px;height:9px;
+    margin-left:-4.5px;
     background:var(--surface2);
     border:1px solid var(--border-strong);
     transform:rotate(45deg);
@@ -663,6 +658,7 @@ background: var(--surface2);
     margin-top:6px;
     display:none;
   }
+  .json-error.show{display:block;}
   .save-status{
     font-size:11px;
     color:var(--text3);
@@ -676,7 +672,11 @@ background: var(--surface2);
     border:1px solid var(--border-strong);
     color:var(--text1);
     padding:10px 18px;
-    border-radius:20px;
+    border-radius:100px;
+    width:max-content;
+    max-width:90vw;
+    box-sizing:border-box;
+    text-align:center;
     font-size:13px;
     opacity:0;
     pointer-events:none;
@@ -765,6 +765,102 @@ background: var(--surface2);
     box-shadow:0 -8px 24px rgba(0,0,0,0.4);
   }
   .bottom-sheet2.open{transform:translateY(0);}
+
+  /* ===== 공통 컴포넌트 (반복되는 레이아웃 패턴 통일) ===== */
+  .header-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .button-row{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .button-row.center{justify-content:center;}
+  .section-divider-gray.spaced-top{margin:40px 0 0;}
+  .section-divider-gray.flush-top{margin:20px -20px 0;}
+  .panel-title.title-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+  .panel-title.sub-title{font-size:14px;margin:0 0 8px;}
+  .panel-caption.warning{color:var(--red);margin-bottom:8px;}
+  .action-btn-prominent.full-width{width:100%;}
+  .text-link-btn.danger{color:var(--red);}
+  .stock-stat-value.gold{color:var(--gold);}
+  .metric.full-row{grid-column:1 / -1;}
+  .value-sub{font-size:13px;font-weight:400;margin-top:2px;}
+  .suffix-text{font-weight:400;font-size:12px;}
+  .hint-text{font-size:11.5px;color:var(--text3);padding:2px 4px 2px;}
+  .stat-footnote{font-size:11px;color:var(--text3);margin:6px 0 2px;}
+  .divacc-group{margin-bottom:6px;}
+  .divider-top{border-top:1px solid var(--border);}
+  .divacc-row{padding-left:10px;font-size:11px;}
+  .amt-lg{font-size:14.5px;}
+  .amt-md{font-size:14px;}
+  .account-suffix-wrap{text-align:right;flex-shrink:0;}
+  .account-total-value{font-size:17px;color:var(--text1);}
+  .account-pl-line{font-size:13px;}
+  .account-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+
+  /* ===== 유틸리티 클래스 (자주 반복되는 단일 속성 — 항상 이 파일의 마지막에 위치해 컴포넌트 클래스보다 우선 적용됨) ===== */
+  .hidden{display:none !important;}
+  .no-wrap{white-space:nowrap;}
+  .full-width{width:100%;}
+  .text-right{text-align:right;}
+  .text-left{text-align:left;}
+  .cursor-pointer{cursor:pointer;}
+  .no-border-bottom{border-bottom:none;}
+
+  .text-dim{color:var(--text2);}
+  .text-faint{color:var(--text3);}
+  .text-strong{color:var(--text1);}
+  .text-red{color:var(--red);}
+  .text-gold{color:var(--gold);}
+  .text-mint{color:var(--mint);}
+
+  .fs-11{font-size:11px;}
+  .fs-11-5{font-size:11.5px;}
+  .fs-12{font-size:12px;}
+  .fs-13{font-size:13px;}
+  .fs-14{font-size:14px;}
+  .fs-16{font-size:16px;}
+  .fs-24{font-size:24px;}
+  .fw-500{font-weight:500;}
+  .fw-400{font-weight:400;}
+
+  .mt-0{margin-top:0;}
+  .mt-2{margin-top:2px;}
+  .mt-4{margin-top:4px;}
+  .mt-6{margin-top:6px;}
+  .mt-8{margin-top:8px;}
+  .mt-12{margin-top:12px;}
+  .mt-14{margin-top:14px;}
+  .mt-18{margin-top:18px;}
+  .mt-20{margin-top:20px;}
+  .mt-40{margin-top:40px;}
+
+  .mb-0{margin-bottom:0;}
+  .mb-4{margin-bottom:4px;}
+  .mb-6{margin-bottom:6px;}
+  .mb-8{margin-bottom:8px;}
+  .mb-16{margin-bottom:16px;}
+
+  .scroll-locked{overflow:hidden;}
+  .body-scroll-locked{
+    position:fixed;
+    left:0;
+    right:0;
+    width:100%;
+  }
+  .pb-40{padding-bottom:40px;}
+  .pt-14{padding-top:14px;}
+  .pb-0{padding-bottom:0;}
+  .pb-2{padding-bottom:2px;}
+  .pt-0{padding-top:0;}
+  .p-0{padding:0;}
 </style>
 </head>
 <body>
@@ -772,16 +868,16 @@ background: var(--surface2);
 <header>
   <h1>주식 현황 정리</h1>
   <p>계좌별 보유 종목, 매수·매도, 배당을 기록합니다</p>
-  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-    <button class="add-btn" id="toggleJsonBtn" style="white-space:nowrap;">JSON 보기/편집</button>
-    <button class="add-btn" id="reloadJsonBtn" style="white-space:nowrap;">stock.json 새로고침</button>
-    <button class="add-btn" id="themeToggleBtn" style="white-space:nowrap;">라이트 모드</button>
+  <div class="header-actions mt-12">
+    <button class="add-btn no-wrap" id="toggleJsonBtn">JSON 보기/편집</button>
+    <button class="add-btn no-wrap" id="reloadJsonBtn">stock.json 새로고침</button>
+    <button class="add-btn no-wrap" id="themeToggleBtn">라이트 모드</button>
   </div>
 </header>
 <div class="save-status" id="saveStatus">저장된 데이터 불러오는 중...</div>
 
 <div class="json-panel" id="jsonPanel">
-  <div style="font-size:12px;color:var(--text2);margin-bottom:8px;">
+  <div class="fs-12 text-dim mb-8">
     stock.json 파일로 내보내서 보관해두세요. 데이터가 사라지면 그 파일을 다시 가져오면 복원됩니다. 아래 텍스트를 직접 고친 뒤 '적용'을 눌러도 됩니다.
   </div>
   <textarea id="jsonTextarea" spellcheck="false"></textarea>
@@ -795,7 +891,7 @@ background: var(--surface2);
     <button class="btn-ghost" onclick="copyJson()">복사(클립보드)</button>
     <button class="btn-ghost" onclick="refreshJsonView()">현재 데이터로 새로고침</button>
   </div>
-  <input type="file" id="importFileInput" accept="application/json,.json" style="display:none;">
+  <input type="file" id="importFileInput" accept="application/json,.json" class="hidden">
 </div>
 
 <div class="owner-tabs" id="ownerTabs"></div>
@@ -807,8 +903,8 @@ background: var(--surface2);
 <div id="breakdownSection"></div>
 
 <main>
-  <div class="section-divider-gray" style="margin:20px -20px 0;"></div>
-  <div class="section-title" style="margin-top:40px;">
+  <div class="section-divider-gray flush-top"></div>
+  <div class="section-title mt-40">
     <span id="accountsLabel">계좌</span>
     <button class="add-btn" id="addAccountBtn">+ 계좌 추가</button>
   </div>
@@ -825,9 +921,9 @@ background: var(--surface2);
   <div id="accountList"></div>
 </main>
 
-<div class="section-divider-gray" style="margin:40px 0 0;"></div>
-<div class="panel-wrap" style="padding-bottom:40px;">
-  <div class="panel-title" style="margin-top:40px;">GitHub 저장</div>
+<div class="section-divider-gray spaced-top"></div>
+<div class="panel-wrap pb-40">
+  <div class="panel-title mt-40">GitHub 저장</div>
   <div class="panel-caption">현재 데이터를 GitHub 저장소의 stock.json에 바로 커밋해요. 최초 1회만 아래 설정을 입력하면, 이후엔 이 브라우저에서 버튼 한 번으로 저장돼요.</div>
 
   <button class="mini-add" id="githubSettingsToggle">저장 설정</button>
@@ -841,7 +937,7 @@ background: var(--surface2);
     <div class="form-row">
       <input type="password" id="gh_token" placeholder="Personal Access Token">
     </div>
-    <div class="panel-caption" style="color:var(--red);margin-bottom:8px;">
+    <div class="panel-caption warning">
       ⚠️ 이 저장소의 Contents 권한만 있는 Fine-grained 토큰을 만들어서 쓰세요. 누구와도 공유하지 마세요. 토큰은 이 브라우저에만 저장되고 stock.json 파일 안에는 절대 포함되지 않아요.
     </div>
     <div class="form-actions">
@@ -850,8 +946,8 @@ background: var(--surface2);
     </div>
   </div>
 
-  <button class="action-btn-prominent" style="width:100%;margin-top:12px;" onclick="pushToGithub()">GitHub에 저장</button>
-  <div id="githubSaveStatus" class="panel-caption" style="margin-top:8px;"></div>
+  <button class="action-btn-prominent full-width mt-12" onclick="pushToGithub()">GitHub에 저장</button>
+  <div id="githubSaveStatus" class="panel-caption mt-8"></div>
 </div>
 
 <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
@@ -907,6 +1003,21 @@ function isValidPortfolio(obj){
   return !!(obj && obj.owners && obj.accounts && obj.stocks);
 }
 
+async function autoSaveTodaySnapshotIfNeeded(){
+  ensureDataShape();
+  const today = new Date().toISOString().slice(0,10);
+  if(DATA.snapshots.some(s=>s.date===today)) return;
+  upsertSnapshot();
+  await saveData();
+  showToast('오늘 자산 스냅샷을 자동으로 저장했어요');
+}
+
+async function finishLoad(){
+  currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
+  await autoSaveTodaySnapshotIfNeeded();
+  render();
+}
+
 async function loadData(){
   // 1순위: 같은 경로의 stock.json (서버에 올린 정적 파일)
   try{
@@ -918,8 +1029,7 @@ async function loadData(){
         dataSource = 'server-json';
         const priceUpdateNote = DATA.lastPriceUpdate ? (' · 시세 갱신: ' + DATA.lastPriceUpdate) : '';
         setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + priceUpdateNote + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
-        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
-        render();
+        await finishLoad();
         return;
       }
     }
@@ -935,8 +1045,7 @@ async function loadData(){
         DATA = JSON.parse(res.value);
         dataSource = 'window-storage';
         setSaveStatus('마지막 저장 데이터를 불러왔습니다 · ' + new Date().toLocaleTimeString('ko-KR'));
-        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
-        render();
+        await finishLoad();
         return;
       }
     }catch(e){ /* 무시하고 아래로 */ }
@@ -946,8 +1055,7 @@ async function loadData(){
   DATA = defaultData();
   dataSource = 'new';
   setSaveStatus('새 데이터로 시작합니다 · stock.json을 서버에 올리면 자동으로 불러와요');
-  currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
-  render();
+  await finishLoad();
 }
 
 function defaultData(){
@@ -960,7 +1068,6 @@ function defaultData(){
     stockCatalog: [],
     stocks: [],
     targets: {},
-    plannedCash: 0,
     snapshots: [],
     dividends: []
   };
@@ -985,7 +1092,6 @@ function migrateStockCatalog(){
 
 function ensureDataShape(){
   if(!DATA.targets) DATA.targets = {};
-  if(typeof DATA.plannedCash !== 'number') DATA.plannedCash = 0;
   if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
   if(!Array.isArray(DATA.dividends)) DATA.dividends = [];
   migrateStockCatalog();
@@ -1211,17 +1317,16 @@ const YIELD_TOOLTIP_INFO = {
   3: { title:'최근 12개월 · 현재가 기준', desc:'최근 12개월 배당금을 현재 평가금액으로 나눈 값이에요. 지금 이 가격에 새로 매수한다면 기대할 수 있는 수익률로, 다른 종목과 비교할 때 참고하기 좋아요.' }
 };
 
-function showYieldTooltip(evt, type){
-  evt.stopPropagation();
+let tooltipAnchorEl = null;
+
+function positionTooltip(anchorEl, titleHtml, bodyHtml){
   closeYieldTooltip();
-  const card = evt.currentTarget;
-  const info = YIELD_TOOLTIP_INFO[type];
-  if(!info) return;
-  const rect = card.getBoundingClientRect();
+  tooltipAnchorEl = anchorEl;
+  const rect = anchorEl.getBoundingClientRect();
   const tip = document.createElement('div');
   tip.className = 'yield-tooltip';
   tip.id = 'yieldTooltip';
-  tip.innerHTML = `<div class="yield-tooltip-title">${info.title}</div><div>${info.desc}</div>`;
+  tip.innerHTML = `<div class="yield-tooltip-title">${titleHtml}</div><div>${bodyHtml}</div>`;
   document.body.appendChild(tip);
 
   const tipRect = tip.getBoundingClientRect();
@@ -1242,7 +1347,6 @@ function showYieldTooltip(evt, type){
   arrow.className = 'yield-tooltip-arrow ' + arrowCls;
   const arrowLeft = Math.max(12, Math.min(rect.left + rect.width/2 - left, tipRect.width - 12));
   arrow.style.left = arrowLeft + 'px';
-  arrow.style.marginLeft = '-4.5px';
   tip.appendChild(arrow);
 
   requestAnimationFrame(()=> tip.classList.add('show'));
@@ -1252,9 +1356,35 @@ function showYieldTooltip(evt, type){
   }, 0);
 }
 
+function toggleTooltip(anchorEl, titleHtml, bodyHtml){
+  const wasOpenOnSameAnchor = !!document.getElementById('yieldTooltip') && tooltipAnchorEl === anchorEl;
+  closeYieldTooltip();
+  if(wasOpenOnSameAnchor) return;
+  positionTooltip(anchorEl, titleHtml, bodyHtml);
+}
+
+function showYieldTooltip(evt, type){
+  evt.stopPropagation();
+  const info = YIELD_TOOLTIP_INFO[type];
+  if(!info) return;
+  toggleTooltip(evt.currentTarget, info.title, info.desc);
+}
+
+function showStockDividendYieldTooltip(evt, stockId){
+  evt.stopPropagation();
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock) return;
+  const ttm = stockDividendTTM(stock);
+  const cost = stockCostBasis(stock);
+  const yieldVal = stockYieldOnAvgPrice(stock);
+  const body = `최근 12개월 배당금 ${fmtWon(ttm)} ÷ 총 투자원금 ${fmtWon(cost)} = ${fmtPctPlain(yieldVal)}<br>지금의 배당 페이스가 앞으로도 이어진다고 가정했을 때의 연간 수익률이에요.`;
+  toggleTooltip(evt.currentTarget, '배당률 계산', body);
+}
+
 function closeYieldTooltip(){
   const el = document.getElementById('yieldTooltip');
   if(el) el.remove();
+  tooltipAnchorEl = null;
 }
 
 function ownerAvgYield(ownerId, fn){
@@ -1317,7 +1447,7 @@ function renderSummary(){
     </div>
     <div class="metric">
       <div class="label">평가손익</div>
-      <div class="value ${plClass(pl)} num" style="font-size:19px;">${fmtPL(pl)}${plPct!==null ? '<div style="font-size:13px;font-weight:400;margin-top:2px;">('+fmtPercent(plPct)+')</div>' : ''}</div>
+      <div class="value ${plClass(pl)} num">${fmtPL(pl)}${plPct!==null ? '<div class="value-sub">('+fmtPercent(plPct)+')</div>' : ''}</div>
     </div>
     <div class="metric">
       <div class="label">총 투자원금</div>
@@ -1335,8 +1465,8 @@ function renderSummary(){
       <div class="label">올해 누적 배당</div>
       <div class="value gold num">${fmtWon(yearDiv)}</div>
     </div>
-    <div class="metric" style="grid-column:1 / -1;">
-      <div class="label" style="margin-bottom:8px;">종목별 배당률 평균 (3가지 기준)</div>
+    <div class="metric full-row">
+      <div class="label mb-8">배당률 평균</div>
       <div class="yield-grid">
         <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
@@ -1381,7 +1511,7 @@ function renderDividendCalendar(){
   if(total===0){
     el.innerHTML = `
       <div class="panel-wrap">
-        <div class="panel-title">월별 배당 현황 (최근 12개월)</div>
+        <div class="panel-title">월별 배당 현황</div>
         <div class="panel-empty">아직 기록된 배당이 없어요. 종목 상세에서 배당을 추가하면 여기 그래프로 나타나요.</div>
       </div>
     `;
@@ -1390,10 +1520,11 @@ function renderDividendCalendar(){
 
   const bars = series.map(m=>{
     const barPx = m.amount>0 ? Math.max(4, Math.round((m.amount/maxAmt)*90)) : 2;
+    const amountLabel = m.amount>0 ? Math.floor(m.amount/10000)+'만' : '';
     return `
       <div class="div-bar-col${m.isCurrent ? ' current' : ''}" onclick="openMonthDividendSheet('${m.month}')">
-        <div class="div-bar-amount num">${m.amount>0 ? m.amount.toLocaleString('ko-KR') : ''}</div>
-        <div class="div-bar" style="height:${barPx}px;"></div>
+        <div class="div-bar-amount num">${amountLabel}</div>
+        <div class="div-bar" style="--h:${barPx}px;"></div>
         <div class="div-bar-label">${m.label}</div>
       </div>
     `;
@@ -1401,8 +1532,8 @@ function renderDividendCalendar(){
 
   el.innerHTML = `
     <div class="panel-wrap">
-      <div class="panel-title">월별 배당 현황 (최근 12개월)</div>
-      <div class="panel-caption">12개월 합계 ${fmtWon(total)}</div>
+      <div class="panel-title">월별 배당 현황</div>
+      <div class="fs-14 mb-8"><span class="text-dim">최근 12개월</span> <span class="text-mint">${fmtWon(total)}</span></div>
       <div class="div-chart-scroll" id="divChartScroll">
         <div class="div-chart">${bars}</div>
       </div>
@@ -1446,9 +1577,9 @@ function renderAssetTrend(){
 
   if(snaps.length < 2){
     el.innerHTML = `
-      <div class="section-divider-gray" style="margin:40px 0 0;"></div>
+      <div class="section-divider-gray spaced-top"></div>
       <div class="panel-wrap">
-        <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;">
+        <div class="panel-title title-row mt-40">
           <span>자산 추이</span>
           ${saveBtnHtml}
         </div>
@@ -1474,19 +1605,23 @@ function renderAssetTrend(){
   const areaPoints = `${pad},${h-pad} ${polyPoints} ${w-pad},${h-pad}`;
 
   const first = values[0];
+  const prev = values[values.length-2];
   const last = values[values.length-1];
-  const delta = last - first;
-  const deltaPct = first ? (delta/first)*100 : null;
+  const delta = last - prev;
+  const deltaPct = prev ? (delta/prev)*100 : null;
+  const firstDelta = last - first;
+  const firstDeltaPct = first ? (firstDelta/first)*100 : null;
 
   el.innerHTML = `
-    <div class="section-divider-gray" style="margin:40px 0 0;"></div>
+    <div class="section-divider-gray spaced-top"></div>
     <div class="panel-wrap">
-      <div class="panel-title" style="display:flex;justify-content:space-between;align-items:center;margin-top:40px;">
+      <div class="panel-title title-row mt-40">
         <span>자산 추이</span>
         ${saveBtnHtml}
       </div>
       <div class="trend-latest num">${fmtWon(last)}</div>
-      <div class="trend-latest-delta num ${plClass(delta)}">${fmtPL(delta)}${deltaPct!==null ? ' ('+fmtPercent(deltaPct)+')' : ''} · 첫 기록 대비</div>
+      <div class="trend-latest-delta num ${plClass(delta)}">${fmtPL(delta)}${deltaPct!==null ? ' ('+fmtPercent(deltaPct)+')' : ''} · 직전 기록 대비</div>
+      <div class="trend-first-delta num">${fmtPL(firstDelta)}${firstDeltaPct!==null ? ' ('+fmtPercent(firstDeltaPct)+')' : ''} · 첫 기록 대비</div>
       <div class="trend-svg-wrap">
         <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
           <polygon points="${areaPoints}" fill="var(--mint-dim)" opacity="0.6"></polygon>
@@ -1497,7 +1632,7 @@ function renderAssetTrend(){
         <span>${dates[0]}</span>
         <span>${dates[dates.length-1]}</span>
       </div>
-      <div class="panel-caption" style="margin-top:6px;">스냅샷 ${snaps.length}개 기록됨</div>
+      <div class="panel-caption mt-6">스냅샷 ${snaps.length}개 기록됨</div>
     </div>
   `;
 }
@@ -1544,9 +1679,6 @@ function renderBreakdown(){
     return s + (typeof t === 'number' ? t : 0);
   }, 0);
 
-  const plannedCash = DATA.plannedCash || 0;
-  const projectedTotal = grandTotal + plannedCash;
-
   const rows = sorted.map(item=>{
     const pl = item.value - item.cost;
     const plPct = item.cost ? (pl/item.cost)*100 : null;
@@ -1560,11 +1692,12 @@ function renderBreakdown(){
     const currentPrice = cat ? (cat.currentPrice||0) : 0;
 
     return `
-      <div class="breakdown-row" style="cursor:pointer;" onclick="openTargetSheet('${keyEsc}','${sid}')">
+      <div class="breakdown-row cursor-pointer" onclick="openTargetSheet('${keyEsc}','${sid}')">
         <div class="breakdown-top">
           <div class="breakdown-name-block">
-            <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span style="color:var(--text2);font-weight:400;font-size:12px;">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
-            <div class="breakdown-price-line">현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span>${item.count>1 ? ' <span style="color:var(--text2);">· '+item.count+'개 계좌</span>' : ''} <span style="color:var(--text3);">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
+            <div class="breakdown-name">${stockEmoji(item.name, item.ticker)} ${escapeHtml(item.name)}${item.ticker ? ' <span class="suffix-text text-dim">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
+            <div class="breakdown-price-line">평가금액 ${fmtWon(item.value)} · 현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span></div>
+            <div class="breakdown-price-line">${item.count>1 ? item.count+'개 계좌 · ' : ''}총 ${item.quantity.toLocaleString('ko-KR')}주${hasTarget ? ' · 목표 '+target+'%' : ''}</div>
           </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
@@ -1572,38 +1705,21 @@ function renderBreakdown(){
           </div>
         </div>
         <div class="breakdown-bar-track">
-          <div class="breakdown-bar-fill" style="width:${ratio}%;"></div>
-        </div>
-        <div>
-          <span class="target-toggle">목표/배당 관리${hasTarget ? ' · 목표 <span style="color:var(--text1);">'+target+'%</span>' : ''}</span>
+          <div class="breakdown-bar-fill" style="--w:${ratio}%;"></div>
         </div>
       </div>
     `;
   }).join('');
 
   const targetSumHint = targetSum > 0
-    ? `<div style="font-size:11.5px;color:var(--text3);padding:2px 4px 2px;">입력된 목표비율 합계: ${targetSum.toFixed(2)}%${Math.abs(targetSum-100) > 0.01 ? ' (100%가 되도록 맞추면 더 정확해요)' : ' ✓'}</div>`
+    ? `<div class="hint-text">입력된 목표비율 합계: ${targetSum.toFixed(2)}%${Math.abs(targetSum-100) > 0.01 ? ' (100%가 되도록 맞추면 더 정확해요)' : ' ✓'}</div>`
     : '';
 
-  const plannedCashBlock = `
-    <div style="padding:10px 4px 14px;border-bottom:1px solid var(--border);margin-bottom:4px;">
-      <div class="form-row" style="margin-bottom:0;">
-        <div class="field">
-          <span class="field-label">앞으로 추가 투입할 금액 (전체)</span>
-          <input type="number" inputmode="decimal" placeholder="예: 1000000" value="${plannedCash || ''}" onchange="updatePlannedCash(this.value)">
-        </div>
-      </div>
-      <div style="font-size:11.5px;color:var(--text3);margin-top:6px;">
-        현재 총 평가금액 ${fmtWon(grandTotal)} + 투입예정 ${fmtWon(plannedCash)} = 투입 후 총액 ${fmtWon(projectedTotal)} 기준으로 목표금액을 계산해요
-      </div>
-    </div>
-  `;
-
   el.innerHTML = `
-    <div class="section-divider-gray" style="margin:40px 0 0;"></div>
+    <div class="section-divider-gray spaced-top"></div>
     <div class="breakdown-wrap">
-      <div class="breakdown-title" id="breakdownToggle" style="margin-top:40px;">포트폴리오 모음</div>
-      ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
+      <div class="breakdown-title mt-40" id="breakdownToggle">포트폴리오 모음</div>
+      ${breakdownOpen ? `<div class="breakdown-card">${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
   document.getElementById('breakdownToggle').onclick = ()=>{
@@ -1630,24 +1746,24 @@ function dividendListHtmlForKey(key){
       const acc = DATA.accounts.find(x=>x.id===a.accountId);
       const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
       return `
-        <div class="entry-row" style="padding-left:10px;font-size:11px;">
-          <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
+        <div class="entry-row divacc-row">
+          <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? '('+escapeHtml(owner.name)+')' : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
           <span class="amt num">${fmtWon(a.amount)}</span>
         </div>
       `;
     }).join('');
     return `
-      <div style="margin-bottom:6px;">
-        <div style="cursor:pointer;" onclick="toggleInlineAccordion('${gid}')">
-          <div class="entry-row" style="border-bottom:none;padding-bottom:2px;">
+      <div class="divacc-group">
+        <div class="cursor-pointer" onclick="toggleInlineAccordion('${gid}')">
+          <div class="entry-row no-border-bottom pb-2">
             <span>${rec.date || rec.month}</span>
             <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="event.stopPropagation();deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
           </div>
-          <div class="entry-row" style="font-size:11px;color:var(--text3);padding-top:0;">
+          <div class="entry-row fs-11 text-faint pt-0">
             <span>총 ${totalQty.toLocaleString('ko-KR')}주 · 주당 <span class="won-sign">₩</span>${(rec.perShare||0).toLocaleString('ko-KR')}</span><span></span>
           </div>
         </div>
-        <div id="${gid}" style="display:none;">${accountRows}</div>
+        <div id="${gid}" class="hidden">${accountRows}</div>
       </div>
     `;
   }).join('');
@@ -1659,10 +1775,12 @@ function holdingsListHtmlForKey(key){
   return stocks.map(s=>{
     const acc = DATA.accounts.find(a=>a.id===s.accountId);
     const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+    const pl = stockPL(s);
+    const plPct = stockPLPercent(s);
     return `
       <div class="entry-row">
-        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
-        <span class="amt num">${fmtWon(stockTotal(s))}</span>
+        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? '('+escapeHtml(owner.name)+')' : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
+        <span class="amt num">${fmtWon(stockTotal(s))}${plPct!==null ? ' <span class="'+plClass(pl)+'">('+fmtPercent(plPct)+')</span>' : ''}</span>
       </div>
     `;
   }).join('');
@@ -1714,30 +1832,10 @@ function refreshOpenTargetSheet(){
 
 function buildTargetSheetContent(key, sid){
   const items = allItemsBreakdown();
-  const grandTotal = items.reduce((s,i)=>s+i.value,0);
-  const plannedCash = DATA.plannedCash || 0;
-  const projectedTotal = grandTotal + plannedCash;
   const item = items.find(i=>i.key===key);
   if(!item) return;
 
-  const ratio = grandTotal ? (item.value/grandTotal)*100 : 0;
-  const target = DATA.targets[key];
-  const hasTarget = typeof target === 'number' && !isNaN(target);
   const keyEsc = key.replace(/'/g,"\\'");
-
-  let rebalanceHtml = `<div class="entry-row"><span>목표비율</span><span class="amt num">미설정 (JSON의 targets에서 설정)</span></div>`;
-  if(hasTarget){
-    const targetValue = projectedTotal * (target/100);
-    const diff = targetValue - item.value;
-    const avgPrice = item.quantity>0 ? (item.value/item.quantity) : null;
-    const diffShares = avgPrice ? (diff/avgPrice) : null;
-    const actionLabel = diff >= 0 ? '추가 매수 필요' : '이미 목표 초과(매도 검토)';
-    rebalanceHtml = `
-      <div class="entry-row"><span>목표비율 · 현재 ${ratio.toFixed(2)}%</span><span class="amt num">${target}%</span></div>
-      <div class="entry-row"><span>목표 금액 (투입 후 기준)</span><span class="amt num">${fmtWon(targetValue)}</span></div>
-      <div class="entry-row"><span>${actionLabel}</span><span class="amt num">${fmtWon(Math.abs(diff))}${diffShares!==null ? ' · 약 '+Math.round(Math.abs(diffShares)).toLocaleString('ko-KR')+'주' : ' (현재가 정보 없음)'}</span></div>
-    `;
-  }
 
   const divTotal = dividendTotalForKey(key);
   const divTTM = dividendTTMForKey(key);
@@ -1746,12 +1844,10 @@ function buildTargetSheetContent(key, sid){
   const y3 = item.value ? (divTTM/item.value)*100 : null;
 
   const bodyHtml = `
-    <div class="panel-title" style="font-size:14px;margin:0 0 8px;">보유현황</div>
+    <div class="panel-title sub-title">보유현황</div>
     ${holdingsListHtmlForKey(key)}
 
-    <div class="panel-title" style="font-size:14px;margin:20px 0 8px;">목표관리</div>
-    ${rebalanceHtml}
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+    <div class="button-row mt-20">
       <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
       <button class="action-btn-prominent" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력</button>
     </div>
@@ -1787,8 +1883,8 @@ function buildTargetSheetContent(key, sid){
       </div>
     </div>
 
-    <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);">
-      <div class="panel-title" style="font-size:14px;margin:0 0 8px;cursor:pointer;" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
+    <div class="mt-20 pt-14 divider-top">
+      <div class="panel-title sub-title cursor-pointer" onclick="openKeyDividendSheet('${keyEsc}')">배당현황</div>
       <div class="yield-grid">
         <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
@@ -1803,7 +1899,7 @@ function buildTargetSheetContent(key, sid){
           <div class="yield-value num">${fmtPctPlain(y3)}</div>
         </div>
       </div>
-      <div style="font-size:11px;color:var(--text3);margin:6px 0 2px;">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
+      <div class="stat-footnote">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
     </div>
   `;
   return { title: item.name, bodyHtml };
@@ -1830,13 +1926,6 @@ function openTargetSheetNested(key, sid){
   if(!content) return;
   openTargetSheetLayer = { key, layer: 2 };
   openSheet2(content.title, content.bodyHtml, ()=>openDividendLink(key));
-}
-
-async function updatePlannedCash(value){
-  const num = parseFloat(value);
-  DATA.plannedCash = (value==='' || isNaN(num)) ? 0 : num;
-  await saveData();
-  render();
 }
 
 async function applyGroupPrice(key, sid){
@@ -1897,7 +1986,7 @@ async function applyGroupDividend(key, sid){
 function renderAccounts(){
   const list = document.getElementById('accountList');
   const isAll = currentOwner === 'ALL';
-  document.getElementById('addAccountBtn').style.display = isAll ? 'none' : '';
+  document.getElementById('addAccountBtn').classList.toggle('hidden', isAll);
   document.getElementById('accountsLabel').textContent = isAll ? '전체 계좌' : '계좌';
   if(isAll) closeForm('accountForm');
   const accounts = accountsForOwner(currentOwner);
@@ -1919,11 +2008,11 @@ function renderAccounts(){
     card.innerHTML = `
       <div class="account-head" data-acc="${acc.id}">
         <div>
-          <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span style="color:var(--text3);font-weight:400;font-size:12px;">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
+          <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span class="suffix-text text-dim">('+escapeHtml(ownerName)+')</span>' : ''}</div>
         </div>
-        <div style="text-align:right;flex-shrink:0;">
-          <div class="account-total num" style="font-size:17px;color:var(--text1);">${fmtWon(accTotal)}</div>
-          <div style="font-size:13px;">
+        <div class="account-suffix-wrap">
+          <div class="account-total num account-total-value">${fmtWon(accTotal)}</div>
+          <div class="account-pl-line">
             <span class="num ${plClass(accPL)}">${fmtPL(accPL)}</span>${accPLPct!==null ? ' <span class="num '+plClass(accPL)+'">('+fmtPercent(accPLPct)+')</span>' : ''}
           </div>
         </div>
@@ -1947,8 +2036,8 @@ function renderAccounts(){
 function renderAccountBody(acc, bodyEl){
   const stocks = stocksForAccount(acc.id);
   let html = `
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-      <span class="empty-hint" style="padding:0;">종목 ${stocks.length}개</span>
+    <div class="account-row-head">
+      <span class="empty-hint p-0">종목 ${stocks.length}개</span>
       <button class="mini-add" data-add-stock="${acc.id}">+ 종목 추가</button>
     </div>
     <div id="stockList_${acc.id}"></div>
@@ -1966,8 +2055,8 @@ function openStockPickerSheet(accountId){
   const rows = cats.map(c=>{
     const keyEsc = c.key.replace(/'/g,"\\'");
     return `
-      <div class="entry-row" style="cursor:pointer;" onclick="addHoldingFromCatalog('${accountId}','${keyEsc}')">
-        <span>${escapeHtml(c.name)}${c.ticker ? ' <span style="color:var(--text3);">('+escapeHtml(c.ticker)+')</span>' : ''}</span>
+      <div class="entry-row cursor-pointer" onclick="addHoldingFromCatalog('${accountId}','${keyEsc}')">
+        <span>${escapeHtml(c.name)}${c.ticker ? ' <span class="text-faint">('+escapeHtml(c.ticker)+')</span>' : ''}</span>
         <span class="amt num"><span class="won-sign">₩</span>${(c.currentPrice||0).toLocaleString('ko-KR')}</span>
       </div>
     `;
@@ -1975,8 +2064,8 @@ function openStockPickerSheet(accountId){
 
   const bodyHtml = `
     ${cats.length ? rows : '<div class="empty-hint">아직 등록된 종목이 없어요. 아래에서 새로 등록해보세요.</div>'}
-    <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-      <div class="panel-caption" style="margin:0 0 8px;">목록에 없는 종목이면 새로 등록하세요 (현재가·수량·매수내역은 등록 후에 채우면 돼요)</div>
+    <div class="mt-14 pt-14 divider-top">
+      <div class="panel-caption mt-0 mb-8">목록에 없는 종목이면 새로 등록하세요 (현재가·수량·매수내역은 등록 후에 채우면 돼요)</div>
       <div class="form-row">
         <input type="text" placeholder="종목명 (예: 뱅가드 S&P500)" id="newcat_name_${accountId}" list="stockCatalogNames">
         <input type="text" placeholder="티커 (선택)" id="newcat_ticker_${accountId}" list="stockCatalogTickers">
@@ -2043,8 +2132,8 @@ function buildStockRow(stock){
   const plPct = stockPLPercent(stock);
   const divMonths = [...new Set(recordsForStock(stock).map(r=>parseInt(r.month.split('-')[1],10)))].sort((a,b)=>a-b);
   const divMonthsStr = divMonths.length ? divMonths.join(', ') : '-';
-  const divYield = stockYieldOnPrincipal(stock);
-  const divTotal = stockDividendTotal(stock);
+  const divYield = stockYieldOnAvgPrice(stock);
+  const divTTM = stockDividendTTM(stock);
 
   const row = document.createElement('div');
   row.className = 'stock-row';
@@ -2056,14 +2145,14 @@ function buildStockRow(stock){
       </div>
     </div>
     <div class="stock-stat-grid">
-      <div class="stock-stat"><span class="stock-stat-label">원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수량</span><span class="stock-stat-value num">${qty.toLocaleString('ko-KR')}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">자산가치</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">평균단가</span><span class="stock-stat-value num"><span class="won-sign">₩</span>${avgPrice.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight"><span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num" style="color:var(--gold);">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num gold cursor-pointer" onclick="showStockDividendYieldTooltip(event,'${stock.id}')">${fmtPctPlain(divYield)}${divTTM ? ' ('+fmtWon(divTTM)+')' : ''}</span></div>
     </div>
   `;
   row.onclick = ()=>{
@@ -2098,19 +2187,19 @@ function buildStockDetailHtml(stock){
     <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
-    <div class="entry-row" onclick="openTxSheet('${stock.id}','sells','매도 내역')>
-        <span">매도 내역</span>
+    <div class="entry-row" onclick="openTxSheet('${stock.id}','sells','매도 내역')">
+        <span>매도 내역</span>
         <span class="amt num">${(stock.sells||[]).length}건</span>
       </div>
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
-    <div style="display:flex;justify-content:center;gap:4px;margin-top:18px;">
+    <div class="button-row center mt-18">
       <button class="text-link-btn" onclick="openTargetSheetNested('${keyEsc}','${safeId(stock.key)}')">종목 상세</button>
-      <button class="text-link-btn" style="color:var(--red);" onclick="deleteStock('${stock.id}')">종목 삭제</button>
+      <button class="text-link-btn danger" onclick="deleteStock('${stock.id}')">종목 삭제</button>
     </div>
 
-    <div style="display:flex;gap:8px;margin-top:12px;">
+    <div class="button-row mt-12">
       <button class="cta-btn" onclick="toggleForm('buyform_${stock.id}')">매수</button>
       <button class="cta-btn" onclick="toggleForm('sellform_${stock.id}')">매도</button>
     </div>
@@ -2219,7 +2308,7 @@ function closeForm(id){
 function toggleInlineAccordion(id){
   const el = document.getElementById(id);
   if(!el) return;
-  el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+  el.classList.toggle('hidden');
 }
 
 let openSheetCount = 0;
@@ -2228,24 +2317,18 @@ function lockBodyScroll(){
   if(openSheetCount===1){
     const scrollY = window.scrollY || window.pageYOffset || 0;
     document.body.dataset.scrollY = scrollY;
-    document.documentElement.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
+    document.documentElement.classList.add('scroll-locked');
+    document.body.classList.add('body-scroll-locked');
     document.body.style.top = `-${scrollY}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
   }
 }
 function unlockBodyScroll(){
   openSheetCount = Math.max(0, openSheetCount-1);
   if(openSheetCount===0){
     const y = parseInt(document.body.dataset.scrollY || '0', 10);
-    document.documentElement.style.overflow = '';
-    document.body.style.position = '';
+    document.documentElement.classList.remove('scroll-locked');
+    document.body.classList.remove('body-scroll-locked');
     document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
     window.scrollTo(0, y);
   }
 }
@@ -2255,7 +2338,7 @@ function openSheet(title, bodyHtml, onTitleClick){
   const wasOpen = sheetEl.classList.contains('open');
   const titleEl = document.getElementById('sheetTitle');
   titleEl.textContent = title;
-  titleEl.style.cursor = onTitleClick ? 'pointer' : '';
+  titleEl.classList.toggle('cursor-pointer', !!onTitleClick);
   titleEl.onclick = onTitleClick || null;
   document.getElementById('sheetBody').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay').classList.add('open');
@@ -2276,7 +2359,7 @@ function openSheet2(title, bodyHtml, onTitleClick){
   const wasOpen = sheetEl.classList.contains('open');
   const titleEl = document.getElementById('sheetTitle2');
   titleEl.textContent = title;
-  titleEl.style.cursor = onTitleClick ? 'pointer' : '';
+  titleEl.classList.toggle('cursor-pointer', !!onTitleClick);
   titleEl.onclick = onTitleClick || null;
   document.getElementById('sheetBody2').innerHTML = bodyHtml;
   document.getElementById('sheetOverlay2').classList.add('open');
@@ -2336,13 +2419,13 @@ function openMonthDividendSheet(month){
       if(parts.length===3) dayLabel = ` · ${parseInt(parts[1],10)}월 ${parseInt(parts[2],10)}일`;
     }
     return `
-      <div style="margin-bottom:8px;">
-        <div style="cursor:pointer;" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
-          <div class="entry-row" style="font-weight:400;color:var(--text1);border-bottom:none;padding-bottom:0;">
-            <span style="font-size:14.5px;">${escapeHtml(rec.name)}</span>
-            <span><span class="amt num" style="font-size:14px;">${fmtWon(rec.total)}</span><span class="del" onclick="event.stopPropagation();deleteMonthRecord('${keyEsc}','${month}')">삭제</span></span>
+      <div class="mb-8">
+        <div class="cursor-pointer" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
+          <div class="entry-row text-strong no-border-bottom pb-0">
+            <span class="amt-lg">${escapeHtml(rec.name)}</span>
+            <span class="amt num amt-md">${fmtWon(rec.total)}</span>
           </div>
-          <div class="entry-row" style="font-size:11.5px;color:var(--text2);padding-top:0;">
+          <div class="entry-row fs-11-5 text-dim pt-0 mt-2">
             <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
             <span></span>
           </div>
@@ -2352,8 +2435,8 @@ function openMonthDividendSheet(month){
   }).join('');
 
   const bodyHtml = `
-    <div style="margin-bottom:16px;">
-      <div class="num" style="font-size:24px;font-weight:500;color:var(--gold);text-align:left;">${fmtWon(total)}</div>
+    <div class="mb-16">
+      <div class="num fs-24 text-gold text-left fw-500">${fmtWon(total)}</div>
     </div>
     ${groupsHtml}
   `;
@@ -2363,17 +2446,24 @@ function openMonthDividendSheet(month){
 function openDividendAccountDetail(key, month){
   const rec = findDividendRecord(key, month);
   if(!rec){ return; }
+  const keyEsc = key.replace(/'/g,"\\'");
   const accountRows = rec.accounts.map(a=>{
     const acc = DATA.accounts.find(x=>x.id===a.accountId);
     const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
     return `
       <div class="entry-row">
-        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
+        <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? '('+escapeHtml(owner.name)+')' : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
         <span class="amt num">${fmtWon(a.amount)}</span>
       </div>
     `;
   }).join('');
-  openSheet2('계좌별 상세 내역', accountRows);
+  const bodyHtml = `
+    ${accountRows}
+    <div class="button-row center mt-18">
+      <button class="text-link-btn danger" onclick="deleteMonthRecord('${keyEsc}','${month}');closeSheet2();">이 기록 삭제</button>
+    </div>
+  `;
+  openSheet2(`${rec.name} 상세내역`, bodyHtml);
 }
 
 async function deleteMonthRecord(key, month){
@@ -2630,16 +2720,16 @@ document.getElementById('githubSettingsToggle').onclick = ()=>{
 
 function refreshJsonView(){
   document.getElementById('jsonTextarea').value = JSON.stringify(DATA, null, 2);
-  document.getElementById('jsonError').style.display = 'none';
+  document.getElementById('jsonError').classList.remove('show');
 }
 
 async function applyParsedData(parsed, successMsg){
   if(!parsed || !parsed.owners || !parsed.accounts || !parsed.stocks){
     document.getElementById('jsonError').textContent = 'owners, accounts, stocks 세 항목이 모두 있어야 합니다.';
-    document.getElementById('jsonError').style.display = 'block';
+    document.getElementById('jsonError').classList.add('show');
     return false;
   }
-  document.getElementById('jsonError').style.display = 'none';
+  document.getElementById('jsonError').classList.remove('show');
   DATA = parsed;
   if(!DATA.owners.find(o=>o.id===currentOwner) && currentOwner!=='ALL'){
     currentOwner = DATA.owners.length ? DATA.owners[0].id : null;
@@ -2656,7 +2746,7 @@ async function applyJson(){
   try{
     parsed = JSON.parse(raw);
   }catch(e){
-    document.getElementById('jsonError').style.display = 'block';
+    document.getElementById('jsonError').classList.add('show');
     return;
   }
   await applyParsedData(parsed, 'JSON 데이터가 적용되었습니다');
