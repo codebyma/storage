@@ -144,7 +144,7 @@
   .div-chart{
     display:flex;
     align-items:flex-end;
-    gap:18px;
+    justify-content:space-between;
     height:110px;
     min-width:max-content;
     padding:0 2px 2px;
@@ -153,7 +153,6 @@
     display:flex;
     flex-direction:column;
     align-items:center;
-    width:32px;
     flex-shrink:0;
     justify-content:flex-end;
     height:100%;
@@ -1516,9 +1515,10 @@ function renderDividendCalendar(){
 
   const bars = series.map(m=>{
     const barPx = m.amount>0 ? Math.max(4, Math.round((m.amount/maxAmt)*90)) : 2;
+    const amountLabel = m.amount>0 ? Math.floor(m.amount/10000)+'만' : '';
     return `
       <div class="div-bar-col${m.isCurrent ? ' current' : ''}" onclick="openMonthDividendSheet('${m.month}')">
-        <div class="div-bar-amount num">${m.amount>0 ? m.amount.toLocaleString('ko-KR') : ''}</div>
+        <div class="div-bar-amount num">${amountLabel}</div>
         <div class="div-bar" style="--h:${barPx}px;"></div>
         <div class="div-bar-label">${m.label}</div>
       </div>
