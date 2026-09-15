@@ -1298,17 +1298,13 @@ const YIELD_TOOLTIP_INFO = {
   3: { title:'최근 12개월 · 현재가 기준', desc:'최근 12개월 배당금을 현재 평가금액으로 나눈 값이에요. 지금 이 가격에 새로 매수한다면 기대할 수 있는 수익률로, 다른 종목과 비교할 때 참고하기 좋아요.' }
 };
 
-function showYieldTooltip(evt, type){
-  evt.stopPropagation();
+function positionTooltip(anchorEl, titleHtml, bodyHtml){
   closeYieldTooltip();
-  const card = evt.currentTarget;
-  const info = YIELD_TOOLTIP_INFO[type];
-  if(!info) return;
-  const rect = card.getBoundingClientRect();
+  const rect = anchorEl.getBoundingClientRect();
   const tip = document.createElement('div');
   tip.className = 'yield-tooltip';
   tip.id = 'yieldTooltip';
-  tip.innerHTML = `<div class="yield-tooltip-title">${info.title}</div><div>${info.desc}</div>`;
+  tip.innerHTML = `<div class="yield-tooltip-title">${titleHtml}</div><div>${bodyHtml}</div>`;
   document.body.appendChild(tip);
 
   const tipRect = tip.getBoundingClientRect();
@@ -1336,6 +1332,24 @@ function showYieldTooltip(evt, type){
     document.addEventListener('click', closeYieldTooltip, { once:true });
     document.addEventListener('scroll', closeYieldTooltip, { once:true, capture:true });
   }, 0);
+}
+
+function showYieldTooltip(evt, type){
+  evt.stopPropagation();
+  const info = YIELD_TOOLTIP_INFO[type];
+  if(!info) return;
+  positionTooltip(evt.currentTarget, info.title, info.desc);
+}
+
+function showStockDividendYieldTooltip(evt, stockId){
+  evt.stopPropagation();
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock) return;
+  const ttm = stockDividendTTM(stock);
+  const cost = stockCostBasis(stock);
+  const yieldVal = stockYieldOnAvgPrice(stock);
+  const body = `최근 12개월 배당금 ${fmtWon(ttm)} ÷ 총 투자원금 ${fmtWon(cost)} = ${fmtPctPlain(yieldVal)}<br>지금의 배당 페이스가 앞으로도 이어진다고 가정했을 때의 연간 수익률이에요.`;
+  positionTooltip(evt.currentTarget, '배당률 계산', body);
 }
 
 function closeYieldTooltip(){
@@ -2081,8 +2095,8 @@ function buildStockRow(stock){
   const plPct = stockPLPercent(stock);
   const divMonths = [...new Set(recordsForStock(stock).map(r=>parseInt(r.month.split('-')[1],10)))].sort((a,b)=>a-b);
   const divMonthsStr = divMonths.length ? divMonths.join(', ') : '-';
-  const divYield = stockYieldOnPrincipal(stock);
-  const divTotal = stockDividendTotal(stock);
+  const divYield = stockYieldOnAvgPrice(stock);
+  const divTTM = stockDividendTTM(stock);
 
   const row = document.createElement('div');
   row.className = 'stock-row';
@@ -2101,7 +2115,7 @@ function buildStockRow(stock){
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight"><span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num gold">${fmtPctPlain(divYield)}${divTotal ? ' ('+fmtWon(divTotal)+')' : ''}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num gold cursor-pointer" onclick="showStockDividendYieldTooltip(event,'${stock.id}')">${fmtPctPlain(divYield)}${divTTM ? ' ('+fmtWon(divTTM)+')' : ''}</span></div>
     </div>
   `;
   row.onclick = ()=>{
