@@ -996,6 +996,21 @@ function isValidPortfolio(obj){
   return !!(obj && obj.owners && obj.accounts && obj.stocks);
 }
 
+async function autoSaveTodaySnapshotIfNeeded(){
+  ensureDataShape();
+  const today = new Date().toISOString().slice(0,10);
+  if(DATA.snapshots.some(s=>s.date===today)) return;
+  upsertSnapshot();
+  await saveData();
+  showToast('오늘 자산 스냅샷을 자동으로 저장했어요');
+}
+
+async function finishLoad(){
+  currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
+  await autoSaveTodaySnapshotIfNeeded();
+  render();
+}
+
 async function loadData(){
   // 1순위: 같은 경로의 stock.json (서버에 올린 정적 파일)
   try{
@@ -1007,8 +1022,7 @@ async function loadData(){
         dataSource = 'server-json';
         const priceUpdateNote = DATA.lastPriceUpdate ? (' · 시세 갱신: ' + DATA.lastPriceUpdate) : '';
         setSaveStatus('./stock.json 불러옴 · ' + new Date().toLocaleTimeString('ko-KR') + priceUpdateNote + ' · 자동저장 안 됨, 변경 후 내보내기 필요');
-        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
-        render();
+        await finishLoad();
         return;
       }
     }
@@ -1024,8 +1038,7 @@ async function loadData(){
         DATA = JSON.parse(res.value);
         dataSource = 'window-storage';
         setSaveStatus('마지막 저장 데이터를 불러왔습니다 · ' + new Date().toLocaleTimeString('ko-KR'));
-        currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
-        render();
+        await finishLoad();
         return;
       }
     }catch(e){ /* 무시하고 아래로 */ }
@@ -1035,8 +1048,7 @@ async function loadData(){
   DATA = defaultData();
   dataSource = 'new';
   setSaveStatus('새 데이터로 시작합니다 · stock.json을 서버에 올리면 자동으로 불러와요');
-  currentOwner = DATA.owners.length > 1 ? 'ALL' : (DATA.owners.length ? DATA.owners[0].id : null);
-  render();
+  await finishLoad();
 }
 
 function defaultData(){
