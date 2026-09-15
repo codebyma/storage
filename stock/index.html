@@ -2425,7 +2425,7 @@ function openMonthDividendSheet(month){
             <span class="amt-lg">${escapeHtml(rec.name)}</span>
             <span class="amt num amt-md">${fmtWon(rec.total)}</span>
           </div>
-          <div class="entry-row fs-11-5 text-dim pt-0">
+          <div class="entry-row fs-11-5 text-dim pt-0 mt-2">
             <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
             <span></span>
           </div>
