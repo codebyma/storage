@@ -116,12 +116,7 @@
   }
   .metric .label{font-size:12px;color:var(--text2);margin-bottom:6px;}
   .metric .value{font-size:19px;font-weight:500;}
-  .metric .value.mint{color:var(--mint);}
-  .metric .value.gold{color:var(--gold);}
-  .metric .value.redtext{color:var(--red);}
   .metric.none{display:none;}
-  .redtext{color:var(--red);}
-  .bluetext{color:var(--blue);}
 
   main{padding:20px;}
 
@@ -223,7 +218,6 @@
   .breakdown-name{font-weight:400;color:var(--text1);font-size:16px;}
   .breakdown-price-line{font-size:11.5px;color:var(--text2);margin-top:3px;}
   .breakdown-name + .breakdown-price-line{margin-top:7px;}
-  .breakdown-price{color:var(--mint);font-weight:400;}
   .price-highlight{color:var(--mint);font-weight:400;}
   .breakdown-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;}
   .breakdown-ratio{font-size:14px;font-weight:600;color:var(--text1);font-family:'Roboto',sans-serif;}
@@ -327,8 +321,8 @@
   .stock-stat:nth-child(even){text-align:right;}
   .stock-stat-label{color:var(--text2);margin-right:6px;}
   .stock-stat-value{color:var(--text1);}
-  .stock-stat-value.redtext{color:var(--red);}
-  .stock-stat-value.bluetext{color:var(--blue);}
+  .stock-stat-value.text-red{color:var(--red);}
+  .stock-stat-value.text-blue{color:var(--blue);}
   .stock-stat-value.price-highlight{color:var(--mint);}
 
   .sub-block{margin-bottom:6px;}
@@ -388,8 +382,8 @@
   }
   .stat-hero-label{font-size:10.5px;color:var(--text2);margin-bottom:3px;}
   .stat-hero-value{font-size:16px;font-weight:600;line-height:1.25;color:var(--text1);}
-  .stat-hero-value.redtext{color:var(--red);}
-  .stat-hero-value.bluetext{color:var(--blue);}
+  .stat-hero-value.text-red{color:var(--red);}
+  .stat-hero-value.text-blue{color:var(--blue);}
   .stat-mini-grid{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -789,7 +783,7 @@ background: var(--surface2);
   .panel-caption.warning{color:var(--red);margin-bottom:8px;}
   .action-btn-prominent.full-width{width:100%;}
   .text-link-btn.danger{color:var(--red);}
-  .stock-stat-value.gold{color:var(--gold);}
+  .stock-stat-value.text-gold{color:var(--gold);}
   .metric.full-row{grid-column:1 / -1;}
   .value-sub{font-size:13px;font-weight:400;margin-top:2px;}
   .suffix-text{font-weight:400;font-size:12px;}
@@ -818,6 +812,7 @@ background: var(--surface2);
   .text-faint{color:var(--text3);}
   .text-strong{color:var(--text1);}
   .text-red{color:var(--red);}
+  .text-blue{color:var(--blue);}
   .text-gold{color:var(--gold);}
   .text-mint{color:var(--mint);}
 
@@ -1448,7 +1443,7 @@ function fmtPctPlain(n){
   return n.toFixed(2) + '%';
 }
 function plClass(n){
-  return n > 0 ? 'redtext' : (n < 0 ? 'bluetext' : '');
+  return n > 0 ? 'text-red' : (n < 0 ? 'text-blue' : '');
 }
 function currentMonthDividend(ownerId){
   const ym = new Date().toISOString().slice(0,7);
@@ -1473,7 +1468,7 @@ function renderSummary(){
   el.innerHTML = `
     <div class="metric">
       <div class="label">총 평가금액</div>
-      <div class="value mint num">${fmtWon(total)}</div>
+      <div class="value text-mint num">${fmtWon(total)}</div>
     </div>
     <div class="metric">
       <div class="label">평가손익</div>
@@ -1489,11 +1484,11 @@ function renderSummary(){
     </div>
     <div class="metric none">
       <div class="label">이번 달 배당</div>
-      <div class="value gold num">${fmtWon(monthDiv)}</div>
+      <div class="value text-gold num">${fmtWon(monthDiv)}</div>
     </div>
     <div class="metric">
       <div class="label">올해 누적 배당</div>
-      <div class="value gold num">${fmtWon(yearDiv)}</div>
+      <div class="value text-gold num">${fmtWon(yearDiv)}</div>
     </div>
     <div class="metric full-row">
       <div class="label mb-8">배당률 평균</div>
@@ -1726,7 +1721,7 @@ function renderBreakdown(){
         <div class="breakdown-top">
           <div class="breakdown-name-block">
             <div class="breakdown-name">${stockEmoji(item.name, item.ticker)} ${escapeHtml(item.name)}${item.ticker ? ' <span class="suffix-text text-dim">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
-            <div class="breakdown-price-line">평가금액 ${fmtWon(item.value)} · 현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span></div>
+            <div class="breakdown-price-line">평가금액 ${fmtWon(item.value)} · 현재가 <span class="price-highlight"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span></div>
             <div class="breakdown-price-line">${item.count>1 ? item.count+'개 계좌 · ' : ''}총 ${item.quantity.toLocaleString('ko-KR')}주${hasTarget ? ' · 목표 '+target+'%' : ''}</div>
           </div>
           <div class="breakdown-right">
@@ -2182,7 +2177,7 @@ function buildStockRow(stock){
       <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">현재가</span><span class="stock-stat-value num price-highlight"><span class="won-sign">₩</span>${price.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">배당월</span><span class="stock-stat-value">${divMonthsStr}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num gold cursor-pointer" onclick="showStockDividendYieldTooltip(event,'${stock.id}')">${fmtPctPlain(divYield)}${divTTM ? ' ('+fmtWon(divTTM)+')' : ''}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">배당률</span><span class="stock-stat-value num text-gold cursor-pointer" onclick="showStockDividendYieldTooltip(event,'${stock.id}')">${fmtPctPlain(divYield)}${divTTM ? ' ('+fmtWon(divTTM)+')' : ''}</span></div>
     </div>
   `;
   row.onclick = ()=>{
