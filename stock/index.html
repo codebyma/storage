@@ -1298,8 +1298,11 @@ const YIELD_TOOLTIP_INFO = {
   3: { title:'최근 12개월 · 현재가 기준', desc:'최근 12개월 배당금을 현재 평가금액으로 나눈 값이에요. 지금 이 가격에 새로 매수한다면 기대할 수 있는 수익률로, 다른 종목과 비교할 때 참고하기 좋아요.' }
 };
 
+let tooltipAnchorEl = null;
+
 function positionTooltip(anchorEl, titleHtml, bodyHtml){
   closeYieldTooltip();
+  tooltipAnchorEl = anchorEl;
   const rect = anchorEl.getBoundingClientRect();
   const tip = document.createElement('div');
   tip.className = 'yield-tooltip';
@@ -1334,11 +1337,18 @@ function positionTooltip(anchorEl, titleHtml, bodyHtml){
   }, 0);
 }
 
+function toggleTooltip(anchorEl, titleHtml, bodyHtml){
+  const wasOpenOnSameAnchor = !!document.getElementById('yieldTooltip') && tooltipAnchorEl === anchorEl;
+  closeYieldTooltip();
+  if(wasOpenOnSameAnchor) return;
+  positionTooltip(anchorEl, titleHtml, bodyHtml);
+}
+
 function showYieldTooltip(evt, type){
   evt.stopPropagation();
   const info = YIELD_TOOLTIP_INFO[type];
   if(!info) return;
-  positionTooltip(evt.currentTarget, info.title, info.desc);
+  toggleTooltip(evt.currentTarget, info.title, info.desc);
 }
 
 function showStockDividendYieldTooltip(evt, stockId){
@@ -1349,12 +1359,13 @@ function showStockDividendYieldTooltip(evt, stockId){
   const cost = stockCostBasis(stock);
   const yieldVal = stockYieldOnAvgPrice(stock);
   const body = `최근 12개월 배당금 ${fmtWon(ttm)} ÷ 총 투자원금 ${fmtWon(cost)} = ${fmtPctPlain(yieldVal)}<br>지금의 배당 페이스가 앞으로도 이어진다고 가정했을 때의 연간 수익률이에요.`;
-  positionTooltip(evt.currentTarget, '배당률 계산', body);
+  toggleTooltip(evt.currentTarget, '배당률 계산', body);
 }
 
 function closeYieldTooltip(){
   const el = document.getElementById('yieldTooltip');
   if(el) el.remove();
+  tooltipAnchorEl = null;
 }
 
 function ownerAvgYield(ownerId, fn){
