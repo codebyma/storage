@@ -1775,7 +1775,7 @@ function holdingsListHtmlForKey(key){
     return `
       <div class="entry-row">
         <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
-        <span class="amt num ${plClass(pl)}">${fmtWon(stockTotal(s))}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span>
+        <span class="amt num">${fmtWon(stockTotal(s))}${plPct!==null ? ' <span class="'+plClass(pl)+'">('+fmtPercent(plPct)+')</span>' : ''}</span>
       </div>
     `;
   }).join('');
