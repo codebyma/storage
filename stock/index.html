@@ -196,7 +196,8 @@
     color:var(--text1);
     margin-bottom:2px;
   }
-  .trend-latest-delta{font-size:12px;margin-bottom:8px;}
+  .trend-latest-delta{font-size:12px;margin-bottom:2px;}
+  .trend-first-delta{font-size:11px;color:var(--text3);margin-bottom:8px;}
 
   .breakdown-wrap{padding:0 20px;}
   .breakdown-card{
@@ -1601,9 +1602,12 @@ function renderAssetTrend(){
   const areaPoints = `${pad},${h-pad} ${polyPoints} ${w-pad},${h-pad}`;
 
   const first = values[0];
+  const prev = values[values.length-2];
   const last = values[values.length-1];
-  const delta = last - first;
-  const deltaPct = first ? (delta/first)*100 : null;
+  const delta = last - prev;
+  const deltaPct = prev ? (delta/prev)*100 : null;
+  const firstDelta = last - first;
+  const firstDeltaPct = first ? (firstDelta/first)*100 : null;
 
   el.innerHTML = `
     <div class="section-divider-gray spaced-top"></div>
@@ -1613,7 +1617,8 @@ function renderAssetTrend(){
         ${saveBtnHtml}
       </div>
       <div class="trend-latest num">${fmtWon(last)}</div>
-      <div class="trend-latest-delta num ${plClass(delta)}">${fmtPL(delta)}${deltaPct!==null ? ' ('+fmtPercent(deltaPct)+')' : ''} · 첫 기록 대비</div>
+      <div class="trend-latest-delta num ${plClass(delta)}">${fmtPL(delta)}${deltaPct!==null ? ' ('+fmtPercent(deltaPct)+')' : ''} · 직전 기록 대비</div>
+      <div class="trend-first-delta num">${fmtPL(firstDelta)}${firstDeltaPct!==null ? ' ('+fmtPercent(firstDeltaPct)+')' : ''} · 첫 기록 대비</div>
       <div class="trend-svg-wrap">
         <svg viewBox="0 0 ${w} ${h}" width="100%" height="${h}" preserveAspectRatio="none">
           <polygon points="${areaPoints}" fill="var(--mint-dim)" opacity="0.6"></polygon>
