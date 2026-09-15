@@ -60,7 +60,7 @@
     -webkit-text-size-adjust:100%;
     text-size-adjust:100%;
     transition:background .15s, color .15s;
-    padding-bottom:60px;
+    padding-bottom:calc(60px + env(safe-area-inset-bottom));
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
@@ -666,7 +666,7 @@ background: var(--surface2);
   }
   .toast{
     position:fixed;
-    bottom:20px;left:50%;
+    bottom:calc(20px + env(safe-area-inset-bottom));left:50%;
     transform:translateX(-50%);
     background:var(--surface2);
     border:1px solid var(--border-strong);
@@ -1200,6 +1200,36 @@ function stockPLPercent(stock){
 }
 function stockKey(stock){
   return stock.key || makeKeyFrom(stock.ticker, stock.name);
+}
+// 특정 계좌(종목 1건)가 기준일(dateStr, YYYY-MM-DD) 시점에 실제로 보유했던 수량을
+// 매수/매도 내역의 날짜를 기준으로 다시 계산. 배당·매수·매도를 어떤 순서로 입력해도
+// 항상 그 날짜 기준의 정확한 보유수량이 나오도록 하기 위한 함수.
+function quantityAsOfDate(stock, dateStr){
+  if(!dateStr) return stock.quantity || 0;
+  const bought = (stock.buys||[]).filter(b=>b.date && b.date <= dateStr).reduce((s,b)=>s+(b.quantity||0),0);
+  const sold = (stock.sells||[]).filter(b=>b.date && b.date <= dateStr).reduce((s,b)=>s+(b.quantity||0),0);
+  return Math.max(0, bought - sold);
+}
+// 이 종목(계좌)의 매수/매도 내역이 바뀔 때마다, 이미 등록돼있는 배당 기록들의
+// 수량·금액을 그 배당일 기준으로 다시 계산해서 맞춰준다.
+// → 배당을 먼저 입력하고 매수/매도를 나중에 입력해도(또는 그 반대여도) 항상 정확해짐
+function recalcDividendQuantitiesForStock(stock){
+  if(!DATA.dividends || !DATA.dividends.length) return;
+  const key = stockKey(stock);
+  DATA.dividends.forEach(rec=>{
+    if(rec.key !== key) return;
+    const asOf = rec.date || (rec.month ? rec.month+'-28' : '');
+    const qty = quantityAsOfDate(stock, asOf);
+    const idx = rec.accounts.findIndex(a=>a.accountId===stock.accountId);
+    if(qty<=0){
+      if(idx>=0) rec.accounts.splice(idx,1);
+    } else {
+      const entry = { accountId: stock.accountId, quantity: qty, amount: qty * (rec.perShare||0) };
+      if(idx>=0) rec.accounts[idx] = entry;
+      else rec.accounts.push(entry);
+    }
+  });
+  DATA.dividends = DATA.dividends.filter(rec=> rec.key!==key || rec.accounts.length>0);
 }
 function findDividendRecord(key, month){
   return (DATA.dividends||[]).find(d=>d.key===key && d.month===month);
@@ -1973,7 +2003,7 @@ async function applyGroupDividend(key, sid){
   if(!date){ showToast('배당일을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const cat = catalogByKey(key);
-  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity:s.quantity||0 }));
+  const stockList = stocksMatchingKey(key).map(s=>({ accountId:s.accountId, quantity:quantityAsOfDate(s, date) }));
   const rec = upsertDividendGroupBulk(key, date, cat ? cat.name : '', cat ? cat.ticker : '', perShare, stockList);
   const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
   closeForm(`divgrpform_${sid}`);
@@ -2525,6 +2555,7 @@ async function submitTx(stockId, field){
   } else if(field==='sells'){
     stock.quantity = Math.max(0, (stock.quantity||0) - qty);
   }
+  recalcDividendQuantitiesForStock(stock);
   await saveData();
   render();
   refreshStockDetailSheetIfOpen(stockId);
@@ -2537,7 +2568,7 @@ async function submitDividend(stockId){
   if(!month){ showToast('월을 선택해주세요'); return; }
   if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
   const stock = DATA.stocks.find(s=>s.id===stockId);
-  const qty = stock.quantity || 0;
+  const qty = quantityAsOfDate(stock, month+'-31');
   const cat = catalogFor(stock);
   upsertDividendAccountEntry(stock.key, month, cat.name, cat.ticker, stock.accountId, qty, perShare);
   await saveData();
@@ -2555,6 +2586,7 @@ async function deleteEntry(stockId, field, entryId){
   } else if(entry && field==='sells'){
     stock.quantity = (stock.quantity||0) + entry.quantity;
   }
+  recalcDividendQuantitiesForStock(stock);
   await saveData();
   render();
   if(document.getElementById('bottomSheet2').classList.contains('open')){
