@@ -2468,7 +2468,7 @@ function openDividendAccountDetail(key, month){
       </div>
     `;
   }).join('');
-  openSheet2('계좌별 상세 내역', accountRows);
+  openSheet2(`${rec.name} 상세내역`, accountRows);
 }
 
 async function deleteMonthRecord(key, month){
