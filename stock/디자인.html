@@ -60,7 +60,7 @@
     -webkit-text-size-adjust:100%;
     text-size-adjust:100%;
     transition:background .15s, color .15s;
-    padding-bottom:60px;
+    padding-bottom:calc(60px + env(safe-area-inset-bottom));
     overflow-x:hidden;
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
@@ -666,7 +666,7 @@ background: var(--surface2);
   }
   .toast{
     position:fixed;
-    bottom:20px;left:50%;
+    bottom:calc(20px + env(safe-area-inset-bottom));left:50%;
     transform:translateX(-50%);
     background:var(--surface2);
     border:1px solid var(--border-strong);
