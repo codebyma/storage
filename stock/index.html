@@ -1665,7 +1665,7 @@ function renderBreakdown(){
         <div class="breakdown-top">
           <div class="breakdown-name-block">
             <div class="breakdown-name">${escapeHtml(item.name)}${item.ticker ? ' <span class="suffix-text text-dim">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
-            <div class="breakdown-price-line">현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span>${item.count>1 ? ' <span class="text-dim">· '+item.count+'개 계좌</span>' : ''} <span class="text-faint">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
+            <div class="breakdown-price-line">평가금액 ${fmtWon(item.value)} · 현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span>${item.count>1 ? ' <span class="text-dim">· '+item.count+'개 계좌</span>' : ''} <span class="text-dim">· 총 ${item.quantity.toLocaleString('ko-KR')}주</span></div>
           </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
