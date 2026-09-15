@@ -212,9 +212,7 @@
   }
   .breakdown-row{
     padding:14px 0;
-    border-bottom:1px solid var(--border);
   }
-  .breakdown-row:last-child{border-bottom:none;}
   .breakdown-top{
     display:flex;
     justify-content:space-between;
@@ -1772,10 +1770,12 @@ function holdingsListHtmlForKey(key){
   return stocks.map(s=>{
     const acc = DATA.accounts.find(a=>a.id===s.accountId);
     const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
+    const pl = stockPL(s);
+    const plPct = stockPLPercent(s);
     return `
       <div class="entry-row">
         <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? ' · '+escapeHtml(owner.name) : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
-        <span class="amt num">${fmtWon(stockTotal(s))}</span>
+        <span class="amt num ${plClass(pl)}">${fmtWon(stockTotal(s))}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span>
       </div>
     `;
   }).join('');
