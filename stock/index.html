@@ -241,13 +241,6 @@
     background:var(--mint);
     border-radius:3px;
   }
-  .target-toggle{
-    font-size:11.5px;
-    color:var(--text2);
-    cursor:pointer;
-    margin-top:8px;
-    display:inline-block;
-  }
   .target-panel{
     margin-top:10px;
     padding:10px;
@@ -798,13 +791,7 @@ background: var(--surface2);
   .value-sub{font-size:13px;font-weight:400;margin-top:2px;}
   .suffix-text{font-weight:400;font-size:12px;}
   .hint-text{font-size:11.5px;color:var(--text3);padding:2px 4px 2px;}
-  .field-hint{font-size:11.5px;color:var(--text3);margin-top:6px;}
   .stat-footnote{font-size:11px;color:var(--text3);margin:6px 0 2px;}
-  .planned-cash-block{
-    padding:10px 4px 14px;
-    border-bottom:1px solid var(--border);
-    margin-bottom:4px;
-  }
   .divacc-group{margin-bottom:6px;}
   .divider-top{border-top:1px solid var(--border);}
   .divacc-row{padding-left:10px;font-size:11px;}
@@ -1062,7 +1049,6 @@ function defaultData(){
     stockCatalog: [],
     stocks: [],
     targets: {},
-    plannedCash: 0,
     snapshots: [],
     dividends: []
   };
@@ -1087,7 +1073,6 @@ function migrateStockCatalog(){
 
 function ensureDataShape(){
   if(!DATA.targets) DATA.targets = {};
-  if(typeof DATA.plannedCash !== 'number') DATA.plannedCash = 0;
   if(!Array.isArray(DATA.snapshots)) DATA.snapshots = [];
   if(!Array.isArray(DATA.dividends)) DATA.dividends = [];
   migrateStockCatalog();
@@ -1645,9 +1630,6 @@ function renderBreakdown(){
     return s + (typeof t === 'number' ? t : 0);
   }, 0);
 
-  const plannedCash = DATA.plannedCash || 0;
-  const projectedTotal = grandTotal + plannedCash;
-
   const rows = sorted.map(item=>{
     const pl = item.value - item.cost;
     const plPct = item.cost ? (pl/item.cost)*100 : null;
@@ -1666,7 +1648,7 @@ function renderBreakdown(){
           <div class="breakdown-name-block">
             <div class="breakdown-name">${stockEmoji(item.name, item.ticker)} ${escapeHtml(item.name)}${item.ticker ? ' <span class="suffix-text text-dim">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
             <div class="breakdown-price-line">평가금액 ${fmtWon(item.value)} · 현재가 <span class="breakdown-price"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span></div>
-            <div class="breakdown-price-line">${item.count>1 ? item.count+'개 계좌 · ' : ''}총 ${item.quantity.toLocaleString('ko-KR')}주</div>
+            <div class="breakdown-price-line">${item.count>1 ? item.count+'개 계좌 · ' : ''}총 ${item.quantity.toLocaleString('ko-KR')}주${hasTarget ? ' · 목표 '+target+'%' : ''}</div>
           </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
@@ -1676,9 +1658,6 @@ function renderBreakdown(){
         <div class="breakdown-bar-track">
           <div class="breakdown-bar-fill" style="--w:${ratio}%;"></div>
         </div>
-        <div>
-          <span class="target-toggle">목표/배당 관리${hasTarget ? ' · 목표 <span class="text-strong">'+target+'%</span>' : ''}</span>
-        </div>
       </div>
     `;
   }).join('');
@@ -1687,25 +1666,11 @@ function renderBreakdown(){
     ? `<div class="hint-text">입력된 목표비율 합계: ${targetSum.toFixed(2)}%${Math.abs(targetSum-100) > 0.01 ? ' (100%가 되도록 맞추면 더 정확해요)' : ' ✓'}</div>`
     : '';
 
-  const plannedCashBlock = `
-    <div class="planned-cash-block">
-      <div class="form-row mb-0">
-        <div class="field">
-          <span class="field-label">앞으로 추가 투입할 금액 (전체)</span>
-          <input type="number" inputmode="decimal" placeholder="예: 1000000" value="${plannedCash || ''}" onchange="updatePlannedCash(this.value)">
-        </div>
-      </div>
-      <div class="field-hint">
-        현재 총 평가금액 ${fmtWon(grandTotal)} + 투입예정 ${fmtWon(plannedCash)} = 투입 후 총액 ${fmtWon(projectedTotal)} 기준으로 목표금액을 계산해요
-      </div>
-    </div>
-  `;
-
   el.innerHTML = `
     <div class="section-divider-gray spaced-top"></div>
     <div class="breakdown-wrap">
       <div class="breakdown-title mt-40" id="breakdownToggle">포트폴리오 모음</div>
-      ${breakdownOpen ? `<div class="breakdown-card">${plannedCashBlock}${rows}</div>${targetSumHint}` : ''}
+      ${breakdownOpen ? `<div class="breakdown-card">${rows}</div>${targetSumHint}` : ''}
     </div>
   `;
   document.getElementById('breakdownToggle').onclick = ()=>{
@@ -1816,30 +1781,10 @@ function refreshOpenTargetSheet(){
 
 function buildTargetSheetContent(key, sid){
   const items = allItemsBreakdown();
-  const grandTotal = items.reduce((s,i)=>s+i.value,0);
-  const plannedCash = DATA.plannedCash || 0;
-  const projectedTotal = grandTotal + plannedCash;
   const item = items.find(i=>i.key===key);
   if(!item) return;
 
-  const ratio = grandTotal ? (item.value/grandTotal)*100 : 0;
-  const target = DATA.targets[key];
-  const hasTarget = typeof target === 'number' && !isNaN(target);
   const keyEsc = key.replace(/'/g,"\\'");
-
-  let rebalanceHtml = `<div class="entry-row"><span>목표비율</span><span class="amt num">미설정 (JSON의 targets에서 설정)</span></div>`;
-  if(hasTarget){
-    const targetValue = projectedTotal * (target/100);
-    const diff = targetValue - item.value;
-    const avgPrice = item.quantity>0 ? (item.value/item.quantity) : null;
-    const diffShares = avgPrice ? (diff/avgPrice) : null;
-    const actionLabel = diff >= 0 ? '추가 매수 필요' : '이미 목표 초과(매도 검토)';
-    rebalanceHtml = `
-      <div class="entry-row"><span>목표비율 · 현재 ${ratio.toFixed(2)}%</span><span class="amt num">${target}%</span></div>
-      <div class="entry-row"><span>목표 금액 (투입 후 기준)</span><span class="amt num">${fmtWon(targetValue)}</span></div>
-      <div class="entry-row"><span>${actionLabel}</span><span class="amt num">${fmtWon(Math.abs(diff))}${diffShares!==null ? ' · 약 '+Math.round(Math.abs(diffShares)).toLocaleString('ko-KR')+'주' : ' (현재가 정보 없음)'}</span></div>
-    `;
-  }
 
   const divTotal = dividendTotalForKey(key);
   const divTTM = dividendTTMForKey(key);
@@ -1851,9 +1796,7 @@ function buildTargetSheetContent(key, sid){
     <div class="panel-title sub-title">보유현황</div>
     ${holdingsListHtmlForKey(key)}
 
-    <div class="panel-title sub-title mt-20">목표관리</div>
-    ${rebalanceHtml}
-    <div class="button-row mt-14">
+    <div class="button-row mt-20">
       <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
       <button class="action-btn-prominent" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력</button>
     </div>
@@ -1932,13 +1875,6 @@ function openTargetSheetNested(key, sid){
   if(!content) return;
   openTargetSheetLayer = { key, layer: 2 };
   openSheet2(content.title, content.bodyHtml, ()=>openDividendLink(key));
-}
-
-async function updatePlannedCash(value){
-  const num = parseFloat(value);
-  DATA.plannedCash = (value==='' || isNaN(num)) ? 0 : num;
-  await saveData();
-  render();
 }
 
 async function applyGroupPrice(key, sid){
