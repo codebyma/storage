@@ -2008,7 +2008,7 @@ function renderAccounts(){
     card.innerHTML = `
       <div class="account-head" data-acc="${acc.id}">
         <div>
-          <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span class="suffix-text text-faint">· '+escapeHtml(ownerName)+'</span>' : ''}</div>
+          <div class="account-name">${escapeHtml(acc.name)}${ownerName ? ' <span class="suffix-text text-dim">('+escapeHtml(ownerName)+')</span>' : ''}</div>
         </div>
         <div class="account-suffix-wrap">
           <div class="account-total num account-total-value">${fmtWon(accTotal)}</div>
