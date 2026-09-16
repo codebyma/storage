@@ -1727,7 +1727,7 @@ function renderBreakdown(){
           <div class="breakdown-name-block">
             <div class="breakdown-name">${stockEmoji(item.name, item.ticker)} ${escapeHtml(item.name)}${item.ticker ? ' <span class="suffix-text text-dim">('+escapeHtml(item.ticker)+')</span>' : ''}</div>
             <div class="breakdown-price-line">평가금액 ${fmtWon(item.value)} · 현재가 <span class="price-highlight"><span class="won-sign">₩</span>${currentPrice.toLocaleString('ko-KR')}</span></div>
-            <div class="breakdown-price-line">${item.count>1 ? item.count+'개 계좌 · ' : ''}총 ${item.quantity.toLocaleString('ko-KR')}주${hasTarget ? ' · 목표 '+target+'%' : ''}</div>
+            <div class="breakdown-price-line">총 ${item.quantity.toLocaleString('ko-KR')}주${hasTarget ? ' · 목표 '+target+'%' : ''}</div>
           </div>
           <div class="breakdown-right">
             <span class="breakdown-ratio num">${ratio.toFixed(2)}%</span>
@@ -1884,8 +1884,16 @@ function buildTargetSheetContent(key, sid){
   const divTTM = dividendTTMForKey(key);
   const y2 = item.cost ? (divTTM/item.cost)*100 : null;
   const y3 = item.value ? (divTTM/item.value)*100 : null;
+  const keyPL = item.value - item.cost;
+  const keyPLPct = item.cost ? (keyPL/item.cost)*100 : null;
 
   const bodyHtml = `
+    <div class="stock-stat-grid mb-16">
+      <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(item.value)}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(item.cost)}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(keyPL)}">${fmtPL(keyPL)}${keyPLPct!==null ? ' ('+fmtPercent(keyPLPct)+')' : ''}</span></div>
+      <div class="stock-stat"><span class="stock-stat-label">보유수량</span><span class="stock-stat-value num">${item.quantity.toLocaleString('ko-KR')}주</span></div>
+    </div>
     <div class="panel-title sub-title">보유현황</div>
     ${holdingsListHtmlForKey(key)}
 
