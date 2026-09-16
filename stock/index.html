@@ -806,48 +806,51 @@ background: var(--surface2);
   .account-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
 
   /* ===== 유틸리티 클래스 (자주 반복되는 단일 속성 — 항상 이 파일의 마지막에 위치해 컴포넌트 클래스보다 우선 적용됨) ===== */
+  /* !important를 붙인 이유: .panel-title.sub-title 처럼 클래스 2개가 합쳐진 규칙은
+     명시도가 더 높아서, 유틸리티가 나중에 나와도 밀려버리는 문제가 반복적으로 있었음.
+     이 유틸리티들은 "항상 이긴다"는 게 존재 이유라 !important로 명시도 문제를 원천 차단. */
   .hidden{display:none !important;}
-  .no-wrap{white-space:nowrap;}
-  .full-width{width:100%;}
-  .text-right{text-align:right;}
-  .text-left{text-align:left;}
-  .cursor-pointer{cursor:pointer;}
-  .no-border-bottom{border-bottom:none;}
+  .no-wrap{white-space:nowrap !important;}
+  .full-width{width:100% !important;}
+  .text-right{text-align:right !important;}
+  .text-left{text-align:left !important;}
+  .cursor-pointer{cursor:pointer !important;}
+  .no-border-bottom{border-bottom:none !important;}
 
-  .text-dim{color:var(--text2);}
-  .text-faint{color:var(--text3);}
-  .text-strong{color:var(--text1);}
-  .text-red{color:var(--red);}
-  .text-blue{color:var(--blue);}
-  .text-gold{color:var(--gold);}
-  .text-mint{color:var(--mint);}
+  .text-dim{color:var(--text2) !important;}
+  .text-faint{color:var(--text3) !important;}
+  .text-strong{color:var(--text1) !important;}
+  .text-red{color:var(--red) !important;}
+  .text-blue{color:var(--blue) !important;}
+  .text-gold{color:var(--gold) !important;}
+  .text-mint{color:var(--mint) !important;}
 
-  .fs-11{font-size:11px;}
-  .fs-11-5{font-size:11.5px;}
-  .fs-12{font-size:12px;}
-  .fs-13{font-size:13px;}
-  .fs-14{font-size:14px;}
-  .fs-16{font-size:16px;}
-  .fs-24{font-size:24px;}
-  .fw-500{font-weight:500;}
-  .fw-400{font-weight:400;}
+  .fs-11{font-size:11px !important;}
+  .fs-11-5{font-size:11.5px !important;}
+  .fs-12{font-size:12px !important;}
+  .fs-13{font-size:13px !important;}
+  .fs-14{font-size:14px !important;}
+  .fs-16{font-size:16px !important;}
+  .fs-24{font-size:24px !important;}
+  .fw-500{font-weight:500 !important;}
+  .fw-400{font-weight:400 !important;}
 
-  .mt-0{margin-top:0;}
-  .mt-2{margin-top:2px;}
-  .mt-4{margin-top:4px;}
-  .mt-6{margin-top:6px;}
-  .mt-8{margin-top:8px;}
-  .mt-12{margin-top:12px;}
-  .mt-14{margin-top:14px;}
-  .mt-18{margin-top:18px;}
-  .mt-20{margin-top:20px;}
-  .mt-40{margin-top:40px;}
+  .mt-0{margin-top:0 !important;}
+  .mt-2{margin-top:2px !important;}
+  .mt-4{margin-top:4px !important;}
+  .mt-6{margin-top:6px !important;}
+  .mt-8{margin-top:8px !important;}
+  .mt-12{margin-top:12px !important;}
+  .mt-14{margin-top:14px !important;}
+  .mt-18{margin-top:18px !important;}
+  .mt-20{margin-top:20px !important;}
+  .mt-40{margin-top:40px !important;}
 
-  .mb-0{margin-bottom:0;}
-  .mb-4{margin-bottom:4px;}
-  .mb-6{margin-bottom:6px;}
-  .mb-8{margin-bottom:8px;}
-  .mb-16{margin-bottom:16px;}
+  .mb-0{margin-bottom:0 !important;}
+  .mb-4{margin-bottom:4px !important;}
+  .mb-6{margin-bottom:6px !important;}
+  .mb-8{margin-bottom:8px !important;}
+  .mb-16{margin-bottom:16px !important;}
 
   .scroll-locked{overflow:hidden;}
   .body-scroll-locked{
@@ -856,12 +859,12 @@ background: var(--surface2);
     right:0;
     width:100%;
   }
-  .pb-40{padding-bottom:40px;}
-  .pt-14{padding-top:14px;}
-  .pb-0{padding-bottom:0;}
-  .pb-2{padding-bottom:2px;}
-  .pt-0{padding-top:0;}
-  .p-0{padding:0;}
+  .pb-40{padding-bottom:40px !important;}
+  .pt-14{padding-top:14px !important;}
+  .pb-0{padding-bottom:0 !important;}
+  .pb-2{padding-bottom:2px !important;}
+  .pt-0{padding-top:0 !important;}
+  .p-0{padding:0 !important;}
 </style>
 </head>
 <body>
