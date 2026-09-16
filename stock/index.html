@@ -365,6 +365,12 @@
     padding:2px 6px;
     display:inline-block;
   }
+  .entry-row .del-icon{
+    cursor:pointer;
+    margin-left:8px;
+    font-size:15px;
+    line-height:1;
+  }
   .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
   .tx-section-label{cursor:pointer;}
 
@@ -1782,7 +1788,7 @@ function dividendListHtmlForKey(key){
         <div class="cursor-pointer" onclick="toggleInlineAccordion('${gid}')">
           <div class="entry-row no-border-bottom pb-2">
             <span>${rec.date || rec.month}</span>
-            <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="event.stopPropagation();deleteKeyDividendRecord('${keyEsc}','${rec.month}')">🗑️</span></span>
+            <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="event.stopPropagation();deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
           </div>
           <div class="entry-row fs-11 text-faint pt-0">
             <span>총 ${totalQty.toLocaleString('ko-KR')}주 · 주당 <span class="won-sign">₩</span>${(rec.perShare||0).toLocaleString('ko-KR')}</span><span></span>
@@ -1831,7 +1837,7 @@ function dividendFlatListHtmlForKey(key){
     return `
       <div class="entry-row">
         <span>${dateLabel}${rec.perShare ? ' · 주당 <span class="won-sign">₩</span>'+rec.perShare.toLocaleString('ko-KR') : ''}</span>
-        <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="deleteKeyDividendRecord('${keyEsc}','${rec.month}')">🗑️</span></span>
+        <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
       </div>
     `;
   }).join('');
@@ -2223,17 +2229,13 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-     <div class="entry-row" onclick="openTxSheet('${stock.id}','buys','매수 내역')">
-        <span>매수 내역</span>
-        <span class="amt num">${(stock.buys||[]).length}건</span>
-      </div>
+     <div class="panel-title sub-title">매수 내역</div>
+     ${entryListHtml(stock.buys, stock.id, 'buys')}
     <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
-    <div class="entry-row" onclick="openTxSheet('${stock.id}','sells','매도 내역')">
-        <span>매도 내역</span>
-        <span class="amt num">${(stock.sells||[]).length}건</span>
-      </div>
+    <div class="panel-title sub-title mt-14">매도 내역</div>
+     ${entryListHtml(stock.sells, stock.id, 'sells')}
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
@@ -2254,8 +2256,8 @@ function entryListHtml(list, stockId, field){
   const sorted = [...list].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   return sorted.map(item=>`
     <div class="entry-row">
-      <span>${item.date||''} · ${item.quantity||0}주${item.price ? ' × <span class="won-sign">₩</span>'+item.price.toLocaleString('ko-KR') : ''}</span>
-      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteEntry('${stockId}','${field}','${item.id}')">🗑️</span></span>
+      <span>${item.date||''} ${item.quantity||0}주${item.price ? ' x <span class="won-sign">₩</span>'+item.price.toLocaleString('ko-KR') : ''}</span>
+      <span class="del-icon" onclick="deleteEntry('${stockId}','${field}','${item.id}')">🗑️</span>
     </div>
   `).join('');
 }
@@ -2267,7 +2269,7 @@ function dividendListHtmlForStock(stock){
   return sorted.map(item=>`
     <div class="entry-row">
       <span>${item.month||''}${item.perShare ? ' · 주당 <span class="won-sign">₩</span>'+item.perShare.toLocaleString('ko-KR') : ''}</span>
-      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteStockDividend('${stock.id}','${item.month}')">🗑️</span></span>
+      <span><span class="amt num">${fmtWon(item.amount)}</span><span class="del" onclick="deleteStockDividend('${stock.id}','${item.month}')">삭제</span></span>
     </div>
   `).join('');
 }
@@ -2417,15 +2419,6 @@ function closeSheet2(){
   if(wasOpen) unlockBodyScroll();
   closeYieldTooltip();
 }
-function openTxSheet(stockId, field, title){
-  const stock = DATA.stocks.find(s=>s.id===stockId);
-  if(!stock) return;
-  const bodyHtml = field==='dividends'
-    ? dividendListHtmlForStock(stock)
-    : entryListHtml(stock[field], stockId, field);
-  openSheet2(title, bodyHtml);
-}
-
 async function deleteStockDividend(stockId, month){
   const stock = DATA.stocks.find(s=>s.id===stockId);
   if(!stock) return;
@@ -2602,10 +2595,6 @@ async function deleteEntry(stockId, field, entryId){
   recalcDividendQuantitiesForStock(stock);
   await saveData();
   render();
-  if(document.getElementById('bottomSheet2').classList.contains('open')){
-    const bodyHtml = entryListHtml(stock[field], stockId, field);
-    document.getElementById('sheetBody2').innerHTML = bodyHtml;
-  }
   refreshStockDetailSheetIfOpen(stockId);
   showToast('삭제하고 보유수량도 되돌렸어요');
 }
