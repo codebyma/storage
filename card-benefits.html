@@ -16,8 +16,6 @@
     --line-soft:#E2E6E3;
     --gold:#A9812F;
     --gold-soft:#EFE4C6;
-    --danger:#9C3B33;
-    --radius:2px;
   }
   *{box-sizing:border-box;}
   body{
@@ -117,16 +115,6 @@
     background:var(--line);
     margin:0 4px;
   }
-  select.sort-select{
-    margin-left:auto;
-    font-size:13px;
-    font-family:'IBM Plex Sans KR', sans-serif;
-    color:var(--ink-soft);
-    border:1px solid var(--line);
-    background:var(--paper-raised);
-    padding:6px 10px;
-    border-radius:999px;
-  }
 
   .list{
     margin-top:8px;
@@ -225,24 +213,8 @@
     border-left:2px solid var(--gold-soft);
     padding:10px 12px;
     line-height:1.6;
-    margin-bottom:14px;
     white-space:pre-wrap;
   }
-  .row-actions{
-    display:flex;
-    gap:14px;
-  }
-  .row-actions button{
-    font-size:12.5px;
-    background:none;
-    border:none;
-    color:var(--ink-soft);
-    text-decoration:underline;
-    cursor:pointer;
-    padding:0;
-    font-family:'IBM Plex Sans KR', sans-serif;
-  }
-  .row-actions button.del{color:var(--danger);}
 
   .empty{
     text-align:center;
@@ -254,127 +226,6 @@
     font-size:22px;
     color:var(--ink);
     margin-bottom:8px;
-  }
-  .empty button{
-    margin-top:18px;
-  }
-
-  .fab{
-    position:fixed;
-    right:28px;
-    bottom:28px;
-    width:56px;
-    height:56px;
-    border-radius:50%;
-    background:var(--ink);
-    color:#fff;
-    border:none;
-    font-size:26px;
-    cursor:pointer;
-    box-shadow:0 4px 14px rgba(22,35,47,0.28);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    line-height:1;
-  }
-  .fab:hover{background:#25384A;}
-
-  .overlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(22,35,47,0.45);
-    z-index:20;
-    align-items:flex-start;
-    justify-content:center;
-    padding:6vh 16px;
-    overflow-y:auto;
-  }
-  .overlay.show{display:flex;}
-  .panel{
-    background:var(--paper-raised);
-    width:100%;
-    max-width:520px;
-    padding:32px;
-    border-radius:2px;
-  }
-  .panel h2{
-    font-family:'Newsreader', serif;
-    font-weight:500;
-    font-size:24px;
-    margin:0 0 22px;
-  }
-  .field{margin-bottom:16px;}
-  .field label{
-    display:block;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    margin-bottom:6px;
-  }
-  .field input, .field textarea{
-    width:100%;
-    border:1px solid var(--line);
-    background:#fff;
-    padding:9px 10px;
-    font-size:14px;
-    font-family:'IBM Plex Sans KR', sans-serif;
-    border-radius:2px;
-    color:var(--ink);
-  }
-  .field textarea{resize:vertical; min-height:52px;}
-  .field-row{display:flex; gap:12px;}
-  .field-row .field{flex:1;}
-  .benefit-fields{
-    border:1px solid var(--line-soft);
-    padding:12px;
-    margin-bottom:10px;
-    position:relative;
-  }
-  .benefit-fields .rm{
-    position:absolute;
-    top:10px;
-    right:10px;
-    background:none;
-    border:none;
-    color:var(--ink-soft);
-    cursor:pointer;
-    font-size:12px;
-    text-decoration:underline;
-  }
-  .add-benefit-btn{
-    font-size:12.5px;
-    background:none;
-    border:1px dashed var(--line);
-    color:var(--ink-soft);
-    padding:8px 12px;
-    width:100%;
-    cursor:pointer;
-    margin-bottom:20px;
-    border-radius:2px;
-  }
-  .panel-actions{
-    display:flex;
-    justify-content:flex-end;
-    gap:10px;
-    margin-top:8px;
-  }
-  .btn{
-    font-size:13.5px;
-    padding:9px 18px;
-    border-radius:2px;
-    cursor:pointer;
-    font-family:'IBM Plex Sans KR', sans-serif;
-  }
-  .btn.primary{
-    background:var(--ink);
-    color:#fff;
-    border:1px solid var(--ink);
-  }
-  .btn.primary:hover{background:#25384A;}
-  .btn.ghost{
-    background:none;
-    border:1px solid var(--line);
-    color:var(--ink-soft);
   }
 
   @media (max-width:560px){
@@ -411,95 +262,31 @@
   <div class="list" id="cardList"></div>
 </div>
 
-<button class="fab" id="openAdd" title="카드 추가">+</button>
-
-<div class="overlay" id="overlay">
-  <div class="panel">
-    <h2 id="panelTitle">카드 추가</h2>
-    <form id="cardForm">
-      <div class="field-row">
-        <div class="field">
-          <label>카드사</label>
-          <input type="text" id="f-issuer" placeholder="예: 신한카드" required>
-        </div>
-        <div class="field">
-          <label>카드명</label>
-          <input type="text" id="f-name" placeholder="예: 신한카드 Deep Dream" required>
-        </div>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>전월실적 기준</label>
-          <input type="text" id="f-minspend" placeholder="예: 300,000원">
-        </div>
-        <div class="field">
-          <label>태그 (쉼표로 구분)</label>
-          <input type="text" id="f-tags" placeholder="예: 커피, 대중교통, 통신">
-        </div>
-      </div>
-
-      <div id="benefitFields"></div>
-      <button type="button" class="add-benefit-btn" id="addBenefitBtn">+ 혜택 항목 추가</button>
-
-      <div class="field">
-        <label>메모</label>
-        <textarea id="f-memo" placeholder="전월실적 산정 제외 항목, 적립 한도 등 참고사항"></textarea>
-      </div>
-
-      <div class="panel-actions">
-        <button type="button" class="btn ghost" id="cancelBtn">취소</button>
-        <button type="submit" class="btn primary">저장</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <script>
-let cards = [];
-let editingId = null;
+/* ============================================================
+   여기에 카드 데이터를 직접 입력하세요.
+   issuer: 카드사, name: 카드명, minSpend: 전월실적 기준,
+   tags: 태그 배열, benefits: [{title, desc}] 혜택 목록, memo: 참고사항
+   ============================================================ */
+const CARD_DATA = [
+  {
+    issuer: "예시카드사",
+    name: "예시 카드 (이 배열을 수정해서 실제 카드로 교체하세요)",
+    minSpend: "300,000원",
+    tags: ["샘플", "커피", "대중교통"],
+    benefits: [
+      { title: "커피전문점", desc: "스타벅스 등 주요 커피전문점 20% 청구할인, 월 최대 5,000원" },
+      { title: "대중교통", desc: "버스·지하철 10% 할인, 월 최대 3,000원" }
+    ],
+    memo: "연회비 15,000원 · 전월실적에서 아파트관리비, 상품권 구매는 제외"
+  }
+];
+
 let openRowId = null;
 let activeIssuer = '__all__';
 
-const STORAGE_KEY = 'cards';
-
-async function loadCards(){
-  try{
-    const res = await window.storage.get(STORAGE_KEY, false);
-    cards = res && res.value ? JSON.parse(res.value) : seedData();
-    if(!res){ await saveCards(); }
-  }catch(e){
-    cards = seedData();
-  }
-  render();
-}
-
-async function saveCards(){
-  try{
-    await window.storage.set(STORAGE_KEY, JSON.stringify(cards), false);
-  }catch(e){
-    console.error('저장 실패', e);
-  }
-}
-
-function seedData(){
-  return [
-    {
-      id: crypto.randomUUID(),
-      issuer: '예시카드사',
-      name: '예시 카드 (샘플 — 자유롭게 수정/삭제하세요)',
-      minSpend: '300,000원',
-      tags: ['샘플','커피','대중교통'],
-      benefits: [
-        {title:'커피전문점', desc:'스타벅스 등 주요 커피전문점 20% 청구할인, 월 최대 5,000원'},
-        {title:'대중교통', desc:'버스·지하철 10% 할인, 월 최대 3,000원'}
-      ],
-      memo: '연회비 15,000원 · 전월실적에서 아파트관리비, 상품권 구매는 제외'
-    }
-  ];
-}
-
 function uniqueIssuers(){
-  return [...new Set(cards.map(c=>c.issuer).filter(Boolean))].sort();
+  return [...new Set(CARD_DATA.map(c=>c.issuer).filter(Boolean))].sort();
 }
 
 function renderFilters(){
@@ -536,28 +323,33 @@ function matchesSearch(card, q){
   return hay.includes(q.toLowerCase());
 }
 
+function escapeHtml(str){
+  return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
 function render(){
   renderFilters();
   const q = document.getElementById('searchInput').value.trim();
   const listEl = document.getElementById('cardList');
-  let filtered = cards.filter(c => matchesSearch(c, q) && (activeIssuer==='__all__' || c.issuer===activeIssuer));
+  let filtered = CARD_DATA.filter(c => matchesSearch(c, q) && (activeIssuer==='__all__' || c.issuer===activeIssuer));
 
-  document.getElementById('countLabel').textContent = `${cards.length}장 등록`;
+  document.getElementById('countLabel').textContent = `${CARD_DATA.length}장 등록`;
 
   if(filtered.length===0){
     listEl.innerHTML = `<div class="empty">
-      <div class="em-title">${cards.length===0 ? '아직 등록된 카드가 없습니다' : '조건에 맞는 카드가 없습니다'}</div>
-      <div>${cards.length===0 ? '오른쪽 아래 + 버튼으로 첫 카드를 추가해보세요.' : '검색어나 필터를 조정해보세요.'}</div>
+      <div class="em-title">${CARD_DATA.length===0 ? '등록된 카드가 없습니다' : '조건에 맞는 카드가 없습니다'}</div>
+      <div>${CARD_DATA.length===0 ? '스크립트 상단의 CARD_DATA 배열에 카드를 추가해보세요.' : '검색어나 필터를 조정해보세요.'}</div>
     </div>`;
     return;
   }
 
-  listEl.innerHTML = filtered.map(card => {
-    const isOpen = openRowId === card.id;
+  listEl.innerHTML = filtered.map((card, idx) => {
+    const rowId = String(idx);
+    const isOpen = openRowId === rowId;
     const previewText = (card.benefits||[]).slice(0,2).map(b=>`<b>${escapeHtml(b.title)}</b> ${escapeHtml(b.desc)}`).join(' · ');
     return `
-    <div class="row ${isOpen?'open':''}" data-id="${card.id}">
-      <div class="row-head" data-toggle="${card.id}">
+    <div class="row ${isOpen?'open':''}" data-toggle="${rowId}">
+      <div class="row-head">
         <div class="row-title-block">
           <div class="issuer">${escapeHtml(card.issuer||'')}</div>
           <div class="card-name">${escapeHtml(card.name||'')}</div>
@@ -578,10 +370,6 @@ function render(){
             </div>`).join('') || '<div class="b-desc">등록된 혜택 항목이 없습니다.</div>'}
         </div>
         ${card.memo ? `<div class="memo">${escapeHtml(card.memo)}</div>` : ''}
-        <div class="row-actions">
-          <button data-edit="${card.id}">수정</button>
-          <button class="del" data-del="${card.id}">삭제</button>
-        </div>
       </div>
     </div>`;
   }).join('');
@@ -593,126 +381,10 @@ function render(){
       render();
     });
   });
-  listEl.querySelectorAll('[data-edit]').forEach(el=>{
-    el.addEventListener('click', (e)=>{
-      e.stopPropagation();
-      openEditPanel(el.getAttribute('data-edit'));
-    });
-  });
-  listEl.querySelectorAll('[data-del]').forEach(el=>{
-    el.addEventListener('click', async (e)=>{
-      e.stopPropagation();
-      const id = el.getAttribute('data-del');
-      if(confirm('이 카드를 삭제할까요?')){
-        cards = cards.filter(c=>c.id!==id);
-        await saveCards();
-        render();
-      }
-    });
-  });
-}
-
-function escapeHtml(str){
-  return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
 
 document.getElementById('searchInput').addEventListener('input', render);
-
-// ---- 추가/수정 패널 ----
-const overlay = document.getElementById('overlay');
-const form = document.getElementById('cardForm');
-const benefitFieldsWrap = document.getElementById('benefitFields');
-
-function addBenefitField(title='', desc=''){
-  const div = document.createElement('div');
-  div.className = 'benefit-fields';
-  div.innerHTML = `
-    <button type="button" class="rm">삭제</button>
-    <div class="field">
-      <label>혜택 항목</label>
-      <input type="text" class="b-title-input" placeholder="예: 커피전문점" value="${escapeHtml(title)}">
-    </div>
-    <div class="field" style="margin-bottom:0;">
-      <label>내용</label>
-      <input type="text" class="b-desc-input" placeholder="예: 20% 할인, 월 최대 5,000원" value="${escapeHtml(desc)}">
-    </div>
-  `;
-  div.querySelector('.rm').addEventListener('click', ()=> div.remove());
-  benefitFieldsWrap.appendChild(div);
-}
-
-document.getElementById('addBenefitBtn').addEventListener('click', ()=> addBenefitField());
-
-function openAddPanel(){
-  editingId = null;
-  document.getElementById('panelTitle').textContent = '카드 추가';
-  form.reset();
-  benefitFieldsWrap.innerHTML = '';
-  addBenefitField();
-  overlay.classList.add('show');
-}
-
-function openEditPanel(id){
-  const card = cards.find(c=>c.id===id);
-  if(!card) return;
-  editingId = id;
-  document.getElementById('panelTitle').textContent = '카드 수정';
-  document.getElementById('f-issuer').value = card.issuer||'';
-  document.getElementById('f-name').value = card.name||'';
-  document.getElementById('f-minspend').value = card.minSpend||'';
-  document.getElementById('f-tags').value = (card.tags||[]).join(', ');
-  document.getElementById('f-memo').value = card.memo||'';
-  benefitFieldsWrap.innerHTML = '';
-  if(card.benefits && card.benefits.length){
-    card.benefits.forEach(b=> addBenefitField(b.title, b.desc));
-  } else {
-    addBenefitField();
-  }
-  overlay.classList.add('show');
-}
-
-function closePanel(){
-  overlay.classList.remove('show');
-}
-
-document.getElementById('openAdd').addEventListener('click', openAddPanel);
-document.getElementById('cancelBtn').addEventListener('click', closePanel);
-overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closePanel(); });
-
-form.addEventListener('submit', async (e)=>{
-  e.preventDefault();
-  const benefits = [...benefitFieldsWrap.querySelectorAll('.benefit-fields')].map(div=>({
-    title: div.querySelector('.b-title-input').value.trim(),
-    desc: div.querySelector('.b-desc-input').value.trim()
-  })).filter(b=>b.title || b.desc);
-
-  const tags = document.getElementById('f-tags').value
-    .split(',').map(t=>t.trim()).filter(Boolean);
-
-  const cardData = {
-    issuer: document.getElementById('f-issuer').value.trim(),
-    name: document.getElementById('f-name').value.trim(),
-    minSpend: document.getElementById('f-minspend').value.trim(),
-    tags,
-    benefits,
-    memo: document.getElementById('f-memo').value.trim()
-  };
-
-  if(editingId){
-    const idx = cards.findIndex(c=>c.id===editingId);
-    cards[idx] = {...cards[idx], ...cardData};
-  } else {
-    cardData.id = crypto.randomUUID();
-    cards.push(cardData);
-    openRowId = cardData.id;
-  }
-
-  await saveCards();
-  closePanel();
-  render();
-});
-
-loadCards();
+render();
 </script>
 </body>
 </html>
