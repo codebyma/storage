@@ -1794,9 +1794,8 @@ function dividendListHtmlForKey(key){
   }).join('');
 }
 
-function holdingsListHtmlForKey(key, sid){
+function holdingsListHtmlForKey(key){
   const stocks = stocksMatchingKey(key);
-  const keyEsc = key.replace(/'/g,"\\'");
   if(stocks.length===0) return `<div class="empty-hint">보유 계좌 없음</div>`;
   return stocks.map(s=>{
     const acc = DATA.accounts.find(a=>a.id===s.accountId);
@@ -1804,7 +1803,7 @@ function holdingsListHtmlForKey(key, sid){
     const pl = stockPL(s);
     const plPct = stockPLPercent(s);
     return `
-      <div class="entry-row cursor-pointer" onclick="openStockDetailFromBreakdown('${s.id}','${keyEsc}','${sid}')">
+      <div class="entry-row cursor-pointer" onclick="openStockDetailFromBreakdown('${s.id}')">
         <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? '('+escapeHtml(owner.name)+')' : ''} · ${(s.quantity||0).toLocaleString('ko-KR')}주</span>
         <span class="amt num">${fmtWon(stockTotal(s))}${plPct!==null ? ' <span class="'+plClass(pl)+'">('+fmtPercent(plPct)+')</span>' : ''}</span>
       </div>
@@ -1812,15 +1811,14 @@ function holdingsListHtmlForKey(key, sid){
   }).join('');
 }
 
-// 포트폴리오 모음 > 종목 상세(보유현황)에서 계좌 항목을 눌렀을 때:
-// 그 계좌의 매수/매도를 입력·조회할 수 있는 종목 상세 시트를 같은 자리(1단계 시트)에 띄운다.
-// 타이틀을 다시 누르면 원래 보던 보유현황(목표관리) 화면으로 되돌아간다.
-function openStockDetailFromBreakdown(stockId, key, sid){
+// 포트폴리오 모음 > 종목 상세(보유현황)에서 계좌 항목을 누르면:
+// 기존에 열려있던 시트(보유현황/목표관리)는 그대로 유지한 채, 그 위에 2단계 시트로
+// 매수/매도 입력이 가능한 종목 상세를 띄운다. 닫으면 자동으로 원래 시트가 다시 보인다.
+function openStockDetailFromBreakdown(stockId){
   const stock = DATA.stocks.find(s=>s.id===stockId);
   if(!stock) return;
   const cat = catalogFor(stock);
-  openTargetSheetLayer = { key: null, layer: null };
-  openSheet(cat.name, buildStockDetailHtml(stock), ()=>openTargetSheet(key, sid));
+  openSheet2(cat.name, buildStockDetailHtml(stock));
 }
 
 function dividendFlatListHtmlForKey(key){
@@ -1882,7 +1880,7 @@ function buildTargetSheetContent(key, sid){
 
   const bodyHtml = `
     <div class="panel-title sub-title">보유현황</div>
-    ${holdingsListHtmlForKey(key, sid)}
+    ${holdingsListHtmlForKey(key)}
 
     <div class="button-row mt-20">
       <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
@@ -2207,11 +2205,19 @@ function openStockDetailSheet(stockId){
   openSheet(title, buildStockDetailHtml(stock));
 }
 
+// 두 시트(1단계/2단계) 중 실제로 이 종목의 상세(매수/매도 폼)를 보여주고 있는 쪽만
+// 골라서 새로고침한다. buyform_${stockId} 마커로 판단하므로, 같은 시트가
+// 매수내역/매도내역 같은 다른 화면을 보여주고 있을 때는 건드리지 않는다.
 function refreshStockDetailSheetIfOpen(stockId){
-  if(document.getElementById('bottomSheet').classList.contains('open')){
-    const stock = DATA.stocks.find(s=>s.id===stockId);
-    if(stock) document.getElementById('sheetBody').innerHTML = buildStockDetailHtml(stock);
-  }
+  const stock = DATA.stocks.find(s=>s.id===stockId);
+  if(!stock) return;
+  [['bottomSheet','sheetBody'], ['bottomSheet2','sheetBody2']].forEach(([sheetId, bodyId])=>{
+    const sheetEl = document.getElementById(sheetId);
+    const bodyEl = document.getElementById(bodyId);
+    if(sheetEl.classList.contains('open') && bodyEl.querySelector(`#buyform_${stockId}`)){
+      bodyEl.innerHTML = buildStockDetailHtml(stock);
+    }
+  });
 }
 
 function buildStockDetailHtml(stock){
