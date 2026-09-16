@@ -356,19 +356,13 @@
   }
   .row-chevron{
     color:var(--text3);
-    margin-left:8px;
+    margin-left:2px;
     flex-shrink:0;
   }
   .row-right{
     display:flex;
     align-items:center;
   }
-  .title-with-chevron{
-    display:inline-flex;
-    align-items:center;
-    gap:4px;
-  }
-  .title-with-chevron .row-chevron{margin-left:0;}
   .entry-row:last-child{border-bottom:none;}
   .entry-row .amt{color:var(--text1);}
   .entry-row .del{
@@ -1948,7 +1942,7 @@ function buildTargetSheetContent(key, sid){
     </div>
 
     <div class="mt-20 pt-14 divider-top">
-      <div class="panel-title sub-title cursor-pointer title-with-chevron" onclick="openKeyDividendSheet('${keyEsc}')">배당현황${CHEVRON_SVG}</div>
+      <div class="panel-title sub-title title-row cursor-pointer" onclick="openKeyDividendSheet('${keyEsc}')"><span>배당현황</span>${CHEVRON_SVG}</div>
       <div class="yield-grid">
         <div class="yield-card" onclick="showYieldTooltip(event,1)">
           <div class="yield-label">누적<br>총투자원금 기준</div>
