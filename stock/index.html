@@ -1840,7 +1840,7 @@ function dividendFlatListHtmlForKey(key){
     return `
       <div class="entry-row">
         <span>${dateLabel}${rec.perShare ? ' · 주당 <span class="won-sign">₩</span>'+rec.perShare.toLocaleString('ko-KR') : ''}</span>
-        <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
+        <span><span class="amt num">${fmtWon(total)}</span><span class="del-icon" onclick="deleteKeyDividendRecord('${keyEsc}','${rec.month}')">🗑️</span></span>
       </div>
     `;
   }).join('');
