@@ -368,7 +368,7 @@
   .entry-row .del-icon{
     cursor:pointer;
     margin-left:8px;
-    font-size:15px;
+    font-size:13px;
     line-height:1;
   }
   .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
@@ -2229,12 +2229,12 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-     <div class="panel-title sub-title">매수 내역</div>
+     <div class="panel-title sub-title mb-6">매수 내역</div>
      ${entryListHtml(stock.buys, stock.id, 'buys')}
     <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
-    <div class="panel-title sub-title mt-14">매도 내역</div>
+    <div class="panel-title sub-title mt-8">매도 내역</div>
      ${entryListHtml(stock.sells, stock.id, 'sells')}
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
