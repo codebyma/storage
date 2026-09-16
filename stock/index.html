@@ -234,13 +234,6 @@
     background:var(--mint);
     border-radius:3px;
   }
-  .target-panel{
-    margin-top:10px;
-    padding:10px;
-    background:var(--surface2);
-    border-radius:8px;
-  }
-  .target-panel .entry-row{border-bottom:none;padding:2px 0;}
 
   .section-title{
     font-size:22px;
@@ -279,18 +272,12 @@
   }
   .account-name{font-size:16px;font-weight:400;color:var(--text1);}
   .account-total{font-size:12px;color:var(--text3);margin-top:3px;}
-  .chevron{
-    color:var(--text3);
-    font-size:12px;
-    transition:transform .15s;
-  }
   .account-body{
     display:none;
     padding:2px 20px 20px;
     padding:2px 0 20px;
   }
   .account-card.open .account-body{display:block;}
-  .account-card.open .chevron{transform:rotate(90deg);}
 
   .stock-row{
     cursor:pointer;
@@ -308,8 +295,6 @@
   .stock-card-title{flex:1;min-width:0;}
   .stock-card-name{font-size:16px;font-weight:400;color:var(--text1);}
   .stock-card-ticker{font-size:11px;color:var(--text3);font-weight:400;margin-left:4px;}
-  .stock-card-qty{font-size:12px;color:var(--text2);text-align:right;flex-shrink:0;white-space:nowrap;}
-  .stock-card-qty b{color:var(--text1);font-weight:600;}
   .stock-stat-grid{
     display:flex;
     flex-wrap:wrap;
@@ -325,26 +310,6 @@
   .stock-stat-value.text-blue{color:var(--blue);}
   .stock-stat-value.price-highlight{color:var(--mint);}
 
-  .sub-block{margin-bottom:6px;}
-  .holding-card{
-    border-top:1px solid var(--border-strong);
-    border-bottom:1px solid var(--border-strong);
-    padding:12px 0 10px;
-    margin-bottom:14px;
-  }
-  .holding-card .stat-mini{border-bottom:none;}
-  .sub-label{
-    font-size:12px;
-    color:var(--text2);
-    margin-bottom:6px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .sub-label .tx-section-label{flex:1;min-width:0;}
-  .sub-label .mini-add{flex-shrink:0;}
   .entry-row{
     display:flex;
     align-items:center;
@@ -382,40 +347,6 @@
     line-height:1;
   }
   .empty-hint{font-size:12px;color:var(--text3);padding:6px 0;}
-  .tx-section-label{cursor:pointer;}
-
-  .stat-hero{
-    display:flex;
-    gap:8px;
-    margin-bottom:8px;
-  }
-  .stat-hero-item{
-    flex:1;
-    background:var(--surface2);
-    border-radius:8px;
-    padding:9px 12px;
-    min-width:0;
-  }
-  .stat-hero-label{font-size:10.5px;color:var(--text2);margin-bottom:3px;}
-  .stat-hero-value{font-size:16px;font-weight:600;line-height:1.25;color:var(--text1);}
-  .stat-hero-value.text-red{color:var(--red);}
-  .stat-hero-value.text-blue{color:var(--blue);}
-  .stat-mini-grid{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:6px 10px;
-    margin-bottom:4px;
-  }
-  .stat-mini{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    padding:4px 0;
-    border-bottom:1px solid var(--border);
-    gap:6px;
-  }
-  .stat-mini-label{font-size:11px;color:var(--text3);}
-  .stat-mini-value{font-size:12px;color:var(--text1);font-weight:500;text-align:right;}
 
   .yield-grid{
     display:grid;
@@ -463,10 +394,6 @@
   }
   .yield-tooltip-arrow.arrow-down{bottom:-5.5px;border-top:none;border-left:none;}
   .yield-tooltip-arrow.arrow-up{top:-5.5px;border-bottom:none;border-right:none;}
-  .tx-list-scroll{
-    max-height:220px;
-    overflow-y:auto;
-  }
 
   .mini-add{
     background:none;
@@ -514,18 +441,6 @@ background: var(--surface2);
     cursor:pointer;
     text-align:center;
   }
-  .inline-num-input{
-    background:transparent;
-    border:none;
-    border-bottom:1px solid var(--border-strong);
-    color:var(--text1);
-    font-size:12.5px;
-    text-align:right;
-    padding:2px 2px;
-    width:72px;
-    font-variant-numeric:tabular-nums;
-  }
-  .inline-num-input:focus{outline:none;border-bottom-color:var(--mint);}
 
   .form-panel{
     background:var(--surface1);
@@ -805,9 +720,7 @@ background: var(--surface2);
   .suffix-text{font-weight:400;font-size:12px;}
   .hint-text{font-size:11.5px;color:var(--text3);padding:2px 4px 2px;}
   .stat-footnote{font-size:11px;color:var(--text3);margin:6px 0 2px;}
-  .divacc-group{margin-bottom:6px;}
   .divider-top{border-top:1px solid var(--border);}
-  .divacc-row{padding-left:10px;font-size:11px;}
   .amt-lg{font-size:14.5px;}
   .amt-md{font-size:14px;}
   .account-suffix-wrap{text-align:right;flex-shrink:0;}
@@ -1181,8 +1094,6 @@ function catalogByKey(key){
 function catalogFor(stock){
   return catalogByKey(stock.key) || { key: stock.key, name:'(알 수 없는 종목)', ticker:'', currentPrice:0 };
 }
-function stockName(stock){ return catalogFor(stock).name; }
-function stockTicker(stock){ return catalogFor(stock).ticker; }
 function makeKeyFrom(ticker, name){
   return (ticker && ticker.trim()) ? ticker.trim().toUpperCase() : ('name:'+name);
 }
@@ -1248,26 +1159,6 @@ function recalcDividendQuantitiesForStock(stock){
 }
 function findDividendRecord(key, month){
   return (DATA.dividends||[]).find(d=>d.key===key && d.month===month);
-}
-// 한 계좌(종목)의 배당을 등록/수정 — 같은 종목의 다른 계좌 perShare도 함께 갱신됨
-// date: 'YYYY-MM-DD' 전체 날짜. month는 집계용으로 date에서 파생해서 같이 저장.
-function upsertDividendAccountEntry(key, date, name, ticker, accountId, quantity, perShare){
-  const month = date.slice(0,7);
-  if(!DATA.dividends) DATA.dividends = [];
-  let rec = findDividendRecord(key, month);
-  if(!rec){
-    rec = { id: uid('divrec'), key, name, ticker, month, date, perShare, accounts: [] };
-    DATA.dividends.push(rec);
-  } else {
-    rec.date = date;
-    rec.perShare = perShare;
-    rec.accounts.forEach(a=>{ a.amount = a.quantity * perShare; });
-  }
-  const idx = rec.accounts.findIndex(a=>a.accountId===accountId);
-  const amount = quantity * perShare;
-  if(idx>=0) rec.accounts[idx] = { accountId, quantity, amount };
-  else rec.accounts.push({ accountId, quantity, amount });
-  return rec;
 }
 // 같은 종목의 여러 계좌에 한 번에 등록(일괄 입력)
 function upsertDividendGroupBulk(key, date, name, ticker, perShare, stockList){
@@ -1763,40 +1654,6 @@ function dividendTotalForKey(key){
 }
 function dividendTTMForKey(key){
   return recordsForKey(key).filter(r=>isWithinLast12Months(r.month)).reduce((s,r)=>s+r.accounts.reduce((s2,a)=>s2+a.amount,0),0);
-}
-function dividendListHtmlForKey(key){
-  const records = recordsForKey(key);
-  if(records.length===0) return `<div class="empty-hint">기록 없음</div>`;
-  return records.map((rec, idx)=>{
-    const gid = `keydivacc_${safeId(key)}_${idx}`;
-    const total = rec.accounts.reduce((s,a)=>s+a.amount,0);
-    const totalQty = rec.accounts.reduce((s,a)=>s+(a.quantity||0),0);
-    const keyEsc = key.replace(/'/g,"\\'");
-    const accountRows = rec.accounts.map(a=>{
-      const acc = DATA.accounts.find(x=>x.id===a.accountId);
-      const owner = acc ? DATA.owners.find(o=>o.id===acc.ownerId) : null;
-      return `
-        <div class="entry-row divacc-row">
-          <span>${acc ? escapeHtml(acc.name) : '(알 수 없는 계좌)'}${owner ? '('+escapeHtml(owner.name)+')' : ''} · ${(a.quantity||0).toLocaleString('ko-KR')}주</span>
-          <span class="amt num">${fmtWon(a.amount)}</span>
-        </div>
-      `;
-    }).join('');
-    return `
-      <div class="divacc-group">
-        <div class="cursor-pointer" onclick="toggleInlineAccordion('${gid}')">
-          <div class="entry-row no-border-bottom pb-2">
-            <span>${rec.date || rec.month}</span>
-            <span><span class="amt num">${fmtWon(total)}</span><span class="del" onclick="event.stopPropagation();deleteKeyDividendRecord('${keyEsc}','${rec.month}')">삭제</span></span>
-          </div>
-          <div class="entry-row fs-11 text-faint pt-0">
-            <span>총 ${totalQty.toLocaleString('ko-KR')}주 · 주당 <span class="won-sign">₩</span>${(rec.perShare||0).toLocaleString('ko-KR')}</span><span></span>
-          </div>
-        </div>
-        <div id="${gid}" class="hidden">${accountRows}</div>
-      </div>
-    `;
-  }).join('');
 }
 
 function holdingsListHtmlForKey(key){
@@ -2355,12 +2212,6 @@ function toggleForm(id){
 function closeForm(id){
   document.getElementById(id).classList.remove('open');
 }
-function toggleInlineAccordion(id){
-  const el = document.getElementById(id);
-  if(!el) return;
-  el.classList.toggle('hidden');
-}
-
 let openSheetCount = 0;
 function lockBodyScroll(){
   openSheetCount++;
@@ -2520,18 +2371,6 @@ async function deleteMonthRecord(key, month){
   showToast('이 종목의 해당 월 배당 기록을 전체 삭제했어요');
 }
 
-function openPriceForm(stockId){
-  const panel = document.getElementById(`priceform_${stockId}`);
-  const willOpen = !panel.classList.contains('open');
-  panel.classList.toggle('open');
-  if(willOpen){
-    const input = document.getElementById(`price_input_${stockId}`);
-    input.value = '';
-    input.focus();
-    scrollToId(`priceform_${stockId}`);
-  }
-}
-
 function escapeHtml(str){
   const d = document.createElement('div');
   d.textContent = str || '';
@@ -2576,21 +2415,6 @@ async function submitTx(stockId, field){
   showToast(`${qty}주 × ₩${price.toLocaleString('ko-KR')} = ₩${amt.toLocaleString('ko-KR')} 반영했어요`);
 }
 
-async function submitDividend(stockId){
-  const month = document.getElementById(`dv_month_${stockId}`).value;
-  const perShare = parseFloat(document.getElementById(`dv_amount_${stockId}`).value) || 0;
-  if(!month){ showToast('월을 선택해주세요'); return; }
-  if(!perShare){ showToast('1주당 배당금을 입력해주세요'); return; }
-  const stock = DATA.stocks.find(s=>s.id===stockId);
-  const qty = quantityAsOfDate(stock, month+'-31');
-  const cat = catalogFor(stock);
-  upsertDividendAccountEntry(stock.key, month, cat.name, cat.ticker, stock.accountId, qty, perShare);
-  await saveData();
-  render();
-  refreshStockDetailSheetIfOpen(stockId);
-  showToast(`주당 ₩${perShare.toLocaleString('ko-KR')} × ${qty.toLocaleString('ko-KR')}주 = ₩${(perShare*qty).toLocaleString('ko-KR')} 반영했어요`);
-}
-
 async function deleteEntry(stockId, field, entryId){
   const stock = DATA.stocks.find(s=>s.id===stockId);
   const entry = (stock[field]||[]).find(e=>e.id===entryId);
@@ -2623,21 +2447,6 @@ async function deleteStock(stockId){
   await saveData();
   render();
   showToast('종목이 삭제되었습니다');
-}
-
-async function submitPrice(stockId){
-  const input = document.getElementById(`price_input_${stockId}`);
-  const num = parseFloat(input.value);
-  if(isNaN(num)){ showToast('숫자를 입력해주세요'); return; }
-  const stock = DATA.stocks.find(s=>s.id===stockId);
-  const cat = catalogFor(stock);
-  cat.currentPrice = num;
-  const count = stocksMatchingKey(stock.key).length;
-  closeForm(`priceform_${stockId}`);
-  await saveData();
-  render();
-  refreshStockDetailSheetIfOpen(stockId);
-  showToast(count>1 ? `현재가를 반영했어요 (같은 종목 ${count}개 계좌에 자동 적용)` : '현재가를 반영했어요');
 }
 
 document.getElementById('toggleJsonBtn').onclick = ()=>{
