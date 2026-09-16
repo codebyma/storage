@@ -2232,12 +2232,12 @@ function refreshStockDetailSheetIfOpen(stockId){
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
   return `
-     <div class="panel-title sub-title mb-6">매수 내역</div>
+     <div class="panel-title sub-title mb-4">매수 내역</div>
      ${entryListHtml(stock.buys, stock.id, 'buys')}
     <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
-    <div class="panel-title sub-title mt-8">매도 내역</div>
+    <div class="panel-title sub-title mt-8 mb-4">매도 내역</div>
      ${entryListHtml(stock.sells, stock.id, 'sells')}
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
@@ -2255,7 +2255,7 @@ function buildStockDetailHtml(stock){
 }
 
 function entryListHtml(list, stockId, field){
-  if(!list || list.length===0) return `<div class="empty-hint">기록 없음</div>`;
+  if(!list || list.length===0) return `<div class="empty-hint text-dim">기록 없음</div>`;
   const sorted = [...list].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   return sorted.map(item=>`
     <div class="entry-row">
