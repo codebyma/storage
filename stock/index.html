@@ -65,10 +65,6 @@
   }
   .num{font-variant-numeric:tabular-nums;white-space:nowrap;font-family:'Roboto',sans-serif;letter-spacing:-0.4px;}
   .won-sign{font-size:1em;margin-right:1px;}
-  header{
-    padding:28px 20px 18px;
-    border-bottom:1px solid var(--border);
-  }
   .owner-tabs{
     display:flex;
     gap:8px;
@@ -576,7 +572,7 @@ background: var(--surface2);
   .save-status{
     font-size:11px;
     color:var(--text3);
-    padding:4px 20px 0;
+    padding:24px 20px 0;
   }
   .toast{
     position:fixed;
@@ -781,12 +777,6 @@ background: var(--surface2);
 </head>
 <body>
 
-<header>
-  <div class="header-actions mt-12">
-    <button class="add-btn no-wrap" id="reloadJsonBtn">stock.json 새로고침</button>
-    <button class="add-btn no-wrap" id="themeToggleBtn">라이트 모드</button>
-  </div>
-</header>
 <div class="save-status" id="saveStatus">저장된 데이터 불러오는 중...</div>
 
 <div class="owner-tabs" id="ownerTabs"></div>
@@ -818,7 +808,11 @@ background: var(--surface2);
 
 <div class="section-divider-gray spaced-top"></div>
 <div class="panel-wrap">
-  <div class="panel-title title-row mt-40">
+  <div class="header-actions mt-40">
+    <button class="add-btn no-wrap" id="reloadJsonBtn">stock.json 새로고침</button>
+    <button class="add-btn no-wrap" id="themeToggleBtn">라이트 모드</button>
+  </div>
+  <div class="panel-title title-row mt-20">
     JSON 편집
     <button class="add-btn no-wrap" id="toggleJsonBtn">JSON 보기/편집</button>
   </div>
