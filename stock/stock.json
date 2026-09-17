@@ -905,6 +905,22 @@
           "amount": 1020
         }
       ]
+    },
+    {
+      "id": "divrec_hemlhyn",
+      "key": "441640",
+      "name": "KODEX 미국배당커버드콜",
+      "ticker": "441640",
+      "month": "2026-09",
+      "date": "2026-09-14",
+      "perShare": 96,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 10,
+          "amount": 960
+        }
+      ]
     }
   ],
   "stockCatalog": [
