@@ -877,7 +877,7 @@
     {
       "id": "divrec_s2kbn9o",
       "key": "441640",
-      "name": "KODEX 미국배당커버드콜",
+      "name": "KODEX 미국배당커버드콜액티브",
       "ticker": "441640",
       "month": "2026-07",
       "date": "2026-07-14",
@@ -893,7 +893,7 @@
     {
       "id": "divrec_upj6wco",
       "key": "441640",
-      "name": "KODEX 미국배당커버드콜",
+      "name": "KODEX 미국배당커버드콜액티브",
       "ticker": "441640",
       "month": "2026-08",
       "date": "2026-08-13",
@@ -909,7 +909,7 @@
     {
       "id": "divrec_hemlhyn",
       "key": "441640",
-      "name": "KODEX 미국배당커버드콜",
+      "name": "KODEX 미국배당커버드콜액티브",
       "ticker": "441640",
       "month": "2026-09",
       "date": "2026-09-14",
@@ -1004,7 +1004,7 @@
     {
       "key": "441640",
       "ticker": "441640",
-      "name": "KODEX 미국배당커버드콜",
+      "name": "KODEX 미국배당커버드콜액티브",
       "currentPrice": 12400,
       "dividendUrl": "https://m.stock.naver.com/domestic/stock/441640/analysis"
     },
