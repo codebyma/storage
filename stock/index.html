@@ -2090,14 +2090,20 @@ function refreshStockDetailSheetIfOpen(stockId){
 
 function buildStockDetailHtml(stock){
   const keyEsc = stock.key.replace(/'/g,"\\'");
+  const hasBuys = stock.buys && stock.buys.length>0;
+  const hasSells = stock.sells && stock.sells.length>0;
   return `
+     ${hasBuys ? `
      <div class="panel-title sub-title mb-4">매수</div>
      ${entryListHtml(stock.buys, stock.id, 'buys')}
+     ` : ''}
     <div class="form-panel" id="buyform_${stock.id}">
         ${txFormHtml(stock.id,'buys')}
       </div>
-    <div class="panel-title sub-title mt-12 mb-4">매도</div>
+    ${hasSells ? `
+    <div class="panel-title sub-title ${hasBuys ? 'mt-12 ' : ''}mb-4">매도</div>
      ${entryListHtml(stock.sells, stock.id, 'sells')}
+     ` : ''}
       <div class="form-panel" id="sellform_${stock.id}">
         ${txFormHtml(stock.id,'sells')}
       </div>
