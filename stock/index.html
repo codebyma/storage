@@ -706,7 +706,7 @@ background: var(--surface2);
   .hint-text{font-size:11.5px;color:var(--text3);padding:2px 4px 2px;}
   .stat-footnote{font-size:11px;color:var(--text3);margin:6px 0 2px;}
   .divider-top{border-top:1px solid var(--border);}
-  .amt-lg{font-size:14.5px;}
+  .amt-lg{font-size:13.5px;}
   .amt-md{font-size:14px;}
   .account-suffix-wrap{text-align:right;flex-shrink:0;}
   .account-total-value{font-size:17px;color:var(--text1);}
@@ -758,6 +758,7 @@ background: var(--surface2);
   .mb-4{margin-bottom:4px !important;}
   .mb-6{margin-bottom:6px !important;}
   .mb-8{margin-bottom:8px !important;}
+  .mb-12{margin-bottom:12px !important;}
   .mb-16{margin-bottom:16px !important;}
 
   .scroll-locked{overflow:hidden;}
@@ -2301,10 +2302,10 @@ function openMonthDividendSheet(month){
     let dayLabel = '';
     if(rec.date){
       const parts = rec.date.split('-');
-      if(parts.length===3) dayLabel = ` · ${parseInt(parts[1],10)}월 ${parseInt(parts[2],10)}일`;
+      if(parts.length===3) dayLabel = `${parseInt(parts[1],10)}월 ${parseInt(parts[2],10)}일 · `;
     }
     return `
-      <div class="mb-8">
+      <div class="mb-12">
         <div class="cursor-pointer" onclick="openDividendAccountDetail('${keyEsc}','${month}')">
           <div class="entry-row text-strong no-border-bottom pb-0">
             <span class="amt-lg">${escapeHtml(rec.name)}</span>
@@ -2314,7 +2315,7 @@ function openMonthDividendSheet(month){
             </span>
           </div>
           <div class="entry-row fs-11-5 text-dim pt-0 mt-2">
-            <span>총 <span class="num">${totalQty.toLocaleString('ko-KR')}</span>주 보유${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}${dayLabel}</span>
+            <span>${dayLabel}<span class="num">${totalQty.toLocaleString('ko-KR')}</span>주${rec.perShare ? ' · 주당 <span class="won-sign">₩</span><span class="num">'+rec.perShare.toLocaleString('ko-KR')+'</span>' : ''}</span>
             <span></span>
           </div>
         </div>
