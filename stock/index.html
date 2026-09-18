@@ -1757,10 +1757,6 @@ function buildTargetSheetContent(key, sid){
       <div class="stat-footnote">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
     </div>
 
-    <div class="button-row mt-20">
-      <button class="cta-btn" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가</button>
-      <button class="cta-btn" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당</button>
-    </div>
     <div class="form-panel" id="grpform_${sid}">
       <div class="form-row">
         <div class="field">
@@ -1791,6 +1787,10 @@ function buildTargetSheetContent(key, sid){
         <button class="btn-ghost" onclick="closeForm('divgrpform_${sid}')">취소</button>
         <button class="btn-primary" onclick="applyGroupDividend('${keyEsc}','${sid}')">전체 계좌에 반영</button>
       </div>
+    </div>
+    <div class="button-row mt-20">
+      <button class="cta-btn" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가</button>
+      <button class="cta-btn" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당</button>
     </div>
   `;
   return { title: item.name, bodyHtml };
