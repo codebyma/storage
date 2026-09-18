@@ -704,7 +704,7 @@ background: var(--surface2);
   .value-sub{font-size:13px;font-weight:400;margin-top:2px;}
   .suffix-text{font-weight:400;font-size:12px;}
   .hint-text{font-size:11.5px;color:var(--text3);padding:2px 4px 2px;}
-  .stat-footnote{font-size:11px;color:var(--text3);margin:6px 0 2px;}
+  .stat-footnote{font-size:11px;color:var(--text2);margin:6px 0 2px;}
   .divider-top{border-top:1px solid var(--border);}
   .amt-lg{font-size:13.5px;}
   .amt-md{font-size:14px;}
@@ -1742,9 +1742,24 @@ function buildTargetSheetContent(key, sid){
     <div class="panel-title sub-title">보유현황</div>
     ${holdingsListHtmlForKey(key)}
 
+    <div class="mt-20 pt-14 divider-top">
+      <div class="panel-title sub-title title-row cursor-pointer" onclick="openKeyDividendSheet('${keyEsc}')"><span>배당현황</span>${CHEVRON_SVG}</div>
+      <div class="yield-grid">
+        <div class="yield-card" onclick="showYieldTooltip(event,2)">
+          <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(y2)}</div>
+        </div>
+        <div class="yield-card" onclick="showYieldTooltip(event,3)">
+          <div class="yield-label">최근 12개월<br>현재가 기준</div>
+          <div class="yield-value num">${fmtPctPlain(y3)}</div>
+        </div>
+      </div>
+      <div class="stat-footnote">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
+    </div>
+
     <div class="button-row mt-20">
-      <button class="action-btn-prominent" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가 일괄수정</button>
-      <button class="action-btn-prominent" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당 일괄 입력</button>
+      <button class="cta-btn" onclick="openGroupPriceForm('${keyEsc}','${sid}')">현재가</button>
+      <button class="cta-btn" onclick="openGroupDividendForm('${keyEsc}','${sid}')">배당</button>
     </div>
     <div class="form-panel" id="grpform_${sid}">
       <div class="form-row">
@@ -1777,21 +1792,6 @@ function buildTargetSheetContent(key, sid){
         <button class="btn-primary" onclick="applyGroupDividend('${keyEsc}','${sid}')">전체 계좌에 반영</button>
       </div>
     </div>
-
-    <div class="mt-20 pt-14 divider-top">
-      <div class="panel-title sub-title title-row cursor-pointer" onclick="openKeyDividendSheet('${keyEsc}')"><span>배당현황</span>${CHEVRON_SVG}</div>
-      <div class="yield-grid">
-        <div class="yield-card" onclick="showYieldTooltip(event,2)">
-          <div class="yield-label">최근 12개월<br>평균매입가 기준</div>
-          <div class="yield-value num">${fmtPctPlain(y2)}</div>
-        </div>
-        <div class="yield-card" onclick="showYieldTooltip(event,3)">
-          <div class="yield-label">최근 12개월<br>현재가 기준</div>
-          <div class="yield-value num">${fmtPctPlain(y3)}</div>
-        </div>
-      </div>
-      <div class="stat-footnote">누적 배당 ${fmtWon(divTotal)} · 최근 12개월 ${fmtWon(divTTM)}</div>
-    </div>
   `;
   return { title: item.name, bodyHtml };
 }
@@ -1810,6 +1810,7 @@ function openTargetSheet(key, sid){
   if(!content) return;
   openTargetSheetLayer = { key, layer: 1 };
   openSheet(content.title, content.bodyHtml, ()=>openDividendLink(key));
+  document.getElementById('sheetTitle').insertAdjacentHTML('beforeend', CHEVRON_SVG);
 }
 
 function openTargetSheetNested(key, sid){
@@ -1817,6 +1818,7 @@ function openTargetSheetNested(key, sid){
   if(!content) return;
   openTargetSheetLayer = { key, layer: 2 };
   openSheet2(content.title, content.bodyHtml, ()=>openDividendLink(key));
+  document.getElementById('sheetTitle2').insertAdjacentHTML('beforeend', CHEVRON_SVG);
 }
 
 async function applyGroupPrice(key, sid){
