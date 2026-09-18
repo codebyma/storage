@@ -292,6 +292,9 @@
   .stock-stat:nth-child(even){text-align:right;}
   .stock-stat-label{color:var(--text2);margin-right:6px;}
   .stock-stat-value{color:var(--text1);}
+  .stat-rows{display:flex;flex-direction:column;gap:7px;}
+  .stat-row{display:flex;justify-content:space-between;gap:4px;}
+  .stat-row .stock-stat{flex:none;min-width:0;}
   .stock-stat-value.text-red{color:var(--red);}
   .stock-stat-value.text-blue{color:var(--blue);}
   .stock-stat-value.price-highlight{color:var(--mint);}
@@ -1734,11 +1737,15 @@ function buildTargetSheetContent(key, sid){
   const keyPLPct = item.cost ? (keyPL/item.cost)*100 : null;
 
   const bodyHtml = `
-    <div class="stock-stat-grid mb-16">
-      <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(item.value)}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(item.cost)}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(keyPL)}">${fmtPL(keyPL)}${keyPLPct!==null ? ' ('+fmtPercent(keyPLPct)+')' : ''}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">보유수량</span><span class="stock-stat-value num">${item.quantity.toLocaleString('ko-KR')}주</span></div>
+    <div class="stat-rows mb-16">
+      <div class="stat-row">
+        <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(item.value)}</span></div>
+        <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(item.cost)}</span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(keyPL)}">${fmtPL(keyPL)}${keyPLPct!==null ? ' ('+fmtPercent(keyPLPct)+')' : ''}</span></div>
+        <div class="stock-stat"><span class="stock-stat-label">보유수량</span><span class="stock-stat-value num">${item.quantity.toLocaleString('ko-KR')}주</span></div>
+      </div>
     </div>
     <div class="panel-title sub-title">보유현황</div>
     ${holdingsListHtmlForKey(key)}
@@ -2088,11 +2095,15 @@ function buildStockDetailHtml(stock){
   const pl = stockPL(stock);
   const plPct = stockPLPercent(stock);
   return `
-    <div class="stock-stat-grid mb-16">
-      <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(value)}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
-      <div class="stock-stat"><span class="stock-stat-label">보유수량</span><span class="stock-stat-value num">${(stock.quantity||0).toLocaleString('ko-KR')}주</span></div>
+    <div class="stat-rows mb-16">
+      <div class="stat-row">
+        <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(value)}</span></div>
+        <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
+      </div>
+      <div class="stat-row">
+        <div class="stock-stat"><span class="stock-stat-label">수익</span><span class="stock-stat-value num ${plClass(pl)}">${fmtPL(pl)}${plPct!==null ? ' ('+fmtPercent(plPct)+')' : ''}</span></div>
+        <div class="stock-stat"><span class="stock-stat-label">보유수량</span><span class="stock-stat-value num">${(stock.quantity||0).toLocaleString('ko-KR')}주</span></div>
+      </div>
     </div>
      ${hasBuys ? `
      <div class="panel-title sub-title mb-4">매수</div>
