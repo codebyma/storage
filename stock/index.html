@@ -304,6 +304,7 @@
     border-bottom:1px solid var(--border);
     color:var(--text2);
   }
+  .entry-row.tight{padding:2px 0;}
   .row-chevron{
     color:var(--text3);
     margin-left:2px;
@@ -2123,7 +2124,7 @@ function entryListHtml(list, stockId, field){
   if(!list || list.length===0) return `<div class="empty-hint text-dim">기록 없음</div>`;
   const sorted = [...list].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   return sorted.map(item=>`
-    <div class="entry-row">
+    <div class="entry-row tight">
       <span>${item.date||''} ${item.quantity||0}주${item.price ? ' x <span class="won-sign">₩</span>'+item.price.toLocaleString('ko-KR') : ''}</span>
       <span class="del-icon" onclick="deleteEntry('${stockId}','${field}','${item.id}')">🗑️</span>
     </div>
