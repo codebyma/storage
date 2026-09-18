@@ -284,8 +284,9 @@
     display:flex;
     flex-wrap:wrap;
     gap:7px 16px;
-    padding:0 2px;
+    padding:0;
   }
+  .stock-stat-grid.px-2{padding:0 2px;}
   .stock-stat{font-size:13px;flex:auto;min-width:45%;}
   .stock-stat:nth-child(odd){text-align:left;}
   .stock-stat:nth-child(even){text-align:right;}
@@ -304,7 +305,6 @@
     border-bottom:1px solid var(--border);
     color:var(--text2);
   }
-  .entry-row.tight{padding:2px 0;}
   .row-chevron{
     color:var(--text3);
     margin-left:2px;
@@ -2038,7 +2038,7 @@ function buildStockRow(stock){
         <span class="stock-card-name">${stockEmoji(cat.name, cat.ticker)} ${escapeHtml(cat.name)}</span>${cat.ticker ? '<span class="stock-card-ticker">('+escapeHtml(cat.ticker)+')</span>' : ''}
       </div>
     </div>
-    <div class="stock-stat-grid">
+    <div class="stock-stat-grid px-2">
       <div class="stock-stat"><span class="stock-stat-label">투자원금</span><span class="stock-stat-value num">${fmtWon(cost)}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">수량</span><span class="stock-stat-value num">${qty.toLocaleString('ko-KR')}</span></div>
       <div class="stock-stat"><span class="stock-stat-label">평가금액</span><span class="stock-stat-value num">${fmtWon(stockTotal(stock))}</span></div>
@@ -2124,7 +2124,7 @@ function entryListHtml(list, stockId, field){
   if(!list || list.length===0) return `<div class="empty-hint text-dim">기록 없음</div>`;
   const sorted = [...list].sort((a,b)=> (b.date||'').localeCompare(a.date||''));
   return sorted.map(item=>`
-    <div class="entry-row tight">
+    <div class="entry-row">
       <span>${item.date||''} ${item.quantity||0}주${item.price ? ' x <span class="won-sign">₩</span>'+item.price.toLocaleString('ko-KR') : ''}</span>
       <span class="del-icon" onclick="deleteEntry('${stockId}','${field}','${item.id}')">🗑️</span>
     </div>
