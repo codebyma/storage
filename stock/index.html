@@ -841,7 +841,7 @@ background: var(--surface2);
 </div>
 
 <div class="section-divider-gray spaced-top"></div>
-<div class="panel-wrap pb-40">
+<div class="panel-wrap">
   <div class="panel-title mt-40">GitHub 저장</div>
   <div class="panel-caption">현재 데이터를 GitHub 저장소의 stock.json에 바로 커밋해요. 최초 1회만 아래 설정을 입력하면, 이후엔 이 브라우저에서 버튼 한 번으로 저장돼요.</div>
 
@@ -867,6 +867,11 @@ background: var(--surface2);
 
   <button class="action-btn-prominent full-width mt-12" onclick="pushToGithub()">GitHub에 저장</button>
   <div id="githubSaveStatus" class="panel-caption mt-8"></div>
+</div>
+
+<div class="section-divider-gray spaced-top"></div>
+<div class="panel-wrap pb-40">
+  <button class="action-btn-prominent full-width" onclick="openPensionCalcSheet()">연금 배당 계산기</button>
 </div>
 
 <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
@@ -1315,6 +1320,14 @@ function accountTotal(accountId){
 }
 function accountCostBasis(accountId){
   return stocksForAccount(accountId).reduce((sum,s)=>sum+stockCostBasis(s),0);
+}
+function accountDividendTTM(accountId){
+  return stocksForAccount(accountId).reduce((sum,s)=>sum+stockDividendTTM(s),0);
+}
+function accountYieldOnCurrentPrice(accountId){
+  const total = accountTotal(accountId);
+  if(!total) return 0;
+  return (accountDividendTTM(accountId) / total) * 100;
 }
 function ownerTotal(ownerId){
   return accountsForOwner(ownerId).reduce((sum,a)=>sum+accountTotal(a.id),0);
@@ -2304,6 +2317,97 @@ async function deleteStockDividend(stockId, month){
   }
   refreshStockDetailSheetIfOpen(stockId);
   showToast('배당 기록을 삭제했어요');
+}
+
+function buildPensionCalcHtml(){
+  const accounts = DATA.accounts || [];
+  if(accounts.length===0) return `<div class="empty-hint">등록된 계좌가 없어요</div>`;
+  const rows = accounts.map(acc=>{
+    const owner = DATA.owners.find(o=>o.id===acc.ownerId);
+    const total = accountTotal(acc.id);
+    const yieldPct = accountYieldOnCurrentPrice(acc.id);
+    return `
+      <div class="mt-14 pt-14 divider-top">
+        <div class="fs-13 text-strong mb-4">${escapeHtml(acc.name)}${owner ? '('+escapeHtml(owner.name)+')' : ''}</div>
+        <div class="form-row mb-0">
+          <div class="field">
+            <span class="field-label">총액</span>
+            <input type="number" inputmode="decimal" id="pension_total_${acc.id}" value="${Math.round(total)}" oninput="recalcPensionSheet()">
+          </div>
+          <div class="field">
+            <span class="field-label">배당률(%)</span>
+            <input type="number" inputmode="decimal" step="0.01" id="pension_yield_${acc.id}" value="${yieldPct.toFixed(2)}" oninput="recalcPensionSheet()">
+          </div>
+        </div>
+        <div class="entry-row no-border-bottom pb-0">
+          <span class="text-dim">월 예상 배당(세후)</span>
+          <span class="amt num" id="pension_result_${acc.id}">₩0</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div class="form-row">
+      <div class="field">
+        <span class="field-label">연금소득세율</span>
+        <select id="pensionTaxRate" onchange="recalcPensionSheet()">
+          <option value="3.3">3.3%</option>
+          <option value="4.4">4.4%</option>
+          <option value="5.5" selected>5.5%</option>
+        </select>
+      </div>
+    </div>
+    <div class="panel-caption mt-0">계좌별 총액·배당률은 현재 데이터 기준으로 자동 채워지며, 직접 수정할 수 있어요. 연 배당 합계가 1,500만원을 넘으면 선택한 세율 대신 16.5%가 자동 적용돼요.</div>
+    ${rows}
+    <div class="mt-14 pt-14 divider-top">
+      <div class="entry-row no-border-bottom pb-0">
+        <span class="text-strong">월 합계(세후)</span>
+        <span class="amt num fs-16" id="pensionTotalResult">₩0</span>
+      </div>
+      <div class="fs-11-5 text-red hidden" id="pensionOverLimitNote">⚠️ 연 배당 합계가 1,500만원을 초과해 16.5% 세율이 적용됐어요</div>
+    </div>
+  `;
+}
+
+function openPensionCalcSheet(){
+  openSheet('연금 배당 계산기', buildPensionCalcHtml());
+  recalcPensionSheet();
+}
+
+function recalcPensionSheet(){
+  const accounts = DATA.accounts || [];
+  const taxSelect = document.getElementById('pensionTaxRate');
+  if(!taxSelect) return;
+  const selectedRate = parseFloat(taxSelect.value) || 5.5;
+
+  let grandAnnual = 0;
+  const perAccount = accounts.map(acc=>{
+    const totalInput = document.getElementById(`pension_total_${acc.id}`);
+    const yieldInput = document.getElementById(`pension_yield_${acc.id}`);
+    if(!totalInput || !yieldInput) return null;
+    const total = parseFloat(totalInput.value) || 0;
+    const yieldPct = parseFloat(yieldInput.value) || 0;
+    const annual = total * (yieldPct/100);
+    grandAnnual += annual;
+    return { id: acc.id, annual };
+  }).filter(Boolean);
+
+  const overLimit = grandAnnual > 15000000;
+  const effectiveRate = overLimit ? 16.5 : selectedRate;
+
+  perAccount.forEach(a=>{
+    const monthlyNet = (a.annual * (1 - effectiveRate/100)) / 12;
+    const el = document.getElementById(`pension_result_${a.id}`);
+    if(el) el.innerHTML = fmtWon(Math.round(monthlyNet));
+  });
+
+  const totalMonthlyNet = (grandAnnual * (1 - effectiveRate/100)) / 12;
+  const totalEl = document.getElementById('pensionTotalResult');
+  if(totalEl) totalEl.innerHTML = fmtWon(Math.round(totalMonthlyNet));
+
+  const noteEl = document.getElementById('pensionOverLimitNote');
+  if(noteEl) noteEl.classList.toggle('hidden', !overLimit);
 }
 
 function openMonthDividendSheet(month){
