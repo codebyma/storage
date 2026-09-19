@@ -710,6 +710,19 @@ background: var(--surface2);
   .hint-text{font-size:11.5px;color:var(--text3);padding:2px 4px 2px;}
   .stat-footnote{font-size:11px;color:var(--text2);margin:6px 0 2px;}
   .divider-top{border-top:1px solid var(--border);}
+  .pension-sum{
+    padding:12px 14px;
+    border-radius:10px;
+    border:1px solid transparent;
+  }
+  .pension-sum-owner{
+    background:var(--blue-dim);
+    border-color:var(--blue);
+  }
+  .pension-sum-total{
+    background:var(--mint-dim);
+    border-color:var(--mint);
+  }
   .amt-lg{font-size:13.5px;}
   .amt-md{font-size:14px;}
   .account-suffix-wrap{text-align:right;flex-shrink:0;}
@@ -815,6 +828,7 @@ background: var(--surface2);
 <div class="panel-wrap">
   <div class="header-actions mt-40">
     <button class="add-btn no-wrap" id="reloadJsonBtn">stock.json 새로고침</button>
+    <button class="add-btn no-wrap" onclick="openPensionCalcSheet()">연금 배당 계산기</button>
     <button class="add-btn no-wrap" id="themeToggleBtn">라이트 모드</button>
   </div>
   <div class="panel-title title-row mt-20">
@@ -841,7 +855,7 @@ background: var(--surface2);
 </div>
 
 <div class="section-divider-gray spaced-top"></div>
-<div class="panel-wrap">
+<div class="panel-wrap pb-40">
   <div class="panel-title mt-40">GitHub 저장</div>
   <div class="panel-caption">현재 데이터를 GitHub 저장소의 stock.json에 바로 커밋해요. 최초 1회만 아래 설정을 입력하면, 이후엔 이 브라우저에서 버튼 한 번으로 저장돼요.</div>
 
@@ -867,11 +881,6 @@ background: var(--surface2);
 
   <button class="action-btn-prominent full-width mt-12" onclick="pushToGithub()">GitHub에 저장</button>
   <div id="githubSaveStatus" class="panel-caption mt-8"></div>
-</div>
-
-<div class="section-divider-gray spaced-top"></div>
-<div class="panel-wrap pb-40">
-  <button class="action-btn-prominent full-width" onclick="openPensionCalcSheet()">연금 배당 계산기</button>
 </div>
 
 <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
@@ -2330,11 +2339,11 @@ function buildPensionCalcHtml(){
   const ownerSections = owners.map(owner=>{
     const accounts = accountsForOwner(owner.id);
     if(accounts.length===0) return '';
-    const accRows = accounts.map(acc=>{
+    const accRows = accounts.map((acc, idx)=>{
       const total = accountTotal(acc.id);
       const yieldPct = accountYieldOnCurrentPrice(acc.id);
       return `
-        <div class="mt-14 pt-14 divider-top">
+        <div class="mt-14 pt-14${idx===0 ? '' : ' divider-top'}">
           <div class="fs-13 text-strong mb-4">${escapeHtml(acc.name)}</div>
           <div class="form-row mb-0">
             <div class="field">
@@ -2357,7 +2366,7 @@ function buildPensionCalcHtml(){
     return `
       <div class="panel-title sub-title mt-20 mb-4">${escapeHtml(owner.name)}</div>
       ${accRows}
-      <div class="mt-8 pt-8 divider-top">
+      <div class="pension-sum pension-sum-owner mt-14">
         <div class="entry-row no-border-bottom pb-0">
           <span class="text-strong">${escapeHtml(owner.name)} 월 합계(세후)</span>
           <span class="amt num fs-16" id="pensionOwnerTotal_${owner.id}">₩0</span>
@@ -2380,7 +2389,7 @@ function buildPensionCalcHtml(){
     </div>
     <div class="panel-caption mt-0">계좌별 총액·배당률은 현재 데이터 기준으로 자동 채워지며, 직접 수정할 수 있어요. 계좌 주인별로 연 배당 합계가 1,500만원을 넘으면 그 사람만 선택한 세율 대신 16.5%가 자동 적용돼요.</div>
     ${ownerSections}
-    <div class="mt-20 pt-14 divider-top">
+    <div class="pension-sum pension-sum-total mt-20">
       <div class="entry-row no-border-bottom pb-0">
         <span class="text-strong">전체 합계(세후)</span>
         <span class="amt num fs-16" id="pensionTotalResult">₩0</span>
