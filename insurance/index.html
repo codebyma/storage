@@ -41,6 +41,7 @@
       --ins3: #ba68c8;
       --ins4: #f08a4b;
       --ins5: #81c784;
+      --hl: #e8683a;
       box-sizing: border-box;
       padding-top: env(safe-area-inset-top, 0px);
       padding-bottom: env(safe-area-inset-bottom, 0px)
@@ -76,7 +77,8 @@
       --ins2: #1f8a80;
       --ins3: #9a3fb0;
       --ins4: #d36a1f;
-      --ins5: #3f8f45
+      --ins5: #3f8f45;
+      --hl: #c8481c
     }
 
     * {
@@ -409,8 +411,9 @@
 
     .stickywrap {
       position: sticky;
-      top: env(safe-area-inset-top, 0px);
+      top: 0;
       z-index: 7;
+      padding-top: env(safe-area-inset-top, 0px);
       background: var(--bg)
     }
 
@@ -524,7 +527,7 @@
 
     .acc-head {
       position: sticky;
-      top: calc(var(--stk, 112px) + env(safe-area-inset-top, 0px));
+      top: var(--stk, 112px);
       z-index: 4;
       display: flex;
       justify-content: space-between;
@@ -633,9 +636,8 @@
       border-bottom: 0
     }
 
-    details.it.star .nm,
-    details.it.star .am {
-      color: var(--mint)
+    details.it.star .nm {
+      color: var(--hl)
     }
 
     details.it.star .nm small {
