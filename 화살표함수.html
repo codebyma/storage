@@ -1,0 +1,630 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>화살표 함수 예제집</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* 레이아웃: 왼쪽 고정 목차 + 본문 한 단. 히어로의 큰 => 모티프가 유일한 과감한 장치이고 나머지는 조용하게 둔다. */
+:root {
+  --bg: #F2F5F7;
+  --surface: #FFFFFF;
+  --fg: #0E1B26;
+  --muted: #566676;
+  --line: #D5DDE4;
+  --accent: #0A7C66;
+  --accent-fg: #FFFFFF;
+  --accent-soft: #DDF1EB;
+  --warn: #A8520B;
+  --warn-soft: #FBEBD9;
+  --code-bg: #0D1A24;
+  --code-fg: #D6E2EA;
+  --code-line: #223645;
+  --code-muted: #8CA1B0;
+  --t-kw: #F2A65A;
+  --t-str: #A6DDB0;
+  --t-num: #F4D07A;
+  --t-cm: #7C93A3;
+  --t-arrow: #5EEAD4;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0A1118;
+    --surface: #111C26;
+    --fg: #E4EDF3;
+    --muted: #93A5B3;
+    --line: #243543;
+    --accent: #4FD1B0;
+    --accent-fg: #05201A;
+    --accent-soft: #0F2D2A;
+    --warn: #F0A15B;
+    --warn-soft: #2E2113;
+    --code-bg: #060C12;
+    --code-line: #1B2C39;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0A1118;
+  --surface: #111C26;
+  --fg: #E4EDF3;
+  --muted: #93A5B3;
+  --line: #243543;
+  --accent: #4FD1B0;
+  --accent-fg: #05201A;
+  --accent-soft: #0F2D2A;
+  --warn: #F0A15B;
+  --warn-soft: #2E2113;
+  --code-bg: #060C12;
+  --code-line: #1B2C39;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font: 16px/1.75 var(--font-body);
+  padding-inline: 16px;
+  padding-block: 0;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 1040px; margin-inline: auto; }
+
+/* 히어로 */
+.hero { display: grid; gap: 22px; padding-block: 48px 40px; }
+.eyebrow {
+  font: 500 0.8125rem/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+h1 {
+  font-size: clamp(2.1rem, 6.5vw, 3.5rem);
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  font-weight: 700;
+  margin: 0;
+  text-wrap: balance;
+}
+.lead { max-width: 34em; color: var(--muted); font-size: 1.0625rem; margin: 0; text-wrap: pretty; }
+.motif {
+  font: 700 clamp(1.5rem, 5.6vw, 3.2rem)/1.2 var(--font-mono);
+  color: var(--fg);
+  margin: 8px 0 0;
+  overflow-wrap: anywhere;
+}
+.motif .arr { color: var(--accent); }
+.motif small {
+  display: block;
+  margin-top: 0.6rem;
+  font: 400 clamp(0.9rem, 2.4vw, 1.125rem)/1.6 var(--font-mono);
+  color: var(--muted);
+}
+
+/* 본문 격자 */
+.shell {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 56px;
+  padding-bottom: 96px;
+}
+main { display: flex; flex-direction: column; gap: 76px; min-width: 0; }
+
+/* 목차 */
+.toc {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 24px);
+  align-self: start;
+}
+.toc-title {
+  font: 600 0.6875rem/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px 0.7em;
+}
+.toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.toc a {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 0.45em 0.7em;
+  border-radius: 6px;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+.toc a .n { font: 600 0.75rem/1 var(--font-mono); min-width: 1.1em; }
+.toc a:hover { color: var(--fg); }
+.toc a[aria-current="true"] { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.toc a:focus-visible, .btn:focus-visible, .step-tab:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.code-bar .btn:focus-visible { outline-color: var(--t-arrow); }
+
+/* 단원 */
+.sec { scroll-margin-top: 24px; min-width: 0; }
+.sec-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.sec-no {
+  font: 700 0.8125rem/1 var(--font-mono);
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.4em 0.65em;
+  border-radius: 4px;
+}
+h2 { font-size: 1.5rem; line-height: 1.3; letter-spacing: -0.015em; margin: 0; text-wrap: balance; }
+.sec-intro { color: var(--muted); max-width: 38em; margin: 12px 0 0; text-wrap: pretty; }
+.ex-list { display: flex; flex-direction: column; gap: 40px; margin-top: 28px; }
+.ex { min-width: 0; }
+h3 { font-size: 1.0625rem; line-height: 1.4; margin: 0 0 4px; font-weight: 700; }
+.ex-desc { margin: 0 0 12px; color: var(--muted); max-width: 40em; text-wrap: pretty; }
+
+/* 코드와 출력 */
+.code { background: var(--code-bg); color: var(--code-fg); border-radius: 8px; overflow: hidden; min-width: 0; }
+.code-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 16px;
+  border-bottom: 1px solid var(--code-line);
+  font: 500 0.75rem/1 var(--font-mono);
+  color: var(--code-muted);
+}
+.actions { display: flex; gap: 6px; }
+.code-pre {
+  margin: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  font: 400 0.8125rem/1.7 var(--font-mono);
+  tab-size: 2;
+  white-space: pre;
+}
+.code-pre code { font: inherit; }
+.k { color: var(--t-kw); }
+.s { color: var(--t-str); }
+.n { color: var(--t-num); }
+.c { color: var(--t-cm); font-style: italic; }
+.a { color: var(--t-arrow); font-weight: 700; }
+
+.btn {
+  font: 600 0.8125rem/1 var(--font-body);
+  border: 0;
+  border-radius: 6px;
+  padding: 0.65em 0.95em;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 0.5em;
+  align-items: center;
+}
+.btn svg { width: 0.7em; height: 0.7em; fill: currentColor; }
+.btn-run { background: var(--accent); color: var(--accent-fg); }
+.btn-ghost { background: transparent; color: var(--code-muted); border: 1px solid var(--code-line); }
+.btn-ghost:hover { color: var(--code-fg); }
+.btn:disabled { opacity: 0.6; cursor: default; }
+
+.out {
+  margin-top: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 16px 12px;
+  min-width: 0;
+}
+.out-label {
+  font: 600 0.6875rem/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.out-body { font: 400 0.8125rem/1.7 var(--font-mono); overflow-x: auto; }
+.ln { white-space: pre; }
+.ln::before { content: "› "; color: var(--accent); }
+.ln-plain { color: var(--muted); }
+.ln-plain::before { content: ""; }
+.out-note { margin: 8px 0 0; font-size: 0.875rem; color: var(--muted); }
+
+.note {
+  margin: 12px 0 0;
+  padding: 10px 14px;
+  background: var(--warn-soft);
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  max-width: 42em;
+}
+.note b { color: var(--warn); font-size: 0.75rem; letter-spacing: 0.08em; margin-right: 0.6em; }
+
+/* 변환 단계 */
+.stepper { margin-top: 28px; }
+.step-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+.step-tab {
+  font: 600 0.8125rem/1 var(--font-body);
+  padding: 0.7em 0.95em;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--fg);
+  cursor: pointer;
+}
+.step-tab .num { font-family: var(--font-mono); margin-right: 0.5em; opacity: 0.7; }
+.step-tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
+.step-note { margin: 12px 0 0; max-width: 42em; color: var(--muted); }
+.step-note b { color: var(--accent); font-size: 0.8125rem; margin-right: 0.6em; }
+
+/* 표 */
+.table-wrap { overflow-x: auto; margin-top: 24px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 600px; font-size: 0.9375rem; }
+th, td { padding: 12px 16px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); }
+th { font: 600 0.75rem/1.4 var(--font-body); color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+.tag { display: inline-block; font: 600 0.75rem/1 var(--font-body); padding: 0.4em 0.65em; border-radius: 4px; white-space: nowrap; }
+.tag-arrow { background: var(--accent-soft); color: var(--accent); }
+.tag-fn { background: var(--warn-soft); color: var(--warn); }
+
+/* 직접 해보기 */
+.play textarea {
+  display: block;
+  width: 100%;
+  min-height: 11rem;
+  resize: vertical;
+  background: var(--code-bg);
+  color: var(--code-fg);
+  border: 0;
+  padding: 14px 16px;
+  font: 400 0.8125rem/1.7 var(--font-mono);
+  tab-size: 2;
+}
+
+@media (max-width: 899px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .toc {
+    top: env(safe-area-inset-top, 0px);
+    z-index: 5;
+    background: var(--bg);
+    margin-inline: -16px;
+    padding: 8px 16px;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 32px;
+  }
+  .toc-title { display: none; }
+  .toc ul { flex-direction: row; gap: 4px; width: max-content; }
+  .toc a { white-space: nowrap; }
+  .sec { scroll-margin-top: 72px; }
+  main { gap: 64px; }
+  .hero { padding-block: 32px 28px; }
+}
+
+</style>
+<div class="wrap">
+<header class="hero">
+<p class="eyebrow">JavaScript ES2015 · 예제 17개</p>
+<h1>화살표 함수 예제집</h1>
+<p class="lead">function 대신 =>로 쓰는 짧은 함수 표기입니다. 기본 문법부터 this, 비동기, 함수 조합까지 예제를 읽고 직접 실행하면서 익혀 보세요.</p>
+<p class="motif" aria-hidden="true">(a, b) <span class="arr">=&gt;</span> a + b<small>add(2, 3)  // 5</small></p>
+</header>
+<div class="shell">
+<nav class="toc" aria-label="목차"><p class="toc-title">목차</p><ul><li><a href="#s1"><span class="n">1</span>기본 문법</a></li><li><a href="#s2"><span class="n">2</span>배열 메서드와 함께</a></li><li><a href="#s3"><span class="n">3</span>this가 다른 점</a></li><li><a href="#s4"><span class="n">4</span>콜백과 비동기</a></li><li><a href="#s5"><span class="n">5</span>함수를 돌려주는 함수</a></li><li><a href="#s6"><span class="n">6</span>매개변수 다루기</a></li><li><a href="#s7"><span class="n">7</span>쓰면 안 되는 곳</a></li><li><a href="#summary"><span class="n">·</span>한눈에 정리</a></li><li><a href="#play"><span class="n">·</span>직접 해보기</a></li></ul></nav>
+<main>
+<section class="sec" id="s1"><div class="sec-head"><span class="sec-no">1</span><h2>기본 문법</h2></div><p class="sec-intro">화살표 함수는 function 대신 =&gt;를 쓰는 짧은 함수 표기입니다. 아래 5단계로 일반 함수가 어떻게 줄어드는지 따라가 봅니다.</p><div class="stepper"><div class="step-tabs" role="tablist" aria-label="변환 단계"><button class="step-tab" type="button" role="tab" aria-selected="true"><span class="num">1</span>function 선언문</button><button class="step-tab" type="button" role="tab" aria-selected="false"><span class="num">2</span>함수 표현식</button><button class="step-tab" type="button" role="tab" aria-selected="false"><span class="num">3</span>화살표로 교체</button><button class="step-tab" type="button" role="tab" aria-selected="false"><span class="num">4</span>return 생략</button><button class="step-tab" type="button" role="tab" aria-selected="false"><span class="num">5</span>괄호 생략</button></div><div class="step-panel" role="tabpanel"><div class="code"><div class="code-bar"><span>JavaScript</span></div><pre class="code-pre"><code><span class="k">function</span> add(a, b) {
+  <span class="k">return</span> a + b;
+}</code></pre></div><p class="step-note"><b>1단계</b>가장 익숙한 형태입니다. 여기서 출발합니다.</p></div><div class="step-panel" role="tabpanel" hidden><div class="code"><div class="code-bar"><span>JavaScript</span></div><pre class="code-pre"><code><span class="k">const</span> add = <span class="k">function</span> (a, b) {
+  <span class="k">return</span> a + b;
+};</code></pre></div><p class="step-note"><b>2단계</b>함수를 변수에 담았습니다. 화살표 함수는 이름 없는 표현식이라 항상 이 형태로 씁니다.</p></div><div class="step-panel" role="tabpanel" hidden><div class="code"><div class="code-bar"><span>JavaScript</span></div><pre class="code-pre"><code><span class="k">const</span> add = (a, b) <span class="a">=&gt;</span> {
+  <span class="k">return</span> a + b;
+};</code></pre></div><p class="step-note"><b>3단계</b>function 키워드를 지우고 매개변수 뒤에 =&gt;를 붙입니다.</p></div><div class="step-panel" role="tabpanel" hidden><div class="code"><div class="code-bar"><span>JavaScript</span></div><pre class="code-pre"><code><span class="k">const</span> add = (a, b) <span class="a">=&gt;</span> a + b;</code></pre></div><p class="step-note"><b>4단계</b>본문이 식 하나뿐이면 중괄호와 return을 지웁니다. 식의 결과가 곧 반환값입니다.</p></div><div class="step-panel" role="tabpanel" hidden><div class="code"><div class="code-bar"><span>JavaScript</span></div><pre class="code-pre"><code><span class="k">const</span> square = n <span class="a">=&gt;</span> n * n;</code></pre></div><p class="step-note"><b>5단계</b>매개변수가 하나뿐이면 괄호도 지울 수 있습니다. 0개이거나 2개 이상이면 괄호가 필요합니다.</p></div></div><div class="ex-list"><article class="ex"><h3>return 없이 값 반환하기</h3><p class="ex-desc">본문이 식 하나면 그 결과가 반환값이 됩니다. 매개변수 개수에 따라 괄호 규칙이 달라집니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> add = (a, b) <span class="a">=&gt;</span> a + b;        <span class="c">// 중괄호와 return 생략</span>
+<span class="k">const</span> square = n <span class="a">=&gt;</span> n * n;          <span class="c">// 매개변수가 하나면 괄호 생략</span>
+<span class="k">const</span> hello = () <span class="a">=&gt;</span> <span class="s">"안녕하세요!"</span>;    <span class="c">// 매개변수가 없으면 빈 괄호</span>
+
+console.log(add(<span class="n">10</span>, <span class="n">5</span>));
+console.log(square(<span class="n">7</span>));
+console.log(hello());</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">15</div><div class="ln">49</div><div class="ln">안녕하세요!</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>객체 리터럴 반환하기</h3><p class="ex-desc">중괄호는 함수 본문으로 읽힙니다. 객체를 바로 돌려주려면 소괄호로 감쌉니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="c">// 객체 리터럴을 바로 반환하려면 소괄호로 감싼다</span>
+<span class="k">const</span> makeUser = (name, age) <span class="a">=&gt;</span> ({ name, age });
+
+<span class="c">// 소괄호가 없으면 중괄호가 함수 본문으로 해석된다</span>
+<span class="k">const</span> broken = (name) <span class="a">=&gt;</span> { name };
+
+console.log(makeUser(<span class="s">"민지"</span>, <span class="n">28</span>));
+console.log(broken(<span class="s">"민지"</span>));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">{"name":"민지","age":28}</div><div class="ln">undefined</div></div><p class="out-note" hidden></p></div></article></div></section>
+<section class="sec" id="s2"><div class="sec-head"><span class="sec-no">2</span><h2>배열 메서드와 함께</h2></div><p class="sec-intro">화살표 함수가 가장 자주 쓰이는 곳입니다. 콜백이 한 줄로 끝나서 데이터가 흘러가는 모양이 바로 보입니다.</p><div class="ex-list"><article class="ex"><h3>map, filter, reduce</h3><p class="ex-desc">가격 목록에 세금을 붙이고, 1만 원 이상만 고르고, 합계를 구합니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> prices = [<span class="n">12000</span>, <span class="n">8500</span>, <span class="n">23000</span>, <span class="n">4900</span>, <span class="n">17500</span>];
+
+<span class="k">const</span> withTax = prices.map(p <span class="a">=&gt;</span> Math.round(p * <span class="n">1.1</span>));
+<span class="k">const</span> expensive = prices.filter(p <span class="a">=&gt;</span> p &gt;= <span class="n">10000</span>);
+<span class="k">const</span> total = prices.reduce((sum, p) <span class="a">=&gt;</span> sum + p, <span class="n">0</span>);
+
+console.log(withTax);
+console.log(expensive);
+console.log(total);</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">[13200,9350,25300,5390,19250]</div><div class="ln">[12000,23000,17500]</div><div class="ln">65900</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>sort, find, some, every</h3><p class="ex-desc">정렬 기준과 조건 검사도 화살표 함수 한 줄이면 됩니다. sort는 원본을 바꾸므로 복사본에 씁니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> users = [
+  { name: <span class="s">"하준"</span>, age: <span class="n">31</span>, active: true },
+  { name: <span class="s">"서연"</span>, age: <span class="n">24</span>, active: false },
+  { name: <span class="s">"도윤"</span>, age: <span class="n">27</span>, active: true },
+];
+
+<span class="k">const</span> byAge = [...users].sort((a, b) <span class="a">=&gt;</span> a.age - b.age);
+<span class="k">const</span> firstActive = users.find(u <span class="a">=&gt;</span> u.active);
+
+console.log(byAge.map(u <span class="a">=&gt;</span> u.name));
+console.log(firstActive.name);
+console.log(users.some(u <span class="a">=&gt;</span> u.age &gt; <span class="n">30</span>));
+console.log(users.every(u <span class="a">=&gt;</span> u.active));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">["서연","도윤","하준"]</div><div class="ln">하준</div><div class="ln">true</div><div class="ln">false</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>메서드 체이닝으로 주문 집계</h3><p class="ex-desc">filter, map, reduce를 이어 붙여 2개 이상 주문한 품목의 금액을 객체로 모읍니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> orders = [
+  { item: <span class="s">"커피"</span>, qty: <span class="n">2</span>, price: <span class="n">4500</span> },
+  { item: <span class="s">"케이크"</span>, qty: <span class="n">1</span>, price: <span class="n">6800</span> },
+  { item: <span class="s">"샌드위치"</span>, qty: <span class="n">3</span>, price: <span class="n">5200</span> },
+];
+
+<span class="k">const</span> summary = orders
+  .filter(o <span class="a">=&gt;</span> o.qty &gt;= <span class="n">2</span>)
+  .map(o <span class="a">=&gt;</span> ({ item: o.item, amount: o.qty * o.price }))
+  .reduce((acc, o) <span class="a">=&gt;</span> ({ ...acc, [o.item]: o.amount }), {});
+
+console.log(summary);</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">{"커피":9000,"샌드위치":15600}</div></div><p class="out-note" hidden></p></div></article></div></section>
+<section class="sec" id="s3"><div class="sec-head"><span class="sec-no">3</span><h2>this가 다른 점</h2></div><p class="sec-intro">화살표 함수는 자기만의 this를 만들지 않고 바깥 범위의 this를 그대로 씁니다. 일반 함수는 호출 방식에 따라 this가 바뀝니다.</p><div class="ex-list"><article class="ex"><h3>setTimeout 안에서의 this</h3><p class="ex-desc">같은 메서드 안에서 콜백만 다르게 썼을 때 this가 객체를 가리키는지 비교합니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> timer = {
+  seconds: <span class="n">0</span>,
+  startWithFunction() {
+    setTimeout(<span class="k">function</span> () {
+      <span class="c">// 일반 함수: 호출 방식에 따라 this가 달라진다</span>
+      console.log(<span class="s">"function:"</span>, <span class="k">this</span> === timer);
+    }, <span class="n">10</span>);
+  },
+  startWithArrow() {
+    setTimeout(() <span class="a">=&gt;</span> {
+      <span class="c">// 화살표 함수: 바깥 this를 그대로 쓴다</span>
+      console.log(<span class="s">"arrow:"</span>, <span class="k">this</span> === timer);
+    }, <span class="n">20</span>);
+  },
+};
+
+timer.startWithFunction();
+timer.startWithArrow();</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">function: false</div><div class="ln">arrow: true</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>클래스 필드로 this 고정하기</h3><p class="ex-desc">화살표 함수를 클래스 필드로 두면 메서드를 변수에 떼어 내도 this가 인스턴스에 묶여 있습니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">class</span> Counter {
+  count = <span class="n">0</span>;
+  increment = () <span class="a">=&gt;</span> {
+    <span class="k">this</span>.count += <span class="n">1</span>;
+    <span class="k">return</span> <span class="k">this</span>.count;
+  };
+}
+
+<span class="k">const</span> counter = <span class="k">new</span> Counter();
+<span class="k">const</span> { increment } = counter;   <span class="c">// 메서드를 떼어 내도 this가 유지된다</span>
+
+console.log(increment());
+console.log(increment());</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">1</div><div class="ln">2</div></div><p class="out-note" hidden></p></div></article></div></section>
+<section class="sec" id="s4"><div class="sec-head"><span class="sec-no">4</span><h2>콜백과 비동기</h2></div><p class="sec-intro">then 콜백과 async 함수 모두 화살표 함수로 간결하게 쓸 수 있습니다. 출력은 시간이 지나면서 차례로 나타납니다.</p><div class="ex-list"><article class="ex"><h3>async 화살표 함수</h3><p class="ex-desc">async를 화살표 앞에 붙입니다. then 체인과 await 방식을 나란히 둡니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> wait = ms <span class="a">=&gt;</span> <span class="k">new</span> Promise(resolve <span class="a">=&gt;</span> setTimeout(resolve, ms));
+
+<span class="k">const</span> fetchUser = <span class="k">async</span> id <span class="a">=&gt;</span> {
+  <span class="k">await</span> wait(<span class="n">30</span>);
+  <span class="k">return</span> { id, name: <span class="s">`사용자 ${id}`</span> };
+};
+
+fetchUser(<span class="n">1</span>)
+  .then(user <span class="a">=&gt;</span> console.log(<span class="s">"then:"</span>, user.name));
+
+(<span class="k">async</span> () <span class="a">=&gt;</span> {
+  <span class="k">const</span> user = <span class="k">await</span> fetchUser(<span class="n">2</span>);
+  console.log(<span class="s">"await:"</span>, user.name);
+})();</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">then: 사용자 1</div><div class="ln">await: 사용자 2</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>Promise.all과 결과 순서</h3><p class="ex-desc">끝나는 시각이 달라도 결과 배열은 넘겨 준 순서를 지킵니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> delay = (ms, value) <span class="a">=&gt;</span>
+  <span class="k">new</span> Promise(resolve <span class="a">=&gt;</span> setTimeout(() <span class="a">=&gt;</span> resolve(value), ms));
+
+Promise.all([delay(<span class="n">40</span>, <span class="s">"A"</span>), delay(<span class="n">10</span>, <span class="s">"B"</span>), delay(<span class="n">20</span>, <span class="s">"C"</span>)])
+  .then(results <span class="a">=&gt;</span> console.log(results));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">["A","B","C"]</div></div><p class="out-note" hidden></p></div></article></div></section>
+<section class="sec" id="s5"><div class="sec-head"><span class="sec-no">5</span><h2>함수를 돌려주는 함수</h2></div><p class="sec-intro">화살표 함수는 함수를 반환하는 코드를 한 줄에 쓸 수 있어서 커링, 합성, 캐시 같은 패턴과 잘 어울립니다.</p><div class="ex-list"><article class="ex"><h3>커링</h3><p class="ex-desc">인자를 하나씩 나누어 받아서 일부만 채운 새 함수를 만듭니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> multiply = a <span class="a">=&gt;</span> b <span class="a">=&gt;</span> a * b;
+
+<span class="k">const</span> double = multiply(<span class="n">2</span>);
+<span class="k">const</span> triple = multiply(<span class="n">3</span>);
+
+console.log(double(<span class="n">8</span>));
+console.log(triple(<span class="n">8</span>));
+console.log([<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>].map(multiply(<span class="n">10</span>)));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">16</div><div class="ln">24</div><div class="ln">[10,20,30]</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>pipe로 함수 이어 붙이기</h3><p class="ex-desc">작은 변환 함수를 순서대로 통과시켜 URL용 문자열을 만듭니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> pipe = (...fns) <span class="a">=&gt;</span> x <span class="a">=&gt;</span> fns.reduce((v, fn) <span class="a">=&gt;</span> fn(v), x);
+
+<span class="k">const</span> slugify = pipe(
+  s <span class="a">=&gt;</span> s.trim(),
+  s <span class="a">=&gt;</span> s.toLowerCase(),
+  s <span class="a">=&gt;</span> s.replace(/\s+/g, <span class="s">"-"</span>)
+);
+
+console.log(slugify(<span class="s">"  Arrow Functions In JS  "</span>));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">arrow-functions-in-js</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>memoize로 계산 결과 재사용</h3><p class="ex-desc">같은 입력은 저장해 둔 값을 돌려주므로 실제 계산은 한 번만 일어납니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> memoize = fn <span class="a">=&gt;</span> {
+  <span class="k">const</span> cache = {};
+  <span class="k">return</span> n <span class="a">=&gt;</span> (n <span class="k">in</span> cache ? cache[n] : (cache[n] = fn(n)));
+};
+
+<span class="k">let</span> calls = <span class="n">0</span>;
+<span class="k">const</span> slowSquare = memoize(n <span class="a">=&gt;</span> {
+  calls += <span class="n">1</span>;
+  <span class="k">return</span> n * n;
+});
+
+console.log(slowSquare(<span class="n">9</span>), slowSquare(<span class="n">9</span>), slowSquare(<span class="n">9</span>));
+console.log(<span class="s">"실제 계산 횟수:"</span>, calls);</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">81 81 81</div><div class="ln">실제 계산 횟수: 1</div></div><p class="out-note" hidden></p></div></article></div></section>
+<section class="sec" id="s6"><div class="sec-head"><span class="sec-no">6</span><h2>매개변수 다루기</h2></div><p class="sec-intro">기본값, 구조분해, 나머지 매개변수는 화살표 함수에서도 일반 함수와 똑같이 동작합니다.</p><div class="ex-list"><article class="ex"><h3>기본값과 구조분해</h3><p class="ex-desc">매개변수 자리에서 바로 기본값을 주고, 객체를 풀어서 받습니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> greet = (name = <span class="s">"고객"</span>, { honorific = <span class="s">"님"</span> } = {}) <span class="a">=&gt;</span>
+  <span class="s">`${name}${honorific}, 환영합니다`</span>;
+
+console.log(greet());
+console.log(greet(<span class="s">"지우"</span>));
+console.log(greet(<span class="s">"지우"</span>, { honorific: <span class="s">"선생님"</span> }));
+
+<span class="k">const</span> fullName = ({ first, last }) <span class="a">=&gt;</span> <span class="s">`${last}${first}`</span>;
+console.log(fullName({ first: <span class="s">"서준"</span>, last: <span class="s">"김"</span> }));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">고객님, 환영합니다</div><div class="ln">지우님, 환영합니다</div><div class="ln">지우선생님, 환영합니다</div><div class="ln">김서준</div></div><p class="out-note" hidden></p></div></article><article class="ex"><h3>나머지 매개변수</h3><p class="ex-desc">인자 개수가 정해지지 않았을 때는 ...args로 받아서 배열처럼 다룹니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> sum = (...nums) <span class="a">=&gt;</span> nums.reduce((a, b) <span class="a">=&gt;</span> a + b, <span class="n">0</span>);
+<span class="k">const</span> max = (...nums) <span class="a">=&gt;</span> Math.max(...nums);
+
+console.log(sum(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>, <span class="n">4</span>));
+console.log(max(<span class="n">4</span>, <span class="n">19</span>, <span class="n">7</span>));
+console.log(sum());</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">10</div><div class="ln">19</div><div class="ln">0</div></div><p class="out-note" hidden></p></div></article></div></section>
+<section class="sec" id="s7"><div class="sec-head"><span class="sec-no">7</span><h2>쓰면 안 되는 곳</h2></div><p class="sec-intro">화살표 함수는 일반 함수를 모두 대신하지 못합니다. 아래 세 경우에는 일반 함수나 메서드 문법을 씁니다.</p><div class="ex-list"><article class="ex"><h3>객체 메서드</h3><p class="ex-desc">화살표 함수의 this는 객체가 아니라 바깥 범위입니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> person = {
+  name: <span class="s">"수아"</span>,
+  regular() { <span class="k">return</span> <span class="k">this</span> === person; },
+  arrow: () <span class="a">=&gt;</span> <span class="k">this</span> === person,
+};
+
+console.log(person.regular());
+console.log(person.arrow());</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">true</div><div class="ln">false</div></div><p class="out-note" hidden></p></div><p class="note"><b>주의</b>객체에 붙이는 메서드는 regular()처럼 메서드 문법으로 씁니다.</p></article><article class="ex"><h3>생성자</h3><p class="ex-desc">화살표 함수는 new로 호출할 수 없습니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">const</span> Point = (x, y) <span class="a">=&gt;</span> ({ x, y });
+
+<span class="k">try</span> {
+  <span class="k">new</span> Point(<span class="n">1</span>, <span class="n">2</span>);
+} <span class="k">catch</span> (e) {
+  console.log(e.constructor.name);
+}</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">TypeError</div></div><p class="out-note" hidden></p></div><p class="note"><b>주의</b>new로 만들 대상은 function이나 class로 선언합니다.</p></article><article class="ex"><h3>arguments 객체</h3><p class="ex-desc">화살표 함수에는 자기 arguments가 없습니다. 나머지 매개변수가 그 자리를 대신합니다.</p><div class="code"><div class="code-bar"><span>JavaScript</span><span class="actions"><button class="btn btn-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button><button class="btn btn-ghost btn-copy" type="button">복사</button></span></div><pre class="code-pre"><code><span class="k">function</span> legacy() { <span class="k">return</span> arguments.length; }
+<span class="k">const</span> modern = (...args) <span class="a">=&gt;</span> args.length;
+
+console.log(legacy(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>));
+console.log(modern(<span class="n">1</span>, <span class="n">2</span>, <span class="n">3</span>));</code></pre></div><div class="out"><div class="out-label">출력</div><div class="out-body" aria-live="polite"><div class="ln">3</div><div class="ln">3</div></div><p class="out-note" hidden></p></div><p class="note"><b>주의</b>화살표 함수 안에서 arguments를 쓰면 바깥 함수의 arguments를 가리킵니다. 의도하지 않았다면 ...args로 바꾸세요.</p></article></div></section>
+<section class="sec" id="summary"><div class="sec-head"><h2>한눈에 정리</h2></div><p class="sec-intro">상황별로 어느 쪽을 고르면 되는지 모았습니다.</p><div class="table-wrap"><table><thead><tr><th>상황</th><th>권장</th><th>이유</th></tr></thead><tbody><tr><td>map, filter 같은 콜백</td><td><span class="tag tag-arrow">화살표 함수</span></td><td>짧게 쓰고, 본문이 식 하나면 return도 생략됩니다.</td></tr><tr><td>setTimeout이나 이벤트 핸들러에서 바깥 this 사용</td><td><span class="tag tag-arrow">화살표 함수</span></td><td>바깥 this를 그대로 쓰므로 bind가 필요 없습니다.</td></tr><tr><td>한 줄짜리 변환 함수, 유틸 함수</td><td><span class="tag tag-arrow">화살표 함수</span></td><td>const로 선언해 이름을 붙이면 재사용하기 쉽습니다.</td></tr><tr><td>객체의 메서드</td><td><span class="tag tag-fn">메서드 문법</span></td><td>화살표 함수의 this는 객체가 아닙니다.</td></tr><tr><td>new로 만드는 생성자</td><td><span class="tag tag-fn">function 또는 class</span></td><td>화살표 함수를 new로 호출하면 TypeError가 납니다.</td></tr><tr><td>인자 전체를 arguments로 접근</td><td><span class="tag tag-fn">일반 함수 또는 ...args</span></td><td>화살표 함수에는 자기 arguments가 없습니다.</td></tr></tbody></table></div></section>
+<section class="sec play" id="play"><div class="sec-head"><h2>직접 해보기</h2></div><p class="sec-intro">코드를 고쳐서 실행해 보세요. console.log로 찍은 값만 출력에 나타나고, 비동기 코드는 0.4초 동안 기다립니다.</p><div class="ex-list"><div class="ex"><div class="code"><div class="code-bar"><label for="play-code">JavaScript</label><span class="actions"><button class="btn btn-run" id="play-run" type="button"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1 0.5 9 5 1 9.5z"/></svg>실행</button></span></div><textarea id="play-code" spellcheck="false" autocomplete="off" autocapitalize="off">const nums = [3, 8, 1, 6];
+const doubled = nums.map(n =&gt; n * 2);
+
+console.log(doubled);
+console.log(doubled.filter(n =&gt; n &gt; 5));</textarea></div><div class="out"><div class="out-label">출력</div><div class="out-body" id="play-out" aria-live="polite"><div class="ln">[6,16,2,12]</div><div class="ln">[6,16,12]</div></div><p class="out-note" id="play-note" hidden></p></div></div></div></section>
+</main>
+</div>
+</div>
+<script>
+// 예제 실행기: 페이지와 빌드 검증(Node)이 같은 코드를 씁니다.
+function fmt(v) {
+  if (typeof v === "string") return v;
+  if (typeof v === "function") return "[Function]";
+  if (v === undefined) return "undefined";
+  if (typeof v === "object" && v !== null) {
+    try { return JSON.stringify(v); } catch (e) { return String(v); }
+  }
+  return String(v);
+}
+
+function runCode(code, onLine, onDone, wait) {
+  var lines = [];
+  var con = {
+    log: function () {
+      var s = Array.prototype.slice.call(arguments).map(fmt).join(" ");
+      lines.push(s);
+      if (onLine) onLine(s);
+    }
+  };
+  var err = null;
+  try {
+    var fn = new Function("console", code);
+    fn(con);
+  } catch (e) {
+    err = e;
+  }
+  var blocked = err && err.name === "EvalError";
+  setTimeout(function () { if (onDone) onDone(lines, err); }, blocked ? 0 : (wait || 400));
+}
+
+if (typeof module !== "undefined") module.exports = { fmt: fmt, runCode: runCode };
+
+(function () {
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function add(body, text, plain) {
+    var d = document.createElement("div");
+    d.className = plain ? "ln ln-plain" : "ln";
+    d.textContent = text;
+    body.appendChild(d);
+  }
+
+  function execute(src, body, btn, note) {
+    var prev = body.innerHTML;
+    btn.disabled = true;
+    note.hidden = true;
+    body.innerHTML = "";
+    runCode(src, function (line) { add(body, line); }, function (lines, err) {
+      btn.disabled = false;
+      if (err && err.name === "EvalError") {
+        body.innerHTML = prev;
+        note.textContent = "이 화면에서는 코드를 직접 실행할 수 없어서, 미리 실행해 둔 결과를 보여 드립니다.";
+        note.hidden = false;
+        return;
+      }
+      if (err) add(body, "오류: " + (err.message || err), true);
+      if (!body.childNodes.length) add(body, "(출력 없음)", true);
+    }, 400);
+  }
+
+  document.querySelectorAll(".ex").forEach(function (ex) {
+    var code = ex.querySelector("code");
+    if (!code) return; // 직접 해보기 칸은 아래에서 따로 연결한다
+    var body = ex.querySelector(".out-body");
+    var note = ex.querySelector(".out-note");
+    var run = ex.querySelector(".btn-run");
+    var copy = ex.querySelector(".btn-copy");
+    run.addEventListener("click", function () { execute(code.textContent, body, run, note); });
+    copy.addEventListener("click", function () {
+      function done(msg) {
+        copy.textContent = msg;
+        setTimeout(function () { copy.textContent = "복사"; }, 1600);
+      }
+      var p = navigator.clipboard && navigator.clipboard.writeText
+        ? navigator.clipboard.writeText(code.textContent)
+        : Promise.reject();
+      p.then(function () { done("복사됨"); }).catch(function () {
+        var r = document.createRange();
+        r.selectNodeContents(code);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(r);
+        done("선택됨");
+      });
+    });
+  });
+
+  var playRun = document.getElementById("play-run");
+  if (playRun) {
+    playRun.addEventListener("click", function () {
+      execute(
+        document.getElementById("play-code").value,
+        document.getElementById("play-out"),
+        playRun,
+        document.getElementById("play-note")
+      );
+    });
+  }
+
+  document.querySelectorAll(".stepper").forEach(function (st) {
+    var tabs = st.querySelectorAll(".step-tab");
+    var panels = st.querySelectorAll(".step-panel");
+    tabs.forEach(function (t, i) {
+      t.addEventListener("click", function () {
+        tabs.forEach(function (x, j) {
+          x.setAttribute("aria-selected", j === i ? "true" : "false");
+          panels[j].hidden = j !== i;
+        });
+      });
+    });
+  });
+
+  var toc = document.querySelector(".toc");
+  var links = {};
+  document.querySelectorAll(".toc a").forEach(function (a) {
+    var id = a.getAttribute("href").slice(1);
+    links[id] = a;
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      var el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    });
+  });
+
+  function setCurrent(id) {
+    Object.keys(links).forEach(function (k) {
+      if (k === id) {
+        links[k].setAttribute("aria-current", "true");
+        if (toc.scrollWidth > toc.clientWidth) {
+          toc.scrollLeft = Math.max(0, links[k].offsetLeft - 16);
+        }
+      } else {
+        links[k].removeAttribute("aria-current");
+      }
+    });
+  }
+
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) setCurrent(en.target.id); });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    document.querySelectorAll(".sec").forEach(function (s) { io.observe(s); });
+  }
+})();
+
+</script>
+
+</body></html>
