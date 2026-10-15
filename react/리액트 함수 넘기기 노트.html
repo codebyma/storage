@@ -1,241 +1,505 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>리액트 함수 넘기기 노트</title>
-<meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-<style>
-/* Layout: 한 칼럼 학습 노트. 두 파트(onClick / setState)를 번호 없는 큰 제목으로 나누고, 코드 비교는 좌우 카드로 보여준다. */
-:root {
-  --bg: #f6f7f5;
-  --surface: #ffffff;
-  --fg: #1d2421;
-  --muted: #5d6965;
-  --line: #dde2de;
-  --accent: #0d6b5a;
-  --accent-soft: #dff1ec;
-  --good: #1f7a3d;
-  --good-soft: #e1f3e6;
-  --bad: #b3322b;
-  --bad-soft: #fbe6e3;
-  --code-bg: #eef1ee;
-  --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-  --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #131816;
-    --surface: #1b221f;
-    --fg: #e6ece8;
-    --muted: #9aa7a1;
-    --line: #2c3631;
-    --accent: #5fd0b5;
-    --accent-soft: #1d3a33;
-    --good: #6fd08c;
-    --good-soft: #1b3324;
-    --bad: #f08a80;
-    --bad-soft: #3a1f1c;
-    --code-bg: #101513;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #131816;
-  --surface: #1b221f;
-  --fg: #e6ece8;
-  --muted: #9aa7a1;
-  --line: #2c3631;
-  --accent: #5fd0b5;
-  --accent-soft: #1d3a33;
-  --good: #6fd08c;
-  --good-soft: #1b3324;
-  --bad: #f08a80;
-  --bad-soft: #3a1f1c;
-  --code-bg: #101513;
-  color-scheme: dark;
-}
+<!doctype html>
+<html>
 
-* { box-sizing: border-box; }
-body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.75;
-  padding-block: 40px 72px;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
-}
-.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
-.wrap > * { min-width: 0; }
+<head>
+  <meta charset=utf8>
+  <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <style>
+    :root {
+      color-scheme: light;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
 
-h1, h2, h3 { text-wrap: balance; line-height: 1.35; margin: 0; }
-h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-spacing: -0.02em; }
-h2 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.01em; }
-h3 { font-size: 1.05rem; font-weight: 700; }
-p { margin: 0; }
-.lead { color: var(--muted); margin-top: 12px; }
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px)
+    }
 
-.eyebrow {
-  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
-  color: var(--accent); text-transform: uppercase; margin-bottom: 8px;
-}
+    body {
+      margin: 0;
+      padding: 0;
+      font: 14px -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fff;
+      color: #000
+    }
 
-section { display: flex; flex-direction: column; gap: 24px; }
-.block { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    img {
+      max-width: 100%
+    }
 
-.key {
-  background: var(--accent-soft);
-  border-radius: 6px;
-  padding: 18px 20px;
-  font-size: 1.05rem;
-  font-weight: 500;
-}
-.key b { color: var(--accent); }
+    [hidden]:not([hidden=until-found i]) {
+      display: none !important
+    }
+  </style>
+</head>
 
-code, pre { font-family: var(--font-code); font-size: 0.86rem; }
-:not(pre) > code {
-  background: var(--code-bg); padding: 0.1em 0.4em; border-radius: 4px;
-  overflow-wrap: anywhere;
-}
-pre {
-  margin: 0; background: var(--code-bg); border: 1px solid var(--line);
-  border-radius: 6px; padding: 14px 16px; overflow-x: auto; line-height: 1.65;
-}
-pre code { white-space: pre; }
-.c { color: var(--muted); }
+<body>
+  <title>리액트 함수 넘기기 노트</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAABzElEQVR42u3ZMQ3AMAxFwRAowVAog+LJHIopgQzpUMlfOusBsKzb3K67S9uaEwgOwSE4BIfgEByCQ3AIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASH9DuOVXhO9n/mKBsccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAkYdDucEhOASH4BAcgkNwCA7BITgEh+Tx9vXxlr4/HHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwFELh3KDQ3AIDsEhOASH4BAcgkNwCA4JDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITik/gLBXd/7htwvIgAAAABJRU5ErkJggg==">
+  <style>
+    /* Layout: 한 칼럼 학습 노트. 두 파트(onClick / setState)를 번호 없는 큰 제목으로 나누고, 코드 비교는 좌우 카드로 보여준다. */
+    :root {
+      --bg: #f6f7f5;
+      --surface: #ffffff;
+      --fg: #1d2421;
+      --muted: #5d6965;
+      --line: #dde2de;
+      --accent: #0d6b5a;
+      --accent-soft: #dff1ec;
+      --good: #1f7a3d;
+      --good-soft: #e1f3e6;
+      --bad: #b3322b;
+      --bad-soft: #fbe6e3;
+      --code-bg: #eef1ee;
+      --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
 
-.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.case { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.tag {
-  align-self: flex-start; font-size: 0.75rem; font-weight: 700;
-  padding: 2px 10px; border-radius: 999px;
-}
-.tag.good { background: var(--good-soft); color: var(--good); }
-.tag.bad { background: var(--bad-soft); color: var(--bad); }
-.case.bad pre { border-color: var(--bad); }
-.case.good pre { border-color: var(--good); }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #131816;
+        --surface: #1b221f;
+        --fg: #e6ece8;
+        --muted: #9aa7a1;
+        --line: #2c3631;
+        --accent: #5fd0b5;
+        --accent-soft: #1d3a33;
+        --good: #6fd08c;
+        --good-soft: #1b3324;
+        --bad: #f08a80;
+        --bad-soft: #3a1f1c;
+        --code-bg: #101513;
+        color-scheme: dark;
+      }
+    }
 
-.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
-table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 0.93rem; }
-th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
-th { font-size: 0.8rem; letter-spacing: 0.04em; color: var(--muted); background: var(--code-bg); }
-tr:last-child td { border-bottom: 0; }
-td code { white-space: nowrap; }
-.ok { color: var(--good); font-weight: 700; }
-.no { color: var(--bad); font-weight: 700; }
 
-ul.plain { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+    * {
+      box-sizing: border-box;
+    }
 
-.steps { display: flex; flex-direction: column; gap: 0; border-left: 2px solid var(--line); margin-left: 6px; }
-.step { padding: 0 0 18px 20px; position: relative; }
-.step:last-child { padding-bottom: 0; }
-.step::before {
-  content: ""; position: absolute; left: -7px; top: 9px; width: 12px; height: 12px;
-  border-radius: 50%; background: var(--accent); border: 2px solid var(--bg);
-}
-.step b { display: block; }
-.step span { color: var(--muted); font-size: 0.93rem; }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.75;
+      padding-block: 40px 72px;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
 
-.ledger { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.ledger > div {
-  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px;
-  display: flex; flex-direction: column; gap: 6px; min-width: 0;
-}
-.ledger .n { font-family: var(--font-code); font-size: 1.4rem; font-weight: 600; }
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+    }
 
-.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; }
-.summary ol { margin: 10px 0 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; }
+    .wrap>* {
+      min-width: 0;
+    }
 
-hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+    h1,
+    h2,
+    h3 {
+      text-wrap: balance;
+      line-height: 1.35;
+      margin: 0;
+    }
 
-@media (max-width: 600px) {
-  .pair, .ledger { grid-template-columns: minmax(0, 1fr); }
-}
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-</style>
+    h1 {
+      font-size: clamp(1.7rem, 5vw, 2.3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
 
-<div class="wrap">
+    h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
 
-<header>
-  <div class="eyebrow">React 기초 노트</div>
-  <h1>함수를 넘긴다는 것과 렌더링 타이밍</h1>
-  <p class="lead">onClick에 괄호를 붙이면 안 되는 이유, 그리고 setState에 함수를 넘기는 이유를 한 번에 정리했어요. 두 이야기는 같은 뿌리에서 나와요. 함수는 값이고, React는 렌더링 단위로 움직인다는 점이에요.</p>
-</header>
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
 
-<!-- ============ PART 1 ============ -->
-<section id="onclick">
-  <div>
-    <div class="eyebrow">Part 1</div>
-    <h2>onClick에서 <code>()</code>를 붙일 때와 안 붙일 때</h2>
-  </div>
+    p {
+      margin: 0;
+    }
 
-  <div class="key">괄호 <code>()</code>가 붙으면 <b>지금 당장 실행</b>, 안 붙으면 <b>함수 자체(나중에 실행할 것)</b>예요.</div>
+    .lead {
+      color: var(--muted);
+      margin-top: 12px;
+    }
 
-  <div class="block">
-    <h3>함수는 값이에요</h3>
-    <pre><code>function hello() {
+    .eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .key {
+      background: var(--accent-soft);
+      border-radius: 6px;
+      padding: 18px 20px;
+      font-size: 1.05rem;
+      font-weight: 500;
+    }
+
+    .key b {
+      color: var(--accent);
+    }
+
+    code,
+    pre {
+      font-family: var(--font-code);
+      font-size: 0.86rem;
+    }
+
+    :not(pre)>code {
+      background: var(--code-bg);
+      padding: 0.1em 0.4em;
+      border-radius: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    pre {
+      margin: 0;
+      background: var(--code-bg);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      line-height: 1.65;
+    }
+
+    pre code {
+      white-space: pre;
+    }
+
+    .c {
+      color: var(--muted);
+    }
+
+    .pair {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .case {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .tag {
+      align-self: flex-start;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 999px;
+    }
+
+    .tag.good {
+      background: var(--good-soft);
+      color: var(--good);
+    }
+
+    .tag.bad {
+      background: var(--bad-soft);
+      color: var(--bad);
+    }
+
+    .case.bad pre {
+      border-color: var(--bad);
+    }
+
+    .case.good pre {
+      border-color: var(--good);
+    }
+
+    .tablewrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 520px;
+      font-size: 0.93rem;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      background: var(--code-bg);
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td code {
+      white-space: nowrap;
+    }
+
+    .ok {
+      color: var(--good);
+      font-weight: 700;
+    }
+
+    .no {
+      color: var(--bad);
+      font-weight: 700;
+    }
+
+    ul.plain {
+      margin: 0;
+      padding-left: 1.2em;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-left: 2px solid var(--line);
+      margin-left: 6px;
+    }
+
+    .step {
+      padding: 0 0 18px 20px;
+      position: relative;
+    }
+
+    .step:last-child {
+      padding-bottom: 0;
+    }
+
+    .step::before {
+      content: "";
+      position: absolute;
+      left: -7px;
+      top: 9px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg);
+    }
+
+    .step b {
+      display: block;
+    }
+
+    .step span {
+      color: var(--muted);
+      font-size: 0.93rem;
+    }
+
+    .ledger {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .ledger>div {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .ledger .n {
+      font-family: var(--font-code);
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 20px 22px;
+    }
+
+    .summary ol {
+      margin: 10px 0 0;
+      padding-left: 1.3em;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--line);
+      margin: 0;
+    }
+
+    @media (max-width: 600px) {
+
+      .pair,
+      .ledger {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+  </style>
+
+  <div class="wrap">
+
+    <header>
+      <div class="eyebrow">React 기초 노트</div>
+      <h1>함수를 넘긴다는 것과 렌더링 타이밍</h1>
+      <p class="lead">onClick에 괄호를 붙이면 안 되는 이유, 그리고 setState에 함수를 넘기는 이유를 한 번에 정리했어요. 두 이야기는 같은 뿌리에서 나와요. 함수는 값이고,
+        React는 렌더링 단위로 움직인다는 점이에요.</p>
+    </header>
+
+    <!-- ============ PART 1 ============ -->
+    <section id="onclick">
+      <div>
+        <div class="eyebrow">Part 1</div>
+        <h2>onClick에서 <code>()</code>를 붙일 때와 안 붙일 때</h2>
+      </div>
+
+      <div class="key">괄호 <code>()</code>가 붙으면 <b>지금 당장 실행</b>, 안 붙으면 <b>함수 자체(나중에 실행할 것)</b>예요.</div>
+
+      <div class="block">
+        <h3>함수는 값이에요</h3>
+        <pre><code>function hello() {
   console.log("안녕");
 }
 
 hello      <span class="c">// 함수 자체. 실행 안 됨</span>
 hello()    <span class="c">// 실행됨. 콘솔에 "안녕"</span></code></pre>
-    <p><code>hello</code>는 레시피 종이이고 <code>hello()</code>는 그 레시피로 실제 요리를 하는 거예요. 함수는 숫자나 문자열처럼 변수에 담거나 다른 곳에 전달할 수 있어요.</p>
-  </div>
+        <p><code>hello</code>는 레시피 종이이고 <code>hello()</code>는 그 레시피로 실제 요리를 하는 거예요. 함수는 숫자나 문자열처럼 변수에 담거나 다른 곳에 전달할 수
+          있어요.</p>
+      </div>
 
-  <div class="block">
-    <h3><code>{ }</code> 안은 렌더링 때 계산되는 JS 식이에요</h3>
-    <p>JSX의 <code>{ }</code>는 "여기부터 JS야"라는 표시예요. 안의 식은 화면이 그려질 때 한 번 계산돼요. React의 특별 규칙이 아니라 JS 규칙이라서, 괄호가 있으면 어디서든 그 자리에서 실행돼요.</p>
-    <pre><code>&lt;button onClick={handleClick()}&gt;
+      <div class="block">
+        <h3><code>{ }</code> 안은 렌더링 때 계산되는 JS 식이에요</h3>
+        <p>JSX의 <code>{ }</code>는 "여기부터 JS야"라는 표시예요. 안의 식은 화면이 그려질 때 한 번 계산돼요. React의 특별 규칙이 아니라 JS 규칙이라서, 괄호가 있으면 어디서든
+          그 자리에서 실행돼요.</p>
+        <pre><code>&lt;button onClick={handleClick()}&gt;
 
 <span class="c">// JS가 하는 일을 풀어 쓰면</span>
 const result = handleClick();  <span class="c">// 렌더링 중에 실행됨</span>
 &lt;button onClick={result}&gt;      <span class="c">// result가 undefined이면 onClick={undefined}</span></code></pre>
-    <p><code>onClick</code>은 이미 계산이 끝난 값을 받을 뿐이라, 앞 단계에서 실행되는 걸 막을 수 없어요. 클릭해도 아무 일이 안 일어나는 이유예요.</p>
-  </div>
+        <p><code>onClick</code>은 이미 계산이 끝난 값을 받을 뿐이라, 앞 단계에서 실행되는 걸 막을 수 없어요. 클릭해도 아무 일이 안 일어나는 이유예요.</p>
+      </div>
 
-  <div class="block">
-    <h3>onClick이 원하는 건 "함수"예요</h3>
-    <p><code>onClick</code>은 "클릭되면 이 함수를 실행해줘" 하고 함수를 맡기는 칸이에요. 실행은 React가 클릭 시점에 하고, 이벤트 객체 같은 인자도 React가 넣어줘요.</p>
-    <pre><code>const handleClick = (event) =&gt; {   <span class="c">// event는 React가 넣어주는 인자</span>
+      <div class="block">
+        <h3>onClick이 원하는 건 "함수"예요</h3>
+        <p><code>onClick</code>은 "클릭되면 이 함수를 실행해줘" 하고 함수를 맡기는 칸이에요. 실행은 React가 클릭 시점에 하고, 이벤트 객체 같은 인자도 React가 넣어줘요.</p>
+        <pre><code>const handleClick = (event) =&gt; {   <span class="c">// event는 React가 넣어주는 인자</span>
   console.log(event.target);
 };
 
 &lt;button onClick={handleClick}&gt;</code></pre>
-  </div>
+      </div>
 
-  <div class="block">
-    <h3>내가 정한 인자를 넘기고 싶으면 <code>() =&gt;</code>로 감싸요</h3>
-    <p>React는 <code>id</code> 같은 내 값을 모르니까, "클릭되면 <code>handleClick(id)</code>를 실행하는 새 함수"를 만들어서 넘겨요. 화살표 함수는 만들기만 하고 실행하지 않아요. 안에 있는 <code>handleClick(id)</code>는 클릭 때 화살표 함수가 호출되어야 실행돼요.</p>
-    <div class="pair">
-      <div class="case good">
-        <span class="tag good">정상</span>
-        <pre><code>onClick={() =&gt; handleClick(id)}</code></pre>
-      </div>
-      <div class="case bad">
-        <span class="tag bad">버그</span>
-        <pre><code>onClick={handleClick(id)}</code></pre>
-      </div>
-    </div>
-    <p>설명을 위해 풀어 쓰면 이래요. <code>result</code>와 <code>wrapper</code>는 이해를 돕는 임시 이름이고, 실제로 이런 변수가 생기는 건 아니에요.</p>
-    <pre><code>const wrapper = () =&gt; handleClick(id);  <span class="c">// 함수를 만들기만 함. 실행 X</span>
+      <div class="block">
+        <h3>내가 정한 인자를 넘기고 싶으면 <code>() =&gt;</code>로 감싸요</h3>
+        <p>React는 <code>id</code> 같은 내 값을 모르니까, "클릭되면 <code>handleClick(id)</code>를 실행하는 새 함수"를 만들어서 넘겨요. 화살표 함수는 만들기만
+          하고 실행하지 않아요. 안에 있는 <code>handleClick(id)</code>는 클릭 때 화살표 함수가 호출되어야 실행돼요.</p>
+        <div class="pair">
+          <div class="case good">
+            <span class="tag good">정상</span>
+            <pre><code>onClick={() =&gt; handleClick(id)}</code></pre>
+          </div>
+          <div class="case bad">
+            <span class="tag bad">버그</span>
+            <pre><code>onClick={handleClick(id)}</code></pre>
+          </div>
+        </div>
+        <p>설명을 위해 풀어 쓰면 이래요. <code>result</code>와 <code>wrapper</code>는 이해를 돕는 임시 이름이고, 실제로 이런 변수가 생기는 건 아니에요.</p>
+        <pre><code>const wrapper = () =&gt; handleClick(id);  <span class="c">// 함수를 만들기만 함. 실행 X</span>
 &lt;button onClick={wrapper}&gt;                <span class="c">// 클릭 때 wrapper 실행 → handleClick(id) 실행</span></code></pre>
-  </div>
+      </div>
 
-  <div class="tablewrap">
-    <table>
-      <thead>
-        <tr><th>코드</th><th>렌더링 때</th><th>클릭 때</th><th>결과</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><code>onClick={handleClick}</code></td><td>아무 일 없음</td><td><code>handleClick(event)</code> 실행</td><td class="ok">정상</td></tr>
-        <tr><td><code>onClick={() =&gt; handleClick(id)}</code></td><td>함수만 만들어짐</td><td><code>handleClick(id)</code> 실행</td><td class="ok">정상</td></tr>
-        <tr><td><code>onClick={handleClick(id)}</code></td><td>바로 실행됨</td><td>undefined라 아무 일 없음</td><td class="no">버그</td></tr>
-      </tbody>
-    </table>
-  </div>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>코드</th>
+              <th>렌더링 때</th>
+              <th>클릭 때</th>
+              <th>결과</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>onClick={handleClick}</code></td>
+              <td>아무 일 없음</td>
+              <td><code>handleClick(event)</code> 실행</td>
+              <td class="ok">정상</td>
+            </tr>
+            <tr>
+              <td><code>onClick={() =&gt; handleClick(id)}</code></td>
+              <td>함수만 만들어짐</td>
+              <td><code>handleClick(id)</code> 실행</td>
+              <td class="ok">정상</td>
+            </tr>
+            <tr>
+              <td><code>onClick={handleClick(id)}</code></td>
+              <td>바로 실행됨</td>
+              <td>undefined라 아무 일 없음</td>
+              <td class="no">버그</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-  <div class="block">
-    <h3>handleClick은 이렇게 정의해요</h3>
-    <pre><code>function ItemList({ items }) {
+      <div class="block">
+        <h3>handleClick은 이렇게 정의해요</h3>
+        <pre><code>function ItemList({ items }) {
   const handleClick = (id) =&gt; {     <span class="c">// 매개변수 id를 받도록 정의</span>
     console.log(`${id}번 클릭됨`);
   };
@@ -252,129 +516,156 @@ const result = handleClick();  <span class="c">// 렌더링 중에 실행됨</sp
     &lt;/ul&gt;
   );
 }</code></pre>
-    <p>이름으로 넘기는 것(<code>onClick={handleClick}</code>)과 그 자리에서 함수를 쓰는 것(<code>onClick={() =&gt; { ... }}</code>)은 같은 동작이에요. 로직이 한 줄 정도면 인라인, 길어지거나 여러 곳에서 쓰면 이름을 붙여 따로 빼요.</p>
-  </div>
+        <p>이름으로 넘기는 것(<code>onClick={handleClick}</code>)과 그 자리에서 함수를 쓰는 것(<code>onClick={() =&gt; { ... }}</code>)은 같은
+          동작이에요. 로직이 한 줄 정도면 인라인, 길어지거나 여러 곳에서 쓰면 이름을 붙여 따로 빼요.</p>
+      </div>
 
-  <div class="block">
-    <h3>HTML과 헷갈리는 이유</h3>
-    <pre><code>&lt;!-- HTML: 따옴표 안의 "문자열"이라서 괄호를 써도 클릭 때 실행 --&gt;
+      <div class="block">
+        <h3>HTML과 헷갈리는 이유</h3>
+        <pre><code>&lt;!-- HTML: 따옴표 안의 "문자열"이라서 괄호를 써도 클릭 때 실행 --&gt;
 &lt;button onclick="handleClick()"&gt;
 
 {/* React: { } 안은 진짜 JS 식이라서 괄호를 쓰면 즉시 실행 */}
 &lt;button onClick={handleClick}&gt;</code></pre>
-    <p>HTML에서는 괄호를 붙이는 게 정상이라서 그 습관이 React에서도 나와요. 그리고 <code>onClick={handleClick(id)}</code> 안에서 <code>setState</code>가 호출되면, 렌더링 → 상태 변경 → 다시 렌더링이 반복되어 <code>Too many re-renders</code> 에러가 나요.</p>
-  </div>
-</section>
+        <p>HTML에서는 괄호를 붙이는 게 정상이라서 그 습관이 React에서도 나와요. 그리고 <code>onClick={handleClick(id)}</code> 안에서
+          <code>setState</code>가 호출되면, 렌더링 → 상태 변경 → 다시 렌더링이 반복되어 <code>Too many re-renders</code> 에러가 나요.
+        </p>
+      </div>
+    </section>
 
-<hr>
+    <hr>
 
-<!-- ============ PART 2 ============ -->
-<section id="setstate">
-  <div>
-    <div class="eyebrow">Part 2</div>
-    <h2>setState에 함수를 넘기는 이유와 렌더링 타이밍</h2>
-  </div>
+    <!-- ============ PART 2 ============ -->
+    <section id="setstate">
+      <div>
+        <div class="eyebrow">Part 2</div>
+        <h2>setState에 함수를 넘기는 이유와 렌더링 타이밍</h2>
+      </div>
 
-  <div class="key">이전 값을 바탕으로 새 값을 계산할 때는 <b><code>setCount(prev =&gt; prev + 1)</code></b> 형태가 안전해요. <code>count</code>는 렌더링마다 고정되는 값이기 때문이에요.</div>
+      <div class="key">이전 값을 바탕으로 새 값을 계산할 때는 <b><code>setCount(prev =&gt; prev + 1)</code></b> 형태가 안전해요.
+        <code>count</code>는 렌더링마다 고정되는 값이기 때문이에요.
+      </div>
 
-  <div class="block">
-    <h3>처음 질문한 코드는 어떻게 되나요</h3>
-    <pre><code><span class="c">// 원래 코드</span>
+      <div class="block">
+        <h3>처음 질문한 코드는 어떻게 되나요</h3>
+        <pre><code><span class="c">// 원래 코드</span>
 onClick={() =&gt; {
   setIsErr(() =&gt; (num.length &lt;= 13 ? true : false));
 }}
 
 <span class="c">// 단순화. 이전 값을 안 쓰고, 조건식 자체가 boolean이라 삼항도 불필요</span>
 onClick={() =&gt; setIsErr(num.length &lt;= 13)}</code></pre>
-    <p>바깥 <code>() =&gt;</code>는 클릭 때까지 실행을 미루려는 것이고, 안쪽 <code>() =&gt;</code>는 setState의 함수형 업데이트예요. 안쪽은 이전 상태를 쓰지 않으니 생략할 수 있어요.</p>
-  </div>
+        <p>바깥 <code>() =&gt;</code>는 클릭 때까지 실행을 미루려는 것이고, 안쪽 <code>() =&gt;</code>는 setState의 함수형 업데이트예요. 안쪽은 이전 상태를 쓰지
+          않으니 생략할 수 있어요.</p>
+      </div>
 
-  <div class="block">
-    <h3>같은 state를 연속으로 바꾸면 결과가 달라져요</h3>
-    <div class="pair">
-      <div class="case bad">
-        <span class="tag bad">결과 +1</span>
-        <pre><code>setCount(count + 1);
+      <div class="block">
+        <h3>같은 state를 연속으로 바꾸면 결과가 달라져요</h3>
+        <div class="pair">
+          <div class="case bad">
+            <span class="tag bad">결과 +1</span>
+            <pre><code>setCount(count + 1);
 setCount(count + 1);</code></pre>
-      </div>
-      <div class="case good">
-        <span class="tag good">결과 +2</span>
-        <pre><code>setCount(prev =&gt; prev + 1);
+          </div>
+          <div class="case good">
+            <span class="tag good">결과 +2</span>
+            <pre><code>setCount(prev =&gt; prev + 1);
 setCount(prev =&gt; prev + 1);</code></pre>
+          </div>
+        </div>
+        <p>한 번의 렌더링 안에서 <code>count</code>는 그 시점의 값으로 고정돼요. 위쪽은 두 줄 모두 <code>0 + 1</code>을 계산해서 1이 되고, 아래쪽은 React가 앞 단계의
+          결과를 <code>prev</code>로 이어서 넣어주기 때문에 2가 돼요.</p>
       </div>
-    </div>
-    <p>한 번의 렌더링 안에서 <code>count</code>는 그 시점의 값으로 고정돼요. 위쪽은 두 줄 모두 <code>0 + 1</code>을 계산해서 1이 되고, 아래쪽은 React가 앞 단계의 결과를 <code>prev</code>로 이어서 넣어주기 때문에 2가 돼요.</p>
-  </div>
 
-  <div class="ledger">
-    <div>
-      <b>값을 직접 넘길 때</b>
-      <span class="n">0 + 1, 0 + 1</span>
-      <span>"내가 본 잔액 0원에 1원 더해서 1원으로 적어줘"를 두 번 말한 것이라 1원이 돼요.</span>
-    </div>
-    <div>
-      <b>함수를 넘길 때</b>
-      <span class="n">0 → 1 → 2</span>
-      <span>"장부에 적힌 잔액에 1원 더해줘"를 두 번 말한 것이라 2원이 돼요.</span>
-    </div>
-  </div>
+      <div class="ledger">
+        <div>
+          <b>값을 직접 넘길 때</b>
+          <span class="n">0 + 1, 0 + 1</span>
+          <span>"내가 본 잔액 0원에 1원 더해서 1원으로 적어줘"를 두 번 말한 것이라 1원이 돼요.</span>
+        </div>
+        <div>
+          <b>함수를 넘길 때</b>
+          <span class="n">0 → 1 → 2</span>
+          <span>"장부에 적힌 잔액에 1원 더해줘"를 두 번 말한 것이라 2원이 돼요.</span>
+        </div>
+      </div>
 
-  <div class="block">
-    <h3>함수를 따로 나눠도 같은 문제가 생겨요</h3>
-    <pre><code>const handleClick  = () =&gt; { setCount(count + 1); };
+      <div class="block">
+        <h3>함수를 따로 나눠도 같은 문제가 생겨요</h3>
+        <pre><code>const handleClick  = () =&gt; { setCount(count + 1); };
 const handleClick2 = () =&gt; { setCount(count + 1); };</code></pre>
-    <ul class="plain">
-      <li>한 번의 클릭에서 둘 다 호출하면 두 함수가 같은 렌더링의 <code>count</code>(0)를 보고 있어서 결과는 1이에요.</li>
-      <li>버튼을 따로 눌렀다면 그 사이에 렌더링이 일어나 <code>count</code>가 1로 갱신되고, 결과는 정상적으로 2가 돼요.</li>
-    </ul>
-    <p>함수가 몇 개로 나뉘었는지는 중요하지 않아요. 같은 렌더링에서 만들어진 함수들은 그 렌더링의 <code>count</code>를 공유해요.</p>
-  </div>
+        <ul class="plain">
+          <li>한 번의 클릭에서 둘 다 호출하면 두 함수가 같은 렌더링의 <code>count</code>(0)를 보고 있어서 결과는 1이에요.</li>
+          <li>버튼을 따로 눌렀다면 그 사이에 렌더링이 일어나 <code>count</code>가 1로 갱신되고, 결과는 정상적으로 2가 돼요.</li>
+        </ul>
+        <p>함수가 몇 개로 나뉘었는지는 중요하지 않아요. 같은 렌더링에서 만들어진 함수들은 그 렌더링의 <code>count</code>를 공유해요.</p>
+      </div>
 
-  <div class="block">
-    <h3>결국 렌더링이 언제 일어나느냐가 관건이에요</h3>
-    <div class="steps">
-      <div class="step"><b>렌더링 1: count = 0</b><span>이때 함수들이 만들어지고, 모두 count를 0으로 기억해요.</span></div>
-      <div class="step"><b>클릭하면 핸들러 실행</b><span><code>setCount</code>는 값을 바로 바꾸지 않고 "다음 렌더링 때 이 값으로 바꿔줘"라고 예약만 해요.</span></div>
-      <div class="step"><b>핸들러가 끝나면 React가 예약을 한꺼번에 처리</b><span>이걸 배칭이라고 불러요.</span></div>
-      <div class="step"><b>렌더링 2: count = 1</b><span>함수들이 새로 만들어지고, 이번엔 count를 1로 기억해요.</span></div>
-    </div>
-    <pre><code>const handleClick = () =&gt; {
+      <div class="block">
+        <h3>결국 렌더링이 언제 일어나느냐가 관건이에요</h3>
+        <div class="steps">
+          <div class="step"><b>렌더링 1: count = 0</b><span>이때 함수들이 만들어지고, 모두 count를 0으로 기억해요.</span></div>
+          <div class="step"><b>클릭하면 핸들러 실행</b><span><code>setCount</code>는 값을 바로 바꾸지 않고 "다음 렌더링 때 이 값으로 바꿔줘"라고 예약만
+              해요.</span></div>
+          <div class="step"><b>핸들러가 끝나면 React가 예약을 한꺼번에 처리</b><span>이걸 배칭이라고 불러요.</span></div>
+          <div class="step"><b>렌더링 2: count = 1</b><span>함수들이 새로 만들어지고, 이번엔 count를 1로 기억해요.</span></div>
+        </div>
+        <pre><code>const handleClick = () =&gt; {
   setCount(count + 1);
   console.log(count);   <span class="c">// 여전히 0. 아직 렌더링 전이라서</span>
 };</code></pre>
-    <p><code>count</code>는 렌더링마다 찍히는 사진이에요. 사진 한 장 안에서는 값이 안 변하고, <code>setCount</code>는 "다음 사진은 이렇게 찍어줘"라는 주문서예요.</p>
+        <p><code>count</code>는 렌더링마다 찍히는 사진이에요. 사진 한 장 안에서는 값이 안 변하고, <code>setCount</code>는 "다음 사진은 이렇게 찍어줘"라는 주문서예요.
+        </p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th>상황</th>
+              <th>추천</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>새 값이 이전 값과 무관해요. <code>setIsErr(num.length &lt;= 13)</code></td>
+              <td>값을 그대로 넘겨요</td>
+            </tr>
+            <tr>
+              <td>이전 값으로 계산해요 (+1, 토글, 배열에 추가)</td>
+              <td>함수형 <code>prev =&gt; ...</code></td>
+            </tr>
+            <tr>
+              <td>한 핸들러에서 같은 state를 여러 번 바꿔요</td>
+              <td>함수형</td>
+            </tr>
+            <tr>
+              <td><code>setTimeout</code>이나 비동기 콜백 안에서 바꿔요</td>
+              <td>함수형 (오래된 값을 볼 위험이 있어요)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr>
+
+    <section id="recap">
+      <div class="summary">
+        <h3>최종 정리</h3>
+        <ol>
+          <li>인자가 필요 없으면 <code>onClick={handleClick}</code>로 써요.</li>
+          <li>인자가 필요하면 <code>onClick={() =&gt; handleClick(id)}</code>로 감싸요.</li>
+          <li><code>onClick={handleClick(id)}</code>처럼 호출 형태로 직접 쓰면 렌더링 때 실행돼요.</li>
+          <li>이 규칙은 <code>onChange</code>, <code>onSubmit</code>, <code>setTimeout</code>, <code>map</code> 등 함수를 받는 모든
+            자리에 똑같이 적용돼요.</li>
+          <li>이전 값으로 새 값을 계산할 때는 <code>setState(prev =&gt; ...)</code>를 써요.</li>
+        </ol>
+      </div>
+    </section>
+
   </div>
 
-  <div class="tablewrap">
-    <table>
-      <thead>
-        <tr><th>상황</th><th>추천</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>새 값이 이전 값과 무관해요. <code>setIsErr(num.length &lt;= 13)</code></td><td>값을 그대로 넘겨요</td></tr>
-        <tr><td>이전 값으로 계산해요 (+1, 토글, 배열에 추가)</td><td>함수형 <code>prev =&gt; ...</code></td></tr>
-        <tr><td>한 핸들러에서 같은 state를 여러 번 바꿔요</td><td>함수형</td></tr>
-        <tr><td><code>setTimeout</code>이나 비동기 콜백 안에서 바꿔요</td><td>함수형 (오래된 값을 볼 위험이 있어요)</td></tr>
-      </tbody>
-    </table>
-  </div>
-</section>
+</body>
 
-<hr>
-
-<section id="recap">
-  <div class="summary">
-    <h3>최종 정리</h3>
-    <ol>
-      <li>인자가 필요 없으면 <code>onClick={handleClick}</code>로 써요.</li>
-      <li>인자가 필요하면 <code>onClick={() =&gt; handleClick(id)}</code>로 감싸요.</li>
-      <li><code>onClick={handleClick(id)}</code>처럼 호출 형태로 직접 쓰면 렌더링 때 실행돼요.</li>
-      <li>이 규칙은 <code>onChange</code>, <code>onSubmit</code>, <code>setTimeout</code>, <code>map</code> 등 함수를 받는 모든 자리에 똑같이 적용돼요.</li>
-      <li>이전 값으로 새 값을 계산할 때는 <code>setState(prev =&gt; ...)</code>를 써요.</li>
-    </ol>
-  </div>
-</section>
-
-</div>
-
-</body></html>
+</html>
