@@ -1,1 +1,209 @@
-ㅇㅇ
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>톈진 여행</title>
+<style>
+/* ===== 디자인 가이드: 값은 :root 변수에서만 수정 / 화면은 공통 컴포넌트만 사용 ===== */
+:root{--bg:#fff;--card:#f7f8fa;--tx:#1b1b1f;--sub:#9a9aa3;--line:#e6e6ea;--pri:#4a33ff;--pl:#ecebff;--chip:#f1f1f3;--sheet:#fff;--green:#d3e8c4;--yellow:#f2e4b5;--pink:#f1d3de;--sky:#cfe3f1;
+--fs-ttl:20px;--fs-lbl:13px;--fs-body:14px;--fs-sm:12px;--fs-btn:15px;--fw-lbl:400;--fw-b:700;
+--r-field:14px;--p-field:16px;--gap:16px;--pad:20px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--card:#1c1c20;--tx:#f2f2f5;--sub:#8b8b95;--line:#2a2a30;--pri:#8a79ff;--pl:#26223f;--chip:#222226;--sheet:#1c1c20;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121214;--card:#1c1c20;--tx:#f2f2f5;--sub:#8b8b95;--line:#2a2a30;--pri:#8a79ff;--pl:#26223f;--chip:#222226;--sheet:#1c1c20;color-scheme:dark}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;display:flex;justify-content:center}
+#app{width:100%;max-width:480px;min-height:100vh;position:relative}
+button,input,select,textarea{font:inherit;color:inherit}button{border:0;background:none;cursor:pointer}
+/* --- 공통: 제목/부제/라벨/입력칸/버튼 (바텀시트·전체화면 모두 이것만 사용) --- */
+.ttl{font-size:var(--fs-ttl);font-weight:var(--fw-b);margin:0}
+.sb{color:var(--sub);font-size:var(--fs-lbl);margin:4px 0 18px}
+.hint{color:var(--sub);font-size:var(--fs-sm);margin-top:8px}
+.fg{margin-top:var(--gap)}
+.lbl{display:block;font-size:var(--fs-lbl);font-weight:var(--fw-lbl);margin-bottom:8px}.lbl i{color:var(--pri);font-style:normal}
+.in{display:block;width:100%;min-width:0;min-height:52px;background:var(--chip);border:0;border-radius:var(--r-field);padding:var(--p-field);font-size:var(--fs-body);color:var(--tx);outline:none}
+textarea.in{min-height:0}
+.in[type=date],.in[type=time]{-webkit-appearance:none;appearance:none;text-align:left}
+.in::-webkit-date-and-time-value{text-align:left;margin:0}
+.in.bare{background:none;padding:0;min-height:0;border-radius:0}
+input.ttl.in{font-size:var(--fs-ttl);font-weight:var(--fw-b)}
+input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
+.box{background:var(--chip);border-radius:var(--r-field);padding:0 var(--p-field)}
+.row2{display:flex;align-items:center;justify-content:space-between;padding:14px 0;font-size:var(--fs-body);color:var(--sub)}.row2+.row2{border-top:1px solid var(--line)}
+.row2 .in{background:none;padding:0;min-height:0;border-radius:0;text-align:right;flex:1;margin-left:12px;color:var(--tx)}
+.mr{display:flex;gap:8px}.mr .in{flex:1}
+.btns{display:flex;gap:10px;margin-top:20px}
+.btn{flex:1;border-radius:var(--r-field);padding:15px;font-size:var(--fs-btn);font-weight:var(--fw-b);background:var(--pri);color:#fff}
+.btn.g{background:var(--chip);color:var(--tx)}.btn.sm{flex:none;padding:14px 16px;font-weight:400;font-size:var(--fs-body)}.btn.full{width:100%;flex:none;margin-top:12px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:20}.ov.on{display:flex}
+.sheet{background:var(--sheet);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:26px var(--pad) calc(24px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.scr{display:flex;flex-direction:column;min-height:100vh}.scr .form{padding:var(--pad)}.scr .form .fg:first-child{margin-top:0}
+.xbar{position:sticky;bottom:0;margin-top:auto;padding:16px var(--pad) calc(16px + env(safe-area-inset-bottom,0px));background:var(--bg)}
+/* --- 앱바/칩/일정 --- */
+.hd{display:flex;align-items:center;gap:12px;padding:14px var(--pad);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
+.back{width:34px;height:34px;border:2px solid var(--tx);border-radius:50%;font-size:18px;line-height:1}
+.hd h1{font-size:17px;margin:0;flex:1}.hd small{display:block;color:var(--sub);font-size:12px;font-weight:400;margin-top:2px}
+.ic{font-size:22px;padding:4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px var(--pad)}
+.chip{background:var(--chip);border-radius:20px;padding:8px 16px;font-size:13px}
+.day{padding:20px var(--pad) 4px}
+.dh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.dtag{background:var(--pl);color:var(--pri);font-weight:700;font-size:12px;padding:4px 7px;border-radius:6px}
+.dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
+.row{display:flex;gap:8px;margin-bottom:8px}
+.rail{width:24px;flex-shrink:0;position:relative}
+.rail::before{content:"";position:absolute;left:50%;width:1px;background:var(--line);top:0;bottom:-8px}
+.rail.f::before{top:50%}.rail.l::before{bottom:50%}.rail.f.l::before{display:none}
+.dot{position:absolute;top:50%;left:0;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;color:#666;z-index:1}
+.it{flex:1;background:var(--card);border-radius:12px;padding:16px;text-align:left}
+.it small{display:block;color:var(--sub);font-size:11px;margin-bottom:4px}.it b{font-size:14px;font-weight:600;line-height:1.45}
+.it .s{color:var(--pri);font-size:12px;margin-top:4px}.it .m{color:var(--sub);font-size:12px;margin-top:4px}
+/* --- 가계부 --- */
+.tot{padding:22px var(--pad);border-bottom:8px solid var(--card)}.tot small{color:var(--sub);font-size:12px}.tot h2{color:var(--pri);font-size:26px;margin:6px 0}.tot div{font-weight:600;font-size:15px}
+.seg{display:flex;background:var(--chip);border-radius:24px;padding:5px;width:max-content;margin:20px auto}.seg button{padding:9px 24px;border-radius:20px;color:var(--sub);font-size:13px}.seg .on{background:var(--bg);color:var(--tx);font-weight:700}
+.gh{display:flex;justify-content:space-between;padding:18px var(--pad) 6px;font-weight:700;font-size:14px}.gh span{color:var(--pri)}.gh.z span{color:var(--sub)}
+.ex{display:flex;justify-content:space-between;padding:16px var(--pad);align-items:center;text-align:left;width:100%}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 7px;border-radius:6px;margin-bottom:6px}
+.ex .l div{font-size:14px}.ex .l small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.ex .r{text-align:right}.ex .r b{font-size:16px;display:block}.ex .r small{color:var(--sub);font-size:13px}
+.fab{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);height:42px;padding:0 22px;border-radius:21px;background:var(--pri);color:#fff;font-size:14px;font-weight:700;box-shadow:0 4px 14px rgba(74,51,255,.35);z-index:6;display:flex;align-items:center;gap:8px;white-space:nowrap}.fab b{font-size:20px;font-weight:400}
+.stat{padding:8px var(--pad)}.sr{display:flex;align-items:center;gap:10px;margin:12px 0}.sr i{height:10px;border-radius:5px;display:block}.sr span{width:48px;font-size:14px}.sr em{font-style:normal;color:var(--sub);font-size:13px;margin-left:auto}
+/* --- 지출 입력 화면 전용 요소 --- */
+.xa{padding:var(--pad);border-bottom:8px solid var(--card)}
+.cs{-webkit-appearance:none;appearance:none;background:var(--chip) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='3'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E") no-repeat right 10px center;border:0;border-radius:20px;padding:8px 30px 8px 14px;font-size:13px;outline:none}
+.am{font-size:28px;font-weight:700;border:0;background:none;width:100%;padding:12px 0 4px;outline:none}
+.kw{font-size:16px;font-weight:600;color:var(--sub)}.rt{font-size:12px;color:var(--sub);margin-top:6px}
+.cats{display:flex;flex-wrap:wrap;gap:8px}.cats button{border:1px solid var(--line);border-radius:22px;padding:11px 20px;font-size:var(--fs-body)}.cats .on{background:var(--pl);border-color:var(--pri);color:var(--pri);font-weight:600}
+</style></head><body><div id="app"></div>
+<div class="ov" id="ov"><div class="sheet" id="sh"></div></div>
+<script>
+const P={sky:['#dff1ff','#1a8cff'],amber:['#fff0cc','#d98a00'],green:['#e3f8e3','#1f9d3a'],brown:['#f3e8dc','#a0642a'],violet:['#ebe8ff','#4a33ff'],pink:['#ffe3ee','#e0457f'],teal:['#e0f5f3','#0e9488'],orange:['#ffe9dc','#e8590c'],grey:['#eee','#666']};
+const CATS={항공:P.sky,항공편:P.sky,숙소:P.amber,호텔:P.amber,식비:P.green,식당:P.green,카페:P.brown,관광:P.violet,관광지:P.violet,쇼핑:P.pink,교통:P.teal,액티비티:P.orange,장소:P.grey,공항:P.grey,기타:P.grey};
+const CL=['항공','숙소','관광','식비','쇼핑','교통','기타'],TN={place:'장소',flight:'항공편',hotel:'숙소',restaurant:'식당',cafe:'카페',sight:'관광지',shopping:'쇼핑',transport:'교통',activity:'액티비티',other:'기타'};
+const COL=['var(--green)','var(--yellow)','var(--pink)','var(--sky)'],WD=['일','월','화','수','목','금','토'];
+const DEF={title:'톈진 여행',start:'2026-10-31',end:'2026-11-03',rate:199.96,
+items:[{id:1,day:0,type:'flight',title:'인천 08:55 - 톈진',sub:'아시아나항공 OZ327 (인천 T2)',route:'ICN → TSN',time:'08:55',memo:''},
+{id:2,day:0,type:'place',label:'공항',title:'톈진 빈하이 국제공항',sub:'',time:'',memo:''},
+{id:3,day:0,type:'hotel',label:'호텔',title:'Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin',sub:'',time:'',memo:''},
+{id:4,day:1,type:'hotel',label:'호텔',title:'Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin',sub:'',time:'',memo:''}],exp:[],nid:10};
+let S;try{S=JSON.parse(localStorage.getItem('trip1'))}catch(e){}S=S||JSON.parse(JSON.stringify(DEF));
+const save=()=>{try{localStorage.setItem('trip1',JSON.stringify(S))}catch(e){}};
+let view='trip',tab='list',E=null;
+const $=id=>document.getElementById(id),v=id=>$(id).value;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
+const days=()=>{const a=[];let d=new Date(S.start+'T00:00:00'),e=new Date(S.end+'T00:00:00');while(d<=e){a.push(new Date(d));d.setDate(d.getDate()+1)}return a};
+const dl=d=>`${d.getMonth()+1}/${d.getDate()} (${WD[d.getDay()]})`;
+const SV=p=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="#666">${p}</svg>`;
+const icon=t=>t=='flight'?SV('<path transform="rotate(45 12 12)" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5z"/>'):t=='hotel'?SV('<path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/>'):'';
+/* --- 공통 폼 빌더: 모든 시트/화면이 이 함수만 사용 --- */
+const fg=(l,c,req)=>`<div class="fg"><label class="lbl">${l}${req?'<i>*</i>':''}</label>${c}</div>`;
+const inp=(id,val='',x='')=>`<input class="in" id="${id}" value="${esc(val)}" ${x}>`;
+const sel=(id,opts,cur,x='')=>`<select class="in" id="${id}" ${x}>${opts.map(([o,t])=>`<option value="${o}" ${o==cur?'selected':''}>${t}</option>`).join('')}</select>`;
+const dayOpts=ex=>[...(ex?[[-1,'여행 전']]:[]),...days().map((d,i)=>[i,`Day ${i+1} - ${dl(d)}`]),...(ex?[[99,'여행 후']]:[])];
+const bG=(t,f)=>`<button class="btn g" onclick="${f}">${t}</button>`,bP=(t,f)=>`<button class="btn" onclick="${f}">${t}</button>`;
+const btns=(a,b,c='')=>`<div class="btns ${c}">${a}${b}</div>`;
+const hd3=(t,sub)=>`<h3 class="ttl">${t}</h3>${sub?`<div class="sb">${sub}</div>`:''}`;
+const MORE='<span class="ic" onclick="settings()">⋯</span>';
+const sheet=h=>{$('sh').innerHTML=h;$('ov').classList.add('on')},shut=()=>$('ov').classList.remove('on');
+$('ov').onclick=e=>{if(e.target.id=='ov')shut()};
+const go=n=>{view=n;scrollTo(0,0);render()};
+const render=()=>{$('app').innerHTML=view=='trip'?trip():view=='ledger'?ledger():expView()};
+/* --- 일정 --- */
+function trip(){const D=days();
+let h=`<div class="hd"><h1>${esc(S.title)} <span style="cursor:pointer" onclick="editTrip()">✎</span><small>${S.start.replace(/-/g,'.')}~${S.end.replace(/-/g,'.')}</small></h1>${MORE}</div>
+<div class="chips"><button class="chip" onclick="addItem('flight')">+ 항공편</button><button class="chip" onclick="go('ledger')">가계부</button></div>`;
+D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
+h+=`<div class="day"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="addItem('place',${i})">추가</u></div>`;
+its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
+h+=`<div class="row"><div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
+<button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${esc(x.memo)}</div>`:''}</button></div>`});
+h+=`</div>`});
+return h+'<div style="height:40px"></div>'}
+function addItem(type='place',day=0){
+if(type=='flight')return addFlight(day);
+sheet(hd3('일정 추가',TN[type])+
+fg('날짜',sel('f_day',dayOpts(),day))+
+fg('종류',sel('f_type',Object.entries(TN),type,`onchange="addItem(this.value,+v('f_day'))"`))+
+fg('이름',inp('f_t','',`placeholder="${type=='flight'?'인천 08:55 - 톈진':'장소 이름'}"`))+
+fg('구글지도',`<div class="mr"><button class="btn g sm" onclick="srch()">지도에서 검색</button>${inp('f_map','','placeholder="공유 링크 붙여넣기" oninput="mapFill()"')}</div><div class="hint">이름 입력 후 검색 → 구글지도에서 공유 링크 복사 → 붙여넣기</div>`)+
+btns(bG('취소','shut()'),bP('추가','saveNew()')))}
+function saveNew(){const t=v('f_t').trim();if(!t)return;const ty=v('f_type');
+S.items.push({id:S.nid++,day:+v('f_day'),type:ty,label:ty=='hotel'?'호텔':TN[ty],title:t,sub:'',time:'',map:v('f_map').trim(),memo:''});
+S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
+function addFlight(day=0){
+sheet(hd3('일정 추가','항공편')+
+fg('날짜',sel('f_day',dayOpts(),day))+
+fg('종류',sel('f_type',Object.entries(TN),'flight',`onchange="addItem(this.value,+v('f_day'))"`))+
+fg('항공사',inp('a_n','','placeholder="아시아나항공"'))+
+fg('항공편명',inp('a_f','','placeholder="OZ327"'))+
+fg('출발 · 도착',`<div class="mr">${inp('a_from','','placeholder="출발지"')}${inp('a_to','','placeholder="도착지"')}</div>`)+
+fg('출발 시간',inp('a_time','','type="time"'))+
+btns(bG('취소','shut()'),bP('추가','saveFlight()')))}
+function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').trim(),to=v('a_to').trim(),t=v('a_time');
+if(!f&&!al)return;
+S.items.push({id:S.nid++,day:+v('f_day'),type:'flight',title:`${fr||'출발'}${t?' '+t:''} - ${to||'도착'}`,sub:`${al} ${f}`.trim(),route:'',time:t,memo:''});
+S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
+function editItem(id){const x=S.items.find(i=>i.id==id),f=x.type=='flight';
+sheet(`<input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}">`+
+(f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)
+:fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>메모</span>${inp('e_m',x.memo)}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button>`))+
+btns(bG('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
+function upItem(id){const x=S.items.find(i=>i.id==id);x.title=v('e_t');
+if(x.type=='flight'){x.route=v('e_r');x.sub=v('e_fn')}else{x.sub=v('e_s');x.time=v('e_time');x.map=v('e_map').trim()}
+x.memo=v('e_m');save();shut();render()}
+function delItem(id){S.items=S.items.filter(i=>i.id!=id);save();shut();render()}
+/* --- 구글지도 연동(링크 방식) --- */
+const gm=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
+function go2(u){const a=document.createElement('a');a.href=u;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
+function srch(){const q=v('f_t').trim();go2(q?gm(q):'https://www.google.com/maps')}
+function mapFill(){const m=v('f_map').match(/\/place\/([^\/@?]+)/);if(m&&!v('f_t').trim()){try{$('f_t').value=decodeURIComponent(m[1].replace(/\+/g,' '))}catch(e){}}}
+const mapOf=id=>{const x=S.items.find(i=>i.id==id);return x.map||gm((x.title+' '+(x.sub||'')).trim())};
+/* --- 설정/여행정보 --- */
+function settings(){sheet(hd3('설정')+fg('환율 (1 CNY = 원)',inp('r',S.rate,'type="number" step="0.01"'))+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint">JSON으로 저장해 GitHub 저장소에 올릴 수 있어요</div>`)+fg('GitHub 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;save();shut();render()`)))}
+async function exportData(){const txt=JSON.stringify(S,null,2);let d=null;try{d=window.claude&&await claude.use('downloads')}catch(e){}
+if(d){try{await d.save({filename:'tianjin-trip.json',data:txt})}catch(e){}return}
+sheet(hd3('백업 내보내기','아래 내용을 복사해 GitHub에 저장하세요')+`<textarea class="in" id="b_t" rows="10" readonly>${esc(txt)}</textarea>`+btns(bG('닫기','shut()'),bP('복사',`$('b_t').select();document.execCommand('copy')`)))}
+function importSheet(){sheet(hd3('백업 불러오기','저장해 둔 JSON 내용을 붙여넣으세요')+fg('JSON',`<textarea class="in" id="b_t" rows="8"></textarea><div class="hint" id="b_h"></div>`)+btns(bG('취소','shut()'),bP('불러오기','doImport()')))}
+function doImport(){try{const d=JSON.parse(v('b_t'));if(!d||!Array.isArray(d.items)||!Array.isArray(d.exp))throw 0;S=d;save();shut();render()}catch(e){$('b_h').textContent='올바른 백업 내용이 아니에요'}}
+const GH=()=>{try{return JSON.parse(localStorage.getItem('gh1'))||{}}catch(e){return{}}};
+const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,''))));
+const ghMsg=t=>{const e=$('gh_h');if(e)e.textContent=t};
+function ghSheet(){const c=GH();sheet(hd3('GitHub 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('저장소 (소유자/이름)',inp('g_r',c.repo||'','placeholder="myname/travel-data"'))+fg('파일 경로',inp('g_p',c.path||'tianjin-trip.json'))+fg('브랜치',inp('g_b',c.branch||'main'))+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({repo:v('g_r').trim(),path:v('g_p').trim(),branch:v('g_b').trim(),token:v('g_t').trim()}))}catch(e){}shut()`)))}
+async function ghReq(method,body){const c=GH();if(!c.repo||!c.token)throw new Error('먼저 연결 설정을 해주세요');
+const url=`https://api.github.com/repos/${c.repo}/contents/${c.path||'tianjin-trip.json'}`+(method=='GET'?`?ref=${encodeURIComponent(c.branch||'main')}`:'');
+const r=await fetch(url,{method,headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'},body:body?JSON.stringify(body):undefined});
+if(r.status==404&&method=='GET')return null;if(!r.ok)throw new Error('GitHub 오류 '+r.status);return r.json()}
+const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀 있어요. GitHub Pages에 올린 버전에서 사용하세요':e.message;
+async function ghPush(){ghMsg('저장 중…');try{const c=GH(),cur=await ghReq('GET');
+await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(S,null,2)),branch:c.branch||'main',...(cur?{sha:cur.sha}:{})});ghMsg('GitHub에 저장했어요')}catch(e){ghMsg(ghErr(e))}}
+async function ghPull(){ghMsg('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
+const d=JSON.parse(unb64(cur.content));if(!d||!Array.isArray(d.items)||!Array.isArray(d.exp))throw new Error('올바른 데이터가 아니에요');S=d;save();render();ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
+function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+btns(bG('취소','shut()'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');save();shut();render()`)))}
+/* --- 가계부 --- */
+function ledger(){const tot=S.exp.reduce((a,e)=>a+e.cny,0);
+let h=`<div class="hd"><button class="back" onclick="go('trip')">←</button><h1 style="text-align:center">가계부</h1>${MORE}</div>
+<div class="tot"><small>총 지출 금액</small><h2>${won(tot*S.rate)}</h2><div>CNY ${tot.toLocaleString()}</div></div>
+<div class="seg"><button class="${tab=='list'?'on':''}" onclick="tab='list';render()">지출 내역</button><button class="${tab=='stat'?'on':''}" onclick="tab='stat';render()">통계</button></div>`;
+if(tab=='stat'){const m={};S.exp.forEach(e=>m[e.cat]=(m[e.cat]||0)+e.cny);const mx=Math.max(1,...Object.values(m));
+h+='<div class="stat">'+(Object.keys(m).length?Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,x])=>`<div class="sr"><span>${k}</span><i style="width:${x/mx*55}%;background:${CATS[k][1]}"></i><em>${won(x*S.rate)}</em></div>`).join(''):'<p style="color:var(--sub);text-align:center">지출이 없어요</p>')+'</div>'}
+else{const grp=(lab,idx)=>{const l=S.exp.filter(e=>e.day==idx),s=l.reduce((a,e)=>a+e.cny,0);
+h+=`<div class="gh ${s?'':'z'}">${lab}<span>총 ${won(s*S.rate)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b>${won(e.cny*S.rate)}</b><small>CNY ${e.cny.toLocaleString()}</small></div></button>`).join('')};
+grp('여행 전',-1);days().forEach((d,i)=>grp(`Day ${i+1} - ${dl(d)}`,i));grp('여행 후',99)}
+return h+'<button class="fab" onclick="editExp()"><b>+</b>지출 내역 추가</button><div style="height:100px"></div>'}
+/* --- 지출 입력 --- */
+const fm=s=>{if(s==='')return'';const[a,b]=s.split('.');return(a?(+a).toLocaleString('en-US'):'0')+(b!==undefined?'.'+b:'')};
+const conv=()=>{const a=parseFloat(E.amt)||0;return E.cur=='CNY'?won(a*S.rate):(Math.round(a/S.rate*100)/100).toLocaleString()+' CNY'};
+function editExp(id){const x=id?S.exp.find(e=>e.id==id):null;E={id:id||0,cur:'CNY',amt:x?String(x.cny):'',day:x?x.day:0,cat:x?x.cat:'식비',title:x?x.title:'',memo:x?x.memo:''};go('exp')}
+function expView(){
+return `<div class="scr"><div class="hd"><div style="width:34px"></div><h1 style="text-align:center">지출 내역 ${E.id?'수정':'추가'}</h1><button class="ic" style="width:34px" onclick="go('ledger')">✕</button></div>
+<div class="xa"><select class="cs" onchange="E.cur=this.value;render()"><option value="CNY" ${E.cur=='CNY'?'selected':''}>CNY(위안)</option><option value="KRW" ${E.cur=='KRW'?'selected':''}>KRW(원)</option></select>
+<input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1CNY = ${S.rate}원</div></div>
+<div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value"'),1)+
+fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
+fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
+btns(bG(E.id?'삭제':'취소',E.id?`S.exp=S.exp.filter(x=>x.id!=${E.id});save();go('ledger')`:`go('ledger')`),bP('완료','saveExp()'),'xbar')+`</div>`}
+function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').textContent=conv()}
+function saveExp(){let a=parseFloat(E.amt);if(!a||!E.title.trim())return;if(E.cur=='KRW')a=a/S.rate;
+const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100};
+if(E.id)Object.assign(S.exp.find(x=>x.id==E.id),o);else S.exp.push({id:S.nid++,...o});save();go('ledger')}
+render();
+</script></body></html>
