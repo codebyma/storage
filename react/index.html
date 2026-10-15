@@ -1,0 +1,312 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset=utf8>
+  <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <style>
+    :root {
+      color-scheme: light;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px)
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px)
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font: 14px -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #fff;
+      color: #000
+    }
+
+    img {
+      max-width: 100%
+    }
+
+    [hidden]:not([hidden=until-found i]) {
+      display: none !important
+    }
+  </style>
+</head>
+
+<body>
+  <title>리액트 노트 모음</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+  <style>
+    /* Layout: 한 칼럼 목록. 날짜 | 제목과 요약 | 태그 순서의 행으로 쌓고, 위에 검색칸을 둔다. 새 노트는 목록 맨 위에 행을 추가한다. */
+    :root {
+      --bg: #f6f7f5;
+      --surface: #ffffff;
+      --fg: #1d2421;
+      --muted: #5d6965;
+      --line: #dde2de;
+      --accent: #0d6b5a;
+      --accent-soft: #dff1ec;
+      --code-bg: #eef1ee;
+      --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #131816;
+        --surface: #1b221f;
+        --fg: #e6ece8;
+        --muted: #9aa7a1;
+        --line: #2c3631;
+        --accent: #5fd0b5;
+        --accent-soft: #1d3a33;
+        --code-bg: #101513;
+        color-scheme: dark;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #131816;
+      --surface: #1b221f;
+      --fg: #e6ece8;
+      --muted: #9aa7a1;
+      --line: #2c3631;
+      --accent: #5fd0b5;
+      --accent-soft: #1d3a33;
+      --code-bg: #101513;
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.7;
+      padding-block: 40px 72px;
+      padding-left: max(16px, env(safe-area-inset-left, 0px));
+      padding-right: max(16px, env(safe-area-inset-right, 0px));
+    }
+
+    .wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .wrap>* {
+      min-width: 0;
+    }
+
+    .eyebrow {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 5vw, 2.3rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.35;
+      text-wrap: balance;
+    }
+
+    .lead {
+      margin: 12px 0 0;
+      color: var(--muted);
+    }
+
+    .tools {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search {
+      flex: 1 1 240px;
+      min-width: 0;
+      font: inherit;
+      font-size: 0.95rem;
+      color: var(--fg);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 14px;
+    }
+
+    .search::placeholder {
+      color: var(--muted);
+    }
+
+    .count {
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      border-top: 1px solid var(--line);
+    }
+
+    .list li {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 4px 20px;
+      padding: 20px 4px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .row:hover {
+      background: var(--surface);
+    }
+
+    .date {
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding-top: 0.3em;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .name {
+      font-size: 1.12rem;
+      font-weight: 700;
+      line-height: 1.45;
+      color: var(--accent);
+    }
+
+    .row:hover .name {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .sum {
+      color: var(--fg);
+      font-size: 0.95rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .tag {
+      font-family: var(--font-code);
+      font-size: 0.75rem;
+      background: var(--code-bg);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      padding: 1px 8px;
+      border-radius: 999px;
+    }
+
+    .empty {
+      padding: 28px 4px;
+      color: var(--muted);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    @media (max-width: 560px) {
+      .row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .date {
+        padding-top: 0;
+      }
+    }
+  </style>
+
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">React 학습</div>
+      <h1>리액트 노트 모음</h1>
+      <p class="lead">궁금했던 개념을 질문하고 정리한 페이지를 한곳에 모아둔 목록이에요. 최신 노트가 맨 위에 와요.</p>
+    </header>
+
+    <div class="tools">
+      <label for="q" hidden>노트 검색</label>
+      <input id="q" class="search" type="search" placeholder="제목, 내용, 태그로 검색" autocomplete="off">
+      <span id="count" class="count">노트 1개</span>
+    </div>
+
+    <ul id="list" class="list">
+      <li data-search="리액트 함수 넘기기 노트 onclick 괄호 함수 호출 setstate 함수형 업데이트 렌더링 타이밍 usestate 배칭">
+        <a class="row" href="./리액트 함수 넘기기 노트.html" target="_blank" rel="noopener">
+          <span class="date">2026-10-15</span>
+          <span class="body">
+            <span class="name">리액트 함수 넘기기 노트</span>
+            <span class="sum">onClick에 괄호를 붙이면 안 되는 이유, 인자를 넘길 때 <code>() =&gt;</code>로 감싸는 이유, setState 함수형 업데이트와 렌더링
+              타이밍을 정리했어요.</span>
+            <span class="tags"><span class="tag">onClick</span><span class="tag">useState</span><span
+                class="tag">렌더링</span></span>
+          </span>
+        </a>
+      </li>
+    </ul>
+    <p id="empty" class="empty" hidden>검색어와 맞는 노트가 없어요. 다른 단어로 찾아보세요.</p>
+  </div>
+
+  <script>
+    (function () {
+      var input = document.getElementById("q");
+      var items = Array.prototype.slice.call(document.querySelectorAll("#list > li"));
+      var count = document.getElementById("count");
+      var empty = document.getElementById("empty");
+      function apply() {
+        var q = input.value.trim().toLowerCase();
+        var shown = 0;
+        items.forEach(function (li) {
+          var hay = (li.getAttribute("data-search") + " " + li.textContent).toLowerCase();
+          var ok = !q || hay.indexOf(q) !== -1;
+          li.hidden = !ok;
+          if (ok) shown++;
+        });
+        count.textContent = "노트 " + shown + "개";
+        empty.hidden = shown !== 0;
+      }
+      input.addEventListener("input", apply);
+      apply();
+    })();
+  </script>
+
+</body>
+
+</html>
