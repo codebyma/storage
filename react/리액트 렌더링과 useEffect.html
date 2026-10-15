@@ -1,0 +1,358 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>리액트 렌더링과 useEffect</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 한 칸짜리 노트 지면. 개념 설명 사이에 작동하는 데모 카드를 끼운다. */
+:root {
+  --bg: #F2F5F7;
+  --surface: #FFFFFF;
+  --fg: #14212B;
+  --muted: #566774;
+  --line: #D5DEE4;
+  --accent: #0B7A9E;
+  --accent-soft: #DCEFF5;
+  --warn: #B8481A;
+  --warn-soft: #F8E6DC;
+  --good: #1B7F5A;
+  --good-soft: #DDF1E8;
+  --code-bg: #0F1B24;
+  --code-fg: #D6E4EC;
+  --code-dim: #7F95A4;
+  --font-display: "Black Han Sans", "IBM Plex Sans KR", sans-serif;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E161C;
+    --surface: #15212A;
+    --fg: #E3ECF1;
+    --muted: #92A5B3;
+    --line: #26363F;
+    --accent: #4CC3E8;
+    --accent-soft: #14323D;
+    --warn: #F08A55;
+    --warn-soft: #3A2316;
+    --good: #4CC9A0;
+    --good-soft: #123329;
+    --code-bg: #0A1218;
+    --code-fg: #D6E4EC;
+    --code-dim: #7F95A4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E161C;
+  --surface: #15212A;
+  --fg: #E3ECF1;
+  --muted: #92A5B3;
+  --line: #26363F;
+  --accent: #4CC3E8;
+  --accent-soft: #14323D;
+  --warn: #F08A55;
+  --warn-soft: #3A2316;
+  --good: #4CC9A0;
+  --good-soft: #123329;
+  --code-bg: #0A1218;
+  --code-fg: #D6E4EC;
+  --code-dim: #7F95A4;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+section { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+p { margin: 0; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+
+.eyebrow { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.04em; color: var(--accent); }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(30px, 6.4vw, 46px); line-height: 1.22; letter-spacing: -0.01em; }
+.lede { font-size: 17.5px; color: var(--muted); max-width: 62ch; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.toc a { font-size: 14px; color: var(--fg); text-decoration: none; border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 6px; }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.thesis { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 18px 20px; font-size: 18px; font-weight: 500; line-height: 1.6; }
+.thesis small { display: block; margin-top: 6px; font-size: 14px; font-weight: 400; color: var(--muted); }
+
+h2 { font-size: 24px; line-height: 1.35; font-weight: 700; letter-spacing: -0.01em; display: flex; gap: 12px; align-items: baseline; }
+h2 .n { font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--accent); flex: none; }
+h3 { font-size: 17px; font-weight: 700; margin-top: 6px; }
+
+code.i { font-family: var(--font-mono); font-size: 0.88em; background: var(--accent-soft); color: var(--fg); padding: 1px 6px; border-radius: 4px; }
+pre { margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: 8px; padding: 16px 18px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; max-width: 100%; }
+pre .c { color: var(--code-dim); }
+pre .bad { color: #FFA77A; background: rgba(240, 138, 85, 0.14); display: inline-block; width: 100%; }
+pre .ok { color: #7FE0BD; background: rgba(76, 201, 160, 0.14); display: inline-block; width: 100%; }
+.cap { font-size: 14px; color: var(--muted); }
+
+/* render film strip */
+.strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.frame { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.frame .t { font-size: 13px; color: var(--muted); }
+.frame .v { font-family: var(--font-mono); font-size: 24px; font-weight: 500; }
+.frame .h { font-family: var(--font-mono); font-size: 12.5px; color: var(--accent); overflow-wrap: anywhere; }
+
+/* demos */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.demo .label { font-size: 13px; color: var(--muted); }
+.demo .big { font-family: var(--font-mono); font-size: 30px; font-weight: 500; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+button { font-family: var(--font-body); font-size: 14.5px; font-weight: 500; padding: 9px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.bad { border-color: var(--warn); color: var(--warn); }
+button.good { border-color: var(--good); color: var(--good); }
+.log { font-family: var(--font-mono); font-size: 13px; line-height: 1.8; min-height: 3.6em; background: var(--bg); border-radius: 6px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+.log .res-bad { color: var(--warn); font-weight: 500; }
+.log .res-good { color: var(--good); font-weight: 500; }
+
+/* tables */
+.scroll { overflow-x: auto; max-width: 100%; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15px; }
+th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 13px; color: var(--muted); font-weight: 500; background: var(--bg); }
+td:first-child { font-family: var(--font-mono); font-size: 13.5px; white-space: nowrap; }
+
+/* lifecycle */
+.life { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; font-size: 14.5px; line-height: 1.55; }
+.step b { display: block; font-size: 13px; color: var(--accent); margin-bottom: 2px; }
+
+.fixes { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.fix { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.fix .tag { font-size: 12.5px; font-weight: 500; color: var(--good); }
+.fix .tag.alt { color: var(--muted); }
+
+.check { display: flex; flex-direction: column; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.check li { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+.check b { color: var(--accent); }
+.next { font-size: 15px; color: var(--muted); }
+</style>
+
+<main>
+  <header style="display:flex;flex-direction:column;gap:16px">
+    <div class="eyebrow">리액트 학습 노트</div>
+    <h1>state는 바꿨는데 왜 옛날 값이 나올까?</h1>
+    <p class="lede">버튼을 세 번 눌렀는데 숫자가 1만 올라가거나, useEffect 안에서 계속 처음 값이 나온 적이 있다면 이 노트가 답입니다. 원인은 하나이고, 한 문장으로 먼저 말씀드립니다.</p>
+    <div class="thesis">렌더링은 컴포넌트 함수를 다시 부르는 일이고, 함수가 불릴 때마다 그 순간의 state 값이 사진처럼 고정됩니다.
+      <small>이 문장만 이해하면 아래 내용은 전부 같은 이야기의 반복입니다.</small></div>
+    <nav class="toc" aria-label="차례">
+      <a href="#render">렌더링이란</a>
+      <a href="#closure">고정된 값과 클로저</a>
+      <a href="#effect">useEffect</a>
+      <a href="#together">둘이 만나는 곳</a>
+      <a href="#summary">한 장 요약</a>
+    </nav>
+  </header>
+
+  <section id="render">
+    <h2><span class="n">1</span>렌더링은 함수를 다시 부르는 일</h2>
+    <p>리액트 컴포넌트는 JSX를 돌려주는 평범한 함수입니다. state가 바뀌면 리액트는 이 함수를 처음부터 다시 호출하고, 새로 돌아온 JSX대로 화면을 고칩니다. 이 "다시 호출"을 렌더링이라고 부릅니다.</p>
+<pre>function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    &lt;button onClick={() =&gt; setCount(count + 1)}&gt;
+      {count}번 눌렀어요
+    &lt;/button&gt;
+  );
+}</pre>
+    <p>여기서 눈여겨볼 점은 <code class="i">count</code>가 <code class="i">const</code>라는 것입니다. 변수가 0에서 1로 바뀌는 게 아닙니다. 함수가 한 번 더 불리고, 그 호출 안에서 <code class="i">count</code>가 새로 1로 만들어집니다. 세 번 누르면 함수는 네 번 불립니다.</p>
+    <div class="strip" role="list" aria-label="렌더마다 고정된 count">
+      <div class="frame" role="listitem"><span class="t">첫 번째 렌더</span><span class="v">count = 0</span><span class="h">onClick → setCount(0 + 1)</span></div>
+      <div class="frame" role="listitem"><span class="t">두 번째 렌더</span><span class="v">count = 1</span><span class="h">onClick → setCount(1 + 1)</span></div>
+      <div class="frame" role="listitem"><span class="t">세 번째 렌더</span><span class="v">count = 2</span><span class="h">onClick → setCount(2 + 1)</span></div>
+    </div>
+    <p class="cap">렌더마다 자기만의 count가 있고, 그 렌더에서 만들어진 onClick도 자기 count만 압니다.</p>
+  </section>
+
+  <section id="closure">
+    <h2><span class="n">2</span>고정된 값과 클로저</h2>
+    <p>클로저는 어려운 말이지만 뜻은 간단합니다. 함수는 만들어진 순간 주변에 있던 변수를 기억합니다. onClick에 넣은 화살표 함수는 렌더 도중에 만들어지므로, 그 렌더의 <code class="i">count</code>를 기억한 채로 남습니다.</p>
+
+    <h3>같은 버튼을 세 번 부르면</h3>
+<pre>function handleClick() {
+<span class="bad">  setCount(count + 1);   // count가 0이면 setCount(1)</span>
+<span class="bad">  setCount(count + 1);   // 여전히 count는 0이라서 setCount(1)</span>
+<span class="bad">  setCount(count + 1);   // 또 setCount(1)</span>
+}</pre>
+    <p>한 번의 클릭 안에서는 <code class="i">count</code>가 계속 0입니다. 같은 값 1을 세 번 예약했으니 결과는 1입니다. 아래에서 직접 눌러 보세요.</p>
+
+    <div class="demo" id="demo1">
+      <div class="label">데모 1 · 렌더 규칙을 흉내 낸 시뮬레이션</div>
+      <div class="big" id="d1-count" aria-live="polite">count = 0</div>
+      <div class="row">
+        <button class="bad" id="d1-plain" type="button">setCount(count + 1) 세 번</button>
+        <button class="good" id="d1-func" type="button">setCount(c =&gt; c + 1) 세 번</button>
+        <button id="d1-reset" type="button">처음으로</button>
+      </div>
+      <div class="log" id="d1-log">버튼을 눌러 보세요.</div>
+    </div>
+
+    <h3>해결은 함수형 업데이트</h3>
+    <p><code class="i">setCount(c =&gt; c + 1)</code>처럼 함수를 넘기면 "지금 렌더의 count"가 아니라 "예약된 직전 결과"를 받아서 계산합니다. 그래서 세 번이면 정말 3이 늘어납니다.</p>
+<pre>setCount(c =&gt; c + 1);   // 0 → 1
+setCount(c =&gt; c + 1);   // 1 → 2
+setCount(c =&gt; c + 1);   // 2 → 3</pre>
+    <p>기준은 간단합니다. 이전 값을 바탕으로 새 값을 만들 때는 함수형으로 씁니다. 값을 통째로 바꾸는 <code class="i">setName("민지")</code> 같은 경우는 그냥 써도 됩니다.</p>
+
+    <h3>시간이 지난 뒤에도 같은 일이 생깁니다</h3>
+    <p>타이머처럼 나중에 실행되는 함수도 만들어진 순간의 값을 기억합니다. 데모 2에서 "3초 뒤 알려주기"를 누른 직후 +1을 여러 번 눌러 보세요.</p>
+    <div class="demo" id="demo2">
+      <div class="label">데모 2 · setTimeout이 기억하는 값</div>
+      <div class="big" id="d2-count">count = 0</div>
+      <div class="row">
+        <button id="d2-inc" type="button">+1</button>
+        <button class="bad" id="d2-later" type="button">3초 뒤 알려주기</button>
+      </div>
+      <div class="log" id="d2-log">+1을 몇 번 누른 뒤 "3초 뒤 알려주기"를 누르고, 바로 +1을 더 눌러 보세요.</div>
+    </div>
+    <p class="cap">시뮬레이션에서는 "지금 count"를 따로 읽어 보여주지만, 실제 리액트의 타이머 함수는 클릭 당시의 값밖에 알지 못합니다.</p>
+  </section>
+
+  <section id="effect">
+    <h2><span class="n">3</span>useEffect는 렌더가 끝난 뒤의 할 일</h2>
+    <p>렌더링 중에는 화면에 무엇을 그릴지 계산만 해야 합니다. 서버에서 데이터 가져오기, 타이머 걸기, 이벤트 등록, <code class="i">document.title</code> 바꾸기처럼 컴포넌트 바깥 세상에 손을 대는 일은 렌더가 끝난 뒤에 해야 하고, 그 자리가 useEffect입니다.</p>
+<pre>useEffect(() =&gt; {
+  document.title = `${count}번 눌렀어요`;
+}, [count]);</pre>
+
+    <h3>의존성 배열이 실행 시점을 정합니다</h3>
+    <div class="scroll"><table>
+      <thead><tr><th>적는 방법</th><th>effect가 실행되는 때</th><th>자주 쓰는 곳</th></tr></thead>
+      <tbody>
+        <tr><td>배열 없음</td><td>렌더가 끝날 때마다</td><td>거의 쓰지 않습니다</td></tr>
+        <tr><td>[]</td><td>처음 화면에 나타난 뒤 한 번</td><td>첫 데이터 불러오기, 이벤트 등록</td></tr>
+        <tr><td>[a, b]</td><td>처음 한 번, 그리고 a나 b가 바뀐 렌더 뒤</td><td>검색어가 바뀌면 다시 요청하기</td></tr>
+      </tbody>
+    </table></div>
+    <p>배열에는 effect 안에서 읽는 값(state, props)을 모두 적는 것이 규칙입니다. 이 규칙이 왜 있는지는 다음 장에서 나옵니다.</p>
+
+    <h3>cleanup은 뒷정리입니다</h3>
+    <p>effect가 함수를 돌려주면 그것이 cleanup입니다. 등록한 것을 해제하는 데 씁니다.</p>
+<pre>useEffect(() =&gt; {
+  const onResize = () =&gt; console.log(window.innerWidth);
+  window.addEventListener("resize", onResize);
+
+  return () =&gt; window.removeEventListener("resize", onResize);
+}, []);</pre>
+    <div class="life" role="list" aria-label="effect 실행 순서">
+      <div class="step" role="listitem"><b>처음 나타남</b>effect 실행</div>
+      <div class="step" role="listitem"><b>의존성 값이 바뀜</b>이전 effect의 cleanup 실행</div>
+      <div class="step" role="listitem"><b>이어서</b>새 값으로 effect 다시 실행</div>
+      <div class="step" role="listitem"><b>화면에서 사라짐</b>마지막 cleanup 실행</div>
+    </div>
+    <p class="cap">개발 모드의 StrictMode에서는 effect가 처음에 두 번 실행되는 것처럼 보입니다. cleanup이 제대로 짝을 이루는지 점검하는 동작이라 정상입니다.</p>
+  </section>
+
+  <section id="together">
+    <h2><span class="n">4</span>둘이 만나는 곳</h2>
+    <p>effect 함수도 결국 렌더 중에 만들어진 함수입니다. 그래서 2장의 규칙이 그대로 적용됩니다. effect는 자신이 만들어진 렌더의 값을 기억합니다. 의존성 배열을 비워 두면 그 effect는 첫 렌더에서 한 번만 만들어지고, 안에 있는 count는 영원히 0입니다.</p>
+<pre>useEffect(() =&gt; {
+  const id = setInterval(() =&gt; {
+<span class="bad">    setCount(count + 1);   // 이 count는 첫 렌더의 0</span>
+  }, 1000);
+  return () =&gt; clearInterval(id);
+<span class="bad">}, []);                       // count를 적지 않았으니 effect는 다시 만들어지지 않음</span></pre>
+    <p>화면의 숫자는 1에서 멈춥니다. 매초 <code class="i">setCount(0 + 1)</code>만 반복하기 때문입니다. 고치는 방법은 두 가지입니다.</p>
+    <div class="fixes">
+      <div class="fix">
+        <span class="tag">권장</span>
+        <strong>함수형 업데이트로 바꾸기</strong>
+<pre>useEffect(() =&gt; {
+  const id = setInterval(() =&gt; {
+<span class="ok">    setCount(c =&gt; c + 1);</span>
+  }, 1000);
+  return () =&gt; clearInterval(id);
+}, []);</pre>
+        <p class="cap">effect 안에서 count를 읽지 않으니 의존성에 적을 것이 없고, 타이머도 한 번만 만들어집니다.</p>
+      </div>
+      <div class="fix">
+        <span class="tag alt">대안</span>
+        <strong>의존성에 count 적기</strong>
+<pre>useEffect(() =&gt; {
+  const id = setInterval(() =&gt; {
+    setCount(count + 1);
+  }, 1000);
+  return () =&gt; clearInterval(id);
+<span class="ok">}, [count]);</span></pre>
+        <p class="cap">count가 바뀔 때마다 cleanup으로 타이머를 지우고 새로 만듭니다. 동작은 맞지만 매초 타이머를 다시 거는 셈입니다.</p>
+      </div>
+    </div>
+    <p>이것이 "effect 안에서 읽는 값은 의존성에 적는다"는 규칙의 이유입니다. 적지 않으면 effect가 옛날 값을 붙들고 있게 됩니다.</p>
+  </section>
+
+  <section id="summary">
+    <h2><span class="n">5</span>한 장 요약</h2>
+    <ul class="check">
+      <li><b>렌더링</b>은 컴포넌트 함수를 다시 부르는 일입니다. state가 바뀌면 일어납니다.</li>
+      <li>함수가 불릴 때마다 <b>그 렌더의 state</b>가 고정됩니다. 변수가 바뀌는 게 아닙니다.</li>
+      <li>이벤트 함수, 타이머, effect는 <b>만들어진 렌더의 값</b>을 기억합니다. 이것이 클로저입니다.</li>
+      <li>이전 값으로 새 값을 만들 때는 <b>함수형 업데이트</b>를 씁니다.</li>
+      <li><b>useEffect</b>는 렌더 뒤에 하는 일이고, 읽는 값은 의존성 배열에 모두 적습니다. 등록한 것은 cleanup으로 해제합니다.</li>
+    </ul>
+    <p class="next">다음으로 이어 보기 좋은 주제는 useRef입니다. 렌더와 상관없이 최신 값을 들고 있어야 하는 경우에 쓰는 도구입니다.</p>
+  </section>
+</main>
+
+<script>
+(function () {
+  /* 데모 1: 한 번의 클릭 안에서 count는 고정되어 있다 */
+  var count1 = 0;
+  var c1 = document.getElementById("d1-count");
+  var l1 = document.getElementById("d1-log");
+  function paint1(lines, cls) {
+    c1.textContent = "count = " + count1;
+    l1.innerHTML = lines.join("\n") + '\n<span class="' + cls + '">→ 다음 렌더의 count = ' + count1 + "</span>";
+  }
+  document.getElementById("d1-plain").addEventListener("click", function () {
+    var snap = count1, lines = ["이번 렌더의 count = " + snap];
+    for (var i = 0; i < 3; i++) lines.push("setCount(" + snap + " + 1)   예약 값: " + (snap + 1));
+    count1 = snap + 1;
+    paint1(lines, "res-bad");
+  });
+  document.getElementById("d1-func").addEventListener("click", function () {
+    var v = count1, lines = ["이번 렌더의 count = " + v];
+    for (var i = 0; i < 3; i++) { lines.push("setCount(c => c + 1)   " + v + " → " + (v + 1)); v++; }
+    count1 = v;
+    paint1(lines, "res-good");
+  });
+  document.getElementById("d1-reset").addEventListener("click", function () {
+    count1 = 0;
+    c1.textContent = "count = 0";
+    l1.textContent = "버튼을 눌러 보세요.";
+  });
+
+  /* 데모 2: 타이머가 클릭 당시의 값을 기억한다 */
+  var count2 = 0, timer = null;
+  var c2 = document.getElementById("d2-count");
+  var l2 = document.getElementById("d2-log");
+  document.getElementById("d2-inc").addEventListener("click", function () {
+    count2++;
+    c2.textContent = "count = " + count2;
+  });
+  document.getElementById("d2-later").addEventListener("click", function () {
+    var snap = count2;
+    l2.textContent = "클릭한 순간의 count(" + snap + ")를 기억하고 3초를 기다리는 중...";
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      l2.innerHTML = "타이머가 알고 있는 값: " + snap + '\n<span class="res-bad">지금 화면의 count: ' + count2 + "</span>";
+    }, 3000);
+  });
+})();
+</script>
+
+</body></html>
