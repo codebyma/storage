@@ -1,0 +1,471 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>구조분해와 스프레드 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 한 칼럼 학습 노트. 개념, 예제, 연습문제 세 파트로 나누고, 코드는 좌우 비교 카드와 단독 블록을 섞어 보여준다. 라이트 테마 한 가지만 쓴다. */
+:root {
+  color-scheme: light;
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --fg: #1d2421;
+  --muted: #5d6965;
+  --line: #dde2de;
+  --accent: #0d6b5a;
+  --accent-soft: #dff1ec;
+  --good: #1f7a3d;
+  --good-soft: #e1f3e6;
+  --bad: #b3322b;
+  --bad-soft: #fbe6e3;
+  --code-bg: #eceeec;
+  --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+.wrap > * { min-width: 0; }
+
+h1, h2, h3 { text-wrap: balance; line-height: 1.35; margin: 0; }
+h1 { font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.01em; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; }
+.lead { color: var(--muted); margin-top: 12px; }
+
+.eyebrow {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--accent); text-transform: uppercase; margin-bottom: 8px;
+}
+
+section { display: flex; flex-direction: column; gap: 28px; }
+.block { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+.key {
+  background: var(--accent-soft);
+  border-radius: 6px;
+  padding: 18px 20px;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+.key b { color: var(--accent); }
+
+code, pre { font-family: var(--font-code); font-size: 0.86rem; }
+:not(pre) > code {
+  background: var(--code-bg); padding: 0.1em 0.4em; border-radius: 4px;
+  overflow-wrap: anywhere;
+}
+pre {
+  margin: 0; background: var(--code-bg); border: 1px solid var(--line);
+  border-radius: 6px; padding: 14px 16px; overflow-x: auto; line-height: 1.65;
+}
+pre code { white-space: pre; }
+
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.case { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.tag {
+  align-self: flex-start; font-size: 0.75rem; font-weight: 700;
+  padding: 2px 10px; border-radius: 999px;
+}
+.tag.good { background: var(--good-soft); color: var(--good); }
+.tag.bad { background: var(--bad-soft); color: var(--bad); }
+.case.bad pre { border-color: var(--bad); }
+.case.good pre { border-color: var(--good); }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 0.93rem; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 0.8rem; letter-spacing: 0.04em; color: var(--muted); background: var(--code-bg); }
+tr:last-child td { border-bottom: 0; }
+td code { white-space: nowrap; }
+
+ul.plain { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+
+.example { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.example h3 .no { font-family: var(--font-code); color: var(--accent); margin-right: 8px; }
+
+.quiz { display: flex; flex-direction: column; gap: 12px; }
+details {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  padding: 12px 16px;
+}
+details > summary { cursor: pointer; font-weight: 700; }
+details[open] > summary { margin-bottom: 10px; }
+
+.summary { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 20px 22px; }
+.summary ol { margin: 10px 0 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; }
+
+hr { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+@media (max-width: 600px) {
+  .pair { grid-template-columns: minmax(0, 1fr); }
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">React 기초 노트</div>
+  <h1>구조분해와 스프레드</h1>
+  <p class="lead">리액트 코드에서 매 줄 나오는 <code>{ }</code>, <code>[ ]</code>, <code>...</code> 문법을 개념과 예제로 정리했어요. 예제는 그대로 복사해서 실행해 볼 수 있어요.</p>
+</header>
+
+<!-- ============ PART 1 ============ -->
+<section id="concept">
+  <div>
+    <div class="eyebrow">Part 1</div>
+    <h2>개념</h2>
+  </div>
+
+  <div class="key">구조분해는 <b>꺼내기</b>, 스프레드는 <b>펼치기</b>예요. 같은 <code>...</code> 모양이 받는 쪽에 오면 <b>나머지 모으기</b>(rest)가 돼요.</div>
+
+  <div class="block">
+    <h3>구조분해: 객체에서 꺼내기 <code>{ }</code></h3>
+    <pre><code>const user = { name: "민지", age: 25 };
+
+// 구조분해 없이
+const name = user.name;
+const age = user.age;
+
+// 구조분해
+const { name, age } = user;</code></pre>
+    <p>변수 이름은 객체의 키 이름과 같아야 해요. 이름을 바꾸려면 <code>:</code>, 기본값을 주려면 <code>=</code>를 써요. 기본값은 값이 <code>undefined</code>일 때만 적용돼요.</p>
+    <pre><code>const { name: userName } = user;   // user.name을 userName이라는 이름으로 꺼냄
+const { city = "서울" } = user;    // user.city가 없으면 "서울"</code></pre>
+  </div>
+
+  <div class="block">
+    <h3>구조분해: 배열에서 꺼내기 <code>[ ]</code></h3>
+    <p>배열은 키가 없어서 <b>순서</b>대로 꺼내요. 이름은 마음대로 지어도 돼요.</p>
+    <pre><code>const colors = ["red", "green", "blue"];
+const [first, second] = colors;    // first = "red", second = "green"
+const [, , third] = colors;        // 앞의 둘은 건너뛰기 → "blue"</code></pre>
+    <p><code>useState</code>가 바로 이 문법이에요.</p>
+    <pre><code>const [count, setCount] = useState(0);
+// useState가 [현재 값, 값을 바꾸는 함수] 배열을 돌려주고
+// 그 순서대로 count, setCount라는 이름으로 꺼낸 것</code></pre>
+  </div>
+
+  <div class="block">
+    <h3>구조분해: 함수 매개변수에서 바로 꺼내기</h3>
+    <p>리액트에서 가장 많이 보는 모양이에요.</p>
+    <pre><code>// props를 통째로 받아서 쓰기
+function Card(props) {
+  return &lt;h2&gt;{props.title} - {props.price}원&lt;/h2&gt;;
+}
+
+// 매개변수 자리에서 바로 구조분해
+function Card({ title, price }) {
+  return &lt;h2&gt;{title} - {price}원&lt;/h2&gt;;
+}
+
+// 기본값도 가능
+function Card({ title, price = 0 }) { ... }</code></pre>
+    <p><code>({ title, price })</code>의 <code>{ }</code>는 객체를 만드는 게 아니라, 받은 객체(props)에서 꺼낸다는 뜻이에요.</p>
+  </div>
+
+  <div class="block">
+    <h3>스프레드: 배열과 객체 펼치기 <code>...</code></h3>
+    <pre><code>const a = [1, 2, 3];
+
+const copy   = [...a];            // [1, 2, 3]  새 배열로 복사
+const added  = [...a, 4];         // [1, 2, 3, 4]  뒤에 추가
+const front  = [0, ...a];         // [0, 1, 2, 3]  앞에 추가
+const merged = [...a, ...[7, 8]]; // [1, 2, 3, 7, 8]  합치기
+
+const user = { name: "민지", age: 25 };
+
+const copy2   = { ...user };                // 복사
+const older   = { ...user, age: 26 };       // age만 바꾼 새 객체
+const withJob = { ...user, job: "개발자" }; // 속성 추가</code></pre>
+    <p>객체에서 같은 키가 겹치면 <b>뒤에 오는 값이 앞의 값을 덮어써요.</b> 그래서 순서가 결과를 바꿔요.</p>
+    <div class="pair">
+      <div class="case">
+        <span class="tag good">age: 26</span>
+        <pre><code>{ ...user, age: 26 }</code></pre>
+      </div>
+      <div class="case">
+        <span class="tag bad">age: 25</span>
+        <pre><code>{ age: 26, ...user }</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <h3>리액트에서 스프레드가 꼭 필요한 이유</h3>
+    <p>state를 바꿀 때는 원본을 고치지 않고 <b>새 배열이나 새 객체를 만들어서</b> 넘겨야 해요. 리액트는 참조(주소)가 바뀌었는지를 보고 다시 렌더링할지 정하기 때문이에요.</p>
+    <div class="pair">
+      <div class="case bad">
+        <span class="tag bad">버그</span>
+        <pre><code>items.push(newItem);
+setItems(items);</code></pre>
+      </div>
+      <div class="case good">
+        <span class="tag good">정상</span>
+        <pre><code>setItems([...items, newItem]);</code></pre>
+      </div>
+    </div>
+    <p>이전 값을 기준으로 바꿀 때는 앞에서 배운 함수형 업데이트와 함께 써요.</p>
+    <pre><code>setItems((prev) =&gt; [...prev, newItem]);
+setUser((prev) =&gt; ({ ...prev, age: prev.age + 1 }));</code></pre>
+    <p>화살표 함수가 객체를 바로 돌려줄 때는 <code>({ ... })</code>처럼 소괄호로 감싸야 해요. 안 감싸면 <code>{ }</code>를 함수 본문으로 오해해요.</p>
+    <p>삭제와 수정은 <code>filter</code>, <code>map</code>을 같이 써요.</p>
+    <pre><code>// 삭제: 조건에 맞는 것만 남긴 새 배열
+setItems(items.filter((item) =&gt; item.id !== targetId));
+
+// 수정: 해당 항목만 새 객체로 바꾼 새 배열
+setItems(items.map((item) =&gt;
+  item.id === targetId ? { ...item, done: true } : item
+));</code></pre>
+  </div>
+
+  <div class="block">
+    <h3>같은 <code>...</code>인데 받는 쪽에 오면 rest</h3>
+    <pre><code>// 구조분해에서 나머지 모으기
+const { name, ...rest } = { name: "민지", age: 25, city: "서울" };
+// name = "민지", rest = { age: 25, city: "서울" }
+
+// 함수 인자 모으기
+function sum(...nums) { return nums.reduce((a, b) =&gt; a + b, 0); }
+sum(1, 2, 3);   // 6</code></pre>
+    <p>리액트에서는 props를 그대로 전달할 때 자주 써요.</p>
+    <pre><code>function Button({ label, ...rest }) {
+  return &lt;button {...rest}&gt;{label}&lt;/button&gt;;
+  // onClick, disabled 같은 나머지 props를 button에 그대로 전달
+}
+
+&lt;Button label="저장" onClick={handleSave} disabled /&gt;</code></pre>
+  </div>
+
+  <div class="block">
+    <h3>주의할 점</h3>
+    <p><b>스프레드는 얕은 복사예요.</b> 한 겹만 복사하고, 안쪽 객체는 같은 것을 공유해요.</p>
+    <pre><code>const a = { profile: { city: "서울" } };
+const b = { ...a };
+b.profile.city = "부산";
+console.log(a.profile.city);   // "부산"  a도 같이 바뀜
+
+// 안쪽까지 바꿀 때는 안쪽도 펼쳐요
+setUser({ ...user, profile: { ...user.profile, city: "부산" } });</code></pre>
+    <p><b><code>undefined</code>나 <code>null</code>을 구조분해하면 에러가 나요.</b> 서버에서 받아오는 중이라 값이 아직 없을 수 있다면 <code>const { name } = user ?? {};</code>처럼 대비해요. 기본값(<code>= "서울"</code>)은 <code>undefined</code>일 때만 적용되고 <code>null</code>에는 적용되지 않아요.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ PART 2 ============ -->
+<section id="examples">
+  <div>
+    <div class="eyebrow">Part 2</div>
+    <h2>초보자용 예제</h2>
+  </div>
+
+  <div class="example">
+    <h3><span class="no">1</span>객체 구조분해 (기본)</h3>
+    <pre><code>const student = { name: "민지", age: 25, city: "서울" };
+
+const { name, age } = student;
+
+console.log(name);   // "민지"
+console.log(age);    // 25</code></pre>
+    <p><code>student.name</code>, <code>student.age</code>를 매번 쓰는 대신 <code>name</code>, <code>age</code>라는 변수로 한 번에 꺼낸 거예요. 이름 바꾸기와 기본값도 같이 볼게요.</p>
+    <pre><code>const { name: studentName, country = "한국" } = student;
+
+console.log(studentName);   // "민지"  (name을 studentName이라는 이름으로 꺼냄)
+console.log(country);       // "한국"  (student에 country가 없어서 기본값이 쓰임)</code></pre>
+  </div>
+
+  <div class="example">
+    <h3><span class="no">2</span>배열 구조분해 (useState의 정체)</h3>
+    <pre><code>function getUser() {
+  return ["민지", 25];   // 배열을 돌려주는 함수
+}
+
+const [userName, userAge] = getUser();
+console.log(userName);   // "민지"
+console.log(userAge);    // 25</code></pre>
+    <p><code>useState(0)</code>도 <code>[현재 값, 값을 바꾸는 함수]</code> 배열을 돌려주고, 우리는 그걸 순서대로 <code>count</code>, <code>setCount</code>라는 이름으로 꺼내는 거예요. 그래서 <code>[value, setValue]</code>로 이름을 지어도 똑같이 동작해요.</p>
+  </div>
+
+  <div class="example">
+    <h3><span class="no">3</span>props 구조분해와 스프레드로 넘기기</h3>
+    <pre><code>// props 객체에서 필요한 것만 꺼내고, soldOut은 안 오면 false
+function ProductCard({ name, price, soldOut = false }) {
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;{name}&lt;/h3&gt;
+      &lt;p&gt;{price.toLocaleString()}원&lt;/p&gt;
+      {soldOut &amp;&amp; &lt;p&gt;품절&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}
+
+function App() {
+  const monitor = { name: "모니터", price: 190000 };
+
+  return (
+    &lt;div&gt;
+      &lt;ProductCard name="키보드" price={45000} /&gt;
+      &lt;ProductCard name="마우스" price={20000} soldOut={true} /&gt;
+      &lt;ProductCard {...monitor} /&gt;   {/* name={monitor.name} price={monitor.price}와 같은 뜻 */}
+    &lt;/div&gt;
+  );
+}</code></pre>
+    <ul class="plain">
+      <li><code>function ProductCard({ name, price })</code>는 <code>props.name</code>, <code>props.price</code>를 쓰는 대신 매개변수 자리에서 바로 꺼낸 거예요.</li>
+      <li><code>&lt;ProductCard {...monitor} /&gt;</code>는 객체의 키와 값을 props로 하나씩 펼쳐서 넘겨요.</li>
+    </ul>
+  </div>
+
+  <div class="example">
+    <h3><span class="no">4</span>할 일 목록 만들기 (배열 state와 스프레드)</h3>
+    <p>추가는 <code>[...todos, 새 항목]</code>, 삭제는 <code>filter</code>를 써요.</p>
+    <pre><code>import { useState } from "react";
+
+function TodoList() {
+  const [todos, setTodos] = useState([
+    { id: 1, text: "빨래하기" },
+    { id: 2, text: "리액트 공부" },
+  ]);
+  const [input, setInput] = useState("");
+
+  const handleAdd = () =&gt; {
+    if (input.trim() === "") return;
+    setTodos([...todos, { id: Date.now(), text: input }]);  // 기존 + 새 항목
+    setInput("");
+  };
+
+  const handleDelete = (id) =&gt; {
+    setTodos(todos.filter((todo) =&gt; todo.id !== id));       // 지울 것만 빼고 새 배열
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;input value={input} onChange={(e) =&gt; setInput(e.target.value)} /&gt;
+      &lt;button onClick={handleAdd}&gt;추가&lt;/button&gt;
+
+      &lt;ul&gt;
+        {todos.map(({ id, text }) =&gt; (        // 여기서도 구조분해
+          &lt;li key={id}&gt;
+            {text}
+            &lt;button onClick={() =&gt; handleDelete(id)}&gt;삭제&lt;/button&gt;
+          &lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    <p>이번에 배운 것이 전부 들어 있어요.</p>
+    <ul class="plain">
+      <li><code>useState</code>는 배열 구조분해예요.</li>
+      <li><code>[...todos, {...}]</code>는 배열 스프레드예요.</li>
+      <li><code>({ id, text }) =&gt;</code>는 객체 구조분해예요.</li>
+      <li><code>onClick={() =&gt; handleDelete(id)}</code>는 인자를 넘길 때 화살표 함수로 감싸는 거예요. 처음에 질문하셨던 바로 그 부분이에요.</li>
+    </ul>
+  </div>
+
+  <div class="example">
+    <h3><span class="no">5</span>프로필 수정하기 (객체 state와 스프레드)</h3>
+    <pre><code>function ProfileEditor() {
+  const [user, setUser] = useState({ name: "민지", age: 25, city: "서울" });
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;{user.name} / {user.age}살 / {user.city}&lt;/p&gt;
+
+      &lt;button onClick={() =&gt; setUser({ ...user, age: user.age + 1 })}&gt;
+        나이 +1
+      &lt;/button&gt;
+
+      &lt;button onClick={() =&gt; setUser({ ...user, city: "부산" })}&gt;
+        부산으로 이사
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+    <p><code>{ ...user, age: user.age + 1 }</code>은 "user를 통째로 복사하고, age만 새 값으로 덮어써라"는 뜻이에요. <code>name</code>과 <code>city</code>는 그대로 유지돼요.</p>
+    <p>만약 <code>setUser({ age: 26 })</code>이라고만 쓰면 <code>name</code>과 <code>city</code>가 사라져요. 객체 state는 통째로 교체되기 때문이에요. 그래서 <code>...user</code>로 나머지를 복사해 오는 거예요.</p>
+  </div>
+</section>
+
+<hr>
+
+<!-- ============ PART 3 ============ -->
+<section id="practice">
+  <div>
+    <div class="eyebrow">Part 3</div>
+    <h2>연습문제와 정리</h2>
+  </div>
+
+  <div class="quiz">
+    <p>결과를 먼저 예상해 보고 정답을 열어 보세요.</p>
+
+    <details>
+      <summary>문제 1</summary>
+      <pre><code>const { a, b = 5 } = { a: 1 };
+console.log(a, b);</code></pre>
+      <p><b>정답: <code>1 5</code></b><br><code>a</code>는 값이 있고, <code>b</code>는 없어서 기본값 5가 쓰여요.</p>
+    </details>
+
+    <details>
+      <summary>문제 2</summary>
+      <pre><code>const arr = [1, 2, 3];
+const arr2 = [...arr, 4];
+console.log(arr, arr2);</code></pre>
+      <p><b>정답: <code>[1, 2, 3] [1, 2, 3, 4]</code></b><br>원본 <code>arr</code>는 그대로고, 새 배열 <code>arr2</code>만 4가 추가돼요.</p>
+    </details>
+
+    <details>
+      <summary>문제 3</summary>
+      <pre><code>const x = { n: 1, m: 2 };
+const y = { ...x, n: 10 };
+console.log(y);</code></pre>
+      <p><b>정답: <code>{ n: 10, m: 2 }</code></b><br>뒤에 온 <code>n: 10</code>이 앞의 값을 덮어써요.</p>
+    </details>
+
+    <details>
+      <summary>문제 4</summary>
+      <pre><code>const x = { n: 1, m: 2 };
+const z = { n: 10, ...x };
+console.log(z);</code></pre>
+      <p><b>정답: <code>{ n: 1, m: 2 }</code></b><br>이번엔 <code>...x</code>가 뒤에 와서 <code>n: 10</code>을 <code>n: 1</code>로 덮어써요. 순서가 결과를 바꿔요.</p>
+    </details>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>문법</th><th>방향</th><th>예시</th><th>용도</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>구조분해</td><td>꺼내기</td><td><code>const { a, b } = obj</code></td><td>객체나 배열에서 값을 변수로</td></tr>
+        <tr><td>스프레드</td><td>펼치기</td><td><code>[...arr, x]</code>, <code>{ ...obj, k: v }</code></td><td>복사, 추가, 일부만 덮어쓰기</td></tr>
+        <tr><td>나머지(rest)</td><td>모으기</td><td><code>const { a, ...rest } = obj</code></td><td>나머지를 한 덩어리로</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="summary">
+    <h3>한 줄 정리</h3>
+    <ol>
+      <li>리액트에서 state가 배열이나 객체면 <code>...</code>로 새로 만들어서 <code>setState</code>에 넘겨요.</li>
+      <li>props는 매개변수 자리에서 구조분해로 꺼내 쓰면 코드가 짧아져요.</li>
+      <li><code>useState</code>의 <code>[값, 함수]</code>는 배열 구조분해라서 이름을 마음대로 지을 수 있어요.</li>
+    </ol>
+  </div>
+</section>
+
+</div>
+
+</body></html>
