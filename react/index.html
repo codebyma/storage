@@ -4,47 +4,17 @@
 <head>
   <meta charset=utf8>
   <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <style>
-    :root {
-      color-scheme: light;
-      box-sizing: border-box;
-      padding-top: env(safe-area-inset-top, 0px);
-      padding-bottom: env(safe-area-inset-bottom, 0px)
-    }
-
-    html {
-      scroll-padding-top: env(safe-area-inset-top, 0px)
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      font: 14px -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #fff;
-      color: #000
-    }
-
-    img {
-      max-width: 100%
-    }
-
-    [hidden]:not([hidden=until-found i]) {
-      display: none !important
-    }
-  </style>
+  <title>리액트 노트 모음</title>
+  <link rel="apple-touch-icon" sizes="180x180"
+    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAABzElEQVR42u3ZMQ3AMAxFwRAowVAog+LJHIopgQzpUMlfOusBsKzb3K67S9uaEwgOwSE4BIfgEByCQ3AIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASH9DuOVXhO9n/mKBsccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAkYdDucEhOASH4BAcgkNwCA7BITgEh+Tx9vXxlr4/HHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwFELh3KDQ3AIDsEhOASH4BAcgkNwCA4JDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITik/gLBXd/7htwvIgAAAABJRU5ErkJggg==">
 </head>
 
 <body>
-  <title>리액트 노트 모음</title>
-  <meta name="claude:viewport-fit-sides" content="cover">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
-  <link rel="apple-touch-icon" sizes="180x180"
-    href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAABzElEQVR42u3ZMQ3AMAxFwRAowVAog+LJHIopgQzpUMlfOusBsKzb3K67S9uaEwgOwSE4BIfgEByCQ3AIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASH9DuOVXhO9n/mKBsccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAkYdDucEhOASH4BAcgkNwCA7BITgEh+Tx9vXxlr4/HHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwAEHHHDAAQcccMABBxxwwFELh3KDQ3AIDsEhOASH4BAcgkNwCA4JDsEhOASH4BAcgkNwCA7BIcEhOASH4BAcgkNwCA7BITik/gLBXd/7htwvIgAAAABJRU5ErkJggg==">
+
   <style>
     /* Layout: 한 칼럼 목록. 날짜 | 제목과 요약 | 태그 순서의 행으로 쌓고, 위에 검색칸을 둔다. 새 노트는 목록 맨 위에 행을 추가한다. */
     :root {
-      --bg: #f6f7f5;
+      --bg: #f4f4f4;
       --surface: #ffffff;
       --fg: #1d2421;
       --muted: #5d6965;
@@ -52,34 +22,12 @@
       --accent: #0d6b5a;
       --accent-soft: #dff1ec;
       --code-bg: #eef1ee;
-      --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      --font-body: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root:not([data-theme="light"]) {
-        --bg: #131816;
-        --surface: #1b221f;
-        --fg: #e6ece8;
-        --muted: #9aa7a1;
-        --line: #2c3631;
-        --accent: #5fd0b5;
-        --accent-soft: #1d3a33;
-        --code-bg: #101513;
-        color-scheme: dark;
-      }
-    }
-
-    :root[data-theme="dark"] {
-      --bg: #131816;
-      --surface: #1b221f;
-      --fg: #e6ece8;
-      --muted: #9aa7a1;
-      --line: #2c3631;
-      --accent: #5fd0b5;
-      --accent-soft: #1d3a33;
-      --code-bg: #101513;
-      color-scheme: dark;
+    :root {
+      color-scheme: light;
     }
 
     * {
