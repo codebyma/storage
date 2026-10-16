@@ -50,6 +50,8 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .ic{font-size:22px;padding:4px}
 .tl{padding:16px var(--pad)}.tc{display:block;width:100%;text-align:left;background:var(--card);border-radius:12px;padding:16px;margin-bottom:10px}.tc b{display:block;font-size:16px;margin:8px 0 4px}.tc small{color:var(--sub);font-size:12px}.tg{display:inline-block;background:var(--pl);color:var(--pri);font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
 .tt{display:flex;align-items:center;gap:0}.ed{display:flex;align-items:center;color:var(--tx);opacity:.7;padding:2px 2px 2px 3px}.ed svg{stroke-width:2}
+.ph{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.ph:empty{display:none}.ph img{width:64px;height:64px;object-fit:cover;border-radius:8px;display:block}.pt{padding:0;border-radius:8px}
+.lb{position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:30}.lb.on{display:flex}.lb img{max-width:100%;max-height:80vh;object-fit:contain}.lbb{display:flex;gap:24px;margin-top:20px}.lbb button{color:#fff;font-size:15px;padding:10px 18px;background:rgba(255,255,255,.15);border-radius:12px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px var(--pad)}
 .chip{background:var(--chip);border-radius:20px;padding:8px 16px;font-size:13px}
 .day{padding:20px var(--pad) 4px}
@@ -80,6 +82,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .kw{font-size:16px;font-weight:600;color:var(--sub)}.rt{font-size:12px;color:var(--sub);margin-top:6px}
 .cats{display:flex;flex-wrap:wrap;gap:8px}.cats button{border:1px solid var(--line);border-radius:22px;padding:11px 20px;font-size:var(--fs-body)}.cats .on{background:var(--pl);border-color:var(--pri);color:var(--pri);font-weight:600}
 </style></head><body><div id="app"></div>
+<div class="lb" id="lb"></div>
 <div class="ov" id="ov"><div class="sheet" id="sh"></div></div>
 <script>
 const rg=(r,g,b,f)=>[`rgba(${r},${g},${b},.14)`,f];
@@ -133,13 +136,31 @@ ALL.trips.push({id,title:n,start:s,end:e,cur:c,rate:parseFloat(v('n_r'))||CUR[c]
 function delTrip(b){if(!b.dataset.s){b.dataset.s=1;b.textContent='한 번 더 눌러 삭제';return}ALL.trips=ALL.trips.filter(t=>t.id!=S.id);S=null;save();shut();go('home')}
 function importAll(d){if(d&&Array.isArray(d.trips)){ALL=d}else if(d&&Array.isArray(d.items)&&Array.isArray(d.exp)){d.id=ALL.nid++;d.cur=d.cur||'CNY';ALL.trips.push(d)}else throw new Error('올바른 데이터가 아니에요');
 ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;S=null;save();go('home')}
+/* --- 사진·후기 --- */
+const PH={};
+const thumbs=x=>(x.ph||[]).map((p,i)=>`<button class="pt" onclick="viewPhoto(${x.id},${i})"><img src="${p.t}"></button>`).join('');
+const recBlock=x=>fg('사진',`<div class="ph" id="phs">${thumbs(x)}</div><input type="file" id="pf" accept="image/*" multiple hidden onchange="addPhotos(${x.id},this.files)"><button class="btn g sm" style="margin-top:8px" onclick="$('pf').click()">+ 사진 추가</button><div class="hint" id="ph_h"></div>`);
+const loadImg=(f,max,q)=>new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=no;im.src=u});
+async function addPhotos(id,files){const c=GH(),h=$('ph_h');
+if(!c.repo||!c.token){h.textContent='사진은 GitHub 연결 후 올릴 수 있어요 (⋯ → GitHub 동기화 → 연결 설정)';return}
+const x=S.items.find(i=>i.id==id);x.ph=x.ph||[];
+for(const f of files){try{h.textContent='올리는 중…';const full=await loadImg(f,1600,.8),th=await loadImg(f,200,.7),name=`photos/${S.id}/${id}-${Date.now()}.jpg`;
+await ghReq('PUT',{message:'사진 추가',content:full.split(',')[1],branch:c.branch||'main'},name);
+x.ph.push({p:name,t:th});save();$('phs').innerHTML=thumbs(x)}catch(e){h.textContent=ghErr(e);return}}
+h.textContent='';render()}
+const closeLb=()=>$('lb').classList.remove('on');
+async function viewPhoto(id,i){const x=S.items.find(a=>a.id==id),p=x.ph[i],lb=$('lb');
+lb.innerHTML=`<img id="lbi" src="${PH[p.p]||p.t}"><div class="lbb"><button onclick="delPhoto(${id},${i})">삭제</button><button onclick="closeLb()">닫기</button></div>`;lb.classList.add('on');
+if(PH[p.p])return;try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${p.p}`,{headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(!r.ok)throw 0;PH[p.p]=URL.createObjectURL(await r.blob());const im=$('lbi');if(im)im.src=PH[p.p]}catch(e){}}
+async function delPhoto(id,i){const x=S.items.find(a=>a.id==id),p=x.ph.splice(i,1)[0];save();closeLb();if($('phs'))$('phs').innerHTML=thumbs(x);render();
+try{const c=GH(),cur=await ghReq('GET',null,p.p);if(cur)await ghReq('DELETE',{message:'사진 삭제',sha:cur.sha,branch:c.branch||'main'},p.p)}catch(e){}}
 /* --- 항공편 --- */
 const flT=x=>`${x.fr||'출발'}${x.time?' '+x.time:''} - ${x.to||'도착'}`,flS=x=>`${x.al||''} ${x.fno||''}`.trim();
 const fixFlights=t=>(t.items||[]).forEach(x=>{if(x.type!='flight'||x.fno!==undefined||x.al!==undefined)return;
 const a=(x.title||'').match(/^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(.+)$/);if(a){x.fr=a[1];x.time=x.time||a[2];x.to=a[3]}else{x.fr=x.title||''}
 const b=(x.sub||'').match(/^(\S+)\s+(.*)$/);if(b){x.al=b[1];x.fno=b[2]}else{x.al=x.sub||'';x.fno=''}});
 function editFlight(id){const x=S.items.find(i=>i.id==id);
-sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upFlight(${id})`)))}
+sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)+recBlock(x)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upFlight(${id})`)))}
 function upFlight(id){const x=S.items.find(i=>i.id==id);x.al=v('a_n').trim();x.fno=v('a_f').trim();x.fr=v('a_from').trim();x.to=v('a_to').trim();x.time=v('a_time');x.memo=v('e_m');x.title=flT(x);x.sub=flS(x);save();shut();render()}
 /* --- 일정 --- */
 function trip(){const D=days();
@@ -149,7 +170,7 @@ D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
 h+=`<div class="day"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="addItem('place',${i})">추가</u></div>`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 h+=`<div class="row"><div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${esc(x.memo)}</div>`:''}</button></div>`});
+<button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${esc(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button></div>`});
 h+=`</div>`});
 return h+'<div style="height:40px"></div>'}
 function addItem(type='place',day=0){
@@ -180,7 +201,7 @@ function editItem(id){fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type==
 sheet(`<input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}">`+
 (f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)
 :fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>메모</span>${inp('e_m',x.memo)}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button>`))+
-btns(bG('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
+recBlock(x)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
 function upItem(id){const x=S.items.find(i=>i.id==id);x.title=v('e_t');
 if(x.type=='flight'){x.route=v('e_r');x.sub=v('e_fn')}else{x.sub=v('e_s');x.time=v('e_time');x.map=v('e_map').trim()}
 x.memo=v('e_m');save();shut();render()}
@@ -207,8 +228,9 @@ const GH=()=>{try{return JSON.parse(localStorage.getItem('gh1'))||{}}catch(e){re
 const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,''))));
 const ghMsg=t=>{const e=$('gh_h');if(e)e.textContent=t};
 function ghSheet(){const c=GH();sheet(hd3('GitHub 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('저장소 (소유자/이름)',inp('g_r',c.repo||'','placeholder="myname/travel-data"'))+fg('파일 경로',inp('g_p',c.path||'travel.json'))+fg('브랜치',inp('g_b',c.branch||'main'))+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({repo:v('g_r').trim(),path:v('g_p').trim(),branch:v('g_b').trim(),token:v('g_t').trim()}))}catch(e){}shut()`)))}
-async function ghReq(method,body){const c=GH();if(!c.repo||!c.token)throw new Error('먼저 연결 설정을 해주세요');
-const repo=c.repo.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/|\/$/g,''),path=(c.path||'travel.json').replace(/^\/+/,''),br=c.branch||'main',H={Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'};
+const repoOf=c=>c.repo.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/|\/$/g,'');
+async function ghReq(method,body,pth){const c=GH();if(!c.repo||!c.token)throw new Error('먼저 연결 설정을 해주세요');
+const repo=repoOf(c),path=(pth||c.path||'travel.json').replace(/^\/+/,''),br=c.branch||'main',H={Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'};
 const r=await fetch(`https://api.github.com/repos/${repo}/contents/${path}`+(method=='GET'?`?ref=${encodeURIComponent(br)}`:''),{method,headers:H,body:body?JSON.stringify(body):undefined});
 if(r.status==404){const rr=await fetch(`https://api.github.com/repos/${repo}`,{headers:H});
 if(!rr.ok)throw new Error('저장소를 찾을 수 없어요. 저장소 이름(아이디/저장소)과 토큰의 저장소 접근 권한을 확인하세요');
