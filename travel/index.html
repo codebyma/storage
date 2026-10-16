@@ -96,7 +96,7 @@ items:[{id:1,day:0,type:'flight',title:'인천 08:55 - 톈진',sub:'아시아나
 {id:2,day:0,type:'place',label:'공항',title:'톈진 빈하이 국제공항',sub:'',time:'',memo:''},
 {id:3,day:0,type:'hotel',label:'호텔',title:'Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin',sub:'',time:'',memo:''},
 {id:4,day:1,type:'hotel',label:'호텔',title:'Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin',sub:'',time:'',memo:''}],exp:[],nid:10};
-const CUR={CNY:['위안',200],HKD:['홍콩달러',175],EUR:['유로',1500],GBP:['파운드',1750],USD:['달러',1400],JPY:['엔',9],TWD:['대만달러',44],VND:['동',0.054],IDR:['루피아',0.085]};
+const CUR={CNY:['위안',200],HKD:['홍콩달러',175],EUR:['유로',1500],GBP:['파운드',1750],USD:['달러',1400],JPY:['엔',9],THB:['바트',40],KRW:['원',1],TWD:['대만달러',44],VND:['동',0.054],IDR:['루피아',0.085]};
 let ALL;try{ALL=JSON.parse(localStorage.getItem('trips2'))}catch(e){}
 if(!ALL||!Array.isArray(ALL.trips)){let o=null;try{o=JSON.parse(localStorage.getItem('trip1'))}catch(e){}
 const t=o||JSON.parse(JSON.stringify(DEF));t.id=1;t.cur='CNY';ALL={trips:[t],nid:2}}
@@ -135,8 +135,10 @@ sheet(hd3('새 여행')+fg('여행 이름',inp('n_n','','placeholder="홍콩 여
 function saveTrip(){const n=v('n_n').trim(),s=v('n_s');let e=v('n_e');if(!n||!s)return;if(!e||e<s)e=s;const c=v('n_c'),id=ALL.nid++;
 ALL.trips.push({id,title:n,start:s,end:e,cur:c,rate:parseFloat(v('n_r'))||CUR[c][1],items:[],exp:[],nid:10});save();shut();openTrip(id)}
 function delTrip(b){if(!b.dataset.s){b.dataset.s=1;b.textContent='한 번 더 눌러 삭제';return}ALL.trips=ALL.trips.filter(t=>t.id!=S.id);S=null;save();shut();go('home')}
-function importAll(d){if(d&&Array.isArray(d.trips)){ALL=d}else if(d&&Array.isArray(d.items)&&Array.isArray(d.exp)){d.id=ALL.nid++;d.cur=d.cur||'CNY';ALL.trips.push(d)}else throw new Error('올바른 데이터가 아니에요');
-ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;S=null;save();go('home')}
+function importAll(d,replace){const L=d&&Array.isArray(d.trips)?d.trips:d&&Array.isArray(d.items)&&Array.isArray(d.exp)?[d]:null;if(!L)throw new Error('올바른 데이터가 아니에요');
+if(replace&&Array.isArray(d.trips)){ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1}
+else L.forEach(t=>{t.cur=t.cur||'CNY';const k=ALL.trips.findIndex(x=>x.title==t.title&&x.start==t.start);if(k>=0){t.id=ALL.trips[k].id;ALL.trips[k]=t}else{t.id=ALL.nid++;ALL.trips.push(t)}});
+S=null;save();go('home')}
 /* --- 사진·후기 --- */
 const PH={};
 const thumbs=x=>(x.ph||[]).map((p,i)=>`<button class="pt" onclick="viewPhoto(${x.id},${i})"><img src="${p.t}"></button>`).join('');
@@ -219,7 +221,7 @@ const getTheme=()=>{try{return localStorage.getItem('theme1')||'auto'}catch(e){r
 function applyTheme(t){const r=document.documentElement;if(t=='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;
 const dk=t=='dark'||(t=='auto'&&matchMedia('(prefers-color-scheme:dark)').matches),m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#121214':'#ffffff'}
 function setTheme(t){try{localStorage.setItem('theme1',t)}catch(e){}applyTheme(t);document.querySelectorAll('.thm button').forEach(b=>b.classList.toggle('on',b.dataset.t==t))}
-function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 불러오면 현재 데이터가 파일 내용으로 바뀌어요</div>`)+fg('GitHub 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;save();shut();render()`)):`<div class="btns">${bG('닫기','shut()')}</div>`))}
+function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('GitHub 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;save();shut();render()`)):`<div class="btns">${bG('닫기','shut()')}</div>`))}
 const bkMsg=t=>{const e=$('bk_h');if(e)e.textContent=t};
 async function exportData(){const txt=JSON.stringify(ALL,null,2),name='travel.json';let d=null;try{d=window.claude&&await claude.use('downloads')}catch(e){}
 if(d){try{await d.save({filename:name,data:txt});bkMsg('파일로 내보냈어요')}catch(e){}return}
@@ -244,7 +246,7 @@ const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀
 async function ghPush(){ghMsg('저장 중…');try{const c=GH(),cur=await ghReq('GET');
 await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(ALL,null,2)),branch:c.branch||'main',...(cur?{sha:cur.sha}:{})});ghMsg('GitHub에 저장했어요')}catch(e){ghMsg(ghErr(e))}}
 async function ghPull(){ghMsg('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
-importAll(JSON.parse(unb64(cur.content)));ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
+importAll(JSON.parse(unb64(cur.content)),true);ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+btns(bG('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');save();shut();render()`)))}
 /* --- 가계부 --- */
 function ledger(){const tot=S.exp.reduce((a,e)=>a+e.cny,0);
