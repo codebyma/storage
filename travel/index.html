@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>여행</title>
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -17,7 +17,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;display:flex;justify-content:center}
 #app{width:100%;max-width:480px;min-height:100vh;position:relative}
-button,input,select,textarea{font:inherit;color:inherit}button{border:0;background:none;cursor:pointer}
+button,input,select,textarea{font:inherit;color:inherit;touch-action:manipulation}button{border:0;background:none;cursor:pointer}
 /* --- 공통: 제목/부제/라벨/입력칸/버튼 (바텀시트·전체화면 모두 이것만 사용) --- */
 .ttl{font-size:var(--fs-ttl);font-weight:var(--fw-b);margin:0}
 .sb{color:var(--sub);font-size:var(--fs-lbl);margin:4px 0 18px}
@@ -49,6 +49,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .hd h1{font-size:17px;margin:0;flex:1}.hd small{display:block;color:var(--sub);font-size:12px;font-weight:400;margin-top:2px}
 .ic{font-size:22px;padding:4px}
 .tl{padding:16px var(--pad)}.tc{display:block;width:100%;text-align:left;background:var(--card);border-radius:12px;padding:16px;margin-bottom:10px}.tc b{display:block;font-size:16px;margin:8px 0 4px}.tc small{color:var(--sub);font-size:12px}.tg{display:inline-block;background:var(--pl);color:var(--pri);font-size:12px;font-weight:700;padding:3px 8px;border-radius:6px}
+.tt{display:flex;align-items:center;gap:0}.ed{display:flex;align-items:center;color:var(--tx);opacity:.7;padding:2px 2px 2px 3px}.ed svg{stroke-width:2}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px var(--pad)}
 .chip{background:var(--chip);border-radius:20px;padding:8px 16px;font-size:13px}
 .day{padding:20px var(--pad) 4px}
@@ -91,7 +92,7 @@ items:[{id:1,day:0,type:'flight',title:'인천 08:55 - 톈진',sub:'아시아나
 {id:2,day:0,type:'place',label:'공항',title:'톈진 빈하이 국제공항',sub:'',time:'',memo:''},
 {id:3,day:0,type:'hotel',label:'호텔',title:'Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin',sub:'',time:'',memo:''},
 {id:4,day:1,type:'hotel',label:'호텔',title:'Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin',sub:'',time:'',memo:''}],exp:[],nid:10};
-const CUR={CNY:['위안',200],HKD:['홍콩달러',175],EUR:['유로',1500],GBP:['파운드',1750],USD:['달러',1400],JPY:['엔',9],TWD:['대만달러',44],VND:['동(베트남)',0.054],IDR:['루피아(발리)',0.085]};
+const CUR={CNY:['위안',200],HKD:['홍콩달러',175],EUR:['유로',1500],GBP:['파운드',1750],USD:['달러',1400],JPY:['엔',9],TWD:['대만달러',44],VND:['동',0.054],IDR:['루피아',0.085]};
 let ALL;try{ALL=JSON.parse(localStorage.getItem('trips2'))}catch(e){}
 if(!ALL||!Array.isArray(ALL.trips)){let o=null;try{o=JSON.parse(localStorage.getItem('trip1'))}catch(e){}
 const t=o||JSON.parse(JSON.stringify(DEF));t.id=1;t.cur='CNY';ALL={trips:[t],nid:2}}
@@ -132,9 +133,17 @@ ALL.trips.push({id,title:n,start:s,end:e,cur:c,rate:parseFloat(v('n_r'))||CUR[c]
 function delTrip(b){if(!b.dataset.s){b.dataset.s=1;b.textContent='한 번 더 눌러 삭제';return}ALL.trips=ALL.trips.filter(t=>t.id!=S.id);S=null;save();shut();go('home')}
 function importAll(d){if(d&&Array.isArray(d.trips)){ALL=d}else if(d&&Array.isArray(d.items)&&Array.isArray(d.exp)){d.id=ALL.nid++;d.cur=d.cur||'CNY';ALL.trips.push(d)}else throw new Error('올바른 데이터가 아니에요');
 ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;S=null;save();go('home')}
+/* --- 항공편 --- */
+const flT=x=>`${x.fr||'출발'}${x.time?' '+x.time:''} - ${x.to||'도착'}`,flS=x=>`${x.al||''} ${x.fno||''}`.trim();
+const fixFlights=t=>(t.items||[]).forEach(x=>{if(x.type!='flight'||x.fno!==undefined||x.al!==undefined)return;
+const a=(x.title||'').match(/^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(.+)$/);if(a){x.fr=a[1];x.time=x.time||a[2];x.to=a[3]}else{x.fr=x.title||''}
+const b=(x.sub||'').match(/^(\S+)\s+(.*)$/);if(b){x.al=b[1];x.fno=b[2]}else{x.al=x.sub||'';x.fno=''}});
+function editFlight(id){const x=S.items.find(i=>i.id==id);
+sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upFlight(${id})`)))}
+function upFlight(id){const x=S.items.find(i=>i.id==id);x.al=v('a_n').trim();x.fno=v('a_f').trim();x.fr=v('a_from').trim();x.to=v('a_to').trim();x.time=v('a_time');x.memo=v('e_m');x.title=flT(x);x.sub=flS(x);save();shut();render()}
 /* --- 일정 --- */
 function trip(){const D=days();
-let h=`<div class="hd"><button class="back" onclick="go('home')">${BK}</button><h1>${esc(S.title)} <span style="cursor:pointer" onclick="editTrip()">✎</span><small>${S.start.replace(/-/g,'.')}~${S.end.replace(/-/g,'.')}</small></h1>${MORE}</div>
+let h=`<div class="hd"><button class="back" onclick="go('home')">${BK}</button><h1><span class="tt">${esc(S.title)}<button class="ed" onclick="editTrip()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button></span><small>${S.start.replace(/-/g,'.')}~${S.end.replace(/-/g,'.')}</small></h1>${MORE}</div>
 <div class="chips"><button class="chip" onclick="addItem('flight')">+ 항공편</button><button class="chip" onclick="go('ledger')">가계부</button></div>`;
 D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
 h+=`<div class="day"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="addItem('place',${i})">추가</u></div>`;
@@ -165,9 +174,9 @@ fg('출발 시간',inp('a_time','','type="time"'))+
 btns(bG('취소','shut()'),bP('추가','saveFlight()')))}
 function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').trim(),to=v('a_to').trim(),t=v('a_time');
 if(!f&&!al)return;
-S.items.push({id:S.nid++,day:+v('f_day'),type:'flight',title:`${fr||'출발'}${t?' '+t:''} - ${to||'도착'}`,sub:`${al} ${f}`.trim(),route:'',time:t,memo:''});
+const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:''};x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
-function editItem(id){const x=S.items.find(i=>i.id==id),f=x.type=='flight';
+function editItem(id){fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
 sheet(`<input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}">`+
 (f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)
 :fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>메모</span>${inp('e_m',x.memo)}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button>`))+
