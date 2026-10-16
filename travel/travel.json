@@ -1,84 +1,6 @@
 {
   "trips": [
     {
-      "title": "톈진 여행",
-      "start": "2026-10-31",
-      "end": "2026-11-03",
-      "rate": 199.96,
-      "items": [
-        {
-          "id": 1,
-          "day": 0,
-          "type": "flight",
-          "title": "인천 08:55 - 톈진",
-          "sub": "아시아나항공 OZ327 (인천 T2)",
-          "route": "ICN → TSN",
-          "time": "08:55",
-          "memo": "메모",
-          "fr": "인천",
-          "to": "톈진",
-          "al": "아시아나항공",
-          "fno": "OZ327 (인천 T2)"
-        },
-        {
-          "id": 2,
-          "day": 0,
-          "type": "place",
-          "label": "공항",
-          "title": "톈진 빈하이 국제공항",
-          "sub": "",
-          "time": "",
-          "memo": ""
-        },
-        {
-          "id": 3,
-          "day": 0,
-          "type": "hotel",
-          "label": "호텔",
-          "title": "Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin",
-          "sub": "",
-          "time": "",
-          "memo": "",
-          "ph": [],
-          "map": "https://maps.app.goo.gl/TTjFoCDBWwjCXmKv8?g_st=ic"
-        },
-        {
-          "id": 12,
-          "day": 3,
-          "type": "flight",
-          "al": "아시아나",
-          "fno": "OZ345",
-          "fr": "톈진",
-          "to": "임천",
-          "time": "17:21",
-          "memo": "",
-          "title": "톈진 17:21 - 임천",
-          "sub": "아시아나 OZ345"
-        }
-      ],
-      "exp": [
-        {
-          "id": 10,
-          "day": 0,
-          "cat": "항공",
-          "title": "비행기",
-          "memo": "",
-          "cny": 2500.5
-        },
-        {
-          "id": 11,
-          "day": 0,
-          "cat": "숙소",
-          "title": "숙소",
-          "memo": "ㅇㅇㅇ",
-          "cny": 200000
-        }
-      ],
-      "nid": 13,
-      "id": 1,
-      "cur": "CNY"
-    },
-    {
       "title": "방콕 여행",
       "start": "2023-03-01",
       "end": "2023-03-04",
@@ -368,8 +290,1328 @@
       ],
       "exp": [],
       "nid": 39,
-      "id": 2
+      "id": 10
+    },
+    {
+      "title": "제주 여행",
+      "start": "2023-05-13",
+      "end": "2023-05-15",
+      "cur": "KRW",
+      "rate": 1,
+      "items": [
+        {
+          "id": 1,
+          "day": 0,
+          "type": "place",
+          "label": "공항",
+          "title": "제주 국제공항",
+          "sub": "제주 시내",
+          "time": "15:50",
+          "memo": "출발 2:20분 도착 3:50분 · 제주항공 7C121 김포(GMP) 14:40 → 제주(CJU) 15:50 · 예약번호 A7I63G · 예약석 2석 · 위탁수하물 15kg"
+        },
+        {
+          "id": 2,
+          "day": 0,
+          "type": "transport",
+          "label": "교통",
+          "title": "SK렌터카 제주지점",
+          "sub": "제주 시내",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 3,
+          "day": 0,
+          "type": "cafe",
+          "label": "카페",
+          "title": "노티드 제주 DT 점",
+          "sub": "제주시",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 4,
+          "day": 0,
+          "type": "cafe",
+          "label": "카페",
+          "title": "집의 기록 상점",
+          "sub": "애월·한림",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 5,
+          "day": 0,
+          "type": "sight",
+          "label": "관광지",
+          "title": "곽지 해수욕장",
+          "sub": "애월·한림",
+          "time": "",
+          "memo": "무무제주 소품샵"
+        },
+        {
+          "id": 6,
+          "day": 0,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "무무 제주",
+          "sub": "애월·한림",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 7,
+          "day": 0,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "제주 김만복 동문 재래 시장 점",
+          "sub": "제주 시내",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 8,
+          "day": 0,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "제주바당",
+          "sub": "제주 시내",
+          "time": "",
+          "memo": "모듬회 3만 + 1만"
+        },
+        {
+          "id": 9,
+          "day": 0,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "유탑유블레스호텔 제주함덕",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 10,
+          "day": 0,
+          "type": "sight",
+          "label": "관광지",
+          "title": "함덕 해수욕장",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 11,
+          "day": 1,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "유탑유블레스호텔 제주함덕",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 12,
+          "day": 1,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "해오반 함덕 점",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": "아침"
+        },
+        {
+          "id": 13,
+          "day": 1,
+          "type": "cafe",
+          "label": "카페",
+          "title": "하양한",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 14,
+          "day": 1,
+          "type": "sight",
+          "label": "관광지",
+          "title": "스누피가든",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 15,
+          "day": 1,
+          "type": "cafe",
+          "label": "카페",
+          "title": "원앤온리",
+          "sub": "중문",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 16,
+          "day": 1,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "숙성도 함덕 점",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 17,
+          "day": 1,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "유탑유블레스호텔 제주함덕",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 18,
+          "day": 2,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "유탑유블레스호텔 제주함덕",
+          "sub": "조천·구좌",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 19,
+          "day": 2,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "평대리 멍석",
+          "sub": "조천·구좌",
+          "time": "09:30",
+          "memo": "9시30분 도착 10시 30분 나옴"
+        },
+        {
+          "id": 20,
+          "day": 2,
+          "type": "cafe",
+          "label": "카페",
+          "title": "커피 템플",
+          "sub": "제주시",
+          "time": "11:30",
+          "memo": "11시30분 도착 12시 30분 나옴"
+        },
+        {
+          "id": 21,
+          "day": 2,
+          "type": "cafe",
+          "label": "카페",
+          "title": "한성 오메기떡",
+          "sub": "제주시",
+          "time": "12:50",
+          "memo": "12시 50분 도착"
+        },
+        {
+          "id": 22,
+          "day": 2,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "진아 떡집",
+          "sub": "제주시",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 23,
+          "day": 2,
+          "type": "place",
+          "label": "공항",
+          "title": "제주 국제공항",
+          "sub": "제주 시내",
+          "time": "16:15",
+          "memo": "4:15분 출발 · 대한항공 KE1264 제주(CJU) 16:15 → 김포(GMP) 17:25"
+        }
+      ],
+      "exp": [],
+      "nid": 34,
+      "id": 11
+    },
+    {
+      "id": 12,
+      "title": "부산 여행",
+      "start": "2023-06-16",
+      "end": "2023-06-17",
+      "cur": "KRW",
+      "rate": 1,
+      "items": [
+        {
+          "id": 1,
+          "day": 0,
+          "type": "transport",
+          "label": "교통",
+          "title": "부산역",
+          "sub": "동구",
+          "time": "10:45",
+          "memo": "KTX 15열차(00015) · 광명 08:17 → 부산 10:45 · 8호차 14C석, 8호차 14D석 · 2023.6.16"
+        },
+        {
+          "id": 2,
+          "day": 0,
+          "type": "activity",
+          "label": "액티비티",
+          "title": "부산시티투어",
+          "sub": "남포동",
+          "time": "11:25",
+          "memo": "레드 노선 11:25분 출발"
+        },
+        {
+          "id": 3,
+          "day": 0,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "거대 갈비",
+          "sub": "해운대",
+          "time": "13:00",
+          "memo": "금요일 1시 예약"
+        },
+        {
+          "id": 4,
+          "day": 0,
+          "type": "cafe",
+          "label": "카페",
+          "title": "블랙 업 커피 해운대 점",
+          "sub": "해운대",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 5,
+          "day": 0,
+          "type": "sight",
+          "label": "관광지",
+          "title": "해운대 해수욕장",
+          "sub": "해운대",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 6,
+          "day": 0,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "상국이네",
+          "sub": "해운대",
+          "time": "",
+          "memo": "물떡"
+        },
+        {
+          "id": 7,
+          "day": 0,
+          "type": "sight",
+          "label": "관광지",
+          "title": "시티투어 해운대",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 8,
+          "day": 0,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "브라운도트 호텔 다대포해수욕장점",
+          "sub": "사하구",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 9,
+          "day": 0,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "다대 씨 파크",
+          "sub": "사하구",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 10,
+          "day": 1,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "브라운도트 호텔 다대포해수욕장점",
+          "sub": "사하구",
+          "time": "09:00",
+          "memo": "9시 출발"
+        },
+        {
+          "id": 11,
+          "day": 1,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "31cm 해물칼국수 하단점",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 12,
+          "day": 1,
+          "type": "sight",
+          "label": "관광지",
+          "title": "감천 문화 마을",
+          "sub": "사하구",
+          "time": "",
+          "memo": "부산역 → 오렌지라인 4번"
+        },
+        {
+          "id": 13,
+          "day": 1,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "이재모피자 본점",
+          "sub": "중구",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 14,
+          "day": 1,
+          "type": "transport",
+          "label": "교통",
+          "title": "부산역",
+          "sub": "동구",
+          "time": "18:00",
+          "memo": "KTX 54열차(00054) · 부산 18:00 → 광명 20:33 · 9호차 11C석, 9호차 11D석 · 2023.6.17"
+        }
+      ],
+      "exp": [],
+      "nid": 25
+    },
+    {
+      "id": 13,
+      "title": "다낭 여행",
+      "start": "2023-12-02",
+      "end": "2023-12-05",
+      "cur": "VND",
+      "rate": 0.054,
+      "items": [
+        {
+          "type": "flight",
+          "al": "대한항공",
+          "fno": "KE457",
+          "fr": "ICN",
+          "to": "DAD 14:15",
+          "time": "11:10",
+          "title": "ICN 11:10 - DAD 14:15",
+          "sub": "대한항공 KE457",
+          "memo": "",
+          "id": 1,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "다낭국제공항",
+          "sub": "",
+          "time": "",
+          "memo": "3시",
+          "id": 2,
+          "day": 0
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "실크 센스 호이안 리버 리조트",
+          "sub": "5성급",
+          "time": "16:00",
+          "memo": "4시 도착 예정 / 다도 픽업",
+          "id": 3,
+          "day": 0
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "Hi Restaurant",
+          "sub": "호이안",
+          "time": "",
+          "memo": "저녁",
+          "id": 4,
+          "day": 0
+        },
+        {
+          "type": "activity",
+          "label": "액티비티",
+          "title": "더 엔젤 스파",
+          "sub": "호이안",
+          "time": "",
+          "memo": "발마사지 완전 비추",
+          "id": 5,
+          "day": 0
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "더 삼목 아이리시 펍 호이안 점",
+          "sub": "술집/바",
+          "time": "",
+          "memo": "",
+          "id": 6,
+          "day": 0
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "KT 과일",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 7,
+          "day": 0
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "실크 센스 호이안 리버 리조트",
+          "sub": "5성급",
+          "time": "",
+          "memo": "",
+          "id": 8,
+          "day": 1
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "안 방 비치",
+          "sub": "호이안",
+          "time": "",
+          "memo": "",
+          "id": 9,
+          "day": 1
+        },
+        {
+          "type": "other",
+          "label": "환전",
+          "title": "환전 1,000,000동",
+          "sub": "",
+          "time": "",
+          "memo": "VIETBANK ATM 출금 영수증",
+          "id": 10,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "호로관",
+          "sub": "호이안",
+          "time": "",
+          "memo": "점심 / 타미린새우 / 반쎄오 / 완탕",
+          "id": 11,
+          "day": 1
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "콩 카페 호이안 점",
+          "sub": "호이안",
+          "time": "",
+          "memo": "티멤버십 10%할인",
+          "id": 12,
+          "day": 1
+        },
+        {
+          "type": "activity",
+          "label": "액티비티",
+          "title": "인생네컷 호이안 점",
+          "sub": "호이안",
+          "time": "",
+          "memo": "",
+          "id": 13,
+          "day": 1
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "Red Apple Tailor (픽드랍 장소)",
+          "sub": "나만의 장소",
+          "time": "15:30",
+          "memo": "스파 픽업 위치",
+          "id": 14,
+          "day": 1
+        },
+        {
+          "type": "activity",
+          "label": "액티비티",
+          "title": "다한 스파 남호이안 점",
+          "sub": "호이안",
+          "time": "16:00",
+          "memo": "티멤버십 10%할인 / 다도 할인 / 4시 예약 완료",
+          "id": 15,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "포즈 엔드 엔조이 점",
+          "sub": "호이안",
+          "time": "",
+          "memo": "분짜 / 완탕 / 총알조이어 / 반쎄오 / 오징어링 / 할인 종료",
+          "id": 16,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "Cô Smoothies",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 17,
+          "day": 1
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "TMS 호텔 다낭 비치",
+          "sub": "5성급",
+          "time": "12:00",
+          "memo": "12시 도착 예정",
+          "id": 18,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "2 Ladies Kitchen",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "반미 간식",
+          "id": 19,
+          "day": 2
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "미케 비치",
+          "sub": "미케 비치&논느억 비치",
+          "time": "",
+          "memo": "",
+          "id": 20,
+          "day": 2
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "다낭 대성당",
+          "sub": "다낭 시내",
+          "time": "",
+          "memo": "",
+          "id": 21,
+          "day": 2
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "콩 카페 응우옌 타이 혹 점",
+          "sub": "다낭 시내",
+          "time": "",
+          "memo": "",
+          "id": 22,
+          "day": 2
+        },
+        {
+          "type": "activity",
+          "label": "액티비티",
+          "title": "다한 스파 다낭 럭셔리 점",
+          "sub": "미케 비치&논느억 비치",
+          "time": "",
+          "memo": "",
+          "id": 23,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "목 씨푸드",
+          "sub": "다낭 시내",
+          "time": "18:00",
+          "memo": "다도할인 / 6시 예약 완료 / 6:15분까지 예약 유지 / 카드 결제 가능",
+          "id": 24,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "더 삼목 레스토랑 앤 아이리시 펍 다낭 점",
+          "sub": "술집/바",
+          "time": "",
+          "memo": "",
+          "id": 25,
+          "day": 2
+        },
+        {
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "유가네 과일",
+          "sub": "다낭 시내",
+          "time": "",
+          "memo": "",
+          "id": 26,
+          "day": 2
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "TMS 호텔 다낭 비치",
+          "sub": "5성급",
+          "time": "",
+          "memo": "",
+          "id": 27,
+          "day": 3
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "Maia beach bar Da Nang",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 28,
+          "day": 3
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "2 Ladies Kitchen",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 29,
+          "day": 3
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "다낭국제공항",
+          "sub": "",
+          "time": "13:30",
+          "memo": "1시 30분까지 도착",
+          "id": 30,
+          "day": 3
+        },
+        {
+          "type": "flight",
+          "al": "대한항공",
+          "fno": "KE458",
+          "fr": "DAD",
+          "to": "ICN 22:05",
+          "time": "15:45",
+          "title": "DAD 15:45 - ICN 22:05",
+          "sub": "대한항공 KE458",
+          "memo": "",
+          "id": 31,
+          "day": 3
+        }
+      ],
+      "exp": [],
+      "nid": 42
+    },
+    {
+      "id": 14,
+      "title": "홍콩 여행",
+      "start": "2024-03-09",
+      "end": "2024-03-12",
+      "cur": "HKD",
+      "rate": 175,
+      "items": [
+        {
+          "type": "flight",
+          "al": "대한항공",
+          "fno": "KE171",
+          "fr": "ICN",
+          "to": "HKG 11:20",
+          "time": "08:20",
+          "title": "ICN 08:20 - HKG 11:20",
+          "sub": "대한항공 KE171",
+          "memo": "홍콩 공항: 249 or 252 게이트 에스컬레이터 타고 왼쪽 4층, 7시부터 입장",
+          "id": 1,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "홍콩 국제공항",
+          "sub": "란타우섬",
+          "time": "",
+          "memo": "직행버스(coach) 이용 / 12:30 버스, 30분 전 카운터 도착 / 키오스크에서 마카오행 버스 티켓 구매 / 호텔 셔틀 C13 정류장, 약 25분, 배차 18~20분 · 상세 안내는 트리플 원문 확인",
+          "id": 2,
+          "day": 0
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "런더너 그랜드, 어 럭셔리 컬렉션 호텔, 마카오",
+          "sub": "5성급 · 마카오",
+          "time": "",
+          "memo": "시티오브드림 셔틀 이용 후 도보 5분 (원문 확인)",
+          "id": 3,
+          "day": 0
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "렁치케이 세나도 광장 점",
+          "sub": "마카오",
+          "time": "",
+          "memo": "완탕면, 크램콩지, 요우티아오",
+          "id": 4,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "세나도 광장",
+          "sub": "마카오",
+          "time": "",
+          "memo": "",
+          "id": 5,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "성 바울 성당 유적",
+          "sub": "마카오",
+          "time": "",
+          "memo": "",
+          "id": 6,
+          "day": 0
+        },
+        {
+          "type": "place",
+          "label": "장소",
+          "title": "레몬첼로 젤라토",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 7,
+          "day": 0
+        },
+        {
+          "type": "place",
+          "label": "장소",
+          "title": "lemon cello",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 8,
+          "day": 0
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "바우 베이커리 하우스",
+          "sub": "마카오",
+          "time": "",
+          "memo": "에그타르트",
+          "id": 9,
+          "day": 0
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "더 런더너 호텔",
+          "sub": "5성급 · 마카오",
+          "time": "",
+          "memo": "4:00, 7:30, 9:30 근처 근위병 교대식 / 7:30~11:30 매 시각 런더너 퍼레이드 앤 사운드쇼(무료)",
+          "id": 10,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "더 파리지앵 마카오",
+          "sub": "마카오",
+          "time": "",
+          "memo": "",
+          "id": 11,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "베네시안 리조트 마카오",
+          "sub": "마카오",
+          "time": "",
+          "memo": "",
+          "id": 12,
+          "day": 0
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "복망관 노스",
+          "sub": "마카오",
+          "time": "",
+          "memo": "",
+          "id": 13,
+          "day": 0
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "로드 스토우 베이커리 베네시안 마카오 리조트",
+          "sub": "마카오",
+          "time": "",
+          "memo": "",
+          "id": 14,
+          "day": 0
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "윈 팰리스 분수쇼",
+          "sub": "마카오",
+          "time": "",
+          "memo": "공연 시간: 12:00~18:00 30분마다 / 18:00~24:00 20분마다",
+          "id": 15,
+          "day": 0
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "런더너 그랜드, 어 럭셔리 컬렉션 호텔, 마카오",
+          "sub": "5성급 · 마카오",
+          "time": "",
+          "memo": "ICBC ATM 수수료 없음, MOP500 인출",
+          "id": 16,
+          "day": 0
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "런더너 그랜드, 어 럭셔리 컬렉션 호텔, 마카오",
+          "sub": "5성급 · 마카오",
+          "time": "08:00",
+          "memo": "정문에서 셔틀버스 탑승",
+          "id": 17,
+          "day": 1
+        },
+        {
+          "type": "activity",
+          "label": "액티비티",
+          "title": "마카오 타이파 페리 터미널",
+          "sub": "마카오",
+          "time": "09:00",
+          "memo": "2층 카운터 1-12에서 표 교환",
+          "id": 18,
+          "day": 1
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "센트럴 페리 터미널",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 19,
+          "day": 1
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "아크보 호텔",
+          "sub": "4성급 · 성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "성완역 A출구 atm출금(bank of china) / 성완역 A2출구 도보 5분",
+          "id": 20,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "뉴 힝 팻 딤섬",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "창펀, 크리스피딤섬",
+          "id": 21,
+          "day": 1
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "베이크 하우스 소호 점",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 22,
+          "day": 1
+        },
+        {
+          "type": "activity",
+          "label": "액티비티",
+          "title": "포춘 풋 마사지 센추리 스퀘어 점",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 23,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "칙 투 칙",
+          "sub": "술집/바",
+          "time": "",
+          "memo": "",
+          "id": 24,
+          "day": 1
+        },
+        {
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "K11 뮤제아",
+          "sub": "",
+          "time": "",
+          "memo": "4층 K bar / 중식당과 붙어있는데 바 이용 의사 밝히면 됨 / 나이트트릿 사용 / 테라스로 나가 야경",
+          "id": 25,
+          "day": 1
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "스타의 거리",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 26,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "THE MUSSELS",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 27,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "네드 켈리스 라스트 스탠드",
+          "sub": "술집/바",
+          "time": "",
+          "memo": "밤 9시 이전까지 해피아워 / 9:30분에 공연 시작",
+          "id": 28,
+          "day": 1
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "스탠리 비치",
+          "sub": "애버딘, 리펄스베이, 스탠리",
+          "time": "",
+          "memo": "홍콩역 D번출구 버스정거장(익스체인지 스퀘어) 260번이 가장 빠르고, 6번과 6A번 등은 코즈웨이베이 경유",
+          "id": 29,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "Spiaggia",
+          "sub": "애버딘, 리펄스베이, 스탠리",
+          "time": "",
+          "memo": "피쉬앤칩스, 라쉬올리",
+          "id": 30,
+          "day": 1
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "베이크 하우스 스탠리 점",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 31,
+          "day": 1
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "하프웨이 커피 성완 점",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 32,
+          "day": 1
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "딤딤섬 조단 점",
+          "sub": "",
+          "time": "",
+          "memo": "炸兩 추천 / 튀김새우창편, 가지딤섬",
+          "id": 33,
+          "day": 1
+        },
+        {
+          "type": "cafe",
+          "label": "카페",
+          "title": "랄프스 커피 오션 터미널 점",
+          "sub": "침사추이",
+          "time": "",
+          "memo": "",
+          "id": 34,
+          "day": 1
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "아크보 호텔",
+          "sub": "4성급 · 성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 35,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "샹 키 콘지 숍",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "#2소고기죽, #18요우티아오, #7갑오징어볼완탕면",
+          "id": 36,
+          "day": 2
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "타이 쿤 센트럴 포 헤리티지 앤 아트",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 37,
+          "day": 2
+        },
+        {
+          "type": "place",
+          "label": "장소",
+          "title": "On The Hill Coffee Bar",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "",
+          "id": 38,
+          "day": 2
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "만다린 오리엔탈 홍콩",
+          "sub": "5성급 · 성완, 센트럴, 빅토리아피크",
+          "time": "14:30",
+          "memo": "2:30-5:30",
+          "id": 39,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "클리퍼 라운지",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 40,
+          "day": 2
+        },
+        {
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "센트럴 마켓",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 41,
+          "day": 2
+        },
+        {
+          "type": "place",
+          "label": "장소",
+          "title": "SPA大顺养生馆",
+          "sub": "나만의 장소",
+          "time": "",
+          "memo": "12시까지 영업",
+          "id": 42,
+          "day": 2
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "소호",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 43,
+          "day": 2
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "란콰이퐁",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 44,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "바치",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 45,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "파스티스",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 46,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "막스 누들 본점",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 47,
+          "day": 2
+        },
+        {
+          "type": "other",
+          "label": "메모",
+          "title": "바세린립밤, 기화병가에그롤",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 48,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "원딤섬 센트럴 점",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 49,
+          "day": 2
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "삼다면식",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "새우완탕면",
+          "id": 50,
+          "day": 2
+        },
+        {
+          "type": "hotel",
+          "label": "호텔",
+          "title": "아크보 호텔",
+          "sub": "4성급 · 성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 51,
+          "day": 3
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "란 퐁 유엔 본점",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 52,
+          "day": 3
+        },
+        {
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "IFC 몰",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 53,
+          "day": 3
+        },
+        {
+          "type": "restaurant",
+          "label": "식당",
+          "title": "딤섬 스퀘어",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 54,
+          "day": 3
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "홍콩 역",
+          "sub": "성완, 센트럴, 빅토리아피크",
+          "time": "",
+          "memo": "",
+          "id": 55,
+          "day": 3
+        },
+        {
+          "type": "sight",
+          "label": "관광지",
+          "title": "홍콩 국제공항",
+          "sub": "란타우섬",
+          "time": "13:00",
+          "memo": "1시까지 공항도착",
+          "id": 56,
+          "day": 3
+        },
+        {
+          "type": "flight",
+          "al": "대한항공",
+          "fno": "KE174",
+          "fr": "HKG",
+          "to": "ICN 20:00",
+          "time": "15:25",
+          "title": "HKG 15:25 - ICN 20:00",
+          "sub": "대한항공 KE174",
+          "memo": "",
+          "id": 57,
+          "day": 3
+        },
+        {
+          "type": "other",
+          "label": "메모",
+          "title": "우버 할인코드: MEETHK100, HKUBER100",
+          "sub": "",
+          "time": "",
+          "memo": "",
+          "id": 58,
+          "day": 3
+        }
+      ],
+      "exp": [],
+      "nid": 69
     }
   ],
-  "nid": 3
+  "nid": 100
 }
