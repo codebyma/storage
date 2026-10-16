@@ -14,7 +14,7 @@
           "sub": "아시아나항공 OZ327 (인천 T2)",
           "route": "ICN → TSN",
           "time": "08:55",
-          "memo": "",
+          "memo": "메모",
           "fr": "인천",
           "to": "톈진",
           "al": "아시아나항공",
@@ -40,7 +40,20 @@
           "time": "",
           "memo": "",
           "ph": [],
-          "map": ""
+          "map": "https://maps.app.goo.gl/TTjFoCDBWwjCXmKv8?g_st=ic"
+        },
+        {
+          "id": 12,
+          "day": 3,
+          "type": "flight",
+          "al": "아시아나",
+          "fno": "OZ345",
+          "fr": "톈진",
+          "to": "임천",
+          "time": "17:21",
+          "memo": "",
+          "title": "톈진 17:21 - 임천",
+          "sub": "아시아나 OZ345"
         }
       ],
       "exp": [
@@ -61,10 +74,302 @@
           "cny": 200000
         }
       ],
-      "nid": 12,
+      "nid": 13,
       "id": 1,
       "cur": "CNY"
+    },
+    {
+      "title": "방콕 여행",
+      "start": "2023-03-01",
+      "end": "2023-03-04",
+      "cur": "THB",
+      "rate": 40,
+      "items": [
+        {
+          "id": 1,
+          "day": 0,
+          "type": "place",
+          "label": "공항",
+          "title": "수완나품 국제공항",
+          "sub": "",
+          "time": "13:30",
+          "memo": "입국심사/수화물 1시간, 숙소이동 1시간"
+        },
+        {
+          "id": 2,
+          "day": 0,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "15:30",
+          "memo": ""
+        },
+        {
+          "id": 3,
+          "day": 0,
+          "type": "activity",
+          "label": "액티비티",
+          "title": "오아시스 스파 수쿰윗 31 점",
+          "sub": "수쿰윗",
+          "time": "18:00",
+          "memo": "골든 그로우 핫 오일 마사지(90분)"
+        },
+        {
+          "id": 4,
+          "day": 0,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "P 키친",
+          "sub": "수쿰윗",
+          "time": "16:00",
+          "memo": ""
+        },
+        {
+          "id": 5,
+          "day": 0,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "티추카 루프탑 바",
+          "sub": "술집/바",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 6,
+          "day": 0,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 7,
+          "day": 1,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 8,
+          "day": 1,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "고메 마켓 터미널 21 아속 점",
+          "sub": "수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 9,
+          "day": 1,
+          "type": "sight",
+          "label": "관광지",
+          "title": "왕궁",
+          "sub": "올드 시티",
+          "time": "",
+          "memo": "MRT/플랫폼1/BL22(Sukhumvit) BL31(Sanam Chai 1번 출구) · Lak Song 방향"
+        },
+        {
+          "id": 10,
+          "day": 1,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "올 밀스 사왓디",
+          "sub": "",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 11,
+          "day": 1,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "팁 씨마이 아이콘시암 점",
+          "sub": "시푼·실물·리버사이드",
+          "time": "17:30",
+          "memo": "오팬지주스"
+        },
+        {
+          "id": 12,
+          "day": 1,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "아이콘시암",
+          "sub": "시푼·실물·리버사이드",
+          "time": "19:00",
+          "memo": "분수쇼, 저녁야경 · 7층 스칵에서 야외 야경 볼 수 있는 자리 · 쑥시암-실내야시장"
+        },
+        {
+          "id": 13,
+          "day": 1,
+          "type": "activity",
+          "label": "액티비티",
+          "title": "헬씨 마사지 수쿰빗 19 점",
+          "sub": "수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 14,
+          "day": 1,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 15,
+          "day": 2,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 16,
+          "day": 2,
+          "type": "activity",
+          "label": "액티비티",
+          "title": "바와",
+          "sub": "수쿰윗",
+          "time": "11:00",
+          "memo": "더 센세이셔널 오브 스타 퍼스트(150분) · 핫톤"
+        },
+        {
+          "id": 17,
+          "day": 2,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "노스이스트",
+          "sub": "시푼·실물·리버사이드",
+          "time": "14:00",
+          "memo": ""
+        },
+        {
+          "id": 18,
+          "day": 2,
+          "type": "sight",
+          "label": "관광지",
+          "title": "촘 아룬",
+          "sub": "올드 시티",
+          "time": "19:45",
+          "memo": "최소 6시 20분 출발 / 7시 45분 예약 · BTS 아속역 환승 · MRT/플랫폼1/BL22(Sukhumvit) BL31(Sanam Chai 4번 출구) · Lak Song 방향"
+        },
+        {
+          "id": 19,
+          "day": 2,
+          "type": "sight",
+          "label": "관광지",
+          "title": "람부뜨리 로드",
+          "sub": "올드 시티",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 20,
+          "day": 2,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "조드 페어",
+          "sub": "",
+          "time": "22:00",
+          "memo": "MRT/플랫폼2/BL31(Sanam Chai) BL20(Phra Ram 9) JODD FAIRS 방향 2번 출구 · Toa Poon 방향 · 목적지인 조드페어 야시장을 알리는 안내판도 설치되어 있는 걸 보니 잘 도착했어요"
+        },
+        {
+          "id": 21,
+          "day": 2,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "",
+          "memo": "MRT/플랫폼1/Sukhumvit 5번 출구"
+        },
+        {
+          "id": 22,
+          "day": 3,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
+          "sub": "5성급 · 수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 23,
+          "day": 3,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "짜뚜짝 시장",
+          "sub": "",
+          "time": "",
+          "memo": "MRT/플랫폼2/BL22(Sukhumvit) BL12(Kamphaeng Phet 2번 출구) · Toa Poon 방향"
+        },
+        {
+          "id": 24,
+          "day": 3,
+          "type": "sight",
+          "label": "관광지",
+          "title": "통로",
+          "sub": "수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 25,
+          "day": 3,
+          "type": "shopping",
+          "label": "쇼핑",
+          "title": "엠쿼티어",
+          "sub": "수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 26,
+          "day": 3,
+          "type": "restaurant",
+          "label": "식당",
+          "title": "싯 앤 원더",
+          "sub": "수쿰윗",
+          "time": "",
+          "memo": ""
+        },
+        {
+          "id": 27,
+          "day": 3,
+          "type": "activity",
+          "label": "액티비티",
+          "title": "방콕 더 그랜드 스파 (쉐라톤 그랜드 수쿰윗)",
+          "sub": "방콕",
+          "time": "17:00",
+          "memo": ""
+        },
+        {
+          "id": 28,
+          "day": 3,
+          "type": "place",
+          "label": "공항",
+          "title": "수완나품 국제공항",
+          "sub": "",
+          "time": "",
+          "memo": "7시 택시 출발"
+        }
+      ],
+      "exp": [],
+      "nid": 39,
+      "id": 2
     }
   ],
-  "nid": 2
+  "nid": 3
 }
