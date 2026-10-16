@@ -9,14 +9,14 @@
 <style>
 /* ===== 디자인 가이드: 값은 :root 변수에서만 수정 / 화면은 공통 컴포넌트만 사용 ===== */
 :root{--bg:#fff;--card:#f7f8fa;--tx:#1b1b1f;--sub:#9a9aa3;--line:#e6e6ea;--pri:#4a33ff;--pl:#ecebff;--chip:#f1f1f3;--sheet:#fff;--green:#d3e8c4;--yellow:#f2e4b5;--pink:#f1d3de;--sky:#cfe3f1;
---fs-ttl:20px;--fs-lbl:13px;--fs-body:14px;--fs-sm:12px;--fs-btn:15px;--fw-lbl:400;--fw-b:700;
+--full:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));--fs-ttl:20px;--fs-lbl:13px;--fs-body:14px;--fs-sm:12px;--fs-btn:15px;--fw-lbl:400;--fw-b:700;
 --r-field:14px;--p-field:16px;--gap:16px;--pad:20px;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121214;--card:#1c1c20;--tx:#f2f2f5;--sub:#8b8b95;--line:#2a2a30;--pri:#8a79ff;--pl:#26223f;--chip:#222226;--sheet:#1c1c20;--green:#3d4f36;--yellow:#574d2c;--pink:#57404a;--sky:#34495a;--dotc:#d0d0d6;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#121214;--card:#1c1c20;--tx:#f2f2f5;--sub:#8b8b95;--line:#2a2a30;--pri:#8a79ff;--pl:#26223f;--chip:#222226;--sheet:#1c1c20;--green:#3d4f36;--yellow:#574d2c;--pink:#57404a;--sky:#34495a;--dotc:#d0d0d6;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;display:flex;justify-content:center}
-#app{width:100%;max-width:480px;min-height:100vh;position:relative}
+#app{width:100%;max-width:480px;min-height:var(--full);position:relative}
 button,input,select,textarea{font:inherit;color:inherit;touch-action:manipulation}button{border:0;background:none;cursor:pointer}
 /* --- 공통: 제목/부제/라벨/입력칸/버튼 (바텀시트·전체화면 모두 이것만 사용) --- */
 .ttl{font-size:var(--fs-ttl);font-weight:var(--fw-b);margin:0}
@@ -41,7 +41,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .btn.sm{flex:none;padding:14px 16px;font-weight:400;font-size:var(--fs-body)}.btn.full{width:100%;flex:none;margin-top:12px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:20}.ov.on{display:flex}
 .sheet{background:var(--sheet);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:26px var(--pad) calc(24px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
-.scr{display:flex;flex-direction:column;min-height:100vh}.scr .form{padding:var(--pad)}.scr .form .fg:first-child{margin-top:0}
+.scr{display:flex;flex-direction:column;min-height:var(--full)}.scr .form{padding:var(--pad)}.scr .form .fg:first-child{margin-top:0}
 .xbar{position:sticky;bottom:0;margin-top:auto;padding:16px var(--pad) calc(16px + env(safe-area-inset-bottom,0px));background:var(--bg)}
 /* --- 앱바/칩/일정 --- */
 .hd{display:flex;align-items:center;gap:12px;padding:14px var(--pad);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);background:var(--bg);z-index:5}
@@ -144,7 +144,7 @@ const loadImg=(f,max,q)=>new Promise((ok,no)=>{const im=new Image(),u=URL.create
 async function addPhotos(id,files){const c=GH(),h=$('ph_h');
 if(!c.repo||!c.token){h.textContent='사진은 GitHub 연결 후 올릴 수 있어요 (⋯ → GitHub 동기화 → 연결 설정)';return}
 const x=S.items.find(i=>i.id==id);x.ph=x.ph||[];
-for(const f of files){try{h.textContent='올리는 중…';const full=await loadImg(f,1600,.8),th=await loadImg(f,200,.7),name=`photos/${S.id}/${id}-${Date.now()}.jpg`;
+for(const f of files){try{h.textContent='올리는 중…';const full=await loadImg(f,1600,.8),th=await loadImg(f,200,.7),name=`travel/photos/${S.id}/${id}-${Date.now()}.jpg`;
 await ghReq('PUT',{message:'사진 추가',content:full.split(',')[1],branch:c.branch||'main'},name);
 x.ph.push({p:name,t:th});save();$('phs').innerHTML=thumbs(x)}catch(e){h.textContent=ghErr(e);return}}
 h.textContent='';render()}
