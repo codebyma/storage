@@ -28,6 +28,7 @@ button,input,select,textarea{font:inherit;color:inherit;touch-action:manipulatio
 textarea.in{min-height:0}
 .in[type=date],.in[type=time]{-webkit-appearance:none;appearance:none;text-align:left}
 .in::-webkit-date-and-time-value{text-align:left;margin:0}
+.in.ta{resize:none;overflow:hidden;line-height:1.5}
 .in.bare{background:none;padding:0;min-height:0;border-radius:0}
 input.ttl.in{font-size:var(--fs-ttl);font-weight:var(--fw-b)}
 input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
@@ -72,7 +73,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dot{position:absolute;top:50%;left:0;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;color:var(--dotc,#666);z-index:1}
 .it{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;flex:1;background:var(--card);border-radius:12px;padding:16px;text-align:left}
 .it small{display:block;color:var(--sub);font-size:11px;margin-bottom:4px}.it b{font-size:14px;font-weight:600;line-height:1.45}
-.it .s{color:var(--pri);font-size:12px;margin-top:4px}.it .m{color:var(--sub);font-size:12px;margin-top:4px}
+.it .s{color:var(--pri);font-size:12px;margin-top:4px}.it .m{color:var(--sub);font-size:12px;margin-top:4px;white-space:pre-line}
 /* --- 가계부 --- */
 .tot{padding:22px var(--pad);border-bottom:8px solid var(--card)}.tot small{color:var(--sub);font-size:12px}.tot h2{color:var(--pri);font-size:26px;margin:6px 0}.tot div{font-weight:600;font-size:15px}
 .seg{display:flex;background:var(--chip);border-radius:24px;padding:5px;width:max-content;margin:20px auto}.seg button{padding:9px 24px;border-radius:20px;color:var(--sub);font-size:13px}.seg .on{background:var(--bg);color:var(--tx);font-weight:700}
@@ -118,6 +119,8 @@ const icon=t=>t=='flight'?SV('<path transform="rotate(45 12 12)" d="M21 16v-2l-8
 /* --- 공통 폼 빌더: 모든 시트/화면이 이 함수만 사용 --- */
 const fg=(l,c,req)=>`<div class="fg"><label class="lbl">${l}${req?'<i>*</i>':''}</label>${c}</div>`;
 const inp=(id,val='',x='')=>`<input class="in" id="${id}" value="${esc(val)}" ${x}>`;
+const ta=(id,v,ph='')=>`<textarea class="in ta" id="${id}" rows="1" placeholder="${ph}" oninput="grow(this)">${esc(v)}</textarea>`;
+const grow=e=>{e.style.height='auto';e.style.height=e.scrollHeight+'px'};
 const sel=(id,opts,cur,x='')=>`<select class="in" id="${id}" ${x}>${opts.map(([o,t])=>`<option value="${o}" ${o==cur?'selected':''}>${t}</option>`).join('')}</select>`;
 const dayOpts=ex=>[...(ex?[[-1,'여행 전']]:[]),...days().map((d,i)=>[i,`Day ${i+1} - ${dl(d)}`]),...(ex?[[99,'여행 후']]:[])];
 const bG=(t,f)=>`<button class="btn g" onclick="${f}">${t}</button>`,bP=(t,f)=>`<button class="btn" onclick="${f}">${t}</button>`;
@@ -126,7 +129,7 @@ const hd3=(t,sub)=>`<div class="shh"><h3 class="ttl">${t}</h3>${sub?`<div class=
 const XI='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg>';
 const BK='<svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1 1 9l8 8"/></svg>';
 const MORE='<span class="ic" onclick="settings()">⋯</span>';
-const sheet=h=>{const b=$('sh');b.innerHTML=h;const hh=b.querySelector&&b.querySelector('.shh');if(hh)hh.insertAdjacentHTML('beforeend',`<button class="x" onclick="shut()">${XI}</button>`);b.scrollTop=0;$('ov').classList.add('on')},shut=()=>$('ov').classList.remove('on');
+const sheet=h=>{const b=$('sh');b.innerHTML=h;const hh=b.querySelector&&b.querySelector('.shh');if(hh)hh.insertAdjacentHTML('beforeend',`<button class="x" onclick="shut()">${XI}</button>`);b.scrollTop=0;$('ov').classList.add('on');if(b.querySelectorAll)b.querySelectorAll('textarea.ta').forEach(grow)},shut=()=>$('ov').classList.remove('on');
 $('ov').onclick=e=>{if(e.target.id=='ov')shut()};
 const go=n=>{view=n;scrollTo(0,0);render()};
 const render=()=>{$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView()};
@@ -169,7 +172,7 @@ const fixFlights=t=>(t.items||[]).forEach(x=>{if(x.type!='flight'||x.fno!==undef
 const a=(x.title||'').match(/^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(.+)$/);if(a){x.fr=a[1];x.time=x.time||a[2];x.to=a[3]}else{x.fr=x.title||''}
 const b=(x.sub||'').match(/^(\S+)\s+(.*)$/);if(b){x.al=b[1];x.fno=b[2]}else{x.al=x.sub||'';x.fno=''}});
 function editFlight(id){const x=S.items.find(i=>i.id==id);
-sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)+recBlock(x)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upFlight(${id})`)))}
+sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))+recBlock(x)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upFlight(${id})`)))}
 function upFlight(id){const x=S.items.find(i=>i.id==id);x.al=v('a_n').trim();x.fno=v('a_f').trim();x.fr=v('a_from').trim();x.to=v('a_to').trim();x.time=v('a_time');x.memo=v('e_m');x.title=flT(x);x.sub=flS(x);save();shut();render()}
 /* --- 일정 --- */
 function trip(){const D=days();
@@ -188,10 +191,11 @@ sheet(hd3('일정 추가',TN[type])+
 fg('날짜',sel('f_day',dayOpts(),day))+
 fg('종류',sel('f_type',Object.entries(TN),type,`onchange="addItem(this.value,+v('f_day'))"`))+
 fg('이름',inp('f_t','',`placeholder="${type=='flight'?'인천 08:55 - 톈진':'장소 이름'}"`))+
+fg('메모',ta('f_m','','메모'))+
 fg('구글지도',`<div class="mr"><button class="btn g sm" onclick="srch()">지도에서 검색</button>${inp('f_map','','placeholder="공유 링크 붙여넣기" oninput="mapFill()"')}</div><div class="hint">이름 입력 후 검색 → 구글지도에서 공유 링크 복사 → 붙여넣기</div>`)+
 btns(bG('취소','shut()'),bP('추가','saveNew()')))}
 function saveNew(){const t=v('f_t').trim();if(!t)return;const ty=v('f_type');
-S.items.push({id:S.nid++,day:+v('f_day'),type:ty,label:ty=='hotel'?'호텔':TN[ty],title:t,sub:'',time:'',map:v('f_map').trim(),memo:''});
+S.items.push({id:S.nid++,day:+v('f_day'),type:ty,label:ty=='hotel'?'호텔':TN[ty],title:t,sub:'',time:'',map:v('f_map').trim(),memo:v('f_m')});
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function addFlight(day=0){
 sheet(hd3('일정 추가','항공편')+
@@ -200,16 +204,16 @@ fg('종류',sel('f_type',Object.entries(TN),'flight',`onchange="addItem(this.val
 fg('항공사',inp('a_n','','placeholder="아시아나항공"'))+
 fg('항공편명',inp('a_f','','placeholder="OZ327"'))+
 fg('출발 · 도착',`<div class="mr">${inp('a_from','','placeholder="출발지"')}${inp('a_to','','placeholder="도착지"')}</div>`)+
-fg('출발 시간',inp('a_time','','type="time"'))+
+fg('출발 시간',inp('a_time','','type="time"'))+fg('메모',ta('f_m','','메모'))+
 btns(bG('취소','shut()'),bP('추가','saveFlight()')))}
 function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').trim(),to=v('a_to').trim(),t=v('a_time');
 if(!f&&!al)return;
-const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:''};x.title=flT(x);x.sub=flS(x);S.items.push(x);
+const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:v('f_m')};x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function editItem(id){if(Date.now()-(window._dd||0)<500)return;fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
 sheet(`<div class="shh"><input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}"></div>`+
-(f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)
-:fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>메모</span>${inp('e_m',x.memo)}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button>`))+
+(f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))
+:fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button><div class="fg"><label class="lbl">메모</label>${ta('e_m',x.memo,'참고할 내용을 적어주세요.')}</div>`))+
 recBlock(x)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
 function upItem(id){const x=S.items.find(i=>i.id==id);x.title=v('e_t');
 if(x.type=='flight'){x.route=v('e_r');x.sub=v('e_fn')}else{x.sub=v('e_s');x.time=v('e_time');x.map=v('e_map').trim()}
