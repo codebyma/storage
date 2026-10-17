@@ -41,7 +41,9 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .btn.g{background:var(--chip);color:var(--tx)}.btn.g.sm.on{background:var(--pl);color:var(--pri)}.thm .btn{flex:1}
 .btn.sm{flex:none;padding:14px 16px;font-weight:400;font-size:var(--fs-body)}.btn.full{width:100%;flex:none;margin-top:12px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;z-index:20}.ov.on{display:flex}
-.sheet{background:var(--sheet);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:26px var(--pad) calc(24px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.sheet{background:var(--sheet);width:100%;max-width:480px;border-radius:26px 26px 0 0;padding:0 var(--pad) calc(24px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.shh{position:sticky;top:0;z-index:2;background:var(--sheet);padding:26px 44px 4px 0}
+.shh .x{position:absolute;right:0;top:22px;width:32px;height:32px;border-radius:50%;background:var(--chip);color:var(--tx);display:flex;align-items:center;justify-content:center}
 .scr{display:flex;flex-direction:column;min-height:var(--full)}.scr .form{padding:var(--pad)}.scr .form .fg:first-child{margin-top:0}
 .xbar{position:sticky;bottom:0;margin-top:auto;padding:16px var(--pad) calc(16px + env(safe-area-inset-bottom,0px));background:var(--bg)}
 /* --- 앱바/칩/일정 --- */
@@ -117,10 +119,11 @@ const sel=(id,opts,cur,x='')=>`<select class="in" id="${id}" ${x}>${opts.map(([o
 const dayOpts=ex=>[...(ex?[[-1,'여행 전']]:[]),...days().map((d,i)=>[i,`Day ${i+1} - ${dl(d)}`]),...(ex?[[99,'여행 후']]:[])];
 const bG=(t,f)=>`<button class="btn g" onclick="${f}">${t}</button>`,bP=(t,f)=>`<button class="btn" onclick="${f}">${t}</button>`;
 const btns=(a,b,c='')=>`<div class="btns ${c}">${a}${b}</div>`;
-const hd3=(t,sub)=>`<h3 class="ttl">${t}</h3>${sub?`<div class="sb">${sub}</div>`:''}`;
+const hd3=(t,sub)=>`<div class="shh"><h3 class="ttl">${t}</h3>${sub?`<div class="sb">${sub}</div>`:''}</div>`;
+const XI='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg>';
 const BK='<svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1 1 9l8 8"/></svg>';
 const MORE='<span class="ic" onclick="settings()">⋯</span>';
-const sheet=h=>{$('sh').innerHTML=h;$('ov').classList.add('on')},shut=()=>$('ov').classList.remove('on');
+const sheet=h=>{const b=$('sh');b.innerHTML=h;const hh=b.querySelector&&b.querySelector('.shh');if(hh)hh.insertAdjacentHTML('beforeend',`<button class="x" onclick="shut()">${XI}</button>`);b.scrollTop=0;$('ov').classList.add('on')},shut=()=>$('ov').classList.remove('on');
 $('ov').onclick=e=>{if(e.target.id=='ov')shut()};
 const go=n=>{view=n;scrollTo(0,0);render()};
 const render=()=>{$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView()};
@@ -201,7 +204,7 @@ if(!f&&!al)return;
 const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:''};x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function editItem(id){fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
-sheet(`<input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}">`+
+sheet(`<div class="shh"><input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}"></div>`+
 (f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)
 :fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>메모</span>${inp('e_m',x.memo)}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button>`))+
 recBlock(x)+btns(bG('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
