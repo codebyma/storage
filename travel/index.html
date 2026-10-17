@@ -249,31 +249,32 @@ async function ghPull(){ghMsg('불러오는 중…');try{const cur=await ghReq('
 importAll(JSON.parse(unb64(cur.content)),true);ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+btns(bG('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');save();shut();render()`)))}
 /* --- 가계부 --- */
-function ledger(){const tot=S.exp.reduce((a,e)=>a+e.cny,0);
+const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
+function ledger(){const tot=S.exp.reduce((a,e)=>a+exW(e),0),loc=S.exp.filter(e=>exC(e)==S.cur).reduce((a,e)=>a+e.cny,0);
 let h=`<div class="hd"><button class="back" onclick="go('trip')">${BK}</button><h1 style="text-align:center">가계부</h1>${MORE}</div>
-<div class="tot"><small>총 지출 금액</small><h2>${won(tot*S.rate)}</h2><div>${S.cur} ${tot.toLocaleString()}</div></div>
+<div class="tot"><small>총 지출 금액</small><h2>${won(tot)}</h2><div>${S.cur} ${loc.toLocaleString()}</div></div>
 <div class="seg"><button class="${tab=='list'?'on':''}" onclick="tab='list';render()">지출 내역</button><button class="${tab=='stat'?'on':''}" onclick="tab='stat';render()">통계</button></div>`;
-if(tab=='stat'){const m={};S.exp.forEach(e=>m[e.cat]=(m[e.cat]||0)+e.cny);const mx=Math.max(1,...Object.values(m));
-h+='<div class="stat">'+(Object.keys(m).length?Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,x])=>`<div class="sr"><span>${k}</span><i style="width:${x/mx*55}%;background:${CATS[k][1]}"></i><em>${won(x*S.rate)}</em></div>`).join(''):'<p style="color:var(--sub);text-align:center">지출이 없어요</p>')+'</div>'}
-else{const grp=(lab,idx)=>{const l=S.exp.filter(e=>e.day==idx),s=l.reduce((a,e)=>a+e.cny,0);
-h+=`<div class="gh ${s?'':'z'}">${lab}<span>총 ${won(s*S.rate)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b>${won(e.cny*S.rate)}</b><small>${S.cur} ${e.cny.toLocaleString()}</small></div></button>`).join('')};
+if(tab=='stat'){const m={};S.exp.forEach(e=>m[e.cat]=(m[e.cat]||0)+exW(e));const mx=Math.max(1,...Object.values(m));
+h+='<div class="stat">'+(Object.keys(m).length?Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,x])=>`<div class="sr"><span>${k}</span><i style="width:${x/mx*55}%;background:${CATS[k][1]}"></i><em>${won(x)}</em></div>`).join(''):'<p style="color:var(--sub);text-align:center">지출이 없어요</p>')+'</div>'}
+else{const grp=(lab,idx)=>{const l=S.exp.filter(e=>e.day==idx),s=l.reduce((a,e)=>a+exW(e),0);
+h+=`<div class="gh ${s?'':'z'}">${lab}<span>총 ${won(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b>${won(exW(e))}</b><small>${exC(e)} ${e.cny.toLocaleString()}</small></div></button>`).join('')};
 grp('여행 전',-1);days().forEach((d,i)=>grp(`Day ${i+1} - ${dl(d)}`,i));grp('여행 후',99)}
 return h+ghBar(['지출 내역 추가','editExp()'])+'<div style="height:110px"></div>'}
 /* --- 지출 입력 --- */
 const fm=s=>{if(s==='')return'';const[a,b]=s.split('.');return(a?(+a).toLocaleString('en-US'):'0')+(b!==undefined?'.'+b:'')};
-const conv=()=>{const a=parseFloat(E.amt)||0;return E.cur==S.cur?won(a*S.rate):(Math.round(a/S.rate*100)/100).toLocaleString()+' '+S.cur};
-function editExp(id){const x=id?S.exp.find(e=>e.id==id):null;E={id:id||0,cur:S.cur,amt:x?String(x.cny):'',day:x?x.day:0,cat:x?x.cat:'식비',title:x?x.title:'',memo:x?x.memo:''};go('exp')}
+const rateE=()=>E.rt!=null?E.rt:(E.cur=='KRW'?1:S.rate),conv=()=>won((parseFloat(E.amt)||0)*rateE());
+function editExp(id){const x=id?S.exp.find(e=>e.id==id):null;E={id:id||0,cur:x?exC(x):S.cur,rt:x&&x.rt!=null?x.rt:null,amt:x?String(x.cny):'',day:x?x.day:0,cat:x?x.cat:'식비',title:x?x.title:'',memo:x?x.memo:''};go('exp')}
 function expView(){
 return `<div class="scr"><div class="hd"><div style="width:34px"></div><h1 style="text-align:center">지출 내역 ${E.id?'수정':'추가'}</h1><button class="ic" style="width:34px" onclick="go('ledger')">✕</button></div>
-<div class="xa"><select class="cs" onchange="E.cur=this.value;render()"><option value="${S.cur}" ${E.cur==S.cur?'selected':''}>${S.cur}(${(CUR[S.cur]||[''])[0]})</option><option value="KRW" ${E.cur=='KRW'?'selected':''}>KRW(원)</option></select>
-<input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1${S.cur} = ${S.rate}원</div></div>
+<div class="xa"><select class="cs" onchange="E.cur=this.value;E.rt=null;render()">${[...new Set([S.cur,'KRW',E.cur])].map(c=>`<option value="${c}" ${E.cur==c?'selected':''}>${c}(${c=='KRW'?'원':(CUR[c]||[''])[0]})</option>`).join('')}</select>
+<input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1${E.cur} = ${rateE()}원</div></div>
 <div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value"'),1)+
 fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
 fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
 btns(bG(E.id?'삭제':'취소',E.id?`S.exp=S.exp.filter(x=>x.id!=${E.id});save();go('ledger')`:`go('ledger')`),bP('완료','saveExp()'),'xbar')+`</div>`}
 function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').textContent=conv()}
-function saveExp(){let a=parseFloat(E.amt);if(!a||!E.title.trim())return;if(E.cur=='KRW')a=a/S.rate;
-const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100};
+function saveExp(){let a=parseFloat(E.amt);if(!a||!E.title.trim())return;
+const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE()};
 if(E.id)Object.assign(S.exp.find(x=>x.id==E.id),o);else S.exp.push({id:S.nid++,...o});save();go('ledger')}
 applyTheme(getTheme());
 render();
