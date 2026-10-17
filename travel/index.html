@@ -62,12 +62,15 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .dtag{background:var(--pl);color:var(--pri);font-weight:700;font-size:12px;padding:4px 7px;border-radius:6px}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
-.row{display:flex;gap:8px;margin-bottom:8px}
+.row{display:flex;gap:8px;margin-bottom:8px;position:relative}
+.row.dragging{opacity:.3}.row.ghost{position:fixed;z-index:50;margin:0;pointer-events:none;background:var(--bg);border-radius:12px;opacity:.95}
+.row.ob::before,.row.oa::after{content:"";position:absolute;left:32px;right:0;height:3px;background:var(--pri);border-radius:2px}.row.ob::before{top:-6px}.row.oa::after{bottom:-6px}
+.day.od{background:var(--pl)}
 .rail{width:24px;flex-shrink:0;position:relative}
 .rail::before{content:"";position:absolute;left:50%;width:1px;background:var(--line);top:0;bottom:-8px}
 .rail.f::before{top:50%}.rail.l::before{bottom:50%}.rail.f.l::before{display:none}
 .dot{position:absolute;top:50%;left:0;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:12px;color:var(--dotc,#666);z-index:1}
-.it{flex:1;background:var(--card);border-radius:12px;padding:16px;text-align:left}
+.it{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;flex:1;background:var(--card);border-radius:12px;padding:16px;text-align:left}
 .it small{display:block;color:var(--sub);font-size:11px;margin-bottom:4px}.it b{font-size:14px;font-weight:600;line-height:1.45}
 .it .s{color:var(--pri);font-size:12px;margin-top:4px}.it .m{color:var(--sub);font-size:12px;margin-top:4px}
 /* --- 가계부 --- */
@@ -173,9 +176,9 @@ function trip(){const D=days();
 let h=`<div class="hd"><button class="back" onclick="go('home')">${BK}</button><h1><span class="tt">${esc(S.title)}<button class="ed" onclick="editTrip()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button></span><small>${S.start.replace(/-/g,'.')}~${S.end.replace(/-/g,'.')}</small></h1>${MORE}</div>
 <div class="chips"><button class="chip" onclick="addItem('flight')">+ 항공편</button><button class="chip" onclick="go('ledger')">가계부</button></div>`;
 D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
-h+=`<div class="day"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="addItem('place',${i})">추가</u></div>`;
+h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="addItem('place',${i})">추가</u></div>`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
-h+=`<div class="row"><div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
+h+=`<div class="row" data-id="${x.id}"><div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
 <button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${esc(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button></div>`});
 h+=`</div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
@@ -203,7 +206,7 @@ function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').
 if(!f&&!al)return;
 const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:''};x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
-function editItem(id){fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
+function editItem(id){if(Date.now()-(window._dd||0)<500)return;fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
 sheet(`<div class="shh"><input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}"></div>`+
 (f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',`<textarea class="in" id="e_m" rows="3" placeholder="참고할 내용을 적어주세요.">${esc(x.memo)}</textarea>`)
 :fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>메모</span>${inp('e_m',x.memo)}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><button class="btn g full" onclick="go2(mapOf(${id}))">📍 구글지도에서 보기</button>`))+
@@ -279,6 +282,33 @@ function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.l
 function saveExp(){let a=parseFloat(E.amt);if(!a||!E.title.trim())return;
 const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE()};
 if(E.id)Object.assign(S.exp.find(x=>x.id==E.id),o);else S.exp.push({id:S.nid++,...o});save();go('ledger')}
+/* --- 길게 눌러 일정 드래그 이동 --- */
+let DR=null;
+const clearOv=()=>document.querySelectorAll('.oa,.ob,.od').forEach(e=>e.classList.remove('oa','ob','od'));
+function startDrag(){if(!DR)return;DR.on=true;const b=DR.r.getBoundingClientRect(),g=DR.r.cloneNode(true);g.className='row ghost';g.style.cssText=`left:${b.left}px;top:${b.top}px;width:${b.width}px`;document.body.appendChild(g);DR.g=g;DR.dy=DR.y-b.top;DR.r.classList.add('dragging');if(navigator.vibrate)navigator.vibrate(15)}
+function moveDrag(x,y){DR.g.style.top=(y-DR.dy)+'px';clearOv();DR.t=null;const el=document.elementFromPoint(x,y);
+if(y<90)scrollBy(0,-12);else if(y>innerHeight-130)scrollBy(0,12);if(!el)return;
+const row=el.closest('.row[data-id]');
+if(row){if(+row.dataset.id==DR.id)return;const b=row.getBoundingClientRect(),after=y>b.top+b.height/2;row.classList.add(after?'oa':'ob');DR.t={id:+row.dataset.id,after};return}
+const day=el.closest('.day[data-day]');if(day){day.classList.add('od');DR.t={day:+day.dataset.day}}}
+function endDrag(){DR.g.remove();DR.r.classList.remove('dragging');clearOv();window._dd=Date.now()}
+function dropDrag(){const t=DR.t,id=DR.id;endDrag();if(!t)return;
+const k=S.items.findIndex(i=>i.id==id),it=S.items.splice(k,1)[0];
+if(t.id!=null){const j=S.items.findIndex(i=>i.id==t.id);it.day=S.items[j].day;S.items.splice(t.after?j+1:j,0,it)}
+else{it.day=t.day;let last=-1;S.items.forEach((i,n)=>{if(i.day==t.day)last=n});S.items.splice(last+1,0,it)}
+save();render()}
+function dragInit(){const A=$('app');
+const down=(x,y,t)=>{const r=t.closest&&t.closest('.row[data-id]');if(!r||view!='trip'||DR)return;DR={r,id:+r.dataset.id,x,y,on:false,tm:setTimeout(startDrag,420)}};
+const move=(x,y,e)=>{if(!DR)return;if(!DR.on){if(Math.hypot(x-DR.x,y-DR.y)>8){clearTimeout(DR.tm);DR=null}return}if(e.cancelable)e.preventDefault();moveDrag(x,y)};
+const up=()=>{if(!DR)return;clearTimeout(DR.tm);if(DR.on)dropDrag();DR=null};
+A.addEventListener('touchstart',e=>{const t=e.touches[0];down(t.clientX,t.clientY,e.target)},{passive:true});
+A.addEventListener('touchmove',e=>{const t=e.touches[0];move(t.clientX,t.clientY,e)},{passive:false});
+A.addEventListener('touchend',up);
+A.addEventListener('touchcancel',()=>{if(!DR)return;clearTimeout(DR.tm);if(DR.on)endDrag();DR=null});
+A.addEventListener('mousedown',e=>{if(e.button===0)down(e.clientX,e.clientY,e.target)});
+document.addEventListener('mousemove',e=>move(e.clientX,e.clientY,e));
+document.addEventListener('mouseup',up)}
 applyTheme(getTheme());
 render();
+dragInit();
 </script></body></html>
