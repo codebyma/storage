@@ -71,6 +71,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .row.sg{opacity:.45}
 .row.sf{opacity:1!important;margin:0}.row.sf .it{outline:2px solid var(--pri)}.row.sf .rail::before{display:none}
 .num{font-family:'Inter',-apple-system,'SF Pro Text',system-ui,sans-serif;font-variant-numeric:tabular-nums}.u{font-size:calc(1em - 1px)}
+.tg.past{background:var(--chip);color:var(--sub);font-weight:600}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px var(--pad)}
 .chip{background:var(--chip);border-radius:20px;padding:8px 16px;font-size:13px}
 .day{padding:20px var(--pad) 4px}
@@ -151,7 +152,7 @@ const render=()=>{$('app').innerHTML=view=='home'?home():view=='trip'?trip():vie
 const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
 const dd=t=>{const a=new Date(t.start+'T00:00:00'),b=new Date(t.end+'T00:00:00'),n=today();return n<a?'D-'+Math.round((a-n)/864e5):n<=b?'여행 중':'지난 여행'};
 function home(){const L=[...ALL.trips].sort((a,b)=>b.start.localeCompare(a.start));
-return `<div class="hd"><h1>내 여행</h1>${MORE}</div>`+(L.length?`<div class="tl">${L.map(t=>`<button class="tc" onclick="openTrip(${t.id})"><span class="tg">${dd(t)}</span><b>${esc(t.title)}</b><small>${t.start.replace(/-/g,'.')} ~ ${t.end.replace(/-/g,'.')}</small></button>`).join('')}</div>`:'<p class="hint" style="text-align:center;margin-top:60px">아직 여행이 없어요</p>')+`${ghBar(['새 여행','newTrip()'])}<div style="height:110px"></div>`}
+return `<div class="hd"><h1>내 여행</h1>${MORE}</div>`+(L.length?`<div class="tl">${L.map(t=>`<button class="tc" onclick="openTrip(${t.id})"><span class="tg${dd(t)=='지난 여행'?' past':''}">${dd(t)}</span><b>${esc(t.title)}</b><small>${t.start.replace(/-/g,'.')} ~ ${t.end.replace(/-/g,'.')}</small></button>`).join('')}</div>`:'<p class="hint" style="text-align:center;margin-top:60px">아직 여행이 없어요</p>')+`${ghBar(['새 여행','newTrip()'])}<div style="height:110px"></div>`}
 const openTrip=id=>{RM=null;S=ALL.trips.find(t=>t.id==id);S.cur=S.cur||'CNY';go('trip')};
 function newTrip(){const t=new Date(),f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,e=new Date(t);e.setDate(e.getDate()+2);
 sheet(hd3('새 여행')+fg('여행 이름',inp('n_n','','placeholder="홍콩 여행"'))+fg('시작일',inp('n_s',f(t),'type="date"'))+fg('종료일',inp('n_e',f(e),'type="date"'))+fg('현지 통화',sel('n_c',Object.entries(CUR).map(([k,x])=>[k,`${k}(${x[0]})`]),'CNY',`onchange="$('n_r').value=CUR[this.value][1]"`))+fg('환율 (1 현지통화 = 원)',inp('n_r',CUR.CNY[1],'type="number" step="any"'))+`<div class="hint">환율은 대략값이에요. 실제 환율로 수정하세요</div>`+btns(bG('취소','shut()'),bP('만들기','saveTrip()')))}
