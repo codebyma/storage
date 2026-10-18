@@ -123,6 +123,7 @@ const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){
 let view='home',tab='list',E=null;
 const $=id=>document.getElementById(id),v=id=>$(id).value;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nl=t=>esc(t).replace(/\r?\n/g,'<br>');
 const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
 const wonH=n=>`${Math.round(n).toLocaleString('ko-KR')}<span class="u">원</span>`;
 const days=()=>{const a=[];let d=new Date(S.start+'T00:00:00'),e=new Date(S.end+'T00:00:00');while(d<=e){a.push(new Date(d));d.setDate(d.getDate()+1)}return a};
@@ -230,7 +231,7 @@ h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+
 h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 h+=`<div class="row" data-id="${x.id}"><div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${esc(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
+<button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
 h+=`</div></div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
 function addItem(type='place',day=0){
