@@ -122,6 +122,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gsi{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 10px;border-radius:12px;border:1px solid transparent}.gsi b{display:block;font-size:14px}.gsi small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gsi.on{background:var(--pl);border-color:var(--pri)}
 .gsn{flex:none;width:24px;height:24px;border-radius:50%;background:var(--pri);color:var(--on-pri);font:600 12px/24px Inter,sans-serif;text-align:center}
 .gsbar{padding:10px var(--pad) calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}.gsbar .btn{width:100%}.gsbar .btn:disabled{opacity:.45}
+.gsl .hint{margin:0;padding:8px 2px;line-height:1.7}.gsl .hint.gsc{padding:12px 2px 10px}.gsi{margin-bottom:2px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -459,7 +460,7 @@ return{south:Math.min(...la)-m,north:Math.max(...la)+m,west:Math.min(...ln)-m,ea
 if(S&&S.ctr)return{center:S.ctr,radius:50000};return null};
 function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>FLYID++);GM.fresh=true}
 let GQ=[],GQM=[],GQS=-1,GSM='ac';
-const gsHint=()=>{const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${gArea()?'🔎 검색 지역: '+esc(gArea())+'<br>':''}장소 이름이나 주소를 입력해 보세요</div>`};
+const gsHint=()=>{const l=$('gsl');if(l)l.innerHTML=(gArea()?`<div class="hint">🔎 검색 지역: ${esc(gArea())}</div>`:'')+'<div class="hint">장소 이름이나 주소를 입력해 보세요</div>'};
 function gsVV(){const g=$('gsin'),v=window.visualViewport;if(g&&v){g.style.top=v.offsetTop+'px';g.style.height=v.height+'px'}}
 async function gsMap(skipFit){try{await gmaps();const{Map}=await google.maps.importLibrary('maps');await google.maps.importLibrary('marker');
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
@@ -490,7 +491,7 @@ if(!await gsMap(true))throw new Error('지도를 불러오지 못했어요');
 const req={textQuery:gQ(q),fields:['displayName','formattedAddress','location'],maxResultCount:20,language:'ko'},bi=gBias();if(bi)req.locationBias=bi;
 const{places}=await Place.searchByText(req);if(GSM!='more'||!$('gsr').classList.contains('on'))return;
 GQ=places.map(p=>({title:p.displayName,addr:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng()}));
-l.innerHTML=GQ.length?`<div class="hint">검색 결과 ${GQ.length}곳</div>`+GQ.map((r,i)=>`<button class="gsi" id="gsi_${i}" onclick="gsSel(${i})"><span class="gsn">${i+1}</span><div><b>${esc(r.title)}</b><small>${esc(r.addr||'')}</small></div></button>`).join(''):'<div class="hint">검색 결과가 없어요</div>';
+l.innerHTML=GQ.length?`<div class="hint gsc">검색 결과 ${GQ.length}곳</div>`+GQ.map((r,i)=>`<button class="gsi" id="gsi_${i}" onclick="gsSel(${i})"><span class="gsn">${i+1}</span><div><b>${esc(r.title)}</b><small>${esc(r.addr||'')}</small></div></button>`).join(''):'<div class="hint">검색 결과가 없어요</div>';
 $('gsr').classList.add('more');
 GQM=GQ.map((r,i)=>{const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m}});
 if(GQ.length==1)gsSel(0);else if(GQ.length){const b=new google.maps.LatLngBounds();GQ.forEach(r=>b.extend({lat:r.lat,lng:r.lng}));GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30})}
