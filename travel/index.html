@@ -316,10 +316,22 @@ if(method=='GET')return null;throw new Error('저장 실패(404): 브랜치 이�
 if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}throw new Error('GitHub 오류 '+r.status+(m?': '+m:''))}
 return r.json()}
 const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀 있어요. GitHub Pages에 올린 버전에서 사용하세요':e.message;
+const hs=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return h+':'+t.length};
+const setSnap=()=>{try{localStorage.setItem('snap1',hs(JSON.stringify(ALL)))}catch(e){}};
+async function autoLoad(){try{const c=GH();let txt=null;
+if(c.repo&&c.token){const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(r.ok)txt=await r.text()}
+if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'});if(r.ok)txt=await r.text()}
+if(!txt)return;const d=JSON.parse(txt);if(!d||!Array.isArray(d.trips)||$('ov').classList.contains('on'))return;
+const lh=hs(JSON.stringify(ALL));if(hs(JSON.stringify(d))==lh){setSnap();return}
+let snap=null,had=false;try{snap=localStorage.getItem('snap1');had=localStorage.getItem('trips2')!==null}catch(e){}
+if(had&&snap!==lh&&!confirm('이 기기에 GitHub에 저장하지 않은 변경이 있어요.\nGitHub의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}
+const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
+S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
+try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghMsg('최신 파일을 불러왔어요')}catch(e){}}
 async function ghPush(){ghMsg('저장 중…');try{const c=GH(),cur=await ghReq('GET');
-await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(ALL,null,2)),branch:c.branch||'main',...(cur?{sha:cur.sha}:{})});ghMsg('GitHub에 저장했어요')}catch(e){ghMsg(ghErr(e))}}
+await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(ALL,null,2)),branch:c.branch||'main',...(cur?{sha:cur.sha}:{})});setSnap();ghMsg('GitHub에 저장했어요')}catch(e){ghMsg(ghErr(e))}}
 async function ghPull(){ghMsg('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
-importAll(JSON.parse(unb64(cur.content)),true);ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
+importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="예: 홍콩"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();save();shut();render()`)))}
 /* --- 가계부 --- */
 const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
@@ -432,4 +444,5 @@ function locDel(id){const x=S.items.find(i=>i.id==id);delete x.lat;delete x.lng;
 applyTheme(getTheme());
 render();
 dgInit();addEventListener('resize',setHdh);let spyT=0;addEventListener('scroll',()=>{if(spyT)return;spyT=requestAnimationFrame(()=>{spyT=0;gSpy()})},{passive:true});
+autoLoad();
 </script></body></html>
