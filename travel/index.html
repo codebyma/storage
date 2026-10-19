@@ -72,8 +72,8 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .row.sf{opacity:1!important;margin:0}.row.sf .it{outline:2px solid var(--pri)}.row.sf .rail::before{display:none}
 .num{font-family:'Inter',-apple-system,'SF Pro Text',system-ui,sans-serif;font-variant-numeric:tabular-nums}.u{font-size:calc(1em - 1px)}
 .tg.past{background:var(--chip);color:var(--sub);font-weight:600}
-.gmp{padding:0 var(--pad) 8px}.gtabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 10px}.gtabs button{flex-shrink:0;background:var(--chip);border-radius:16px;padding:7px 14px;font-size:12px}.gtabs .on{background:var(--pri);color:var(--on-pri)}
-.gmapw{height:280px;border-radius:12px;overflow:hidden;background:var(--chip)}.gact{display:flex;gap:8px;margin-top:10px}
+.gsticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdh,64px));z-index:4;background:var(--bg);border-bottom:1px solid var(--line)}.gmp{padding:12px var(--pad) 8px}.gtabs{display:flex;gap:6px;overflow-x:auto;padding:8px var(--pad)}.gtabs button{flex-shrink:0;background:var(--chip);border-radius:16px;padding:7px 14px;font-size:12px}.gtabs .on{background:var(--pri);color:var(--on-pri)}
+.gmapw{height:170px;border-radius:0;overflow:hidden;background:var(--chip)}.gact{display:flex;gap:8px}
 .gpin{width:26px;height:26px;border-radius:50%;color:#fff;font:600 12px/22px Inter,sans-serif;text-align:center;border:2px solid #fff}
 .sg{max-height:220px;overflow:auto}.sgi{display:block;width:100%;text-align:left;padding:12px 4px;border-bottom:1px solid var(--line);font-size:14px}.sgi small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
 .gl .gi{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.gi small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gi span{font-weight:700;width:24px;text-align:center;flex-shrink:0}.gi .ok{color:var(--pri)}.gi .warn{color:#e0a000}.gi .bad{color:var(--red)}
@@ -105,6 +105,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .am{font-size:28px;font-weight:700;border:0;background:none;width:100%;padding:12px 0 4px;outline:none}
 .kw{font-size:16px;font-weight:600;color:var(--sub)}.rt{font-size:12px;color:var(--sub);margin-top:6px}
 .cats{display:flex;flex-wrap:wrap;gap:8px}.cats button{border:1px solid var(--line);border-radius:22px;padding:11px 20px;font-size:var(--fs-body)}.cats .on{background:var(--pl);border-color:var(--pri);color:var(--pri);font-weight:600}
+.row.hl .it{outline:2px solid transparent;animation:hl 1.6s ease-out}@keyframes hl{0%,55%{outline-color:var(--pri)}100%{outline-color:transparent}}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="ov" id="ov"><div class="sheet" id="sh"></div></div>
@@ -153,7 +154,8 @@ const MORE='<span class="ic" onclick="settings()">⋯</span>';
 const sheet=h=>{const b=$('sh');b.innerHTML=h;const hh=b.querySelector&&b.querySelector('.shh');if(hh)hh.insertAdjacentHTML('beforeend',`<button class="x" onclick="shut()">${XI}</button>`);b.scrollTop=0;$('ov').classList.add('on');if(b.querySelectorAll)b.querySelectorAll('textarea.ta').forEach(grow)},shut=()=>$('ov').classList.remove('on');
 $('ov').onclick=e=>{if(e.target.id=='ov')shut()};
 const go=n=>{view=n;scrollTo(0,0);render()};
-const render=()=>{$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();initSort();if(GM.on&&view=='trip')drawMap()};
+const setHdh=()=>{const h=document.querySelector('.hd');if(h)document.documentElement.style.setProperty('--hdh',h.offsetHeight+'px')};
+const render=()=>{$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();initSort();if(GM.on&&view=='trip')drawMap()};
 /* --- 여행 목록 --- */
 const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
 const dd=t=>{const a=new Date(t.start+'T00:00:00'),b=new Date(t.end+'T00:00:00'),n=today();return n<a?'D-'+Math.round((a-n)/864e5):n<=b?'여행 중':'지난 여행'};
@@ -354,19 +356,20 @@ function gmaps(){if(GMP)return GMP;const k=gKey();if(!k)return Promise.reject(ne
 GMP=new Promise((ok,no)=>{window.__gm=()=>ok();const sc=document.createElement('script');sc.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(k)}&loading=async&v=weekly&language=ko&callback=__gm`;sc.onerror=()=>{GMP=null;no(new Error('구글 지도를 불러오지 못했어요. GitHub Pages로 올린 버전에서 사용하세요'))};document.head.appendChild(sc)});return GMP}
 function saveKey(){const had=!!GMP;try{localStorage.setItem('gmk',v('g_key').trim())}catch(e){}const m=$('gk_h');if(m)m.textContent=had?'저장했어요. 새로고침하면 적용돼요':'저장했어요'}
 const toggleMap=()=>{GM.on=!GM.on;render()},gDay=i=>{GM.day=i;render()};
-const mapPanel=()=>`<div class="gmp"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div id="gmap" class="gmapw"></div><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
+const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div id="gmap" class="gmapw"></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
+function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+12;
+scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'});r.classList.remove('hl');void r.offsetWidth;r.classList.add('hl')}
 async function drawMap(){const host=$('gmap');if(!host)return;
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
 host.appendChild(GMAPEL);
-try{await gmaps();const{Map,Polyline,InfoWindow}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
+try{await gmaps();const{Map,Polyline}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
 if(!GMAP)GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});
-if(!GIW)GIW=new InfoWindow();
 GOV.forEach(f=>f());GOV=[];const b=new google.maps.LatLngBounds();let any=false;
 days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const col=GCOL[i%GCOL.length],pts=[];let n=0;
 S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{n++;const pos={lat:x.lat,lng:x.lng};pts.push(pos);b.extend(pos);any=true;
 const c=document.createElement('div');c.className='gpin';c.style.background=col;c.textContent=n;
 const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title});
-m.addListener('click',()=>{GIW.setContent(`<b>${esc(x.title)}</b>${x.addr?`<br><small>${esc(x.addr)}</small>`:''}`);GIW.open({map:GMAP,anchor:m})});
+m.addListener('click',()=>gGoto(x.id));
 GOV.push(()=>{m.map=null})});
 if(pts.length>1){const pl=new Polyline({map:GMAP,path:pts,strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,strokeColor:col,scale:3},offset:'0',repeat:'12px'}]});GOV.push(()=>pl.setMap(null))}});
 if(any)GMAP.fitBounds(b,40);else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
@@ -397,5 +400,5 @@ sheet(hd3(esc(x.title),'위치 지정')+fg('장소 검색',`<input class="in" id
 function locDel(id){const x=S.items.find(i=>i.id==id);delete x.lat;delete x.lng;delete x.addr;delete x.gx;save();shut();render()}
 applyTheme(getTheme());
 render();
-dgInit();
+dgInit();addEventListener('resize',setHdh);
 </script></body></html>
