@@ -15,7 +15,11 @@
           "title": "수완나품 국제공항",
           "sub": "",
           "time": "13:30",
-          "memo": "입국심사/수화물 1시간, 숙소이동 1시간"
+          "memo": "입국심사/수화물 1시간, 숙소이동 1시간",
+          "lat": 13.6818969,
+          "lng": 100.7468694,
+          "addr": "태국 10540 Chang Wat Samut Prakan, Amphoe Bang Phli, Tambon Nong Prue, หมู่ที่ 1 수완나품 공항 (BKK)",
+          "gx": 1
         },
         {
           "id": 2,
@@ -25,7 +29,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "15:30",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 3,
@@ -55,7 +63,11 @@
           "title": "티추카 루프탑 바",
           "sub": "술집/바",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7223968,
+          "lng": 100.5805317,
+          "addr": "Building 46 fl, T-one, Soi Sukhumvit 40, Khwaeng Phra Khanong, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 6,
@@ -65,7 +77,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 7,
@@ -75,7 +91,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 8,
@@ -115,7 +135,11 @@
           "title": "팁 씨마이 아이콘시암 점",
           "sub": "시푼·실물·리버사이드",
           "time": "17:30",
-          "memo": "오팬지주스"
+          "memo": "오팬지주스",
+          "lat": 13.7268131,
+          "lng": 100.5103667,
+          "addr": "299 Charoen Nakhon Rd, Khwaeng Khlong Ton Sai, Khet Khlong San, Krung Thep Maha Nakhon 10600 태국",
+          "gx": 1
         },
         {
           "id": 12,
@@ -125,7 +149,11 @@
           "title": "아이콘시암",
           "sub": "시푼·실물·리버사이드",
           "time": "19:00",
-          "memo": "분수쇼, 저녁야경 · 7층 스칵에서 야외 야경 볼 수 있는 자리 · 쑥시암-실내야시장"
+          "memo": "분수쇼, 저녁야경 · 7층 스칵에서 야외 야경 볼 수 있는 자리 · 쑥시암-실내야시장",
+          "lat": 13.7268131,
+          "lng": 100.5103667,
+          "addr": "299 Charoen Nakhon Rd, Khwaeng Khlong Ton Sai, Khet Khlong San, Krung Thep Maha Nakhon 10600 태국",
+          "gx": 1
         },
         {
           "id": 13,
@@ -145,7 +173,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 15,
@@ -155,7 +187,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 16,
@@ -175,7 +211,11 @@
           "title": "노스이스트",
           "sub": "시푼·실물·리버사이드",
           "time": "14:00",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7271025,
+          "lng": 100.5419286,
+          "addr": "1010, 12-15 Thanon Rama IV, Si Lom, Khet Bang Rak, Krung Thep Maha Nakhon 10500 태국",
+          "gx": 1
         },
         {
           "id": 18,
@@ -185,7 +225,11 @@
           "title": "촘 아룬",
           "sub": "올드 시티",
           "time": "19:45",
-          "memo": "최소 6시 20분 출발 / 7시 45분 예약 · BTS 아속역 환승 · MRT/플랫폼1/BL22(Sukhumvit) BL31(Sanam Chai 4번 출구) · Lak Song 방향"
+          "memo": "최소 6시 20분 출발 / 7시 45분 예약 · BTS 아속역 환승 · MRT/플랫폼1/BL22(Sukhumvit) BL31(Sanam Chai 4번 출구) · Lak Song 방향",
+          "lat": 13.7440478,
+          "lng": 100.4917704,
+          "addr": "392 53 Thanon Maha Rat, Khwaeng Phra Borom Maha Ratchawang, Khet Phra Nakhon, Krung Thep Maha Nakhon 10200 태국",
+          "gx": 1
         },
         {
           "id": 19,
@@ -195,7 +239,11 @@
           "title": "람부뜨리 로드",
           "sub": "올드 시티",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7598947,
+          "lng": 100.4975401,
+          "addr": "42 Soi Ram Buttri, Khwaeng Talat Yot, Khet Phra Nakhon, Krung Thep Maha Nakhon 10200 태국",
+          "gx": 1
         },
         {
           "id": 20,
@@ -215,7 +263,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "",
-          "memo": "MRT/플랫폼1/Sukhumvit 5번 출구"
+          "memo": "MRT/플랫폼1/Sukhumvit 5번 출구",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 22,
@@ -225,7 +277,11 @@
           "title": "쉐라톤 그랜드 수쿰윗, 럭셔리 컬렉션 호텔, 방콕",
           "sub": "5성급 · 수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 23,
@@ -235,7 +291,11 @@
           "title": "짜뚜짝 시장",
           "sub": "",
           "time": "",
-          "memo": "MRT/플랫폼2/BL22(Sukhumvit) BL12(Kamphaeng Phet 2번 출구) · Toa Poon 방향"
+          "memo": "MRT/플랫폼2/BL22(Sukhumvit) BL12(Kamphaeng Phet 2번 출구) · Toa Poon 방향",
+          "lat": 13.799781,
+          "lng": 100.5504245,
+          "addr": "587, 10 Kamphaeng Phet 2 Rd, Khwaeng Chatuchak, Khet Chatuchak, Krung Thep Maha Nakhon 10900 태국",
+          "gx": 1
         },
         {
           "id": 24,
@@ -255,7 +315,11 @@
           "title": "엠쿼티어",
           "sub": "수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7312253,
+          "lng": 100.5694763,
+          "addr": "695 Sukhumvit Rd, Khwaeng Khlong Tan Nuea, Watthana, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 26,
@@ -265,7 +329,11 @@
           "title": "싯 앤 원더",
           "sub": "수쿰윗",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7252218,
+          "lng": 100.5800618,
+          "addr": "119 Soi Ban Kluai Nuea, Khwaeng Khlong Tan Nuea, Watthana, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 27,
@@ -275,7 +343,11 @@
           "title": "방콕 더 그랜드 스파 (쉐라톤 그랜드 수쿰윗)",
           "sub": "방콕",
           "time": "17:00",
-          "memo": ""
+          "memo": "",
+          "lat": 13.7374102,
+          "lng": 100.5590841,
+          "addr": "250 Sukhumvit Rd, Khwaeng Khlong Toei, Khet Khlong Toei, Krung Thep Maha Nakhon 10110 태국",
+          "gx": 1
         },
         {
           "id": 28,
@@ -285,7 +357,11 @@
           "title": "수완나품 국제공항",
           "sub": "",
           "time": "",
-          "memo": "7시 택시 출발"
+          "memo": "7시 택시 출발",
+          "lat": 13.6818969,
+          "lng": 100.7468694,
+          "addr": "태국 10540 Chang Wat Samut Prakan, Amphoe Bang Phli, Tambon Nong Prue, หมู่ที่ 1 수완나품 공항 (BKK)",
+          "gx": 1
         }
       ],
       "exp": [],
@@ -307,7 +383,11 @@
           "title": "제주 국제공항",
           "sub": "제주 시내",
           "time": "15:50",
-          "memo": "출발 2:20분 도착 3:50분 · 제주항공 7C121 김포(GMP) 14:40 → 제주(CJU) 15:50 · 예약번호 A7I63G · 예약석 2석 · 위탁수하물 15kg"
+          "memo": "출발 2:20분 도착 3:50분 · 제주항공 7C121 김포(GMP) 14:40 → 제주(CJU) 15:50 · 예약번호 A7I63G · 예약석 2석 · 위탁수하물 15kg",
+          "lat": 33.5070772,
+          "lng": 126.4934311,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 공항로 2 제주국제공항 (CJU)",
+          "gx": 1
         },
         {
           "id": 2,
@@ -317,7 +397,11 @@
           "title": "SK렌터카 제주지점",
           "sub": "제주 시내",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5036679,
+          "lng": 126.4991631,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 공항로1길 44",
+          "gx": 1
         },
         {
           "id": 3,
@@ -327,7 +411,11 @@
           "title": "노티드 제주 DT 점",
           "sub": "제주시",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.4927938,
+          "lng": 126.5020639,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도 오라삼동 2745-1",
+          "gx": 1
         },
         {
           "id": 4,
@@ -337,7 +425,11 @@
           "title": "집의 기록 상점",
           "sub": "애월·한림",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.446405,
+          "lng": 126.2972537,
+          "addr": "대한민국 제주특별자치도 제주시 한림읍 귀덕리 951",
+          "gx": 1
         },
         {
           "id": 5,
@@ -347,7 +439,11 @@
           "title": "곽지 해수욕장",
           "sub": "애월·한림",
           "time": "",
-          "memo": "무무제주 소품샵"
+          "memo": "무무제주 소품샵",
+          "lat": 33.450902,
+          "lng": 126.3057298,
+          "addr": "대한민국 제주특별자치도 제주시 애월읍 곽지리 곽지해수욕장",
+          "gx": 1
         },
         {
           "id": 6,
@@ -357,7 +453,11 @@
           "title": "무무 제주",
           "sub": "애월·한림",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.4189783,
+          "lng": 126.3114336,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 애월읍 봉성로3길 11 무무제주",
+          "gx": 1
         },
         {
           "id": 7,
@@ -367,7 +467,11 @@
           "title": "제주 김만복 동문 재래 시장 점",
           "sub": "제주 시내",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5122122,
+          "lng": 126.5282021,
+          "addr": "대한민국 제주특별자치도 제주시 동문로4길 9",
+          "gx": 1
         },
         {
           "id": 8,
@@ -377,7 +481,11 @@
           "title": "제주바당",
           "sub": "제주 시내",
           "time": "",
-          "memo": "모듬회 3만 + 1만"
+          "memo": "모듬회 3만 + 1만",
+          "lat": 33.4871464,
+          "lng": 126.4959404,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도 은남길 29 1층",
+          "gx": 1
         },
         {
           "id": 9,
@@ -387,7 +495,11 @@
           "title": "유탑유블레스호텔 제주함덕",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5423291,
+          "lng": 126.6661651,
+          "addr": "대한민국 제주특별자치도 제주시 조천읍 함덕리 1269-9",
+          "gx": 1
         },
         {
           "id": 10,
@@ -397,7 +509,11 @@
           "title": "함덕 해수욕장",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5434231,
+          "lng": 126.6697752,
+          "addr": "대한민국 제주특별자치도 제주시 조천읍 신북로 함덕해수욕장",
+          "gx": 1
         },
         {
           "id": 11,
@@ -407,7 +523,11 @@
           "title": "유탑유블레스호텔 제주함덕",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5423291,
+          "lng": 126.6661651,
+          "addr": "대한민국 제주특별자치도 제주시 조천읍 함덕리 1269-9",
+          "gx": 1
         },
         {
           "id": 12,
@@ -417,7 +537,11 @@
           "title": "해오반 함덕 점",
           "sub": "조천·구좌",
           "time": "",
-          "memo": "아침"
+          "memo": "아침",
+          "lat": 33.5424913,
+          "lng": 126.667586,
+          "addr": "대한민국 제주특별자치도 제주시 조천읍 함덕리 1004-17",
+          "gx": 1
         },
         {
           "id": 13,
@@ -427,7 +551,11 @@
           "title": "하양한",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.542728,
+          "lng": 126.6629462,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 함덕리 1233",
+          "gx": 1
         },
         {
           "id": 14,
@@ -437,7 +565,11 @@
           "title": "스누피가든",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.4441972,
+          "lng": 126.7783058,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 구좌읍 금백조로 930",
+          "gx": 1
         },
         {
           "id": 15,
@@ -457,7 +589,11 @@
           "title": "숙성도 함덕 점",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5423994,
+          "lng": 126.6712053,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 조천읍 함덕로 40",
+          "gx": 1
         },
         {
           "id": 17,
@@ -467,7 +603,11 @@
           "title": "유탑유블레스호텔 제주함덕",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5423291,
+          "lng": 126.6661651,
+          "addr": "대한민국 제주특별자치도 제주시 조천읍 함덕리 1269-9",
+          "gx": 1
         },
         {
           "id": 18,
@@ -477,7 +617,11 @@
           "title": "유탑유블레스호텔 제주함덕",
           "sub": "조천·구좌",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5423291,
+          "lng": 126.6661651,
+          "addr": "대한민국 제주특별자치도 제주시 조천읍 함덕리 1269-9",
+          "gx": 1
         },
         {
           "id": 19,
@@ -487,7 +631,11 @@
           "title": "평대리 멍석",
           "sub": "조천·구좌",
           "time": "09:30",
-          "memo": "9시30분 도착 10시 30분 나옴"
+          "memo": "9시30분 도착 10시 30분 나옴",
+          "lat": 33.530656,
+          "lng": 126.850101,
+          "addr": "대한민국 제주특별자치도 제주시 구좌읍 해맞이해안로 1310",
+          "gx": 1
         },
         {
           "id": 20,
@@ -497,7 +645,11 @@
           "title": "커피 템플",
           "sub": "제주시",
           "time": "11:30",
-          "memo": "11시30분 도착 12시 30분 나옴"
+          "memo": "11시30분 도착 12시 30분 나옴",
+          "lat": 33.4781416,
+          "lng": 126.5702901,
+          "addr": "대한민국 제주특별자치도 제주시 영평길 269",
+          "gx": 1
         },
         {
           "id": 21,
@@ -507,7 +659,11 @@
           "title": "한성 오메기떡",
           "sub": "제주시",
           "time": "12:50",
-          "memo": "12시 50분 도착"
+          "memo": "12시 50분 도착",
+          "lat": 33.5122057,
+          "lng": 126.527931,
+          "addr": "대한민국 제주특별자치도 제주시 일도1동 동문로4길 9-2",
+          "gx": 1
         },
         {
           "id": 22,
@@ -517,7 +673,11 @@
           "title": "진아 떡집",
           "sub": "제주시",
           "time": "",
-          "memo": ""
+          "memo": "",
+          "lat": 33.5123978,
+          "lng": 126.52839,
+          "addr": "대한민국 제주특별자치도 제주시 동문로4길 7-1",
+          "gx": 1
         },
         {
           "id": 23,
@@ -527,7 +687,11 @@
           "title": "제주 국제공항",
           "sub": "제주 시내",
           "time": "16:15",
-          "memo": "4:15분 출발 · 대한항공 KE1264 제주(CJU) 16:15 → 김포(GMP) 17:25"
+          "memo": "4:15분 출발 · 대한항공 KE1264 제주(CJU) 16:15 → 김포(GMP) 17:25",
+          "lat": 33.5070772,
+          "lng": 126.4934311,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도, 공항로 2 제주국제공항 (CJU)",
+          "gx": 1
         }
       ],
       "exp": [],
@@ -715,7 +879,11 @@
           "time": "",
           "memo": "3시",
           "id": 2,
-          "day": 0
+          "day": 0,
+          "lat": 16.0569804,
+          "lng": 108.2025372,
+          "addr": "Danang International Airport, Nguyễn Văn Linh, Hải Châu, Đà Nẵng 550000 베트남",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -725,7 +893,11 @@
           "time": "16:00",
           "memo": "4시 도착 예정 / 다도 픽업",
           "id": 3,
-          "day": 0
+          "day": 0,
+          "lat": 15.8996557,
+          "lng": 108.3569681,
+          "addr": "01 Đống Đa, Hội An Tây, Đà Nẵng 560000 베트남",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -735,7 +907,11 @@
           "time": "",
           "memo": "저녁",
           "id": 4,
-          "day": 0
+          "day": 0,
+          "lat": 15.8753211,
+          "lng": 108.3282936,
+          "addr": "V8GH+48F, Nguyễn Phúc Chu, An Hội, Hội An, Đà Nẵng, 베트남",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -755,7 +931,11 @@
           "time": "",
           "memo": "",
           "id": 6,
-          "day": 0
+          "day": 0,
+          "lat": 34.67152069999999,
+          "lng": 135.5045711,
+          "addr": "東心斎, 玉屋町ギャラクシービル 2号館5階, ２丁目-４-21 東心斎橋 中央区 大阪市 大阪府 542-0083 일본",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -775,7 +955,11 @@
           "time": "",
           "memo": "",
           "id": 8,
-          "day": 1
+          "day": 1,
+          "lat": 15.8996557,
+          "lng": 108.3569681,
+          "addr": "01 Đống Đa, Hội An Tây, Đà Nẵng 560000 베트남",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -835,7 +1019,11 @@
           "time": "15:30",
           "memo": "스파 픽업 위치",
           "id": 14,
-          "day": 1
+          "day": 1,
+          "lat": 15.8775902,
+          "lng": 108.3327417,
+          "addr": "17 Hoàng Diệu, Hội An, Đà Nẵng 560000 베트남",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -845,7 +1033,11 @@
           "time": "16:00",
           "memo": "티멤버십 10%할인 / 다도 할인 / 4시 예약 완료",
           "id": 15,
-          "day": 1
+          "day": 1,
+          "lat": 16.0383857,
+          "lng": 108.2494437,
+          "addr": "498/6 Võ Nguyên Giáp, Ngũ Hành Sơn, Đà Nẵng, 베트남",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -865,7 +1057,11 @@
           "time": "",
           "memo": "",
           "id": 17,
-          "day": 1
+          "day": 1,
+          "lat": 15.877025,
+          "lng": 108.3300219,
+          "addr": "5 Hoàng Văn Thụ, Old Town, Hội An, Đà Nẵng 51306 베트남",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -875,7 +1071,11 @@
           "time": "12:00",
           "memo": "12시 도착 예정",
           "id": 18,
-          "day": 2
+          "day": 2,
+          "lat": 16.0511516,
+          "lng": 108.2482863,
+          "addr": "292 Võ Nguyên Giáp, Ngũ Hành Sơn, Đà Nẵng 550000 베트남",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -885,7 +1085,10 @@
           "time": "",
           "memo": "반미 간식",
           "id": 19,
-          "day": 2
+          "day": 2,
+          "lat": 16.0484489,
+          "lng": 108.2464085,
+          "addr": "28 An Thượng 4, Ngũ Hành Sơn, Đà Nẵng 550000 베트남"
         },
         {
           "type": "sight",
@@ -895,7 +1098,10 @@
           "time": "",
           "memo": "",
           "id": 20,
-          "day": 2
+          "day": 2,
+          "lat": 16.0745906,
+          "lng": 108.2461182,
+          "addr": "11 Võ Nguyên Giáp, An Hải, Đà Nẵng 55000 베트남"
         },
         {
           "type": "sight",
@@ -905,7 +1111,11 @@
           "time": "",
           "memo": "",
           "id": 21,
-          "day": 2
+          "day": 2,
+          "lat": 16.0544563,
+          "lng": 108.0717219,
+          "addr": "베트남 다낭",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -915,7 +1125,11 @@
           "time": "",
           "memo": "",
           "id": 22,
-          "day": 2
+          "day": 2,
+          "lat": 16.0544563,
+          "lng": 108.0717219,
+          "addr": "베트남 다낭",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -925,7 +1139,11 @@
           "time": "",
           "memo": "",
           "id": 23,
-          "day": 2
+          "day": 2,
+          "lat": 15.9955335,
+          "lng": 108.2738648,
+          "addr": "Non Nuoc Beach, Ngu Hanh Son, Da Nang 550000 베트남",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -935,7 +1153,11 @@
           "time": "18:00",
           "memo": "다도할인 / 6시 예약 완료 / 6:15분까지 예약 유지 / 카드 결제 가능",
           "id": 24,
-          "day": 2
+          "day": 2,
+          "lat": 16.0544563,
+          "lng": 108.0717219,
+          "addr": "베트남 다낭",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -945,7 +1167,11 @@
           "time": "",
           "memo": "",
           "id": 25,
-          "day": 2
+          "day": 2,
+          "lat": 16.0599691,
+          "lng": 108.211111,
+          "addr": "베트남 다낭 Hai Chau, 다낭",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -955,7 +1181,11 @@
           "time": "",
           "memo": "",
           "id": 26,
-          "day": 2
+          "day": 2,
+          "lat": 16.0662915,
+          "lng": 108.2237659,
+          "addr": "181 Trần Phú, Hải Châu, Đà Nẵng 550000 베트남",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -965,7 +1195,11 @@
           "time": "",
           "memo": "",
           "id": 27,
-          "day": 3
+          "day": 3,
+          "lat": 16.0511516,
+          "lng": 108.2482863,
+          "addr": "292 Võ Nguyên Giáp, Ngũ Hành Sơn, Đà Nẵng 550000 베트남",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -975,7 +1209,11 @@
           "time": "",
           "memo": "",
           "id": 28,
-          "day": 3
+          "day": 3,
+          "lat": 16.0516973,
+          "lng": 108.2486229,
+          "addr": "284 Võ Nguyên Giáp, Ngũ Hành Sơn, Đà Nẵng 550000 베트남",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -985,7 +1223,10 @@
           "time": "",
           "memo": "",
           "id": 29,
-          "day": 3
+          "day": 3,
+          "lat": 16.0484489,
+          "lng": 108.2464085,
+          "addr": "28 An Thượng 4, Ngũ Hành Sơn, Đà Nẵng 550000 베트남"
         },
         {
           "type": "sight",
@@ -995,7 +1236,11 @@
           "time": "13:30",
           "memo": "1시 30분까지 도착",
           "id": 30,
-          "day": 3
+          "day": 3,
+          "lat": 16.0569804,
+          "lng": 108.2025372,
+          "addr": "Danang International Airport, Nguyễn Văn Linh, Hải Châu, Đà Nẵng 550000 베트남",
+          "gx": 1
         },
         {
           "type": "flight",
@@ -1404,7 +1649,11 @@
           "time": "",
           "memo": "직행버스(coach) 이용 / 12:30 버스, 30분 전 카운터 도착 / 키오스크에서 마카오행 버스 티켓 구매 / 호텔 셔틀 C13 정류장, 약 25분, 배차 18~20분 · 상세 안내는 트리플 원문 확인",
           "id": 2,
-          "day": 0
+          "day": 0,
+          "lat": 22.3134736,
+          "lng": 113.9137283,
+          "addr": "홍콩 New Territories, Chek Lap Kok, Sky Plaza Rd, 1號 홍콩 국제 공항",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1414,7 +1663,11 @@
           "time": "",
           "memo": "시티오브드림 셔틀 이용 후 도보 5분 (원문 확인)",
           "id": 3,
-          "day": 0
+          "day": 0,
+          "lat": 22.146836,
+          "lng": 113.564743,
+          "addr": "마카오 4HW7+PV",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1424,7 +1677,11 @@
           "time": "",
           "memo": "완탕면, 크램콩지, 요우티아오",
           "id": 4,
-          "day": 0
+          "day": 0,
+          "lat": 22.1935334,
+          "lng": 113.5397593,
+          "addr": "11 Largo do Senado, 마카오",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1434,7 +1691,11 @@
           "time": "",
           "memo": "",
           "id": 5,
-          "day": 0
+          "day": 0,
+          "lat": 22.1935334,
+          "lng": 113.5397593,
+          "addr": "11 Largo do Senado, 마카오",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1444,7 +1705,11 @@
           "time": "",
           "memo": "",
           "id": 6,
-          "day": 0
+          "day": 0,
+          "lat": 22.1974561,
+          "lng": 113.5408647,
+          "addr": "Calcada de São Paulo, 마카오",
+          "gx": 1
         },
         {
           "type": "place",
@@ -1474,7 +1739,11 @@
           "time": "",
           "memo": "에그타르트",
           "id": 9,
-          "day": 0
+          "day": 0,
+          "lat": 22.198745,
+          "lng": 113.543873,
+          "addr": "마카오",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1484,7 +1753,11 @@
           "time": "",
           "memo": "4:00, 7:30, 9:30 근처 근위병 교대식 / 7:30~11:30 매 시각 런더너 퍼레이드 앤 사운드쇼(무료)",
           "id": 10,
-          "day": 0
+          "day": 0,
+          "lat": 22.146836,
+          "lng": 113.564743,
+          "addr": "마카오 4HW7+PV",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1494,7 +1767,11 @@
           "time": "",
           "memo": "",
           "id": 11,
-          "day": 0
+          "day": 0,
+          "lat": 22.143661,
+          "lng": 113.5619583,
+          "addr": "Lote 3, Strip, SAR, P.R. China, Estr. do Istmo, 마카오",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1504,7 +1781,11 @@
           "time": "",
           "memo": "",
           "id": 12,
-          "day": 0
+          "day": 0,
+          "lat": 22.1484129,
+          "lng": 113.5602018,
+          "addr": "마카오Estrada da Baía de N",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1514,7 +1795,11 @@
           "time": "",
           "memo": "",
           "id": 13,
-          "day": 0
+          "day": 0,
+          "lat": 22.198745,
+          "lng": 113.543873,
+          "addr": "마카오",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -1524,7 +1809,11 @@
           "time": "",
           "memo": "",
           "id": 14,
-          "day": 0
+          "day": 0,
+          "lat": 22.1470331,
+          "lng": 113.559839,
+          "addr": "s/n Estrada da Baia de Nossa Senhora da Esperanca, 마카오",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1534,7 +1823,11 @@
           "time": "",
           "memo": "공연 시간: 12:00~18:00 30분마다 / 18:00~24:00 20분마다",
           "id": 15,
-          "day": 0
+          "day": 0,
+          "lat": 22.1476213,
+          "lng": 113.5714287,
+          "addr": "Av. da Nave Desportiva, 마카오",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1544,7 +1837,11 @@
           "time": "",
           "memo": "ICBC ATM 수수료 없음, MOP500 인출",
           "id": 16,
-          "day": 0
+          "day": 0,
+          "lat": 22.146836,
+          "lng": 113.564743,
+          "addr": "마카오 4HW7+PV",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1554,7 +1851,11 @@
           "time": "08:00",
           "memo": "정문에서 셔틀버스 탑승",
           "id": 17,
-          "day": 1
+          "day": 1,
+          "lat": 22.146836,
+          "lng": 113.564743,
+          "addr": "마카오 4HW7+PV",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -1564,7 +1865,11 @@
           "time": "09:00",
           "memo": "2층 카운터 1-12에서 표 교환",
           "id": 18,
-          "day": 1
+          "day": 1,
+          "lat": 22.1639516,
+          "lng": 113.5767212,
+          "addr": "Estr. de Pac On, 마카오",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1574,7 +1879,11 @@
           "time": "",
           "memo": "",
           "id": 19,
-          "day": 1
+          "day": 1,
+          "lat": 22.2758835,
+          "lng": 114.145532,
+          "addr": "홍콩 The Peak, 빅토리아 피크",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1584,7 +1893,11 @@
           "time": "",
           "memo": "성완역 A출구 atm출금(bank of china) / 성완역 A2출구 도보 5분",
           "id": 20,
-          "day": 1
+          "day": 1,
+          "lat": 22.285127,
+          "lng": 114.1514511,
+          "addr": "57 Jervois St, Sheung Wan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1594,7 +1907,11 @@
           "time": "",
           "memo": "창펀, 크리스피딤섬",
           "id": 21,
-          "day": 1
+          "day": 1,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -1604,7 +1921,11 @@
           "time": "",
           "memo": "",
           "id": 22,
-          "day": 1
+          "day": 1,
+          "lat": 37.55963029999999,
+          "lng": 126.9031043,
+          "addr": "대한민국 서울특별시 마포구 포은로 146",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -1634,7 +1955,11 @@
           "time": "",
           "memo": "4층 K bar / 중식당과 붙어있는데 바 이용 의사 밝히면 됨 / 나이트트릿 사용 / 테라스로 나가 야경",
           "id": 25,
-          "day": 1
+          "day": 1,
+          "lat": 22.297525,
+          "lng": 114.1736355,
+          "addr": "18 Hanoi Rd, Tsim Sha Tsui, Kowloon, 홍콩",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1644,7 +1969,11 @@
           "time": "",
           "memo": "",
           "id": 26,
-          "day": 1
+          "day": 1,
+          "lat": 22.2930046,
+          "lng": 114.1741517,
+          "addr": "Ave of Stars, Tsim Sha Tsui, Kowloon, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1654,7 +1983,11 @@
           "time": "",
           "memo": "",
           "id": 27,
-          "day": 1
+          "day": 1,
+          "lat": 22.2933788,
+          "lng": 114.1739512,
+          "addr": "Shop No.034, MUSE EDITION, Level 0 K11 MUSEA, Victoria Dockside, 18 Salisbury Rd, Tsim Sha Tsui, Kowloon, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1664,7 +1997,11 @@
           "time": "",
           "memo": "밤 9시 이전까지 해피아워 / 9:30분에 공연 시작",
           "id": 28,
-          "day": 1
+          "day": 1,
+          "lat": 22.2967361,
+          "lng": 114.1704083,
+          "addr": "11A Ashley Rd, Tsim Sha Tsui, Kowloon, 홍콩",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1674,7 +2011,11 @@
           "time": "",
           "memo": "홍콩역 D번출구 버스정거장(익스체인지 스퀘어) 260번이 가장 빠르고, 6번과 6A번 등은 코즈웨이베이 경유",
           "id": 29,
-          "day": 1
+          "day": 1,
+          "lat": 22.2345043,
+          "lng": 114.1952039,
+          "addr": "홍콩 리펄스 베이",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1684,7 +2025,11 @@
           "time": "",
           "memo": "피쉬앤칩스, 라쉬올리",
           "id": 30,
-          "day": 1
+          "day": 1,
+          "lat": 22.2345043,
+          "lng": 114.1952039,
+          "addr": "홍콩 리펄스 베이",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -1704,7 +2049,11 @@
           "time": "",
           "memo": "",
           "id": 32,
-          "day": 1
+          "day": 1,
+          "lat": 22.2846615,
+          "lng": 114.1497724,
+          "addr": "26號 Upper Lascar Row, Tai Ping Shan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1724,7 +2073,11 @@
           "time": "",
           "memo": "",
           "id": 34,
-          "day": 1
+          "day": 1,
+          "lat": 22.2953381,
+          "lng": 114.1688303,
+          "addr": "Shop OT313, Ocean Terminal, Harbour City, Canton Rd, Tsim Sha Tsui, Kowloon, 홍콩",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1734,7 +2087,11 @@
           "time": "",
           "memo": "",
           "id": 35,
-          "day": 2
+          "day": 2,
+          "lat": 22.285127,
+          "lng": 114.1514511,
+          "addr": "57 Jervois St, Sheung Wan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1744,7 +2101,11 @@
           "time": "",
           "memo": "#2소고기죽, #18요우티아오, #7갑오징어볼완탕면",
           "id": 36,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1754,7 +2115,11 @@
           "time": "",
           "memo": "",
           "id": 37,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "place",
@@ -1764,7 +2129,11 @@
           "time": "",
           "memo": "",
           "id": 38,
-          "day": 2
+          "day": 2,
+          "lat": 22.2806115,
+          "lng": 114.1542259,
+          "addr": "홍콩 Hong Kong Island, Central, Hollywood Rd, 10號區警署)大館營房大樓舊中地下15號舖",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1774,7 +2143,11 @@
           "time": "14:30",
           "memo": "2:30-5:30",
           "id": 39,
-          "day": 2
+          "day": 2,
+          "lat": 22.2758835,
+          "lng": 114.145532,
+          "addr": "홍콩 The Peak, 빅토리아 피크",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1784,7 +2157,11 @@
           "time": "",
           "memo": "",
           "id": 40,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -1794,7 +2171,11 @@
           "time": "",
           "memo": "",
           "id": 41,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "place",
@@ -1804,7 +2185,11 @@
           "time": "",
           "memo": "12시까지 영업",
           "id": 42,
-          "day": 2
+          "day": 2,
+          "lat": 22.2810889,
+          "lng": 114.1557677,
+          "addr": "1/F, 至22號20號 D'Aguilar St, Central, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1814,7 +2199,11 @@
           "time": "",
           "memo": "",
           "id": 43,
-          "day": 2
+          "day": 2,
+          "lat": 40.7245908,
+          "lng": -74.00191740000001,
+          "addr": "미국 뉴욕주 뉴욕 소호",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1824,7 +2213,11 @@
           "time": "",
           "memo": "",
           "id": 44,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1834,7 +2227,11 @@
           "time": "",
           "memo": "",
           "id": 45,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1844,7 +2241,11 @@
           "time": "",
           "memo": "",
           "id": 46,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1854,7 +2255,11 @@
           "time": "",
           "memo": "",
           "id": 47,
-          "day": 2
+          "day": 2,
+          "lat": 22.2972508,
+          "lng": 114.1714276,
+          "addr": "19 Lock Rd, Tsim Sha Tsui, Kowloon, 홍콩",
+          "gx": 1
         },
         {
           "type": "other",
@@ -1874,7 +2279,11 @@
           "time": "",
           "memo": "",
           "id": 49,
-          "day": 2
+          "day": 2,
+          "lat": 22.2823969,
+          "lng": 114.1537886,
+          "addr": "G/F, 44 Lyndhurst Terrace, Central, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1884,7 +2293,11 @@
           "time": "",
           "memo": "새우완탕면",
           "id": 50,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -1894,7 +2307,11 @@
           "time": "",
           "memo": "",
           "id": 51,
-          "day": 3
+          "day": 3,
+          "lat": 22.285127,
+          "lng": 114.1514511,
+          "addr": "57 Jervois St, Sheung Wan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1904,7 +2321,11 @@
           "time": "",
           "memo": "",
           "id": 52,
-          "day": 3
+          "day": 3,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -1914,7 +2335,11 @@
           "time": "",
           "memo": "",
           "id": 53,
-          "day": 3
+          "day": 3,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -1924,7 +2349,11 @@
           "time": "",
           "memo": "",
           "id": 54,
-          "day": 3
+          "day": 3,
+          "lat": 22.284886,
+          "lng": 114.1513815,
+          "addr": "홍콩 Hong Kong Island, Sheung Wan, Jervois St, 78號太興中心二座低層地下",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1934,7 +2363,11 @@
           "time": "",
           "memo": "",
           "id": 55,
-          "day": 3
+          "day": 3,
+          "lat": 22.2758835,
+          "lng": 114.145532,
+          "addr": "홍콩 The Peak, 빅토리아 피크",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -1944,7 +2377,11 @@
           "time": "13:00",
           "memo": "1시까지 공항도착",
           "id": 56,
-          "day": 3
+          "day": 3,
+          "lat": 22.3134736,
+          "lng": 113.9137283,
+          "addr": "홍콩 New Territories, Chek Lap Kok, Sky Plaza Rd, 1號 홍콩 국제 공항",
+          "gx": 1
         },
         {
           "type": "flight",
@@ -2739,7 +3176,11 @@
           "time": "",
           "memo": "",
           "id": 1,
-          "day": 0
+          "day": 0,
+          "lat": 34.9472682,
+          "lng": 127.4983978,
+          "addr": "대한민국 전라남도 순천시 역전2길 61",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -2749,7 +3190,11 @@
           "time": "",
           "memo": "",
           "id": 2,
-          "day": 0
+          "day": 0,
+          "lat": 34.885971,
+          "lng": 127.5090298,
+          "addr": "대한민국 전라남도 순천시 순천만길 513-25 순천만습지",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -2759,7 +3204,11 @@
           "time": "",
           "memo": "",
           "id": 3,
-          "day": 0
+          "day": 0,
+          "lat": 34.9044743,
+          "lng": 127.5076877,
+          "addr": "대한민국 전라남도 순천시 학동길 54",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -2769,7 +3218,11 @@
           "time": "",
           "memo": "",
           "id": 4,
-          "day": 0
+          "day": 0,
+          "lat": 34.9470771,
+          "lng": 127.4904794,
+          "addr": "대한민국 전라남도 순천시 장천6길 40",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -2779,7 +3232,11 @@
           "time": "",
           "memo": "",
           "id": 5,
-          "day": 0
+          "day": 0,
+          "lat": 34.945607,
+          "lng": 127.4947428,
+          "addr": "대한민국 전라남도 순천시 풍덕동 장평4길 60",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -2789,7 +3246,11 @@
           "time": "",
           "memo": "",
           "id": 6,
-          "day": 1
+          "day": 1,
+          "lat": 34.9470771,
+          "lng": 127.4904794,
+          "addr": "대한민국 전라남도 순천시 장천6길 40",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -2799,7 +3260,11 @@
           "time": "",
           "memo": "",
           "id": 7,
-          "day": 1
+          "day": 1,
+          "lat": 34.9570009,
+          "lng": 127.5376003,
+          "addr": "대한민국 전라남도 순천시 비례골길 24",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -2809,7 +3274,11 @@
           "time": "",
           "memo": "",
           "id": 8,
-          "day": 1
+          "day": 1,
+          "lat": 34.9035931,
+          "lng": 127.5039002,
+          "addr": "대한민국 전라남도 순천시 동너리길 8",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -2819,7 +3288,11 @@
           "time": "",
           "memo": "",
           "id": 9,
-          "day": 1
+          "day": 1,
+          "lat": 34.9284391,
+          "lng": 127.4982691,
+          "addr": "대한민국 전라남도 순천시 국가정원1호길 47",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -2829,7 +3302,11 @@
           "time": "",
           "memo": "",
           "id": 10,
-          "day": 1
+          "day": 1,
+          "lat": 34.932454,
+          "lng": 127.514104,
+          "addr": "대한민국 전라남도 순천시 팔마1길 2",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -2839,7 +3316,11 @@
           "time": "",
           "memo": "",
           "id": 11,
-          "day": 1
+          "day": 1,
+          "lat": 34.9468947,
+          "lng": 127.4908164,
+          "addr": "대한민국 전라남도 순천시 장천동 85-79",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -2849,7 +3330,11 @@
           "time": "",
           "memo": "",
           "id": 12,
-          "day": 2
+          "day": 2,
+          "lat": 34.9470771,
+          "lng": 127.4904794,
+          "addr": "대한민국 전라남도 순천시 장천6길 40",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -2859,7 +3344,11 @@
           "time": "",
           "memo": "",
           "id": 13,
-          "day": 2
+          "day": 2,
+          "lat": 34.9072954,
+          "lng": 127.3411258,
+          "addr": "대한민국 전라남도 순천시 낙안면 평촌리 6-4",
+          "gx": 1
         }
       ],
       "exp": [
@@ -3154,7 +3643,11 @@
           "time": "",
           "memo": "",
           "id": 6,
-          "day": 0
+          "day": 0,
+          "lat": -8.7164495,
+          "lng": 115.1692697,
+          "addr": "Jl. Pantai Kuta, Kuta, Kec. Kuta, Kabupaten Badung, Bali 80361 인도네시아",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -3197,7 +3690,11 @@
           "time": "",
           "memo": "",
           "id": 10,
-          "day": 1
+          "day": 1,
+          "lat": -8.5078669,
+          "lng": 115.2619619,
+          "addr": "Jl. Monkey Forest No.5, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "place",
@@ -3207,7 +3704,11 @@
           "time": "",
           "memo": "",
           "id": 11,
-          "day": 1
+          "day": 1,
+          "lat": -8.509573699999999,
+          "lng": 115.2621525,
+          "addr": "F7R6+5VC, Jl. Dewisita, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -3217,7 +3718,11 @@
           "time": "15:00",
           "memo": "왓츠앱: 3시 예약 90분 핫스톤",
           "id": 12,
-          "day": 1
+          "day": 1,
+          "lat": -8.4914116,
+          "lng": 115.252898,
+          "addr": "Jl. Raya Sanggingan, Kedewatan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80561 인도네시아",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3227,7 +3732,11 @@
           "time": "",
           "memo": "",
           "id": 13,
-          "day": 1
+          "day": 1,
+          "lat": -8.4748432,
+          "lng": 115.2436169,
+          "addr": "Jl. Raya Kedewatan, Kedewatan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3237,7 +3746,11 @@
           "time": "",
           "memo": "",
           "id": 14,
-          "day": 2
+          "day": 2,
+          "lat": -8.51202,
+          "lng": 115.2581302,
+          "addr": "Jl. Bisma, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -3247,7 +3760,11 @@
           "time": "",
           "memo": "5시까지 / 우붓시장 근처",
           "id": 15,
-          "day": 2
+          "day": 2,
+          "lat": -8.5065977,
+          "lng": 115.2625884,
+          "addr": "F7V7+72R, Jl. Raya Ubud No.8, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "place",
@@ -3257,7 +3774,11 @@
           "time": "",
           "memo": "",
           "id": 16,
-          "day": 2
+          "day": 2,
+          "lat": -8.5078669,
+          "lng": 115.2619619,
+          "addr": "Jl. Monkey Forest No.5, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -3267,7 +3788,11 @@
           "time": "",
           "memo": "",
           "id": 17,
-          "day": 2
+          "day": 2,
+          "lat": -8.5068536,
+          "lng": 115.2624778,
+          "addr": "인도네시아 발리 기안일 우붓 지구 Ubud, 우부드",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -3277,7 +3802,11 @@
           "time": "",
           "memo": "점심 통 나시고랭 폭립 삼발소스",
           "id": 18,
-          "day": 2
+          "day": 2,
+          "lat": -8.5068536,
+          "lng": 115.2624778,
+          "addr": "인도네시아 발리 기안일 우붓 지구 Ubud, 우부드",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3287,7 +3816,11 @@
           "time": "",
           "memo": "",
           "id": 19,
-          "day": 2
+          "day": 2,
+          "lat": -8.51202,
+          "lng": 115.2581302,
+          "addr": "Jl. Bisma, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -3297,7 +3830,11 @@
           "time": "",
           "memo": "",
           "id": 20,
-          "day": 2
+          "day": 2,
+          "lat": -8.4914116,
+          "lng": 115.252898,
+          "addr": "Jl. Raya Sanggingan, Kedewatan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80561 인도네시아",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -3307,7 +3844,11 @@
           "time": "",
           "memo": "",
           "id": 21,
-          "day": 2
+          "day": 2,
+          "lat": -8.5068536,
+          "lng": 115.2624778,
+          "addr": "인도네시아 발리 기안일 우붓 지구 Ubud, 우부드",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -3317,7 +3858,11 @@
           "time": "",
           "memo": "",
           "id": 22,
-          "day": 2
+          "day": 2,
+          "lat": -8.518101999999999,
+          "lng": 115.2637702,
+          "addr": "F7J7+PHR, Jl. Cok Gede Rai, Peliatan, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3327,7 +3872,11 @@
           "time": "",
           "memo": "",
           "id": 23,
-          "day": 3
+          "day": 3,
+          "lat": -8.51202,
+          "lng": 115.2581302,
+          "addr": "Jl. Bisma, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3337,7 +3886,11 @@
           "time": "",
           "memo": "네이버 페이 / 5/4 체크인 → 5/5 체크아웃",
           "id": 24,
-          "day": 3
+          "day": 3,
+          "lat": -8.6909879,
+          "lng": 115.1677598,
+          "addr": "인도네시아 발리 바둥 군 쿠타 세미냑",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -3347,7 +3900,11 @@
           "time": "",
           "memo": "",
           "id": 25,
-          "day": 3
+          "day": 3,
+          "lat": -8.3405389,
+          "lng": 115.0919509,
+          "addr": "인도네시아 발리",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -3387,7 +3944,11 @@
           "time": "",
           "memo": "",
           "id": 29,
-          "day": 3
+          "day": 3,
+          "lat": -8.6765489,
+          "lng": 115.1555587,
+          "addr": "Jalan Petitenget No.108 - 110, Kerobokan, Kuta Utara, Kerobokan Kelod, Jl. Petitenget No.108, Kerobokan Kelod, Kec. Kuta Utara, Kabupaten Badung, Bali 80361 인도네시아",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3397,7 +3958,11 @@
           "time": "",
           "memo": "",
           "id": 30,
-          "day": 4
+          "day": 4,
+          "lat": -8.6909879,
+          "lng": 115.1677598,
+          "addr": "인도네시아 발리 바둥 군 쿠타 세미냑",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -3417,7 +3982,11 @@
           "time": "",
           "memo": "",
           "id": 32,
-          "day": 4
+          "day": 4,
+          "lat": -8.6833565,
+          "lng": 115.157134,
+          "addr": "Jl. Kayu Cendana No.8, Seminyak, Kec. Kuta, Kabupaten Badung, Bali 80361 인도네시아",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -3427,7 +3996,11 @@
           "time": "17:00",
           "memo": "17:00 예약완료 (포테이토헤드 2층) / 사테 만두 추천 / 예약ID VECUU2 (tablecheck) / 저녁 18:45 예약완료(네이버 메일) - 취소예정",
           "id": 33,
-          "day": 4
+          "day": 4,
+          "lat": -8.6909879,
+          "lng": 115.1677598,
+          "addr": "인도네시아 발리 바둥 군 쿠타 세미냑",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -3437,7 +4010,11 @@
           "time": "19:00",
           "memo": "스파 픽업",
           "id": 34,
-          "day": 4
+          "day": 4,
+          "lat": -8.6909879,
+          "lng": 115.1677598,
+          "addr": "인도네시아 발리 바둥 군 쿠타 세미냑",
+          "gx": 1
         },
         {
           "type": "activity",
@@ -3447,7 +4024,11 @@
           "time": "19:30",
           "memo": "90분 코스(~9시) / 9:30 공항으로 출발 / 마이리얼트립 예약, 네이버페이 결제완료 / 아로마테라피 마사지 90분, 왕복 이동 서비스 포함 / 7:30 시작, 7:00 칸바즈 빌리지 로비에서 픽업 (WhatsApp 확인)",
           "id": 35,
-          "day": 4
+          "day": 4,
+          "lat": -8.6909879,
+          "lng": 115.1677598,
+          "addr": "인도네시아 발리 바둥 군 쿠타 세미냑",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -3457,7 +4038,11 @@
           "time": "21:30",
           "memo": "",
           "id": 36,
-          "day": 4
+          "day": 4,
+          "lat": -8.7469933,
+          "lng": 115.1681655,
+          "addr": "인도네시아 80361 Bali, Kabupaten Badung, Kec. Kuta Sel., Tuban, 응우라라이 공항 (DPS)",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -3467,7 +4052,11 @@
           "time": "",
           "memo": "",
           "id": 37,
-          "day": 4
+          "day": 4,
+          "lat": -8.6909879,
+          "lng": 115.1677598,
+          "addr": "인도네시아 발리 바둥 군 쿠타 세미냑",
+          "gx": 1
         },
         {
           "type": "flight",
@@ -4294,7 +4883,11 @@
           "time": "09:53",
           "memo": "11월 2일(일) / 푸텐 09:53 출발 → 홍콩 웨스트카오룽 10:07 도착 / 기차표 수령 번호 E7W2542460 / 좌석: 02호차 18F, 19A",
           "id": 7,
-          "day": 1
+          "day": 1,
+          "lat": 22.3193039,
+          "lng": 114.1693611,
+          "addr": "홍콩",
+          "gx": 1
         },
         {
           "type": "hotel",
@@ -4304,7 +4897,11 @@
           "time": "",
           "memo": "아고다 예약, 네이버페이 신한글로벌 결제",
           "id": 8,
-          "day": 1
+          "day": 1,
+          "lat": 22.2852908,
+          "lng": 114.150854,
+          "addr": "83 Jervois St, Sheung Wan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "other",
@@ -4324,7 +4921,11 @@
           "time": "",
           "memo": "창펀, 크리스피딤섬",
           "id": 10,
-          "day": 1
+          "day": 1,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -4334,7 +4935,11 @@
           "time": "",
           "memo": "",
           "id": 11,
-          "day": 1
+          "day": 1,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -4344,7 +4949,11 @@
           "time": "",
           "memo": "",
           "id": 12,
-          "day": 1
+          "day": 1,
+          "lat": 22.2846615,
+          "lng": 114.1497724,
+          "addr": "26號 Upper Lascar Row, Tai Ping Shan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -4364,7 +4973,11 @@
           "time": "",
           "memo": "삼수이포역 A2출구 도보 8분 / 맛조개볶음 / 웨이팅: 인원수대로 A(1~3인), B(4~7인), C(8~12인), D(13~20인)로 나눔, A가 제일 많음 / 앱(THE GULU)으로 원격 웨이팅 가능 / QR코드로 주문",
           "id": 14,
-          "day": 1
+          "day": 1,
+          "lat": 22.3203648,
+          "lng": 114.169773,
+          "addr": "홍콩 가우룽 웡곡",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -4384,7 +4997,11 @@
           "time": "",
           "memo": "milk cafe KFC센트럴 옆건물 / 생선까스 파인애플번",
           "id": 16,
-          "day": 2
+          "day": 2,
+          "lat": 22.2877482,
+          "lng": 114.1465549,
+          "addr": "Des Voeux Rd W, Sheung Wan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -4394,7 +5011,11 @@
           "time": "",
           "memo": "",
           "id": 17,
-          "day": 2
+          "day": 2,
+          "lat": 22.2846615,
+          "lng": 114.1497724,
+          "addr": "26號 Upper Lascar Row, Tai Ping Shan, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -4404,7 +5025,11 @@
           "time": "",
           "memo": "피스타치오번 / 옥토퍼스카드만 결제 됨",
           "id": 18,
-          "day": 2
+          "day": 2,
+          "lat": 22.2859787,
+          "lng": 114.1914919,
+          "addr": "홍콩 코즈웨이 베이",
+          "gx": 1
         },
         {
           "type": "shopping",
@@ -4414,7 +5039,11 @@
           "time": "",
           "memo": "할로윈미피 / 공항에도 있음",
           "id": 19,
-          "day": 2
+          "day": 2,
+          "lat": 22.2859787,
+          "lng": 114.1914919,
+          "addr": "홍콩 코즈웨이 베이",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -4424,7 +5053,11 @@
           "time": "",
           "memo": "",
           "id": 20,
-          "day": 2
+          "day": 2,
+          "lat": 22.2798079,
+          "lng": 114.1837883,
+          "addr": "12F, 500號 Hennessy Rd, Causeway Bay, Hong Kong Island, 홍콩",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -4434,7 +5067,11 @@
           "time": "",
           "memo": "",
           "id": 21,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "restaurant",
@@ -4444,7 +5081,11 @@
           "time": "",
           "memo": "카치오 에 페페, 트러플파스타, 라구라자냐, 티라미수 / 케네디타운/침사추이/코즈웨이베이 등 지점 많음",
           "id": 22,
-          "day": 2
+          "day": 2,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "cafe",
@@ -4454,7 +5095,11 @@
           "time": "",
           "memo": "",
           "id": 23,
-          "day": 2
+          "day": 2,
+          "lat": 22.2758835,
+          "lng": 114.145532,
+          "addr": "홍콩 The Peak, 빅토리아 피크",
+          "gx": 1
         },
         {
           "type": "sight",
@@ -4464,7 +5109,10 @@
           "time": "",
           "memo": "",
           "id": 24,
-          "day": 3
+          "day": 3,
+          "lat": 22.3134736,
+          "lng": 113.91372829999999,
+          "addr": "1 Sky Plaza Rd, Chek Lap Kok, New Territories, 홍콩"
         },
         {
           "type": "restaurant",
@@ -4474,7 +5122,11 @@
           "time": "",
           "memo": "",
           "id": 25,
-          "day": 3
+          "day": 3,
+          "lat": 22.2863943,
+          "lng": 114.1491375,
+          "addr": "홍콩 성완",
+          "gx": 1
         },
         {
           "type": "flight",
