@@ -388,7 +388,8 @@ function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&GMAPEL)
 if(GM.day>=0)gDay(GM.day);else drawMap()}
 function gFullGo(id){gFullClose();gGoto(id)}
 function gCard(id){const x=S.items.find(i=>i.id==id),c=$('gfcard');if(!x||!c)return;gFocus(id);
-c.innerHTML=`<b>${esc(x.title)}</b>${x.addr||x.sub?`<small>${esc(x.addr||x.sub)}</small>`:''}<button class="btn lt full" onclick="gFullGo(${id})">일정으로 이동</button>`}
+c.innerHTML=`<b>${esc(x.title)}</b>${x.addr||x.sub?`<small>${esc(x.addr||x.sub)}</small>`:''}<div class="btns" style="margin-top:12px"><button class="btn lt" onclick="gFullGo(${id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${id})">구글지도</button></div>`}
+function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(gm(x.lat+','+x.lng))}
 async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
 host.appendChild(GMAPEL);if(GMAP&&window.google)google.maps.event.trigger(GMAP,'resize');
