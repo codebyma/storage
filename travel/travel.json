@@ -1928,10 +1928,9 @@
           "memo": "",
           "id": 22,
           "day": 1,
-          "lat": 37.55963029999999,
-          "lng": 126.9031043,
-          "addr": "대한민국 서울특별시 마포구 포은로 146",
-          "gx": 1
+          "lat": 22.2817302,
+          "lng": 114.153144,
+          "addr": "5 Staunton St, Central, Hong Kong Island, 홍콩"
         },
         {
           "type": "activity",
