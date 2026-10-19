@@ -378,9 +378,18 @@ const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
 const GZ=16;
-function gZoom(force,hard){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return;const k=GMK[GM.focus];if(!k)return;const p=k.m.position;if(!p)return;
-if(!hard&&(GMAP.getZoom()||0)>=GZ-2){GMAP.panTo(p);if(GMAP.getZoom()!=GZ)GMAP.setZoom(GZ)}
-else if(GMAP.moveCamera)GMAP.moveCamera({center:p,zoom:GZ});else{GMAP.setZoom(GZ);GMAP.setCenter(p)}}
+let FLYID=0;
+function gFly(p,z,instant){const m=GMAP;if(instant||!m.moveCamera){if(m.moveCamera)m.moveCamera({center:p,zoom:z});else{m.setZoom(z);m.setCenter(p)}return}
+const id=++FLYID,c=m.getCenter(),z0=m.getZoom()||z,la0=c.lat(),ln0=c.lng(),la1=p.lat,ln1=p.lng,
+w=m.getDiv().clientWidth||400,span=360*w/(256*Math.pow(2,z0)),d=Math.hypot(la1-la0,ln1-ln0),r=d/span,
+bump=r>.6?Math.min(4,Math.log2(r+1)*.9):0,dur=Math.min(1100,380+bump*140+Math.min(r,3)*120),t0=performance.now();
+if(d<1e-7&&Math.abs(z-z0)<.01)return;
+const step=n=>{if(id!=FLYID)return;const t=Math.min(1,(n-t0)/dur),e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+m.moveCamera({center:{lat:la0+(la1-la0)*e,lng:ln0+(ln1-ln0)*e},zoom:Math.max(2,z0+(z-z0)*e-bump*Math.sin(Math.PI*e))});
+if(t<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
+function gZoom(force){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return false;const k=GMK[GM.focus];if(!k)return false;let p=k.m.position;if(!p)return false;
+p={lat:typeof p.lat=='function'?p.lat():p.lat,lng:typeof p.lng=='function'?p.lng():p.lng};
+const f=GM.fresh;GM.fresh=false;gFly(p,GZ,f);return true}
 function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.zIndex=on?1000:null}}
 function gFocus(id,force){if(force)GM.focus=undefined;if(GM.focus===id)return;GM.focus=id;
 document.querySelectorAll('.row.fc').forEach(r=>r.classList.remove('fc'));
@@ -410,7 +419,7 @@ async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
 host.appendChild(GMAPEL);if(GMAP&&window.google)google.maps.event.trigger(GMAP,'resize');
 try{await gmaps();const{Map,Polyline}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
-if(!GMAP){GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''})}
+if(!GMAP){GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>FLYID++);GM.fresh=true}
 GOV.forEach(f=>f());GOV=[];GMK={};const b=new google.maps.LatLngBounds();let any=false;
 days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const col=GCOL[i%GCOL.length],pts=[];let n=0;
 S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{n++;const pos={lat:x.lat,lng:x.lng};pts.push(pos);b.extend(pos);any=true;
@@ -419,7 +428,7 @@ const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title
 m.addListener('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
 GOV.push(()=>{m.map=null})});
 if(pts.length>1){const pl=new Polyline({map:GMAP,path:pts,strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,strokeColor:col,scale:3},offset:'0',repeat:'12px'}]});GOV.push(()=>pl.setMap(null))}});
-gEmph();if(any){GMAP.fitBounds(b,40);gZoom(false,true)}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
+gEmph();if(any){if(!gZoom())GMAP.fitBounds(b,40)}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
 catch(e){const m=$('gm_h');if(m)m.textContent=gErr(e)}}
 const gBias=()=>{const L=(S?S.items:[]).filter(x=>x.lat!=null);if(!L.length)return null;return{center:{lat:L.reduce((a,x)=>a+x.lat,0)/L.length,lng:L.reduce((a,x)=>a+x.lng,0)/L.length},radius:50000}};
 function gSearch(el,boxId){clearTimeout(GT);GT=setTimeout(async()=>{const q=el.value.trim(),box=$(boxId);if(!box)return;if(q.length<2){box.innerHTML='';return}
