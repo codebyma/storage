@@ -377,12 +377,10 @@ const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="c
 const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
-const GZ=15;
-function gZoom(force){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return;const x=S.items.find(i=>i.id==GM.focus);if(!x||x.lat==null)return;
-const L=S.items.filter(i=>i.day==x.day&&i.lat!=null),k=L.findIndex(i=>i.id==x.id),b=new google.maps.LatLngBounds(),near=i=>i&&Math.abs(i.lat-x.lat)<.04&&Math.abs(i.lng-x.lng)<.04;
-b.extend({lat:x.lat,lng:x.lng});[L[k-1],L[k+1]].forEach(i=>{if(near(i))b.extend({lat:i.lat,lng:i.lng})});
-const d=.012;b.extend({lat:x.lat+d,lng:x.lng+d});b.extend({lat:x.lat-d,lng:x.lng-d});
-GMAP.fitBounds(b,{top:46,right:24,bottom:24,left:24})}
+const GZ=16;
+function gZoom(force,hard){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return;const k=GMK[GM.focus];if(!k)return;const p=k.m.position;if(!p)return;
+if(!hard&&(GMAP.getZoom()||0)>=GZ-2){GMAP.panTo(p);if(GMAP.getZoom()!=GZ)GMAP.setZoom(GZ)}
+else if(GMAP.moveCamera)GMAP.moveCamera({center:p,zoom:GZ});else{GMAP.setZoom(GZ);GMAP.setCenter(p)}}
 function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.zIndex=on?1000:null}}
 function gFocus(id,force){if(force)GM.focus=undefined;if(GM.focus===id)return;GM.focus=id;
 document.querySelectorAll('.row.fc').forEach(r=>r.classList.remove('fc'));
