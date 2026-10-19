@@ -3131,7 +3131,10 @@
           "time": "",
           "memo": "",
           "id": 4,
-          "day": 0
+          "day": 0,
+          "lat": -8.7254123,
+          "lng": 115.1707654,
+          "addr": "75FC+R8J, Jl. Kartika Plaza, Kuta, Kec. Kuta, Kabupaten Badung, Bali 80361 인도네시아"
         },
         {
           "type": "restaurant",
@@ -4232,7 +4235,10 @@
           "time": "",
           "memo": "아고다 예약 (아고다 계정), 네이버페이 현대카드 결제",
           "id": 2,
-          "day": 0
+          "day": 0,
+          "lat": 22.547383999999997,
+          "lng": 114.05736499999999,
+          "addr": "1st Floor, East Podium Building, Radio and Television Financial Center, Intersection of Fuzhong 3rd Road, and Pengcheng 1st Road, 莲花立交桥中心城福田区深圳市广东省 중국 518048"
         },
         {
           "type": "other",
@@ -4539,7 +4545,10 @@
           "sub": "",
           "time": "",
           "map": "",
-          "memo": ""
+          "memo": "",
+          "lat": 39.129999999999995,
+          "lng": 117.20999999999998,
+          "addr": "133 Xin Hua Lu, He Ping Qu, Tian Jin Shi, 중국 300041"
         }
       ],
       "exp": [],
