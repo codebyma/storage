@@ -3105,7 +3105,10 @@
           "time": "",
           "memo": "세관 나온 후 BNI/MANDIRI/MAY BANK/BRI 은행 인출: 250만 루피아 / 출국장 나오는 길에 그랩 호출",
           "id": 2,
-          "day": 0
+          "day": 0,
+          "lat": -8.7469933,
+          "lng": 115.1681655,
+          "addr": "Jl. Airport Ngurah Rai, Tuban, Kec. Kuta Sel., Kabupaten Badung, Bali 80361 인도네시아"
         },
         {
           "type": "hotel",
@@ -3115,7 +3118,10 @@
           "time": "",
           "memo": "네이버페이 결제 / 네이버 메일",
           "id": 3,
-          "day": 0
+          "day": 0,
+          "lat": -8.7228578,
+          "lng": 115.1730175,
+          "addr": "Jl. Khayangan Suci, Kuta, Kec. Kuta, Kabupaten Badung, Bali 80361 인도네시아"
         },
         {
           "type": "restaurant",
@@ -3175,7 +3181,10 @@
           "time": "13:00",
           "memo": "4/17일까지 무료 취소 / 네이버 메일 / 현지 결제용 신한체크카드, 통장에 90만원 정도 넣어놓기",
           "id": 9,
-          "day": 1
+          "day": 1,
+          "lat": -8.51202,
+          "lng": 115.25813019999998,
+          "addr": "Jl. Bisma, Ubud, Kecamatan Ubud, Kabupaten Gianyar, Bali 80571 인도네시아"
         },
         {
           "type": "place",
@@ -4512,7 +4521,30 @@
         }
       ],
       "nid": 37
+    },
+    {
+      "id": 100,
+      "title": "톈진",
+      "start": "2026-10-31",
+      "end": "2026-11-03",
+      "cur": "CNY",
+      "rate": 200,
+      "items": [
+        {
+          "id": 11,
+          "day": 0,
+          "type": "hotel",
+          "label": "호텔",
+          "title": "Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin",
+          "sub": "",
+          "time": "",
+          "map": "",
+          "memo": ""
+        }
+      ],
+      "exp": [],
+      "nid": 12
     }
   ],
-  "nid": 100
+  "nid": 101
 }
