@@ -106,8 +106,13 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .kw{font-size:16px;font-weight:600;color:var(--sub)}.rt{font-size:12px;color:var(--sub);margin-top:6px}
 .cats{display:flex;flex-wrap:wrap;gap:8px}.cats button{border:1px solid var(--line);border-radius:22px;padding:11px 20px;font-size:var(--fs-body)}.cats .on{background:var(--pl);border-color:var(--pri);color:var(--pri);font-weight:600}
 .row.fc{z-index:0}.row.fc::after{content:"";position:absolute;left:calc(var(--pad)*-1);right:calc(var(--pad)*-1);top:-4px;bottom:-4px;background:var(--pl);z-index:-1;pointer-events:none}
+.gmw{position:relative}.gexp{position:absolute;left:10px;top:10px;z-index:3;display:flex;align-items:center;gap:5px;padding:7px 11px;border-radius:16px;background:var(--bg);border:1px solid var(--line);font-size:12px;color:var(--tx)}
+.gfull{position:fixed;inset:0;z-index:25;background:var(--bg);display:none;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}.gfull.on{display:flex}.gfull .hd{position:static}
+.gfb{position:relative;flex:1;min-height:0}#gfmap{position:absolute;inset:0}#gfmap>div{position:absolute;inset:0}
+.gfc{position:absolute;left:var(--pad);right:var(--pad);bottom:var(--pad);z-index:2;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r-field);padding:14px 16px}.gfc:empty{display:none}.gfc b{display:block;font-size:15px}.gfc small{display:block;color:var(--sub);font-size:12px;margin-top:4px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
+<div class="gfull" id="gfull"></div>
 <div class="ov" id="ov"><div class="sheet" id="sh"></div></div>
 <script>
 const rg=(r,g,b,f)=>[`rgba(${r},${g},${b},.14)`,f];
@@ -356,36 +361,45 @@ function gmaps(){if(GMP)return GMP;const k=gKey();if(!k)return Promise.reject(ne
 GMP=new Promise((ok,no)=>{window.__gm=()=>ok();const sc=document.createElement('script');sc.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(k)}&loading=async&v=weekly&language=ko&callback=__gm`;sc.onerror=()=>{GMP=null;no(new Error('구글 지도를 불러오지 못했어요. GitHub Pages로 올린 버전에서 사용하세요'))};document.head.appendChild(sc)});return GMP}
 function saveKey(){const had=!!GMP;try{localStorage.setItem('gmk',v('g_key').trim())}catch(e){}const m=$('gk_h');if(m)m.textContent=had?'저장했어요. 새로고침하면 적용돼요':'저장했어요'}
 const toggleMap=()=>{GM.on=!GM.on;if(GM.on&&GM.day<0)GM.day=0;render()};
-const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div id="gmap" class="gmapw"></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
+const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
 function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.zIndex=on?1000:null}}
 function gFocus(id,force){if(force)GM.focus=undefined;if(GM.focus===id)return;GM.focus=id;
 document.querySelectorAll('.row.fc').forEach(r=>r.classList.remove('fc'));
 const r=id!=null&&document.querySelector(`.row[data-id="${id}"]`);if(r)r.classList.add('fc');gEmph()}
-function gSetDay(i){GM.day=i;const g=document.querySelector('.gtabs');
-if(g){[...g.children].forEach((b,k)=>b.classList.toggle('on',k==i+1));const b=g.children[i+1];if(b)g.scrollTo({left:b.offsetLeft-(g.clientWidth-b.offsetWidth)/2,behavior:'smooth'})}drawMap()}
+function gSetDay(i){GM.day=i;document.querySelectorAll('.gtabs').forEach(g=>{[...g.children].forEach((b,k)=>b.classList.toggle('on',k==i+1));const b=g.children[i+1];if(b)g.scrollTo({left:b.offsetLeft-(g.clientWidth-b.offsetWidth)/2,behavior:'smooth'})});drawMap()}
 function gDay(i){if(i<0){gSetDay(-1);return}GM.lock=Date.now()+700;gSetDay(i);
 const d=document.querySelector(`.day[data-day="${i}"]`),st=document.querySelector('.gsticky');
 if(d&&st)scrollTo(0,scrollY+d.getBoundingClientRect().top-st.getBoundingClientRect().bottom);
 const r=d&&d.querySelector('.row[data-id]');gFocus(r?+r.dataset.id:null,true)}
-function gSpy(force){if(!GM.on||view!='trip'||(!force&&Date.now()<GM.lock))return;const st=document.querySelector('.gsticky');if(!st)return;
+function gSpy(force){if(!GM.on||GM.full||view!='trip'||(!force&&Date.now()<GM.lock))return;const st=document.querySelector('.gsticky');if(!st)return;
 const line=st.getBoundingClientRect().bottom+10,
 sec=[...document.querySelectorAll('.day[data-day]')].find(x=>x.getBoundingClientRect().bottom>line),
 row=[...document.querySelectorAll('.row[data-id]')].find(x=>x.getBoundingClientRect().bottom>line);
 if(sec&&GM.day>=0&&+sec.dataset.day!=GM.day)gSetDay(+sec.dataset.day);
 gFocus(row?+row.dataset.id:null,force)}
-async function drawMap(){const host=$('gmap');if(!host)return;
+function gFull(){if(!GMAP){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
+GM.full=true;const o=$('gfull');
+o.innerHTML=`<div class="hd"><button class="back" onclick="gFullClose()">${XL}</button><h1>${esc(S.title)}<small>지도 크게 보기</small></h1></div><div class="gtabs">${[-1,...days().map((d,i)=>i)].map(i=>`<button class="${GM.day==i?'on':''}" onclick="gSetDay(${i})">${i<0?'전체':'Day '+(i+1)}</button>`).join('')}</div><div class="gfb"><div id="gfmap"></div><div id="gfcard" class="gfc"></div></div>`;
+o.classList.add('on');document.body.style.overflow='hidden';drawMap()}
+function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);o.classList.remove('on');o.innerHTML='';document.body.style.overflow='';
+if(GM.day>=0)gDay(GM.day);else drawMap()}
+function gFullGo(id){gFullClose();gGoto(id)}
+function gCard(id){const x=S.items.find(i=>i.id==id),c=$('gfcard');if(!x||!c)return;gFocus(id);
+c.innerHTML=`<b>${esc(x.title)}</b>${x.addr||x.sub?`<small>${esc(x.addr||x.sub)}</small>`:''}<button class="btn lt full" onclick="gFullGo(${id})">일정으로 이동</button>`}
+async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
-host.appendChild(GMAPEL);
+host.appendChild(GMAPEL);if(GMAP&&window.google)google.maps.event.trigger(GMAP,'resize');
 try{await gmaps();const{Map,Polyline}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
-if(!GMAP)GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});
+if(!GMAP){GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''})}
 GOV.forEach(f=>f());GOV=[];GMK={};const b=new google.maps.LatLngBounds();let any=false;
 days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const col=GCOL[i%GCOL.length],pts=[];let n=0;
 S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{n++;const pos={lat:x.lat,lng:x.lng};pts.push(pos);b.extend(pos);any=true;
 const c=document.createElement('div');c.className='gpin';c.style.background=col;c.textContent=n;
 const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title});
-m.addListener('click',()=>gGoto(x.id));GMK[x.id]={c,m};
+m.addListener('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
 GOV.push(()=>{m.map=null})});
 if(pts.length>1){const pl=new Polyline({map:GMAP,path:pts,strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,strokeColor:col,scale:3},offset:'0',repeat:'12px'}]});GOV.push(()=>pl.setMap(null))}});
 gEmph();if(any)GMAP.fitBounds(b,40);else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
