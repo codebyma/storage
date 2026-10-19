@@ -116,7 +116,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gfk b,.gfk small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gfk b{font-size:15px;margin-top:8px}.gfk small{color:var(--sub);font-size:12px;margin-top:3px;min-height:15px}
 .gfk .btns{margin-top:12px}.gfk .btn{padding:11px}
 .sgm{display:block;width:100%;padding:12px 4px;text-align:center;color:var(--pri);font-size:13px}.sgm small{display:block;color:var(--sub);font-size:11px;margin-top:2px}
-.gsr{position:fixed;inset:0;z-index:30;background:var(--bg);display:none;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 0}.gsr.on{display:flex}.gsr .hd{position:static}.gsr .hd .in{flex:1;min-width:0}.gsr:not(.more) .gsbar{display:none}
+.gsr{position:fixed;inset:0;z-index:30;background:var(--bg);display:none}.gsr.on{display:block}.gsin{position:absolute;left:0;right:0;top:0;height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);overflow:hidden}.gsr .hd{position:static}.gsr .hd .in{flex:1;min-width:0}.gsr:not(.more) .gsbar{display:none}
 #gsmap{flex:none;height:34%;min-height:140px;position:relative;background:var(--chip)}#gsmap>div{position:absolute;inset:0}
 .gsl{flex:1;min-height:0;overflow:auto;position:relative;padding:6px var(--pad)}
 .gsi{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:12px 10px;border-radius:12px;border:1px solid transparent}.gsi b{display:block;font-size:14px}.gsi small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gsi.on{background:var(--pl);border-color:var(--pri)}
@@ -460,7 +460,7 @@ if(S&&S.ctr)return{center:S.ctr,radius:50000};return null};
 function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>FLYID++);GM.fresh=true}
 let GQ=[],GQM=[],GQS=-1,GSM='ac';
 const gsHint=()=>{const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${gArea()?'🔎 검색 지역: '+esc(gArea())+'<br>':''}장소 이름이나 주소를 입력해 보세요</div>`};
-function gsVV(){const o=$('gsr'),v=window.visualViewport;if(o&&v){o.style.top=v.offsetTop+'px';o.style.height=v.height+'px';o.style.bottom='auto'}}
+function gsVV(){const g=$('gsin'),v=window.visualViewport;if(g&&v){g.style.top=v.offsetTop+'px';g.style.height=v.height+'px'}}
 async function gsMap(skipFit){try{await gmaps();const{Map}=await google.maps.importLibrary('maps');await google.maps.importLibrary('marker');
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
 const mh=$('gsmap');if(!mh)return false;mh.appendChild(GMAPEL);GOV.forEach(f=>f());GOV=[];GMK={};mkMap(Map);google.maps.event.trigger(GMAP,'resize');
@@ -468,9 +468,9 @@ if(!skipFit){const b=gBias();if(b){if(b.south!=null)GMAP.fitBounds(b,0);else GMA
 function gsReset(){GQM.forEach(k=>{k.m.map=null});GQM=[];GQ=[];GQS=-1;GSM='ac';const o=$('gsr');if(o)o.classList.remove('more');const b=$('gsok');if(b){b.disabled=true;b.textContent='장소를 선택해 주세요'}}
 async function gOpen(id){const el=$(id);if(!el)return;GTOK=null;GS=[];gsReset();
 const o=$('gsr');o.className='gsr on';
-o.innerHTML=`<div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div>`;
+o.innerHTML=`<div class="gsin" id="gsin"><div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div></div>`;
 gsHint();gsVV();if(window.visualViewport){visualViewport.addEventListener('resize',gsVV);visualViewport.addEventListener('scroll',gsVV)}
-$('gs_q').focus();await gsMap();if(el.value.trim().length>=2)gsAC()}
+document.body.style.overflow='hidden';$('gs_q').focus();setTimeout(gsVV,350);await gsMap();if(el.value.trim().length>=2)gsAC()}
 function gsInput(){clearTimeout(GT);GT=setTimeout(()=>{if(GSM=='more')gsReset();gsAC()},300)}
 async function gsAC(){const inp=$('gs_q');if(!inp)return;const t=inp.value.trim();if(t.length<2){gsHint();return}
 try{await gmaps();const{AutocompleteSuggestion,AutocompleteSessionToken}=await google.maps.importLibrary('places');GTOK=GTOK||new AutocompleteSessionToken();
@@ -503,7 +503,7 @@ gFly({lat:r.lat,lng:r.lng},Math.max(GMAP.getZoom()||0,15))}
 function gsPick(){const r=GQ[GQS];if(!r)return;const d={title:r.title,addr:r.addr,lat:r.lat,lng:r.lng};gCtr(d);gsClose();if(GCB)GCB(d)}
 function gsClose(){gsReset();clearTimeout(GT);const o=$('gsr'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);
 if(window.visualViewport){visualViewport.removeEventListener('resize',gsVV);visualViewport.removeEventListener('scroll',gsVV)}
-o.removeAttribute('style');o.className='gsr';o.innerHTML='';if(GM.on&&view=='trip'&&!GM.full)drawMap()}
+document.body.style.overflow='';o.className='gsr';o.innerHTML='';if(GM.on&&view=='trip'&&!GM.full)drawMap()}
 async function gLocate(){const msg=t=>{const e=$('gm_h');if(e)e.textContent=t};
 try{await gmaps();const{Geocoder}=await google.maps.importLibrary('geocoding'),g=new Geocoder(),todo=S.items.filter(x=>x.lat==null&&x.type!='flight'&&x.type!='other');let ok=0,i=0;
 if(!todo.length){msg('위치를 찾을 일정이 없어요');return}
