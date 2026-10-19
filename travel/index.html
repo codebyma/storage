@@ -377,10 +377,13 @@ const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="c
 const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
+const GZ=15;
+function gZoom(force,hard){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return;const k=GMK[GM.focus];if(!k)return;const p=k.m.position;if(!p)return;
+if(!hard&&(GMAP.getZoom()||0)>=GZ-2){GMAP.panTo(p);if(GMAP.getZoom()!=GZ)GMAP.setZoom(GZ)}else{GMAP.setZoom(GZ);GMAP.setCenter(p)}}
 function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.zIndex=on?1000:null}}
 function gFocus(id,force){if(force)GM.focus=undefined;if(GM.focus===id)return;GM.focus=id;
 document.querySelectorAll('.row.fc').forEach(r=>r.classList.remove('fc'));
-const r=id!=null&&document.querySelector(`.row[data-id="${id}"]`);if(r)r.classList.add('fc');gEmph()}
+const r=id!=null&&document.querySelector(`.row[data-id="${id}"]`);if(r)r.classList.add('fc');gEmph();gZoom()}
 function gSetDay(i){GM.day=i;document.querySelectorAll('.gtabs').forEach(g=>{[...g.children].forEach((b,k)=>b.classList.toggle('on',k==i+1));const b=g.children[i+1];if(b)g.scrollTo({left:b.offsetLeft-(g.clientWidth-b.offsetWidth)/2,behavior:'smooth'})});drawMap()}
 function gDay(i){if(i<0){gSetDay(-1);return}GM.lock=Date.now()+700;gSetDay(i);
 const d=document.querySelector(`.day[data-day="${i}"]`),st=document.querySelector('.gsticky');
@@ -399,7 +402,7 @@ o.classList.add('on');document.body.style.overflow='hidden';drawMap()}
 function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);o.classList.remove('on');o.innerHTML='';document.body.style.overflow='';
 if(GM.day>=0)gDay(GM.day);else drawMap()}
 function gFullGo(id){gFullClose();gGoto(id)}
-function gCard(id){const x=S.items.find(i=>i.id==id),c=$('gfcard');if(!x||!c)return;gFocus(id);
+function gCard(id){const x=S.items.find(i=>i.id==id),c=$('gfcard');if(!x||!c)return;gFocus(id);gZoom(true);
 c.innerHTML=`<b>${esc(x.title)}</b>${x.addr||x.sub?`<small>${esc(x.addr||x.sub)}</small>`:''}<div class="btns" style="margin-top:12px"><button class="btn lt" onclick="gFullGo(${id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${id})">구글지도</button></div>`}
 function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(gm(x.lat+','+x.lng))}
 async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
@@ -415,7 +418,7 @@ const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title
 m.addListener('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
 GOV.push(()=>{m.map=null})});
 if(pts.length>1){const pl=new Polyline({map:GMAP,path:pts,strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,strokeColor:col,scale:3},offset:'0',repeat:'12px'}]});GOV.push(()=>pl.setMap(null))}});
-gEmph();if(any)GMAP.fitBounds(b,40);else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
+gEmph();if(any){GMAP.fitBounds(b,40);gZoom(false,true)}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
 catch(e){const m=$('gm_h');if(m)m.textContent=gErr(e)}}
 const gBias=()=>{const L=(S?S.items:[]).filter(x=>x.lat!=null);if(!L.length)return null;return{center:{lat:L.reduce((a,x)=>a+x.lat,0)/L.length,lng:L.reduce((a,x)=>a+x.lng,0)/L.length},radius:50000}};
 function gSearch(el,boxId){clearTimeout(GT);GT=setTimeout(async()=>{const q=el.value.trim(),box=$(boxId);if(!box)return;if(q.length<2){box.innerHTML='';return}
