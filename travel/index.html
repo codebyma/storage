@@ -291,8 +291,9 @@ let FD={};
 function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
 function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m')}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD);const b=$('f_ldel');if(b)b.disabled=FD.lat==null}
-function fLocClear(){FD={};fLocSync()}
-function fMapUrl(){const t=v('f_t').trim();return FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):(v('f_map').trim()||gm((t+' '+v('f_s').trim()).trim()))}
+function fLocClear(){const a=FD.auto;FD={};if(a&&v('f_map')==a)$('f_map').value='';fLocSync()}
+function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.title;if(L){$('f_map').value=L;const dt=document.querySelector('.adv');if(dt)dt.open=true}fLocSync()}
+function fMapUrl(){const t=v('f_t').trim(),l=v('f_map').trim();return l||(FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):gm((t+' '+v('f_s').trim()).trim()))}
 function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
 return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
@@ -300,10 +301,10 @@ fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(),x.day)}${sel('f_t
 fg('이름',`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea()):''):'설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요'}</div><div id="f_loc">${locCard(FD)}</div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(fMapUrl())">📍 구글지도</button><button class="btn g" id="f_ldel" onclick="fLocClear()" ${FD.lat==null?'disabled':''}>위치 삭제</button></div>`)+
 fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="예: 꾸따"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
-`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">위치를 등록하면 링크보다 등록한 위치가 먼저 열려요</div></details>`+
+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
 (isNew?'':recBlock(x))+btns(isNew?bG('취소','shut()'):bD('삭제',`delItem(${id})`),bP(isNew?'추가':'저장',`saveForm('${id}')`))}
 function addItem(type='place',day=0){if(type=='flight')return addFlight(day);
-FD={};GCB=d=>{FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id};$('f_t').value=d.title;fLocSync()};
+FD={};GCB=fPick;
 sheet(itemForm({day,type,title:'',sub:'',time:'',map:'',memo:''},'new'))}
 function saveForm(id){const r=fRead(),d=FD,nw=id==='new';let x;
 if(nw){if(!r.title)return;x={id:S.nid++};S.items.push(x)}else{x=S.items.find(i=>i.id==id);if(!x)return;if(!r.title)r.title=x.title;if(!(x.day>=0&&x.day<days().length))r.day=x.day}
@@ -326,7 +327,7 @@ if(!f&&!al)return;
 const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:v('f_m')};x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function editItem(id){if(RM)return;fixFlights(S);const x=S.items.find(i=>i.id==id);if(x.type=='flight')return editFlight(id);
-FD=x.lat!=null?{lat:x.lat,lng:x.lng,addr:x.addr,pid:x.pid,gx:x.gx}:{};GCB=d=>{FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id};$('f_t').value=d.title;fLocSync()};
+FD=x.lat!=null?{lat:x.lat,lng:x.lng,addr:x.addr,pid:x.pid,gx:x.gx,auto:(x.pid&&/query_place_id=/.test(x.map||''))?x.map:''}:{};GCB=fPick;
 sheet(itemForm(x,id))}
 function delItem(id){S.items=S.items.filter(i=>i.id!=id);save();shut();render()}
 /* --- 구글지도 연동(링크 방식) --- */
@@ -336,7 +337,7 @@ function go2(u){const a=document.createElement('a');a.href=u;a.target='_blank';a
 function srch(){const q=v('f_t').trim();go2(q?gm(q):'https://www.google.com/maps')}
 function mapFill(){const m=v('f_map').match(/\/place\/([^\/@?]+)/);if(m&&!v('f_t').trim()){try{$('f_t').value=decodeURIComponent(m[1].replace(/\+/g,' '))}catch(e){}}}
 const locUrl=x=>x.lat==null?null:x.pid?gmPlace(x.title,x.pid):gm(x.lat+','+x.lng);
-const mapOf=id=>{const x=S.items.find(i=>i.id==id);return locUrl(x)||x.map||gm((x.title+' '+(x.sub||'')).trim())};
+const mapOf=id=>{const x=S.items.find(i=>i.id==id);return x.map||locUrl(x)||gm((x.title+' '+(x.sub||'')).trim())};
 /* --- 설정/여행정보 --- */
 const THEMES=[['auto','시스템'],['light','라이트'],['dark','다크']];
 const getTheme=()=>{try{return localStorage.getItem('theme1')||'auto'}catch(e){return'auto'}};
@@ -427,18 +428,19 @@ const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
 const GZ=13;
-let FLYID=0;
-function gFly(p,z,instant){const m=GMAP;if(instant||!m.moveCamera){if(m.moveCamera)m.moveCamera({center:p,zoom:z});else{m.setZoom(z);m.setCenter(p)}return}
+let FLYID=0,FLYING=false;
+function gFly(p,z,instant){const m=GMAP;if(instant||!m.moveCamera){FLYING=false;GM.pt=Date.now();if(m.moveCamera)m.moveCamera({center:p,zoom:z});else{m.setZoom(z);m.setCenter(p)}return}
 const id=++FLYID,c=m.getCenter(),z0=m.getZoom()||z,la0=c.lat(),ln0=c.lng(),la1=p.lat,ln1=p.lng,
 w=m.getDiv().clientWidth||400,span=360*w/(256*Math.pow(2,z0)),d=Math.hypot(la1-la0,ln1-ln0),r=d/span,
 bump=r>.6?Math.min(4,Math.log2(r+1)*.9):0,dur=Math.max(340,560-Math.min(r,3)*75),t0=performance.now();
 if(d<1e-7&&Math.abs(z-z0)<.01)return;
+FLYING=true;GM.pt=Date.now();
 const step=n=>{if(id!=FLYID)return;const t=Math.min(1,(n-t0)/dur),e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 m.moveCamera({center:{lat:la0+(la1-la0)*e,lng:ln0+(ln1-ln0)*e},zoom:Math.max(2,z0+(z-z0)*e-bump*Math.sin(Math.PI*e))});
-if(t<1)requestAnimationFrame(step)};requestAnimationFrame(step)}
-function gZoom(force){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return false;const k=GMK[GM.focus];if(!k)return false;let p=k.m.position;if(!p)return false;
+if(t<1)requestAnimationFrame(step);else{FLYING=false;GM.pt=Date.now()}};requestAnimationFrame(step)}
+function gZoom(force,keep){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return false;const k=GMK[GM.focus];if(!k)return false;let p=k.m.position;if(!p)return false;
 p={lat:typeof p.lat=='function'?p.lat():p.lat,lng:typeof p.lng=='function'?p.lng():p.lng};
-const f=GM.fresh;GM.fresh=false;gFly(p,GZ,f);return true}
+const f=GM.fresh,kp=keep&&GM.uz!=null;GM.fresh=false;if(!kp)GM.uz=null;gFly(p,kp?GM.uz:GZ,f);return true}
 function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.zIndex=on?1000:null}}
 function gFocus(id,force){if(force)GM.focus=undefined;if(GM.focus===id)return;GM.focus=id;
 document.querySelectorAll('.row.fc').forEach(r=>r.classList.remove('fc'));
@@ -461,7 +463,7 @@ if(keep){const k=GFL.findIndex(o=>o.x.id==GM.focus);if(k>0)st=k}
 GM.focus=GFL[st]?GFL[st].x.id:null;
 c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||o.x.sub||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
 c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)}
-function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true)}
+function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true,true)}
 function gFull(){if(!GMAP){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
 GM.full=true;const o=$('gfull');
 o.innerHTML=`<div class="hd"><button class="back" onclick="gFullClose()">${XL}</button><h1>${esc(S.title)}<small>지도 크게 보기</small></h1></div><div class="gfb"><div id="gfmap"></div></div><div class="gtabs">${[-1,...days().map((d,i)=>i)].map(i=>`<button class="${GM.day==i?'on':''}" onclick="gSetDay(${i})">${i<0?'전체':'Day '+(i+1)}</button>`).join('')}</div><div class="gfcw" id="gfc"></div>`;
@@ -469,8 +471,8 @@ o.classList.add('on');document.body.style.overflow='hidden';gfCards(true);$('gfc
 function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);o.classList.remove('on');o.innerHTML='';document.body.style.overflow='';
 if(GM.day>=0)gDay(GM.day);else drawMap()}
 function gFullGo(id){gFullClose();gGoto(id)}
-function gCard(id){const i=GFL.findIndex(o=>o.x.id==id),c=$('gfc');if(i<0||!c)return;GM.focus=id;gEmph();gZoom(true);const k=c.children[0];if(k)c.scrollTo({left:i*(k.offsetWidth+10),behavior:'smooth'})}
-function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(locUrl(x))}
+function gCard(id){const i=GFL.findIndex(o=>o.x.id==id),c=$('gfc');if(i<0||!c)return;GM.focus=id;gEmph();gZoom(true,true);const k=c.children[0];if(k)c.scrollTo({left:i*(k.offsetWidth+10),behavior:'smooth'})}
+function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(x.map||locUrl(x))}
 const dayDisp=i=>{const m={};let n=0;S.items.filter(x=>x.day==i).forEach(x=>{const ic=icon(x.type);if(ic)m[x.id]={ic};else m[x.id]={n:++n}});return m};
 async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
@@ -485,7 +487,7 @@ const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title
 m.addListener('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
 GOV.push(()=>{m.map=null})});
 if(pts.length>1){const pl=new Polyline({map:GMAP,path:pts,strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,strokeColor:col,scale:3},offset:'0',repeat:'12px'}]});GOV.push(()=>pl.setMap(null))}});
-gEmph();if(any){if(!gZoom())GMAP.fitBounds(b,40)}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
+gEmph();if(any){if(!gZoom()){GM.pt=Date.now();GM.uz=null;GMAP.fitBounds(b,40)}}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
 catch(e){const m=$('gm_h');if(m)m.textContent=gErr(e)}}
 const gArea=()=>((S&&S.area)||'').trim()||(S&&S.title)||'';
 const gQ=q=>{const a=gArea();return a&&!q.includes(a)?q+' '+a:q};
@@ -494,7 +496,7 @@ const gBias=()=>{const A=(S?S.items:[]).filter(x=>x.lat!=null);
 if(A.length){const md=a=>{const b=[...a].sort((p,q)=>p-q);return b[Math.floor(b.length/2)]},ml=md(A.map(x=>x.lat)),mg=md(A.map(x=>x.lng)),L=A.filter(x=>Math.abs(x.lat-ml)<1.5&&Math.abs(x.lng-mg)<1.5),la=L.map(x=>x.lat),ln=L.map(x=>x.lng),m=.15;
 return{south:Math.min(...la)-m,north:Math.max(...la)+m,west:Math.min(...ln)-m,east:Math.max(...ln)+m}}
 if(S&&S.ctr)return{center:S.ctr,radius:50000};return null};
-function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>FLYID++);GM.fresh=true}
+function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>{FLYID++;FLYING=false});GMAP.addListener('zoom_changed',()=>{if(!FLYING&&Date.now()-(GM.pt||0)>500)GM.uz=GMAP.getZoom()});GM.fresh=true}
 const GMAX=4000,gmKey=()=>{const d=new Date();return 'gmore:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 const gmCnt=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}};
 const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmCnt()+1))}catch(e){}};
@@ -563,12 +565,12 @@ const locStat=x=>x.lat==null?{c:'s3',i:'!',b:'위치 미등록',t:'위치 미등
 const locBtn=(x,id)=>{const t=locStat(x);return `<button class="btn g loc ${t.c}" id="locbtn_${id}" onclick="locSheet(${id})">${t.i} ${t.b}</button>`};
 const locCard=x=>{const t=locStat(x);return `<div class="lst ${t.c}"><span class="lsi">${t.i}</span><div><b>${t.t}</b><small>${esc(t.d)}</small></div><button class="tipb" onclick="tip(event,'loc')">i</button></div>`};
 const locSync=(x,id)=>{const b=$('locbtn_'+id);if(b)b.outerHTML=locBtn(x,id)};
-const TIPS={map:'<b>구글지도 버튼은 이렇게 열려요</b><br>① 위치가 지정된 일정 → 그 위치의 구글지도<br>② 위치가 없고 지도 링크가 있으면 → 그 링크<br>③ 둘 다 없으면 → 이름으로 검색<br><br>장소 검색으로 고른 위치는 정확한 장소 화면이, 자동으로 찾은 위치는 좌표 핀이 열려요.',loc:'<b>위치 등록 상태</b><br>✓ 장소 연결: 검색으로 고른 정확한 장소<br>✓ 좌표만 저장: 위치만 저장돼 핀으로 열려요<br>? 자동으로 찾은 위치: 확인이 필요해요<br>! 미등록: 지도 탭에 마커가 나오지 않아요'};
+const TIPS={map:'<b>구글지도 버튼은 이렇게 열려요</b><br>① 지도 링크가 있으면 → 그 링크<br>② 링크가 없고 위치가 등록돼 있으면 → 그 위치<br>③ 둘 다 없으면 → 이름으로 검색<br><br>장소 검색으로 고르면 지도 링크 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요.',loc:'<b>위치 등록 상태</b><br>✓ 장소 연결: 검색으로 고른 정확한 장소<br>✓ 좌표만 저장: 위치만 저장돼 핀으로 열려요<br>? 자동으로 찾은 위치: 확인이 필요해요<br>! 미등록: 지도 탭에 마커가 나오지 않아요'};
 function tip(e,t){e.stopPropagation();const o=$('tipb');if(o){const same=o.dataset.t==t;o.remove();if(same)return}
 const r=e.currentTarget.getBoundingClientRect(),d=document.createElement('div'),w=Math.min(300,innerWidth-32);d.id='tipb';d.className='tipbub';d.dataset.t=t;d.innerHTML=TIPS[t];d.style.width=w+'px';d.style.left=Math.max(16,Math.min(innerWidth-w-16,r.right-w))+'px';d.style.top=(r.bottom+8)+'px';document.body.appendChild(d);
 if(r.bottom+8+d.offsetHeight>innerHeight-16)d.style.top=Math.max(16,r.top-8-d.offsetHeight)+'px'}
 document.addEventListener('click',()=>{const o=$('tipb');if(o)o.remove()});
-function locSheet(id,from){const x=S.items.find(i=>i.id==id);GCB=d=>{x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.id)x.pid=d.id;else delete x.pid;delete x.gx;save();shut2();render();locSync(x,id);if(from=='geo')geoCheck()};
+function locSheet(id,from){const x=S.items.find(i=>i.id==id);GCB=d=>{x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.id){x.pid=d.id;x.map=gmPlace(d.title,d.id)}else delete x.pid;delete x.gx;save();shut2();render();locSync(x,id);if(from=='geo')geoCheck()};
 sheet2(hd3(esc(x.title),'위치 지정')+locCard(x)+fg('장소 검색',`<input class="in" id="g_q" value="${esc(x.title)}" placeholder="장소 이름·주소" readonly onclick="gOpen('g_q')"><div id="g_sg" class="sg"></div><div class="hint">${gArea()?'🔎 검색 지역: '+esc(gArea()):''}</div>`)+btns(bD('위치 삭제',`locDel(${id},'${from||''}')`),bG('닫기','shut2()')))}
 function locDel(id,from){const x=S.items.find(i=>i.id==id);delete x.lat;delete x.lng;delete x.addr;delete x.gx;delete x.pid;save();shut2();render();locSync(x,id);if(from=='geo')geoCheck()}
 applyTheme(getTheme());
