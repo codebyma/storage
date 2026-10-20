@@ -134,6 +134,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .lst.s1{background:rgba(19,169,156,.14)}.lst.s2{background:rgba(245,165,36,.16)}.lst.s3{background:rgba(255,107,107,.16)}
 .lsi{flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font:700 14px/28px Inter,sans-serif;text-align:center}.s1 .lsi{background:var(--pri)}.s2 .lsi{background:#f5a524}.s3 .lsi{background:#ff6b6b}
 .btn.loc.s1{background:var(--pl);color:var(--pri)}.btn.loc.s2{background:rgba(245,165,36,.18);color:#d98a00}.btn.loc.s3{background:rgba(255,107,107,.16);color:#e5484d}
+.gpin svg,.gfn svg{width:13px;height:13px;display:inline-block;vertical-align:-2px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -440,11 +441,11 @@ row=[...document.querySelectorAll('.row[data-id]')].find(x=>x.getBoundingClientR
 if(sec&&GM.day>=0&&+sec.dataset.day!=GM.day)gSetDay(+sec.dataset.day);
 gFocus(row?+row.dataset.id:null,force)}
 let GFL=[],GFT=0;
-function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;let n=0;S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{n++;o.push({x,n,col:GCOL[i%GCOL.length]})})});return o}
+function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const dp=dayDisp(i);S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{o.push({x,lbl:dp[x.id].ic||dp[x.id].n,col:GCOL[i%GCOL.length]})})});return o}
 function gfCards(keep){GFL=gfList();const c=$('gfc');if(!c)return;let st=0;
 if(keep){const k=GFL.findIndex(o=>o.x.id==GM.focus);if(k>0)st=k}
 GM.focus=GFL[st]?GFL[st].x.id:null;
-c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.n}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||o.x.sub||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
+c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||o.x.sub||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
 c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)}
 function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true)}
 function gFull(){if(!GMAP){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
@@ -456,15 +457,16 @@ if(GM.day>=0)gDay(GM.day);else drawMap()}
 function gFullGo(id){gFullClose();gGoto(id)}
 function gCard(id){const i=GFL.findIndex(o=>o.x.id==id),c=$('gfc');if(i<0||!c)return;GM.focus=id;gEmph();gZoom(true);const k=c.children[0];if(k)c.scrollTo({left:i*(k.offsetWidth+10),behavior:'smooth'})}
 function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(locUrl(x))}
+const dayDisp=i=>{const m={};let n=0;S.items.filter(x=>x.day==i).forEach(x=>{const ic=icon(x.type);if(ic)m[x.id]={ic};else m[x.id]={n:++n}});return m};
 async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
 host.appendChild(GMAPEL);if(GMAP&&window.google)google.maps.event.trigger(GMAP,'resize');
 try{await gmaps();const{Map,Polyline}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
 mkMap(Map);
 GOV.forEach(f=>f());GOV=[];GMK={};const b=new google.maps.LatLngBounds();let any=false;
-days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const col=GCOL[i%GCOL.length],pts=[];let n=0;
-S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{n++;const pos={lat:x.lat,lng:x.lng};pts.push(pos);b.extend(pos);any=true;
-const c=document.createElement('div');c.className='gpin';c.style.background=col;c.textContent=n;
+days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const col=GCOL[i%GCOL.length],pts=[],dp=dayDisp(i);
+S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{const pos={lat:x.lat,lng:x.lng};pts.push(pos);b.extend(pos);any=true;
+const c=document.createElement('div');c.className='gpin';c.style.background=col;c.innerHTML=dp[x.id].ic||dp[x.id].n;
 const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title});
 m.addListener('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
 GOV.push(()=>{m.map=null})});
