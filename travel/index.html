@@ -128,7 +128,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gsw{display:flex;align-items:center;gap:4px;margin-bottom:2px;border-radius:12px}.gsm{flex:1;min-width:0;text-align:left;padding:12px 10px}.gsm b{display:block;font-size:14px}.gsm small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gsg{flex:none;padding:10px 12px;border-radius:10px;font-size:12px;color:var(--pri)}
 #ov2{z-index:22}
 .tiprow{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--sub)}
-.tipb{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);font:600 12px/20px Inter,sans-serif;color:var(--sub);text-align:center}
+.tipb{flex:none;position:relative;width:15px;height:15px;border-radius:50%;border:1px solid var(--line);font:600 9px/13px Inter,sans-serif;color:var(--sub);text-align:center}.tipb::after{content:"";position:absolute;inset:-8px}
 .tipbub{position:fixed;z-index:40;background:var(--tx);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.65}
 .lst{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-field);margin-top:12px}.lst b{display:block;font-size:14px}.lst small{display:block;font-size:12px;color:var(--sub);margin-top:2px;line-height:1.5}.lst>div{flex:1;min-width:0}
 .lst.s1{background:rgba(19,169,156,.14)}.lst.s2{background:rgba(245,165,36,.16)}.lst.s3{background:rgba(255,107,107,.16)}
@@ -136,6 +136,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .btn.loc.s1{background:var(--pl);color:var(--pri)}.btn.loc.s2{background:rgba(245,165,36,.18);color:#d98a00}.btn.loc.s3{background:rgba(255,107,107,.16);color:#e5484d}
 .gpin svg,.gfn svg{width:13px;height:13px;display:inline-block;vertical-align:-2px}
 .adv{margin-top:14px;font-size:13px}.adv summary{color:var(--sub);padding:6px 0}.adv .in{margin-top:8px}
+.tmw{position:relative;flex:1;min-width:0}.tmw .in{width:100%}.tmph{display:none;position:absolute;left:var(--p-field);top:50%;transform:translateY(-50%);color:var(--sub);opacity:.6;pointer-events:none}.tmw.empty .tmph{display:block}.tmw.empty input::-webkit-datetime-edit{color:transparent}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -287,6 +288,7 @@ h+=`<div class="row" data-id="${x.id}"><div class="rail ${j==0?'f':''} ${j==its.
 h+=`</div></div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
 let FD={};
+function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
 function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m')}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD);const b=$('f_ldel');if(b)b.disabled=FD.lat==null}
 function fLocClear(){FD={};fLocSync()}
@@ -295,8 +297,8 @@ function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
 return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
 fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
-fg('이름',`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea())+' · ':'')+'"장소 검색"으로 고르면 이름과 위치가 선택한 장소로 채워져요':'설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요'}</div><div id="f_loc">${locCard(FD)}</div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(fMapUrl())">📍 구글지도</button><button class="btn g" id="f_ldel" onclick="fLocClear()" ${FD.lat==null?'disabled':''}>위치 삭제</button></div>`)+
-fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="예: 꾸따"')}${inp('f_time',x.time||'','type="time"')}</div>`)+
+fg('이름',`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea()):''):'설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요'}</div><div id="f_loc">${locCard(FD)}</div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(fMapUrl())">📍 구글지도</button><button class="btn g" id="f_ldel" onclick="fLocClear()" ${FD.lat==null?'disabled':''}>위치 삭제</button></div>`)+
+fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="예: 꾸따"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
 `<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">위치를 등록하면 링크보다 등록한 위치가 먼저 열려요</div></details>`+
 (isNew?'':recBlock(x))+btns(isNew?bG('취소','shut()'):bD('삭제',`delItem(${id})`),bP(isNew?'추가':'저장',`saveForm('${id}')`))}
