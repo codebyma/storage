@@ -5251,10 +5251,55 @@
           "lat": 39.129999999999995,
           "lng": 117.20999999999998,
           "addr": "133 Xin Hua Lu, He Ping Qu, Tian Jin Shi, 중국 300041"
+        },
+        {
+          "id": 12,
+          "day": 0,
+          "type": "place",
+          "label": "장소",
+          "title": "滨江道",
+          "sub": "",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "lat": 39.12694,
+          "lng": 117.2016,
+          "addr": "Bin Jiang Dao, He Ping Qu, Tian Jin Shi, 중국",
+          "pid": "EiHspJHqta0g7YaI7KeEIOyLnCDlkozlubPmu6jmsZ_pgZMiLiosChQKEglpxwWBvP3tNRFrGW0D6cbR9hIUChIJNcSgYqH97TURNB3gHj7TYl4"
+        },
+        {
+          "id": 13,
+          "day": 0,
+          "type": "place",
+          "label": "장소",
+          "title": "和平路",
+          "sub": "",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "lat": 39.1360962,
+          "lng": 117.1903998,
+          "addr": "He Ping Lu, 南市 He Ping Qu, Tian Jin Shi, 중국",
+          "pid": "EizspJHqta0g7YaI7KeEIOyLnCDtl4jtlZEg6rWsIOWNl-W4guWSjOW5s-i3ryIuKiwKFAoSCfV-qUi-_e01EY222TFYcq2FEhQKEgkRwXkXjv3tNRFEu3eP66MZpw"
+        },
+        {
+          "id": 14,
+          "day": 0,
+          "type": "place",
+          "label": "장소",
+          "title": "瓷房子",
+          "sub": "",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "lat": 39.1248698,
+          "lng": 117.202339,
+          "addr": "Ci Fang Zi, 黄家花园 He Ping Qu, Tian Jin Shi, 중국 300022",
+          "pid": "ChIJ28dil7z97TURC3huJCcGEao"
         }
       ],
       "exp": [],
-      "nid": 12
+      "nid": 15
     }
   ],
   "nid": 101
