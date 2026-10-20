@@ -125,6 +125,13 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gsl .hint{margin:0;padding:8px 2px;line-height:1.7}.gsl .hint.gsc{padding:12px 2px 10px}.gsi{margin-bottom:2px}
 .gsw{display:flex;align-items:center;gap:4px;margin-bottom:2px;border-radius:12px}.gsm{flex:1;min-width:0;text-align:left;padding:12px 10px}.gsm b{display:block;font-size:14px}.gsm small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gsg{flex:none;padding:10px 12px;border-radius:10px;font-size:12px;color:var(--pri)}
 #ov2{z-index:22}
+.tiprow{display:flex;align-items:center;gap:6px;margin-top:14px;font-size:13px;color:var(--sub)}
+.tipb{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);font:600 12px/20px Inter,sans-serif;color:var(--sub);text-align:center}
+.tipbub{position:fixed;z-index:40;background:var(--tx);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.65}
+.lst{display:flex;align-items:center;gap:12px;padding:14px;border-radius:var(--r-field);margin-top:12px}.lst b{display:block;font-size:14px}.lst small{display:block;font-size:12px;color:var(--sub);margin-top:2px;line-height:1.5}.lst>div{flex:1;min-width:0}
+.lst.s1{background:rgba(19,169,156,.14)}.lst.s2{background:rgba(245,165,36,.16)}.lst.s3{background:rgba(255,107,107,.16)}
+.lsi{flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font:700 14px/28px Inter,sans-serif;text-align:center}.s1 .lsi{background:var(--pri)}.s2 .lsi{background:#f5a524}.s3 .lsi{background:#ff6b6b}
+.btn.loc.s1{background:var(--pl);color:var(--pri)}.btn.loc.s2{background:rgba(245,165,36,.18);color:#d98a00}.btn.loc.s3{background:rgba(255,107,107,.16);color:#e5484d}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -294,7 +301,7 @@ S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function editItem(id){if(RM)return;fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
 sheet(`<div class="shh"><input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}"></div>`+
 (f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))
-:fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><div class="btns" style="margin-top:12px"><button class="btn g" onclick="go2(mapOf(${id}))">📍 구글지도</button><button class="btn g" onclick="locSheet(${id})">위치 지정${x.lat!=null?' ✓':''}</button></div><div class="fg"><label class="lbl">메모</label>${ta('e_m',x.memo,'참고할 내용을 적어주세요.')}</div>`))+
+:fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(mapOf(${id}))">📍 구글지도</button>${locBtn(x,id)}</div><div class="fg"><label class="lbl">메모</label>${ta('e_m',x.memo,'참고할 내용을 적어주세요.')}</div>`))+
 recBlock(x)+btns(bD('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
 function upItem(id){const x=S.items.find(i=>i.id==id);x.title=v('e_t');
 if(x.type=='flight'){x.route=v('e_r');x.sub=v('e_fn')}else{x.sub=v('e_s');x.time=v('e_time');x.map=v('e_map').trim()}
@@ -529,9 +536,18 @@ save();render();msg(`${ok}곳 위치를 찾았어요 (${todo.length-ok}곳은 �
 catch(e){msg(gErr(e))}}
 function geoCheck(){const L=S.items.filter(x=>x.type!='flight'&&x.type!='other');
 sheet(hd3('위치 확인',`${L.filter(x=>x.lat!=null).length}/${L.length}곳에 위치가 있어요`)+`<div class="gl">${L.map(x=>`<button class="gi" onclick="locSheet(${x.id},'geo')"><div><b>${esc(x.title)}</b><small>${x.lat!=null?esc(x.addr||'좌표만 있음'):'위치 없음'}</small></div><span class="${x.lat==null?'bad':x.gx?'warn':'ok'}">${x.lat==null?'!':x.gx?'?':'✓'}</span></button>`).join('')}</div><div class="hint">✓ 확인됨 · ? 자동으로 찾은 위치(확인 필요) · ! 위치 없음</div>`)}
-function locSheet(id,from){const x=S.items.find(i=>i.id==id);GCB=d=>{x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.id)x.pid=d.id;else delete x.pid;delete x.gx;save();shut2();render();if(from=='geo')geoCheck()};
-sheet2(hd3(esc(x.title),'위치 지정')+fg('장소 검색',`<input class="in" id="g_q" value="${esc(x.title)}" placeholder="장소 이름·주소" readonly onclick="gOpen('g_q')"><div id="g_sg" class="sg"></div><div class="hint">${gArea()?'🔎 검색 지역: '+esc(gArea()):''}</div>`)+(x.lat!=null?`<div class="hint">현재 위치: ${esc(x.addr||x.lat+', '+x.lng)}</div>`:'')+btns(bD('위치 삭제',`locDel(${id},'${from||''}')`),bG('닫기','shut2()')))}
-function locDel(id,from){const x=S.items.find(i=>i.id==id);delete x.lat;delete x.lng;delete x.addr;delete x.gx;delete x.pid;save();shut2();render();if(from=='geo')geoCheck()}
+const locStat=x=>x.lat==null?{c:'s3',i:'!',b:'위치 미등록',t:'위치 미등록',d:'지도에 마커로 표시되지 않아요. 아래에서 장소를 검색해 지정해 보세요'}:x.gx?{c:'s2',i:'?',b:'위치 확인 필요',t:'자동으로 찾은 위치',d:(x.addr||x.lat+', '+x.lng)+' · 정확한지 확인이 필요해요'}:{c:'s1',i:'✓',b:'위치 등록됨',t:x.pid?'위치 등록됨 · 구글지도 장소 연결':'위치 등록됨 · 좌표만 저장',d:x.addr||x.lat+', '+x.lng};
+const locBtn=(x,id)=>{const t=locStat(x);return `<button class="btn g loc ${t.c}" id="locbtn_${id}" onclick="locSheet(${id})">${t.i} ${t.b}</button>`};
+const locCard=x=>{const t=locStat(x);return `<div class="lst ${t.c}"><span class="lsi">${t.i}</span><div><b>${t.t}</b><small>${esc(t.d)}</small></div><button class="tipb" onclick="tip(event,'loc')">i</button></div>`};
+const locSync=(x,id)=>{const b=$('locbtn_'+id);if(b)b.outerHTML=locBtn(x,id)};
+const TIPS={map:'<b>구글지도 버튼은 이렇게 열려요</b><br>① 위치가 지정된 일정 → 그 위치의 구글지도<br>② 위치가 없고 지도 링크가 있으면 → 그 링크<br>③ 둘 다 없으면 → 이름으로 검색<br><br>장소 검색으로 고른 위치는 정확한 장소 화면이, 자동으로 찾은 위치는 좌표 핀이 열려요.',loc:'<b>위치 등록 상태</b><br>✓ 장소 연결: 검색으로 고른 정확한 장소<br>✓ 좌표만 저장: 위치만 저장돼 핀으로 열려요<br>? 자동으로 찾은 위치: 확인이 필요해요<br>! 미등록: 지도 탭에 마커가 나오지 않아요'};
+function tip(e,t){e.stopPropagation();const o=$('tipb');if(o){const same=o.dataset.t==t;o.remove();if(same)return}
+const r=e.currentTarget.getBoundingClientRect(),d=document.createElement('div'),w=Math.min(300,innerWidth-32);d.id='tipb';d.className='tipbub';d.dataset.t=t;d.innerHTML=TIPS[t];d.style.width=w+'px';d.style.left=Math.max(16,Math.min(innerWidth-w-16,r.right-w))+'px';d.style.top=(r.bottom+8)+'px';document.body.appendChild(d);
+if(r.bottom+8+d.offsetHeight>innerHeight-16)d.style.top=Math.max(16,r.top-8-d.offsetHeight)+'px'}
+document.addEventListener('click',()=>{const o=$('tipb');if(o)o.remove()});
+function locSheet(id,from){const x=S.items.find(i=>i.id==id);GCB=d=>{x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.id)x.pid=d.id;else delete x.pid;delete x.gx;save();shut2();render();locSync(x,id);if(from=='geo')geoCheck()};
+sheet2(hd3(esc(x.title),'위치 지정')+locCard(x)+fg('장소 검색',`<input class="in" id="g_q" value="${esc(x.title)}" placeholder="장소 이름·주소" readonly onclick="gOpen('g_q')"><div id="g_sg" class="sg"></div><div class="hint">${gArea()?'🔎 검색 지역: '+esc(gArea()):''}</div>`)+btns(bD('위치 삭제',`locDel(${id},'${from||''}')`),bG('닫기','shut2()')))}
+function locDel(id,from){const x=S.items.find(i=>i.id==id);delete x.lat;delete x.lng;delete x.addr;delete x.gx;delete x.pid;save();shut2();render();locSync(x,id);if(from=='geo')geoCheck()}
 applyTheme(getTheme());
 render();
 dgInit();addEventListener('resize',setHdh);let spyT=0;addEventListener('scroll',()=>{if(spyT)return;spyT=requestAnimationFrame(()=>{spyT=0;gSpy()})},{passive:true});
