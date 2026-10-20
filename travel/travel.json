@@ -5255,21 +5255,6 @@
           "addr": "133 Xin Hua Lu, He Ping Qu, Tian Jin Shi, 중국 300041"
         },
         {
-          "id": 12,
-          "day": 0,
-          "type": "place",
-          "label": "장소",
-          "title": "滨江道",
-          "sub": "",
-          "time": "",
-          "map": "https://maps.app.goo.gl/dQXJ2TJsET1yMfr77?g_st=ic",
-          "memo": "",
-          "lat": 39.12694,
-          "lng": 117.2016,
-          "addr": "Bin Jiang Dao, He Ping Qu, Tian Jin Shi, 중국",
-          "pid": "EiHspJHqta0g7YaI7KeEIOyLnCDlkozlubPmu6jmsZ_pgZMiLiosChQKEglpxwWBvP3tNRFrGW0D6cbR9hIUChIJNcSgYqH97TURNB3gHj7TYl4"
-        },
-        {
           "id": 13,
           "day": 0,
           "type": "place",
@@ -5283,6 +5268,21 @@
           "lng": 117.1903998,
           "addr": "He Ping Lu, 南市 He Ping Qu, Tian Jin Shi, 중국",
           "pid": "EizspJHqta0g7YaI7KeEIOyLnCDtl4jtlZEg6rWsIOWNl-W4guWSjOW5s-i3ryIuKiwKFAoSCfV-qUi-_e01EY222TFYcq2FEhQKEgkRwXkXjv3tNRFEu3eP66MZpw"
+        },
+        {
+          "id": 12,
+          "day": 0,
+          "type": "place",
+          "label": "장소",
+          "title": "滨江道",
+          "sub": "",
+          "time": "",
+          "map": "https://maps.app.goo.gl/dQXJ2TJsET1yMfr77?g_st=ic",
+          "memo": "",
+          "lat": 39.12694,
+          "lng": 117.2016,
+          "addr": "Bin Jiang Dao, He Ping Qu, Tian Jin Shi, 중국",
+          "pid": "EiHspJHqta0g7YaI7KeEIOyLnCDlkozlubPmu6jmsZ_pgZMiLiosChQKEglpxwWBvP3tNRFrGW0D6cbR9hIUChIJNcSgYqH97TURNB3gHj7TYl4"
         },
         {
           "id": 14,
