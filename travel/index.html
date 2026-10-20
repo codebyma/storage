@@ -135,6 +135,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .lsi{flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font:700 14px/28px Inter,sans-serif;text-align:center}.s1 .lsi{background:var(--pri)}.s2 .lsi{background:#f5a524}.s3 .lsi{background:#ff6b6b}
 .btn.loc.s1{background:var(--pl);color:var(--pri)}.btn.loc.s2{background:rgba(245,165,36,.18);color:#d98a00}.btn.loc.s3{background:rgba(255,107,107,.16);color:#e5484d}
 .gpin svg,.gfn svg{width:13px;height:13px;display:inline-block;vertical-align:-2px}
+.adv{margin-top:14px;font-size:13px}.adv summary{color:var(--sub);padding:6px 0}.adv .in{margin-top:8px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -285,18 +286,29 @@ h+=`<div class="row" data-id="${x.id}"><div class="rail ${j==0?'f':''} ${j==its.
 <button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
 h+=`</div></div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
-function addItem(type='place',day=0){
-if(type=='flight')return addFlight(day);
-G_NEW=null;GCB=d=>{G_NEW=d;$('f_t').value=d.title;$('f_sh').textContent='📍 '+(d.addr||'위치 저장됨')};
-sheet(hd3('일정 추가',TN[type])+
-fg('날짜',sel('f_day',dayOpts(),day))+
-fg('종류',sel('f_type',Object.entries(TN),type,`onchange="addItem(this.value,+v('f_day'))"`))+
-fg('이름',`<div class="mr">${inp('f_t','',`placeholder="${type=='flight'?'인천 08:55 - 톈진':'장소 이름'}"`)}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea())+' · ':'')+'이름 옆 "장소 검색"으로 지도에 표시할 장소를 찾아요':'설정에서 구글 지도 API 키를 입력하면 장소를 검색해서 지도에 표시할 수 있어요'}</div>`)+
-fg('메모',ta('f_m','','메모'))+
-fg('구글지도',`<div class="mr"><button class="btn g sm" onclick="srch()">지도에서 검색</button>${inp('f_map','','placeholder="공유 링크 붙여넣기" oninput="mapFill()"')}</div><div class="hint">이름 입력 후 검색 → 구글지도에서 공유 링크 복사 → 붙여넣기</div>`)+
-btns(bG('취소','shut()'),bP('추가','saveNew()')))}
-function saveNew(){const t=v('f_t').trim();if(!t)return;const ty=v('f_type');
-S.items.push({id:S.nid++,day:+v('f_day'),type:ty,label:ty=='hotel'?'호텔':TN[ty],title:t,sub:'',time:'',map:v('f_map').trim(),memo:v('f_m'),...(G_NEW?{lat:G_NEW.lat,lng:G_NEW.lng,addr:G_NEW.addr,pid:G_NEW.id}:{})});
+let FD={};
+function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m')}}
+function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD);const b=$('f_ldel');if(b)b.disabled=FD.lat==null}
+function fLocClear(){FD={};fLocSync()}
+function fMapUrl(){const t=v('f_t').trim();return FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):(v('f_map').trim()||gm((t+' '+v('f_s').trim()).trim()))}
+function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
+function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
+return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
+fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
+fg('이름',`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea())+' · ':'')+'"장소 검색"으로 고르면 이름과 위치가 선택한 장소로 채워져요':'설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요'}</div><div id="f_loc">${locCard(FD)}</div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(fMapUrl())">📍 구글지도</button><button class="btn g" id="f_ldel" onclick="fLocClear()" ${FD.lat==null?'disabled':''}>위치 삭제</button></div>`)+
+fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="예: 꾸따"')}${inp('f_time',x.time||'','type="time"')}</div>`)+
+fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">위치를 등록하면 링크보다 등록한 위치가 먼저 열려요</div></details>`+
+(isNew?'':recBlock(x))+btns(isNew?bG('취소','shut()'):bD('삭제',`delItem(${id})`),bP(isNew?'추가':'저장',`saveForm('${id}')`))}
+function addItem(type='place',day=0){if(type=='flight')return addFlight(day);
+FD={};GCB=d=>{FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id};$('f_t').value=d.title;fLocSync()};
+sheet(itemForm({day,type,title:'',sub:'',time:'',map:'',memo:''},'new'))}
+function saveForm(id){const r=fRead(),d=FD,nw=id==='new';let x;
+if(nw){if(!r.title)return;x={id:S.nid++};S.items.push(x)}else{x=S.items.find(i=>i.id==id);if(!x)return;if(!r.title)r.title=x.title;if(!(x.day>=0&&x.day<days().length))r.day=x.day}
+const ch=!nw&&r.day!=x.day,tc=nw||r.type!=x.type;
+Object.assign(x,r);if(tc)x.label=r.type=='hotel'?'호텔':TN[r.type];
+if(d.lat!=null){x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.pid)x.pid=d.pid;else delete x.pid;if(d.gx)x.gx=1;else delete x.gx}else{delete x.lat;delete x.lng;delete x.addr;delete x.pid;delete x.gx}
+if(ch){S.items=S.items.filter(i=>i!==x);S.items.push(x)}
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function addFlight(day=0){
 sheet(hd3('일정 추가','항공편')+
@@ -311,14 +323,9 @@ function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').
 if(!f&&!al)return;
 const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:v('f_m')};x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
-function editItem(id){if(RM)return;fixFlights(S);const x=S.items.find(i=>i.id==id),f=x.type=='flight';if(f)return editFlight(id);
-sheet(`<div class="shh"><input class="in bare ttl" id="e_t" value="${esc(x.title)}"><input class="in bare sb" id="${f?'e_r':'e_s'}" value="${esc(f?(x.route??(id==1?'ICN → TSN':'')):x.sub)}" placeholder="${f?'ICN → TSN':'지역'}"></div>`+
-(f?fg('항공편명',inp('e_fn',x.sub))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))
-:fg('정보',`<div class="box"><div class="row2"><span>시간</span>${inp('e_time',x.time,'type="time"')}</div><div class="row2"><span>지도 링크</span>${inp('e_map',x.map||'','placeholder="구글지도 공유 링크"')}</div></div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(mapOf(${id}))">📍 구글지도</button>${locBtn(x,id)}</div><div class="fg"><label class="lbl">메모</label>${ta('e_m',x.memo,'참고할 내용을 적어주세요.')}</div>`))+
-recBlock(x)+btns(bD('삭제',`delItem(${id})`),bP('저장',`upItem(${id})`)))}
-function upItem(id){const x=S.items.find(i=>i.id==id);x.title=v('e_t');
-if(x.type=='flight'){x.route=v('e_r');x.sub=v('e_fn')}else{x.sub=v('e_s');x.time=v('e_time');x.map=v('e_map').trim()}
-x.memo=v('e_m');save();shut();render()}
+function editItem(id){if(RM)return;fixFlights(S);const x=S.items.find(i=>i.id==id);if(x.type=='flight')return editFlight(id);
+FD=x.lat!=null?{lat:x.lat,lng:x.lng,addr:x.addr,pid:x.pid,gx:x.gx}:{};GCB=d=>{FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id};$('f_t').value=d.title;fLocSync()};
+sheet(itemForm(x,id))}
 function delItem(id){S.items=S.items.filter(i=>i.id!=id);save();shut();render()}
 /* --- 구글지도 연동(링크 방식) --- */
 const gm=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
