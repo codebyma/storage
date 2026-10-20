@@ -3654,7 +3654,9 @@
           "day": 0,
           "lat": -8.7228578,
           "lng": 115.1730175,
-          "addr": "Jl. Khayangan Suci, Kuta, Kec. Kuta, Kabupaten Badung, Bali 80361 인도네시아"
+          "addr": "Jl. Khayangan Suci, Kuta, Kec. Kuta, Kabupaten Badung, Bali 80361 인도네시아",
+          "map": "",
+          "pid": "ChIJ7Z_cPLtG0i0RYP2tVk7F6mg"
         },
         {
           "type": "restaurant",
