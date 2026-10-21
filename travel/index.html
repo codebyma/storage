@@ -508,13 +508,15 @@ const gmCnt=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}
 const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmCnt()+1))}catch(e){}};
 let GQ=[],GQM=[],GQS=-1,GSM='ac';
 const gsHint=()=>{const l=$('gsl');if(l)l.innerHTML=(gArea()?`<div class="hint">🔎 검색 지역: ${esc(gArea())}</div>`:'')+'<div class="hint">장소 이름이나 주소를 입력해 보세요</div>'};
-function gsVV(){const g=$('gsin'),v=window.visualViewport;if(g&&v){g.style.top=v.offsetTop+'px';g.style.height=v.height+'px'}}
+let GSH=0;
+function gsVV(){const g=$('gsin'),v=window.visualViewport;if(g&&v){g.style.top=v.offsetTop+'px';g.style.height=v.height+'px'}
+const m=$('gsmap');if(m){GSH=Math.max(GSH,window.innerHeight);const hd=g?g.querySelector('.hd'):null,top=hd?hd.offsetHeight:60,vh=v?v.height:GSH;m.style.height=Math.max(140,Math.min(Math.round(GSH*.34),Math.round(vh-top-110)))+'px'}}
 async function gsMap(skipFit){try{await gmaps();const{Map}=await google.maps.importLibrary('maps');await google.maps.importLibrary('marker');
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
 const mh=$('gsmap');if(!mh)return false;mh.appendChild(GMAPEL);GOV.forEach(f=>f());GOV=[];GMK={};mkMap(Map);google.maps.event.trigger(GMAP,'resize');
 if(!skipFit){const b=gBias();if(b){if(b.south!=null)GMAP.fitBounds(b,0);else GMAP.moveCamera({center:b.center,zoom:11})}}return true}catch(e){return false}}
 function gsReset(){GQM.forEach(k=>{k.m.map=null});GQM=[];GQ=[];GQS=-1;GSM='ac';const o=$('gsr');if(o)o.classList.remove('more');const b=$('gsok'),g=$('gsgo');if(g)g.disabled=true;if(b){b.disabled=true;b.textContent='장소를 선택해 주세요'}}
-async function gOpen(id){const el=$(id);if(!el)return;GTOK=null;GS=[];gsReset();
+async function gOpen(id){const el=$(id);if(!el)return;GSH=0;GTOK=null;GS=[];gsReset();
 const o=$('gsr');o.className='gsr on';
 o.innerHTML=`<div class="gsin" id="gsin"><div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn g" id="gsgo" disabled onclick="gsGo()">구글지도</button><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div></div>`;
 gsHint();gsVV();if(window.visualViewport){visualViewport.addEventListener('resize',gsVV);visualViewport.addEventListener('scroll',gsVV)}
