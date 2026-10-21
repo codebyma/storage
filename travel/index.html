@@ -141,10 +141,16 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .rmode .gmw,.rmode .gmp{display:none}.row.sg{transform:none!important}
 .crow{display:flex;gap:8px;margin-bottom:8px}.cdb{flex:none;width:52px;border-radius:12px;background:var(--pl);color:var(--pri);font-size:12px;font-weight:700;line-height:1.3}
 .ddb{left:0;transform:none}
+.lst{padding:8px 11px;gap:8px;margin-top:8px;border-radius:10px}.lst b{font-size:12.5px}.lst small{font-size:11px;margin-top:1px;line-height:1.4}.lsi{width:20px;height:20px;font:700 11px/20px Inter,sans-serif}
+.tiprow{margin-top:10px;font-size:12px}.lbtn{gap:8px}.lbtn .btn{padding:9px 10px;font-size:13px;font-weight:600;border-radius:10px}
+.lcl{position:fixed;inset:0;z-index:50;background:#fff;color:#111;display:none;flex-direction:column;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 64px) 28px calc(env(safe-area-inset-bottom,0px) + 32px);overflow:auto;text-align:center}.lcl.on{display:flex}
+.lcl .lx{position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:14px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;color:#555}
+.lcl .lt{font-size:clamp(30px,9vw,44px);font-weight:800;line-height:1.35;overflow-wrap:anywhere}.lcl .la{font-size:clamp(22px,6.4vw,30px);line-height:1.5;margin-top:22px;overflow-wrap:anywhere}.lcl .lk{font-size:14px;color:#777;margin-top:32px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
 <div class="gsr" id="gsr"></div>
+<div class="lcl" id="lcl"></div>
 <div class="ov" id="ov"><div class="sheet" id="sh"></div></div>
 <div class="ov" id="ov2"><div class="sheet" id="sh2"></div></div>
 <script>
@@ -292,6 +298,13 @@ A.addEventListener('pointerup',end);A.addEventListener('pointercancel',end)}
 const hav=(a,b)=>{const R=6371,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lng-a.lng)*r,q=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(q))};
 const eta=k=>{const r=k*1.3,w=Math.round(r/4.5*12)*5||5,t=Math.round((r/20*60+3)/5)*5||5;return r<=1.5?`도보 ~${w}분`:r<=3?`도보 ~${w}분 · 택시 ~${t}분`:`택시 ~${t}분`};
 const fmtKm=k=>k<.05?'':k<1?Math.round(k*100)*10+'m':k<10?k.toFixed(1)+'km':Math.round(k)+'km';
+/* --- 현지어 크게 보기 (택시 기사님께 보여주기) --- */
+function showLocal(){const t=v('f_t').trim(),n=v('f_ln').trim(),a=v('f_la').trim(),h=$('f_lh');
+if(!n&&!a){if(h)h.textContent='현지어 이름이나 주소를 먼저 입력해 주세요';return}
+if(h)h.textContent='';const lc=$('lcl');
+lc.innerHTML=`<button class="lx" onclick="closeLocal()">${XL}</button><div class="lt">${esc(n||t)}</div>${a?`<div class="la">${nl(a)}</div>`:''}${(n&&t&&n!=t)?`<div class="lk">${esc(t)}</div>`:''}`;
+lc.classList.add('on');lc.scrollTop=0}
+const closeLocal=()=>$('lcl').classList.remove('on');
 /* --- 후보 장소 보관함 (day=-2) --- */
 let CO=true;
 function candSec(){const L=S.items.filter(x=>x.day==-2);
@@ -314,7 +327,7 @@ h+=`</div></div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
 let FD={};
 function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
-function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m')}}
+function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim()}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD);const b=$('f_ldel');if(b)b.disabled=FD.lat==null}
 function fLocClear(){const a=FD.auto;FD={};if(a&&v('f_map')==a)$('f_map').value='';fLocSync()}
 function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.title;if(L){$('f_map').value=L;const dt=document.querySelector('.adv');if(dt)dt.open=true}fLocSync()}
@@ -323,10 +336,10 @@ function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
 return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
 fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(0,1),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
-fg('이름',`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea()):''):'설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요'}</div><div id="f_loc">${locCard(FD)}</div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns" style="margin-top:8px"><button class="btn g" onclick="go2(fMapUrl())">📍 구글지도</button><button class="btn g" id="f_ldel" onclick="fLocClear()" ${FD.lat==null?'disabled':''}>위치 삭제</button></div>`)+
+fg('이름',`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div><div class="hint" id="f_sh">${gKey()?(gArea()?'🔎 검색 지역: '+esc(gArea()):''):'설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요'}</div><div id="f_loc">${locCard(FD)}</div><div class="tiprow"><span>지도</span><button class="tipb" onclick="tip(event,'map')">i</button></div><div class="btns lbtn" style="margin-top:6px"><button class="btn g" onclick="go2(fMapUrl())">📍 구글지도</button><button class="btn g" id="f_ldel" onclick="fLocClear()" ${FD.lat==null?'disabled':''}>위치 삭제</button></div>`)+
 fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="예: 꾸따"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
-`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
+`<details class="adv"${x.ln||x.la?' open':''}><summary>현지어 이름 · 주소 (택시 기사님께 보여주기)</summary>${inp('f_ln',x.ln||'','placeholder="현지어 이름"')}${ta('f_la',x.la||'','현지어 주소')}<button class="btn g full" onclick="showLocal()">🚕 현지어로 크게 보여주기</button><div class="hint" id="f_lh"></div></details>`+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
 (isNew?'':recBlock(x))+btns(isNew?bG('취소','shut()'):bD('삭제',`delItem(${id})`),bP(isNew?'추가':'저장',`saveForm('${id}')`))}
 function addItem(type='place',day=0){if(type=='flight')return addFlight(day);
 FD={};GCB=fPick;
