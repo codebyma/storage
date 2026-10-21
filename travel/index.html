@@ -71,7 +71,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dgl::before{content:"";position:absolute;left:-4px;top:-3px;width:9px;height:9px;border-radius:50%;background:var(--pri)}
 .dl.rm{min-height:48px}
 .row.sg{opacity:1}.row.sg>*{visibility:hidden}
-.row.sf{opacity:1!important;margin:0}.row.sf .it{outline:2px solid var(--pri)}.row.sf .rail::before{display:none}
+.row.sf{opacity:1!important;margin:0}.row.sf .it{outline:2px solid var(--pri);transform:scale(1.03);box-shadow:0 12px 28px rgba(0,0,0,.2);transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s}.row.sf .rail::before{display:none}
 .num{font-family:'Inter',-apple-system,'SF Pro Text',system-ui,sans-serif;font-variant-numeric:tabular-nums}.u{font-size:calc(1em - 1px)}
 .tg.past{background:var(--chip);color:var(--sub);font-weight:600}
 .gsticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdh,64px));z-index:4;background:var(--bg);border-bottom:1px solid var(--line)}.gmp{padding:12px var(--pad) 8px}.gtabs{display:flex;gap:6px;overflow-x:auto;padding:8px var(--pad)}.gtabs button{flex-shrink:0;background:var(--chip);border-radius:16px;padding:7px 14px;font-size:12px}.gtabs .on{background:var(--pri);color:var(--on-pri)}
@@ -264,9 +264,17 @@ const k=S.items.findIndex(i=>i.id==id),it=S.items.splice(k,1)[0];it.day=t.day;
 if(t.before!=null){const j=S.items.findIndex(i=>i.id==t.before);S.items.splice(j,0,it)}
 else{let last=-1;S.items.forEach((x,n)=>{if(x.day==t.day)last=n});S.items.splice(last+1,0,it)}
 render();setTimeout(save,80)}
-let SRT=[];
+let SRT=[],SRAF=0;
+function sortMove(e){const r=e.related;return!(r&&r.matches&&r.matches('.row[data-id]')&&e.dragged&&r.parentNode===e.dragged.parentNode)}
+function sortLoop(){const g=document.querySelector('.row.sf'),p=document.querySelector('.row.sg');
+if(g&&p&&p.parentNode){const gr=g.getBoundingClientRect(),M=3,geo=r=>{const b=r.getBoundingClientRect();let dy=0;try{dy=new DOMMatrix(getComputedStyle(r).transform).m42||0}catch(x){}return{t:b.top-dy,h:b.height}};
+const nx=p.nextElementSibling,pv=p.previousElementSibling;let mv=null;
+if(nx&&nx.matches('.row[data-id]')){const c=geo(nx);if(gr.bottom>c.t+c.h/2+M)mv=()=>nx.after(p)}
+if(!mv&&pv&&pv.matches('.row[data-id]')){const c=geo(pv);if(gr.top<c.t+c.h/2-M)mv=()=>pv.before(p)}
+if(mv){const so=Sortable.get(p.parentNode);if(so)so.captureAnimationState();mv();if(so)so.animateAll()}}
+SRAF=requestAnimationFrame(sortLoop)}
 function initSort(){SRT.forEach(x=>{try{x.destroy()}catch(e){}});SRT=[];if(!window.Sortable||view!='trip'||!RM)return;
-document.querySelectorAll('.dl').forEach(el=>SRT.push(new Sortable(el,{group:'trip',handle:'.dgh',direction:'vertical',swapThreshold:.5,invertSwap:true,invertedSwapThreshold:.5,animation:200,easing:'cubic-bezier(.2,.8,.2,1)',forceFallback:true,fallbackOnBody:true,fallbackTolerance:3,ghostClass:'sg',fallbackClass:'sf',emptyInsertThreshold:24,scrollSensitivity:90,scrollSpeed:14,onEnd:sortEnd})))}
+document.querySelectorAll('.dl').forEach(el=>SRT.push(new Sortable(el,{group:'trip',handle:'.dgh',direction:'vertical',swapThreshold:1,invertSwap:false,animation:260,easing:'cubic-bezier(.25,1,.5,1)',forceFallback:true,fallbackOnBody:true,fallbackTolerance:3,ghostClass:'sg',fallbackClass:'sf',emptyInsertThreshold:24,scrollSensitivity:90,scrollSpeed:14,onMove:sortMove,onStart:()=>{cancelAnimationFrame(SRAF);SRAF=requestAnimationFrame(sortLoop)},onEnd:()=>{cancelAnimationFrame(SRAF);sortEnd()}})))}
 function sortEnd(){const m=new Map(S.items.map(i=>[i.id,i])),out=[];
 document.querySelectorAll('.dl').forEach(dl=>dl.querySelectorAll(':scope>.row[data-id]').forEach(r=>{const it=m.get(+r.dataset.id);if(it){it.day=+dl.dataset.day;out.push(it)}}));
 let ok=out.length==S.items.length;if(ok)S.items=out;render();if(ok)setTimeout(save,80)}
@@ -472,7 +480,7 @@ c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)
 function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true,true)}
 function gFull(){if(!GMAP){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
 GM.full=true;const o=$('gfull');
-o.innerHTML=`<div class="hd"><button class="back" onclick="gFullClose()">${XL}</button><h1>${esc(S.title)}<small>지도 크게 보기</small></h1></div><div class="gfb"><div id="gfmap"></div></div><div class="gtabs">${[-1,...days().map((d,i)=>i)].map(i=>`<button class="${GM.day==i?'on':''}" onclick="gSetDay(${i})">${i<0?'전체':'Day '+(i+1)}</button>`).join('')}</div><div class="gfcw" id="gfc"></div>`;
+o.innerHTML=`<div class="hd"><button class="back" onclick="gFullClose()">${XL}</button><h1>${esc(S.title)}</h1></div><div class="gfb"><div id="gfmap"></div></div><div class="gtabs">${[-1,...days().map((d,i)=>i)].map(i=>`<button class="${GM.day==i?'on':''}" onclick="gSetDay(${i})">${i<0?'전체':'Day '+(i+1)}</button>`).join('')}</div><div class="gfcw" id="gfc"></div>`;
 o.classList.add('on');document.body.style.overflow='hidden';gfCards(true);$('gfc').onscroll=()=>{clearTimeout(GFT);GFT=setTimeout(gfScroll,90)};drawMap()}
 function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);o.classList.remove('on');o.innerHTML='';document.body.style.overflow='';
 if(GM.day>=0)gDay(GM.day);else drawMap()}
