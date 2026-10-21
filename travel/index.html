@@ -265,13 +265,13 @@ if(t.before!=null){const j=S.items.findIndex(i=>i.id==t.before);S.items.splice(j
 else{let last=-1;S.items.forEach((x,n)=>{if(x.day==t.day)last=n});S.items.splice(last+1,0,it)}
 render();setTimeout(save,80)}
 let SRT=[];
-function initSort(){SRT.forEach(x=>{try{x.destroy()}catch(e){}});SRT=[];if(true||!window.Sortable||view!='trip'||!RM)return;
-document.querySelectorAll('.dl').forEach(el=>SRT.push(new Sortable(el,{group:'trip',handle:'.dgh',direction:'vertical',animation:0,forceFallback:true,fallbackOnBody:true,fallbackTolerance:3,ghostClass:'sg',fallbackClass:'sf',emptyInsertThreshold:24,scrollSensitivity:90,scrollSpeed:14,onEnd:sortEnd})))}
+function initSort(){SRT.forEach(x=>{try{x.destroy()}catch(e){}});SRT=[];if(!window.Sortable||view!='trip'||!RM)return;
+document.querySelectorAll('.dl').forEach(el=>SRT.push(new Sortable(el,{group:'trip',handle:'.dgh',direction:'vertical',swapThreshold:.5,invertSwap:true,invertedSwapThreshold:.5,animation:0,forceFallback:true,fallbackOnBody:true,fallbackTolerance:3,ghostClass:'sg',fallbackClass:'sf',emptyInsertThreshold:24,scrollSensitivity:90,scrollSpeed:14,onEnd:sortEnd})))}
 function sortEnd(){const m=new Map(S.items.map(i=>[i.id,i])),out=[];
 document.querySelectorAll('.dl').forEach(dl=>dl.querySelectorAll(':scope>.row[data-id]').forEach(r=>{const it=m.get(+r.dataset.id);if(it){it.day=+dl.dataset.day;out.push(it)}}));
 let ok=out.length==S.items.length;if(ok)S.items=out;render();if(ok)setTimeout(save,80)}
 function dgInit(){const A=$('app');
-A.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.dgh');if(!h||DG)return;const r=h.closest('.row');e.preventDefault();h.setPointerCapture(e.pointerId);
+A.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.dgh');if(!h||DG||window.Sortable)return;const r=h.closest('.row');e.preventDefault();h.setPointerCapture(e.pointerId);
 const l=document.createElement('div');l.className='dgl';document.body.appendChild(l);r.classList.add('lift');
 DG={r,pid:e.pointerId,y0:e.clientY,y:e.clientY,s0:scrollY,l,t:null};
 const loop=()=>{if(!DG)return;if(DG.y<90)scrollBy(0,-10);else if(DG.y>innerHeight-150)scrollBy(0,10);dgUpdate();DG.raf=requestAnimationFrame(loop)};loop();requestAnimationFrame(()=>l.classList.add('on'))});
