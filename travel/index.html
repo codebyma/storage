@@ -138,7 +138,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .adv{margin-top:14px;font-size:13px}.adv summary{color:var(--sub);padding:6px 0}.adv .in{margin-top:8px}
 .tmw{position:relative;flex:1;min-width:0}.tmw .in{width:100%}.tmph{display:none;position:absolute;left:var(--p-field);top:50%;transform:translateY(-50%);color:var(--sub);opacity:.6;pointer-events:none}.tmw.empty .tmph{display:block}.tmw.empty input::-webkit-datetime-edit{color:transparent}
 .row.dd{margin-top:18px}.row.dd .rail::before{top:-10px}.ddb{position:absolute;left:12px;top:-17px;transform:translateX(-50%);z-index:2;height:16px;padding:0 7px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--sub);font-size:10.5px;line-height:14px;white-space:nowrap}
-.rmode .gmw,.rmode .gmp{display:none}.dl.rm .row{transition:none!important}.row.sg{transform:none!important}
+.rmode .gmw,.rmode .gmp{display:none}.row.sg{transform:none!important}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -266,7 +266,7 @@ else{let last=-1;S.items.forEach((x,n)=>{if(x.day==t.day)last=n});S.items.splice
 render();setTimeout(save,80)}
 let SRT=[];
 function initSort(){SRT.forEach(x=>{try{x.destroy()}catch(e){}});SRT=[];if(!window.Sortable||view!='trip'||!RM)return;
-document.querySelectorAll('.dl').forEach(el=>SRT.push(new Sortable(el,{group:'trip',handle:'.dgh',direction:'vertical',swapThreshold:.5,invertSwap:true,invertedSwapThreshold:.5,animation:0,forceFallback:true,fallbackOnBody:true,fallbackTolerance:3,ghostClass:'sg',fallbackClass:'sf',emptyInsertThreshold:24,scrollSensitivity:90,scrollSpeed:14,onEnd:sortEnd})))}
+document.querySelectorAll('.dl').forEach(el=>SRT.push(new Sortable(el,{group:'trip',handle:'.dgh',direction:'vertical',swapThreshold:.5,invertSwap:true,invertedSwapThreshold:.5,animation:200,easing:'cubic-bezier(.2,.8,.2,1)',forceFallback:true,fallbackOnBody:true,fallbackTolerance:3,ghostClass:'sg',fallbackClass:'sf',emptyInsertThreshold:24,scrollSensitivity:90,scrollSpeed:14,onEnd:sortEnd})))}
 function sortEnd(){const m=new Map(S.items.map(i=>[i.id,i])),out=[];
 document.querySelectorAll('.dl').forEach(dl=>dl.querySelectorAll(':scope>.row[data-id]').forEach(r=>{const it=m.get(+r.dataset.id);if(it){it.day=+dl.dataset.day;out.push(it)}}));
 let ok=out.length==S.items.length;if(ok)S.items=out;render();if(ok)setTimeout(save,80)}
