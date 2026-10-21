@@ -4942,7 +4942,7 @@
         {
           "type": "hotel",
           "label": "호텔",
-          "title": "Motto by Hilton HONG KONG SOHO",
+          "title": "Motto by Hilton Hong Kong SoHo",
           "sub": "나만의 장소",
           "time": "",
           "memo": "아고다 예약, 네이버페이 신한글로벌 결제",
@@ -4951,7 +4951,8 @@
           "lat": 22.2852908,
           "lng": 114.150854,
           "addr": "83 Jervois St, Sheung Wan, Hong Kong Island, 홍콩",
-          "gx": 1
+          "map": "https://www.google.com/maps/search/?api=1&query=Motto%20by%20Hilton%20Hong%20Kong%20SoHo&query_place_id=ChIJXTlqFnwABDQR7kI2k0VfHrc",
+          "pid": "ChIJXTlqFnwABDQR7kI2k0VfHrc"
         },
         {
           "type": "other",
@@ -4966,44 +4967,47 @@
         {
           "type": "restaurant",
           "label": "식당",
-          "title": "뉴 힝 팻 딤섬",
+          "title": "New Hing Fat Dim Sum",
           "sub": "성완, 센트럴, 빅토리아피크",
           "time": "",
           "memo": "창펀, 크리스피딤섬",
           "id": 10,
           "day": 1,
-          "lat": 22.2863943,
-          "lng": 114.1491375,
-          "addr": "홍콩 성완",
-          "gx": 1
+          "lat": 22.2880826,
+          "lng": 114.14157639999999,
+          "addr": "Tak May House, Des Voeux Rd W, Sai Ying Pun, Hong Kong Island, 홍콩",
+          "map": "https://www.google.com/maps/search/?api=1&query=New%20Hing%20Fat%20Dim%20Sum&query_place_id=ChIJe5cW2cb_AzQRwmZ3P45qffc",
+          "pid": "ChIJe5cW2cb_AzQRwmZ3P45qffc"
         },
         {
           "type": "shopping",
           "label": "쇼핑",
-          "title": "토카 로카 센트럴 마켓 점",
+          "title": "센트럴 마켓",
           "sub": "성완, 센트럴, 빅토리아피크",
           "time": "",
-          "memo": "",
+          "memo": "토카 로카 센트럴 마켓 점",
           "id": 11,
           "day": 1,
-          "lat": 22.2863943,
-          "lng": 114.1491375,
-          "addr": "홍콩 성완",
-          "gx": 1
+          "lat": 22.2840679,
+          "lng": 114.15548349999999,
+          "addr": "93 Queen's Road Central, Central, Hong Kong Island, 홍콩",
+          "map": "https://www.google.com/maps/search/?api=1&query=%EC%84%BC%ED%8A%B8%EB%9F%B4%20%EB%A7%88%EC%BC%93&query_place_id=ChIJlf_dsXwABDQR_vHeEbY8JhA",
+          "pid": "ChIJlf_dsXwABDQR_vHeEbY8JhA"
         },
         {
           "type": "cafe",
           "label": "카페",
-          "title": "하프웨이 커피 미드 레벨 점",
+          "title": "하프웨이 커피",
           "sub": "",
           "time": "",
           "memo": "",
           "id": 12,
           "day": 1,
           "lat": 22.2846615,
-          "lng": 114.1497724,
+          "lng": 114.14977239999999,
           "addr": "26號 Upper Lascar Row, Tai Ping Shan, Hong Kong Island, 홍콩",
-          "gx": 1
+          "map": "https://www.google.com/maps/search/?api=1&query=%ED%95%98%ED%94%84%EC%9B%A8%EC%9D%B4%20%EC%BB%A4%ED%94%BC&query_place_id=ChIJAQAhpH4ABDQRJ9C5gcbz0II",
+          "pid": "ChIJAQAhpH4ABDQRJ9C5gcbz0II"
         },
         {
           "type": "cafe",
