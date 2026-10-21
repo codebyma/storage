@@ -4901,15 +4901,17 @@
         {
           "type": "hotel",
           "label": "호텔",
-          "title": "그랜드 하얏트 선전",
+          "title": "Grand Hyatt Shenzhen",
           "sub": "5성급",
           "time": "19:00",
           "memo": "Living Room (Park Hyatt Shenzhen) 19:00 예약, 예약ID H2PYCE, 2명, 창가석 요청 / 33/F, 5023 Yi Tian Road, Futian District / 0755 8828 8567 / 예약 후 15분간 테이블 유지",
           "id": 5,
           "day": 0,
-          "lat": 22.5373095,
-          "lng": 114.1115267,
-          "addr": "1881 Bao An Nan Lu, 蔡屋围 Luo Hu Qu, Shen Zhen Shi, Guang Dong Sheng, 중국"
+          "lat": 22.5372205,
+          "lng": 114.1112931,
+          "addr": "1881 Bao An Nan Lu, Luo Hu Qu, Shen Zhen Shi, Guang Dong Sheng, 중국",
+          "map": "https://www.google.com/maps/search/?api=1&query=Grand%20Hyatt%20Shenzhen&query_place_id=ChIJW3hgUuRwBDQRSPNa6tUJkQA",
+          "pid": "ChIJW3hgUuRwBDQRSPNa6tUJkQA"
         },
         {
           "type": "other",
