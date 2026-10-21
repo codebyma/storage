@@ -503,7 +503,7 @@ if(A.length){const md=a=>{const b=[...a].sort((p,q)=>p-q);return b[Math.floor(b.
 return{south:Math.min(...la)-m,north:Math.max(...la)+m,west:Math.min(...ln)-m,east:Math.max(...ln)+m}}
 if(S&&S.ctr)return{center:S.ctr,radius:50000};return null};
 function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>{FLYID++;FLYING=false});GMAP.addListener('zoom_changed',()=>{if(!FLYING&&Date.now()-(GM.pt||0)>500)GM.uz=GMAP.getZoom()});GM.fresh=true}
-const GMAX=4000,gmKey=()=>{const d=new Date();return 'gmore:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
+const GMAX=4700,gmKey=()=>{const d=new Date();return 'gmore:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 const gmCnt=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}};
 const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmCnt()+1))}catch(e){}};
 let GQ=[],GQM=[],GQS=-1,GSM='ac';
