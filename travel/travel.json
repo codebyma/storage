@@ -4896,7 +4896,9 @@
           "day": 0,
           "lat": 22.53323,
           "lng": 114.054448,
-          "addr": "268 Fu Hua San Lu, 中心城 Fu Tian Qu, Shen Zhen Shi, Guang Dong Sheng, 중국 518020"
+          "addr": "268 Fu Hua San Lu, 中心城 Fu Tian Qu, Shen Zhen Shi, Guang Dong Sheng, 중국 518020",
+          "map": "https://www.google.com/maps/search/?api=1&query=COCO%20Park&query_place_id=ChIJ12zhVgH0AzQRjO3kFXyv6QM",
+          "pid": "ChIJ12zhVgH0AzQRjO3kFXyv6QM"
         },
         {
           "type": "hotel",
