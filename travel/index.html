@@ -534,20 +534,42 @@ function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.
 async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location']});GTOK=null;
 const d={title:p.mainText.text,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId};gCtr(d);gsClose();if(GCB)GCB(d)}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
-async function gsMore(){const inp=$('gs_q');if(!inp)return;const q=inp.value.trim();if(q.length<2)return;inp.blur();GTOK=null;gsReset();GSM='more';
+let GNEXT=null,GREQ=null;
+const gsRow=(r,i)=>`<button class="gsi" id="gsi_${i}" onclick="gsSel(${i})"><span class="gsn">${i+1}</span><div><b>${esc(r.title)}</b><small>${esc(r.addr||'')}</small></div></button>`;
+const gsNxBtn=()=>GNEXT?'<button class="btn lt" id="gs_nx" style="width:100%;margin:8px 0 4px" onclick="gsNext()">20개 더 보기</button>':'';
+async function gsFetch(tok){
+if(gmCnt()>=GMAX)throw new Error('이번 달 "더 많은 결과 보기" 한도('+GMAX.toLocaleString()+'회)에 도달했어요. 무료 한도를 넘지 않도록 막아 두었어요. 다음 달에 다시 쓸 수 있어요.');
+gmInc();
+const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':gKey(),'X-Goog-FieldMask':'places.id,places.displayName,places.formattedAddress,places.location,nextPageToken'},body:JSON.stringify(tok?{...GREQ,pageToken:tok}:GREQ)});
+const j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
+GNEXT=j.nextPageToken||null;
+return(j.places||[]).map(p=>({id:p.id,title:(p.displayName&&p.displayName.text)||'',addr:p.formattedAddress,lat:p.location.latitude,lng:p.location.longitude}))}
+function gsMk(AE,r,i){const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AE({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m}}
+function gsFit(){if(!GQ.length)return;const b=new google.maps.LatLngBounds();GQ.forEach(r=>b.extend({lat:r.lat,lng:r.lng}));GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30})}
+async function gsMore(){const inp=$('gs_q');if(!inp)return;const q=inp.value.trim();if(q.length<2)return;inp.blur();GTOK=null;gsReset();GSM='more';GNEXT=null;
 const l=$('gsl');
 if(gmCnt()>=GMAX){GSM='ac';l.innerHTML=`<div class="hint">이번 달 "더 많은 결과 보기" 한도(${GMAX.toLocaleString()}회)에 도달했어요.<br>무료 한도를 넘지 않도록 막아 두었어요. 다음 달에 다시 쓸 수 있어요.</div>`;return}
 l.innerHTML='<div class="hint">검색 중…</div>';
-try{await gmaps();const{Place}=await google.maps.importLibrary('places'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
+try{await gmaps();await google.maps.importLibrary('places');const{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
 if(!await gsMap(true))throw new Error('지도를 불러오지 못했어요');
-const req={textQuery:gQ(q),fields:['id','displayName','formattedAddress','location'],maxResultCount:20,language:'ko'},bi=gBias();if(bi)req.locationBias=bi;
-gmInc();const{places}=await Place.searchByText(req);if(GSM!='more'||!$('gsr').classList.contains('on'))return;
-GQ=places.map(p=>({id:p.id,title:p.displayName,addr:p.formattedAddress,lat:p.location.lat(),lng:p.location.lng()}));
-l.innerHTML=GQ.length?`<div class="hint gsc">검색 결과 ${GQ.length}곳</div>`+GQ.map((r,i)=>`<button class="gsi" id="gsi_${i}" onclick="gsSel(${i})"><span class="gsn">${i+1}</span><div><b>${esc(r.title)}</b><small>${esc(r.addr||'')}</small></div></button>`).join(''):'<div class="hint">검색 결과가 없어요</div>';
+GREQ={textQuery:gQ(q),pageSize:20,languageCode:'ko'};const bi=gBias();
+if(bi){if(bi.south!=null)GREQ.locationBias={rectangle:{low:{latitude:bi.south,longitude:bi.west},high:{latitude:bi.north,longitude:bi.east}}};else GREQ.locationBias={circle:{center:{latitude:bi.center.lat,longitude:bi.center.lng},radius:bi.radius}}}
+const places=await gsFetch(null);if(GSM!='more'||!$('gsr').classList.contains('on'))return;
+GQ=places;
+l.innerHTML=GQ.length?`<div class="hint gsc" id="gsc_n">검색 결과 ${GQ.length}곳</div>`+GQ.map(gsRow).join('')+gsNxBtn():'<div class="hint">검색 결과가 없어요</div>';
 $('gsr').classList.add('more');
-GQM=GQ.map((r,i)=>{const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m}});
-if(GQ.length==1)gsSel(0);else if(GQ.length){const b=new google.maps.LatLngBounds();GQ.forEach(r=>b.extend({lat:r.lat,lng:r.lng}));GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30})}
+GQM=GQ.map((r,i)=>gsMk(AdvancedMarkerElement,r,i));
+if(GQ.length==1)gsSel(0);else gsFit();
 }catch(e){l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`;GSM='ac'}}
+async function gsNext(){if(GSM!='more'||!GNEXT)return;const l=$('gsl'),b=$('gs_nx');if(b){b.disabled=true;b.textContent='불러오는 중…'}
+const er=$('gs_er');if(er)er.remove();
+try{const{AdvancedMarkerElement}=await google.maps.importLibrary('marker');const add=await gsFetch(GNEXT);if(GSM!='more'||!$('gsr').classList.contains('on'))return;
+const n0=GQ.length;GQ=GQ.concat(add);if(b)b.remove();
+const c=$('gsc_n');if(c)c.textContent='검색 결과 '+GQ.length+'곳';
+l.insertAdjacentHTML('beforeend',add.map((r,k)=>gsRow(r,n0+k)).join('')+gsNxBtn());
+add.forEach((r,k)=>GQM.push(gsMk(AdvancedMarkerElement,r,n0+k)));
+gsFit();
+}catch(e){if(b){b.disabled=false;b.textContent='20개 더 보기'}l.insertAdjacentHTML('beforeend',`<div class="hint" id="gs_er">${esc(gErr(e))}</div>`)}}
 function gsSel(i,sc){const r=GQ[i];if(!r)return;GQS=i;
 GQ.forEach((x,k)=>{const e=$('gsi_'+k);if(e)e.classList.toggle('on',k==i);if(GQM[k]){GQM[k].c.classList.toggle('on',k==i);GQM[k].m.zIndex=k==i?1000:null}});
 const b=$('gsok'),g=$('gsgo');if(g)g.disabled=false;if(b){b.disabled=false;b.textContent='이 장소로 선택'}
