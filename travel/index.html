@@ -158,6 +158,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .hmc{flex:none;font-size:13px;font-weight:600;color:var(--tx);background:var(--chip);padding:6px 11px;border-radius:14px;white-space:nowrap}.hmc.on{color:var(--pri);background:var(--pl)}
 .gcard>.btn{display:block;width:100%}
 .gbt{display:flex;gap:10px}.gbt .btn{flex:1}
+.gsw{padding-left:8px}.gsw.on{background:var(--pl)}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -616,9 +617,25 @@ try{await gmaps();const{AutocompleteSuggestion,AutocompleteSessionToken}=await g
 const req={input:gQ(t),sessionToken:GTOK,language:'ko'},bi=gBias();if(bi)req.locationBias=bi;
 const{suggestions}=await AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
 const cur=$('gs_q');if(GSM!='ac'||!cur||cur.value.trim()!=t)return;
-GS=suggestions.map(x=>x.placePrediction).filter(Boolean);
-$('gsl').innerHTML=(GS.map((p,i)=>`<div class="gsw"><button class="gsm" onclick="gsAcPick(${i})"><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></button><button class="gsg" onclick="gsLink(${i})">지도↗</button></div>`).join('')||'<div class="hint">검색 결과가 없어요</div>')+`<button class="sgm" onclick="gsMore()">더 많은 결과 보기 (지도에서 최대 20곳)<small>누를 때만 추가 검색해요 · 이번 달 ${gmCnt()}/${GMAX}회</small></button>`}
+GS=suggestions.map(x=>x.placePrediction).filter(Boolean);GQM.forEach(k=>k.m.map=null);GQM=[];
+$('gsl').innerHTML=(GS.map((p,i)=>`<div class="gsw" id="gsw_${i}"><span class="gsn">${i+1}</span><button class="gsm" onclick="gsAcPick(${i})"><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></button><button class="gsg" onclick="gsLink(${i})">지도↗</button></div>`).join('')||'<div class="hint">검색 결과가 없어요</div>')+`<button class="sgm" onclick="gsMore()">더 많은 결과 보기 (지도에서 최대 20곳)<small>누를 때만 추가 검색해요 · 이번 달 ${gmCnt()}/${GMAX}회</small></button>`;gsPins(t)}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
+/* --- 검색 결과 상위 5곳 지도 핀 (Place Details Essentials 무료 한도 보호용 월 상한) --- */
+const GPMAX=8000,gpKey=()=>{const d=new Date();return 'gpin:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
+const gpCnt=()=>{try{return +localStorage.getItem(gpKey())||0}catch(e){return 0}};
+const gpInc=n=>{try{localStorage.setItem(gpKey(),String(gpCnt()+n))}catch(e){}};
+const GPC=new Map();
+function gsHi(i,sc){GQM.forEach(k=>k.c.classList.toggle('on',k.ix==i));GS.forEach((p,k)=>{const e=$('gsw_'+k);if(e)e.classList.toggle('on',k==i)});if(sc){const e=$('gsw_'+i);if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})}}
+async function gsPins(t){const list=GS;if(!GMAP||!list.length)return;
+try{const{AdvancedMarkerElement}=await google.maps.importLibrary('marker'),{Place}=await google.maps.importLibrary('places');
+const need=list.filter(p=>!GPC.has(p.placeId));
+if(need.length&&gpCnt()+need.length>GPMAX){const l=$('gsl');if(l&&GS===list&&!$('gs_pn'))l.insertAdjacentHTML('afterbegin','<div class="hint" id="gs_pn">이번 달 핀 표시 한도에 도달해 핀은 숨겨요. 검색과 더 많은 결과 보기는 계속 쓸 수 있어요</div>');return}
+gpInc(need.length);
+await Promise.all(need.map(async p=>{try{const pl=new Place({id:p.placeId});await pl.fetchFields({fields:['location']});GPC.set(p.placeId,{lat:pl.location.lat(),lng:pl.location.lng()})}catch(e){}}));
+const cur=$('gs_q');if(GS!==list||GSM!='ac'||!cur||cur.value.trim()!=t)return;
+GQM.forEach(k=>k.m.map=null);GQM=[];const b=new google.maps.LatLngBounds();let n=0;
+list.forEach((p,i)=>{const c=GPC.get(p.placeId);if(!c)return;const e=document.createElement('div');e.className='gpin';e.style.background='var(--pri)';e.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:c,content:e,title:p.mainText.text});m.addListener('click',()=>gsHi(i,true));GQM.push({c:e,m,ix:i});b.extend(c);n++});
+if(n>1)GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30});else if(n==1)GMAP.moveCamera({center:b.getCenter(),zoom:15})}catch(e){}}
 function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.text,p.placeId))}
 async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location']});GTOK=null;
 const d={title:p.mainText.text,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId};gCtr(d);gsClose();if(GCB)GCB(d)}
