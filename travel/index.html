@@ -7,6 +7,8 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="theme-color" content="#4a33ff">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
@@ -85,6 +87,9 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .dtag{background:var(--pl);color:var(--pri);font-weight:700;font-size:12px;padding:4px 7px;border-radius:6px}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
+.dadd{display:block;width:100%;margin-top:8px;padding:11px 0;border:1px dashed var(--line,#d5d5dc);border-radius:12px;background:none;color:var(--sub);font-size:13px;font-weight:600;font-family:inherit}
+.dadd:active{opacity:.6}
+.leaflet-container{isolation:isolate;font:inherit;background:var(--chip)}.gpw{background:none;border:0}.gpw .gpin{translate:0 0}
 .row{display:flex;gap:8px;margin-bottom:8px;position:relative}
 .rail{width:24px;flex-shrink:0;position:relative}
 .rail::before{content:"";position:absolute;left:50%;width:1px;background:var(--line);top:0;bottom:-8px}
@@ -343,13 +348,13 @@ let h=`<div class="hd"><button class="back" onclick="go('home')">${BK}</button><
 ${GM.on?mapPanel():''}`;
 h+=candSec();
 D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
-h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="addItem('place',${i})">추가</u><u onclick="reorder()">${RM?'완료':'순서변경'}</u></div>`;
+h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2>${RM?'':`<u onclick="dayRoute(${i})">경로</u>`}<u onclick="reorder()">${RM?'완료':'순서변경'}</u></div>`;
 h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='';if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv)dd=fmtKm(hav(pv,x))}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<span class="ddb">${dd}</span>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
 <button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
-h+=`</div></div>`});
+h+=`</div>${RM?'':`<button class="dadd" onclick="addItem('place',${i})">+ 일정 추가</button>`}</div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
 let FD={};
 function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
@@ -521,7 +526,7 @@ const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*1
 if(E.id)Object.assign(S.exp.find(x=>x.id==E.id),o);else S.exp.push({id:S.nid++,...o});save();go('ledger')}
 /* --- 구글 지도 --- */
 const gKey=()=>{try{return localStorage.getItem('gmk')||''}catch(e){return''}};
-let GMK={},GM={on:false,day:-1,lock:0},GCB=null,G_NEW=null,GS=[],GT=null,GTOK=null,GMP=null,GMAP=null,GMAPEL=null,GOV=[],GIW=null;
+let GMK={},GM={on:false,day:-1,lock:0},GCB=null,G_NEW=null,GS=[],GT=null,GTOK=null,GMP=null,GMAP=null,GMAPEL=null,LMAP=null,LMAPEL=null,GOV=[],GIW=null;
 const GCOL=['#13a99c','#7b61ff','#ff6b6b','#f5a524','#3b82f6','#e0457f'];
 const gErr=e=>{const m=(e&&e.message)||String(e);return /referer/i.test(m)?m+' → 구글 클라우드 API 키의 "웹사이트 제한"에 https://codebyma.github.io/* 를 추가하세요 (저장소 이름 경로는 넣지 마세요). 반영에 몇 분 걸릴 수 있어요':m};
 const GME={ApiNotActivatedMapError:'Maps JavaScript API가 켜져 있지 않아요 (구글 클라우드 > API 및 서비스 > 라이브러리에서 사용 설정)',BillingNotEnabledMapError:'결제 계정이 연결되지 않았어요',RefererNotAllowedMapError:'API 키의 웹사이트 제한에 이 주소가 없어요 (https://codebyma.github.io/*)',InvalidKeyMapError:'API 키가 올바르지 않아요',ApiTargetBlockedMapError:'API 키의 API 제한사항에 Maps JavaScript API가 없어요',MissingKeyMapError:'API 키가 입력되지 않았어요',ExpiredKeyMapError:'API 키가 만료됐어요',RequestDeniedMapError:'요청이 거부됐어요 (키 제한 설정 확인)'};
@@ -537,7 +542,14 @@ function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
 const GZ=13;
 let FLYID=0,FLYING=false;
-function gFly(p,z,instant){const m=GMAP;if(instant||!m.moveCamera){FLYING=false;GM.pt=Date.now();if(m.moveCamera)m.moveCamera({center:p,zoom:z});else{m.setZoom(z);m.setCenter(p)}return}
+function gFly(p,z,instant){const m=LMAP;if(!m)return;
+if(instant){FLYING=false;GM.pt=Date.now();m.setView([p.lat,p.lng],z,{animate:false});return}
+const c=m.getCenter();if(Math.abs(c.lat-p.lat)<1e-7&&Math.abs(c.lng-p.lng)<1e-7&&Math.abs(m.getZoom()-z)<.01)return;
+FLYING=true;GM.pt=Date.now();m.once('moveend',()=>{FLYING=false;GM.pt=Date.now()});
+try{m.flyTo([p.lat,p.lng],z,{duration:.55})}catch(e){FLYING=false;m.setView([p.lat,p.lng],z,{animate:false})}}
+function gZoom(force,keep){if(!LMAP||GM.focus==null||(!force&&GM.day<0))return false;const k=GMK[GM.focus];if(!k)return false;const ll=k.m.getLatLng(),p={lat:ll.lat,lng:ll.lng};
+const f=GM.fresh,kp=keep&&GM.uz!=null;GM.fresh=false;if(!kp)GM.uz=null;gFly(p,kp?GM.uz:GZ,f);return true}
+function gsFly(p,z,instant){const m=GMAP;if(instant||!m.moveCamera){FLYING=false;GM.pt=Date.now();if(m.moveCamera)m.moveCamera({center:p,zoom:z});else{m.setZoom(z);m.setCenter(p)}return}
 const id=++FLYID,c=m.getCenter(),z0=m.getZoom()||z,la0=c.lat(),ln0=c.lng(),la1=p.lat,ln1=p.lng,
 w=m.getDiv().clientWidth||400,span=360*w/(256*Math.pow(2,z0)),d=Math.hypot(la1-la0,ln1-ln0),r=d/span,
 bump=r>.6?Math.min(4,Math.log2(r+1)*.9):0,dur=Math.max(340,560-Math.min(r,3)*75),t0=performance.now();
@@ -546,10 +558,7 @@ FLYING=true;GM.pt=Date.now();
 const step=n=>{if(id!=FLYID)return;const t=Math.min(1,(n-t0)/dur),e=t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
 m.moveCamera({center:{lat:la0+(la1-la0)*e,lng:ln0+(ln1-ln0)*e},zoom:Math.max(2,z0+(z-z0)*e-bump*Math.sin(Math.PI*e))});
 if(t<1)requestAnimationFrame(step);else{FLYING=false;GM.pt=Date.now()}};requestAnimationFrame(step)}
-function gZoom(force,keep){if(!GMAP||GM.focus==null||(!force&&GM.day<0))return false;const k=GMK[GM.focus];if(!k)return false;let p=k.m.position;if(!p)return false;
-p={lat:typeof p.lat=='function'?p.lat():p.lat,lng:typeof p.lng=='function'?p.lng():p.lng};
-const f=GM.fresh,kp=keep&&GM.uz!=null;GM.fresh=false;if(!kp)GM.uz=null;gFly(p,kp?GM.uz:GZ,f);return true}
-function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.zIndex=on?1000:null}}
+function gEmph(){for(const id in GMK){const k=GMK[id],on=+id===GM.focus;k.c.classList.toggle('on',on);k.m.setZIndexOffset(on?1000:0)}}
 function gFocus(id,force){if(force)GM.focus=undefined;if(GM.focus===id)return;GM.focus=id;
 document.querySelectorAll('.row.fc').forEach(r=>r.classList.remove('fc'));
 const r=id!=null&&document.querySelector(`.row[data-id="${id}"]`);if(r)r.classList.add('fc');gEmph();gZoom()}
@@ -572,30 +581,40 @@ GM.focus=GFL[st]?GFL[st].x.id:null;
 c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||o.x.sub||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
 c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)}
 function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true,true)}
-function gFull(){if(!GMAP){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
+function gFull(){if(!LMAP){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
 GM.full=true;const o=$('gfull');
 o.innerHTML=`<div class="hd"><button class="back" onclick="gFullClose()">${XL}</button><h1>${esc(S.title)}</h1></div><div class="gfb"><div id="gfmap"></div></div><div class="gtabs">${[-1,...days().map((d,i)=>i)].map(i=>`<button class="${GM.day==i?'on':''}" onclick="gSetDay(${i})">${i<0?'전체':'Day '+(i+1)}</button>`).join('')}</div><div class="gfcw" id="gfc"></div>`;
 o.classList.add('on');document.body.style.overflow='hidden';gfCards(true);$('gfc').onscroll=()=>{clearTimeout(GFT);GFT=setTimeout(gfScroll,90)};drawMap()}
-function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);o.classList.remove('on');o.innerHTML='';document.body.style.overflow='';
+function gFullClose(){GM.full=false;const o=$('gfull'),h=$('gmap');if(h&&LMAPEL)h.appendChild(LMAPEL);o.classList.remove('on');o.innerHTML='';document.body.style.overflow='';
 if(GM.day>=0)gDay(GM.day);else drawMap()}
 function gFullGo(id){gFullClose();gGoto(id)}
 function gCard(id){const i=GFL.findIndex(o=>o.x.id==id),c=$('gfc');if(i<0||!c)return;GM.focus=id;gEmph();gZoom(true,true);const k=c.children[0];if(k)c.scrollTo({left:i*(k.offsetWidth+10),behavior:'smooth'})}
+const rLL=x=>x.lat+','+x.lng;
+function routeUrl(c){const o=c[0],d=c[c.length-1],m=c.slice(1,-1);let u='https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(rLL(o))+'&destination='+encodeURIComponent(rLL(d));
+if(m.length)u+='&waypoints='+m.map(x=>encodeURIComponent(rLL(x))).join('%7C');
+if(c.every(x=>x.pid)){u+='&origin_place_id='+encodeURIComponent(o.pid)+'&destination_place_id='+encodeURIComponent(d.pid);if(m.length)u+='&waypoint_place_ids='+m.map(x=>encodeURIComponent(x.pid)).join('%7C')}
+return u}
+let DR=[];
+function dayRoute(i){const P=S.items.filter(x=>x.day==i&&x.lat!=null);if(P.length<2){toast('위치가 등록된 일정이 2개 이상 있어야 경로를 열 수 있어요');return}
+const C=[];for(let k=0;k<P.length-1;k+=4)C.push(P.slice(k,k+5));DR=C;
+if(C.length==1){go2(routeUrl(C[0]));return}
+sheet(hd3('Day '+(i+1)+' 경로','구글 지도는 한 번에 최대 5곳까지 열려서 구간으로 나눴어요')+C.map((c,k)=>`<button class="btn g" style="width:100%;margin-bottom:8px;text-align:left" onclick="go2(routeUrl(DR[${k}]))">구간 ${k+1} · ${esc(c[0].title)} → ${esc(c[c.length-1].title)}</button>`).join('')+btns(bG('닫기','shut()')))}
 function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(x.map||locUrl(x))}
 const dayDisp=i=>{const m={};let n=0;S.items.filter(x=>x.day==i).forEach(x=>{const ic=icon(x.type);if(ic)m[x.id]={ic};else m[x.id]={n:++n}});return m};
-async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
-if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
-host.appendChild(GMAPEL);if(GMAP&&window.google){google.maps.event.trigger(GMAP,'resize');setTimeout(()=>{if(GMAP)google.maps.event.trigger(GMAP,'resize')},250)}
-try{await gmaps();const{Map,Polyline}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
-mkMap(Map);
-GOV.forEach(f=>f());GOV=[];GMK={};const b=new google.maps.LatLngBounds();let any=false;
+function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
+if(!window.L){const m=$('gm_h');if(m)m.textContent='지도를 불러오지 못했어요. 인터넷 연결을 확인해 주세요';return}
+if(!LMAPEL){LMAPEL=document.createElement('div');LMAPEL.style.cssText='width:100%;height:100%'}
+host.appendChild(LMAPEL);
+try{mkMap();LMAP.invalidateSize();setTimeout(()=>{if(LMAP)LMAP.invalidateSize()},250);
+GOV.forEach(f=>f());GOV=[];GMK={};const b=[];let any=false;
 days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const col=GCOL[i%GCOL.length],pts=[],dp=dayDisp(i);
-S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{const pos={lat:x.lat,lng:x.lng};pts.push(pos);b.extend(pos);any=true;
+S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{const pos=[x.lat,x.lng];pts.push(pos);b.push(pos);any=true;
 const c=document.createElement('div');c.className='gpin';c.style.background=col;c.innerHTML=dp[x.id].ic||dp[x.id].n;
-const m=new AdvancedMarkerElement({map:GMAP,position:pos,content:c,title:x.title});
-m.addListener('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
-GOV.push(()=>{m.map=null})});
-if(pts.length>1){const pl=new Polyline({map:GMAP,path:pts,strokeOpacity:0,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:1,strokeColor:col,scale:3},offset:'0',repeat:'12px'}]});GOV.push(()=>pl.setMap(null))}});
-gEmph();if(any){if(!gZoom()){GM.pt=Date.now();GM.uz=null;GMAP.fitBounds(b,40)}}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
+const m=L.marker(pos,{icon:L.divIcon({html:c,className:'gpw',iconSize:[26,26],iconAnchor:[13,13]}),title:x.title}).addTo(LMAP);
+m.on('click',()=>GM.full?gCard(x.id):gGoto(x.id));GMK[x.id]={c,m};
+GOV.push(()=>m.remove())});
+if(pts.length>1){const pl=L.polyline(pts,{color:col,weight:4,opacity:1,dashArray:'1 10',lineCap:'round'}).addTo(LMAP);GOV.push(()=>pl.remove())}});
+gEmph();if(any){if(!gZoom()){GM.pt=Date.now();GM.uz=null;LMAP.fitBounds(b,{padding:[40,40],animate:false})}}else{const m=$('gm_h');if(m)m.textContent='위치가 있는 일정이 없어요. "위치 찾기"를 눌러 보세요'}}
 catch(e){const m=$('gm_h');if(m)m.textContent=gErr(e)}}
 const gArea=()=>((S&&S.area)||'').trim()||(S&&S.title)||'';
 const gQ=q=>{const a=gArea();return a&&!q.includes(a)?q+' '+a:q};
@@ -604,7 +623,7 @@ const gBias=()=>{const A=(S?S.items:[]).filter(x=>x.lat!=null);
 if(A.length){const md=a=>{const b=[...a].sort((p,q)=>p-q);return b[Math.floor(b.length/2)]},ml=md(A.map(x=>x.lat)),mg=md(A.map(x=>x.lng)),L=A.filter(x=>Math.abs(x.lat-ml)<1.5&&Math.abs(x.lng-mg)<1.5),la=L.map(x=>x.lat),ln=L.map(x=>x.lng),m=.15;
 return{south:Math.min(...la)-m,north:Math.max(...la)+m,west:Math.min(...ln)-m,east:Math.max(...ln)+m}}
 if(S&&S.ctr)return{center:S.ctr,radius:50000};return null};
-function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'});GMAP.addListener('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});GMAP.addListener('dragstart',()=>{FLYID++;FLYING=false});GMAP.addListener('zoom_changed',()=>{if(!FLYING&&Date.now()-(GM.pt||0)>500)GM.uz=GMAP.getZoom()});GM.fresh=true}
+function mkMap(){if(LMAP)return;LMAP=L.map(LMAPEL,{zoomControl:false,zoomSnap:.5,worldCopyJump:true}).setView([37.5,127],5);L.control.zoom({position:'bottomright'}).addTo(LMAP);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(LMAP);LMAP.on('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});LMAP.on('dragstart',()=>{FLYING=false});LMAP.on('zoomend',()=>{if(!FLYING&&Date.now()-(GM.pt||0)>500)GM.uz=LMAP.getZoom()});GM.fresh=true}
 const GMAX=4700,gmKey=()=>{const d=new Date();return 'gmore:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 const gmCnt=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}};
 const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmCnt()+1))}catch(e){}};
@@ -712,7 +731,7 @@ GQ.forEach((x,k)=>{const e=$('gsi_'+k);if(e)e.classList.toggle('on',k==i);if(GQM
 const b=$('gsok'),g=$('gsgo');if(g)g.disabled=false;if(b){b.disabled=false;b.textContent='이 장소로 선택'}
 if(sc){const e=$('gsi_'+i),l=$('gsl');if(e&&l)l.scrollTo({top:e.offsetTop-8,behavior:'smooth'})}
 if(sc&&$('gsr').classList.contains('big'))gsKScroll(i);
-gFly({lat:r.lat,lng:r.lng},Math.max(GMAP.getZoom()||0,15))}
+gsFly({lat:r.lat,lng:r.lng},Math.max(GMAP.getZoom()||0,15))}
 function gsGo(){const r=GQ[GQS];if(r)go2(gmPlace(r.title+(r.addr?' '+r.addr:''),r.id))}
 function gsPick(){const r=GQ[GQS];if(!r)return;const qi=$('gs_q'),d={title:r.title,q:qi?qi.value.trim():'',addr:r.addr,lat:r.lat,lng:r.lng,id:r.id,area:r.area};gCtr(d);gsClose();if(GCB)GCB(d)}
 function gsClose(){gsReset();clearTimeout(GT);if(GSW){GSM2=GMAP;GSEL2=GMAPEL;GMAP=GTRIP;GMAPEL=GTRIPEL;GSW=0}const o=$('gsr'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);
