@@ -139,7 +139,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gpin svg,.gfn svg{width:13px;height:13px;display:inline-block;vertical-align:-2px}
 .adv{margin-top:14px;font-size:13px}.adv summary{color:var(--sub);padding:6px 0}.adv .in{margin-top:8px}
 .tmw{position:relative;flex:1;min-width:0}.tmw .in{width:100%}.tmph{display:none;position:absolute;left:var(--p-field);top:50%;transform:translateY(-50%);color:var(--sub);opacity:.6;pointer-events:none}.tmw.empty .tmph{display:block}.tmw.empty input::-webkit-datetime-edit{color:transparent}
-.row.dd{margin-top:18px}.row.dd .rail::before{top:-10px}.ddb{position:absolute;left:12px;top:-17px;transform:translateX(-50%);z-index:2;height:16px;padding:0 7px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--sub);font-size:10.5px;line-height:14px;white-space:nowrap}
+.row.dd{margin-top:18px}.row.dd .rail::before{top:-10px}.ddb{position:absolute;left:12px;top:-17px;transform:translateX(-50%);z-index:2;height:16px;padding:0 7px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--sub);font-size:10.5px;line-height:14px;white-space:nowrap;font-family:inherit;cursor:pointer}.ddb::after{content:'';position:absolute;inset:-8px -6px}.ddb:active{background:var(--chip)}
 .rmode .gmw,.rmode .gmp{display:none}.row.sg{transform:none!important}
 .crow{display:flex;gap:8px;margin-bottom:8px}.cdb{flex:none;width:52px;border-radius:12px;background:var(--pl);color:var(--pri);font-size:12px;font-weight:700;line-height:1.3}
 .tiprow{margin-top:10px;font-size:12px}
@@ -348,11 +348,11 @@ let h=`<div class="hd"><button class="back" onclick="go('home')">${BK}</button><
 ${GM.on?mapPanel():''}`;
 h+=candSec();
 D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
-h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2>${RM?'':`<u onclick="dayRoute(${i})">경로</u>`}<u onclick="reorder()">${RM?'완료':'순서변경'}</u></div>`;
+h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="reorder()">${RM?'완료':'순서변경'}</u></div>`;
 h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
-let dd='';if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv)dd=fmtKm(hav(pv,x))}
-h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<span class="ddb">${dd}</span>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
+let dd='',pi=0;if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
+h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd} · 경로</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
 <button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
 h+=`</div>${RM?'':`<button class="dadd" onclick="addItem('place',${i})">+ 일정 추가</button>`}</div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
@@ -594,11 +594,7 @@ function routeUrl(c){const o=c[0],d=c[c.length-1],m=c.slice(1,-1);let u='https:/
 if(m.length)u+='&waypoints='+m.map(x=>encodeURIComponent(rLL(x))).join('%7C');
 if(c.every(x=>x.pid)){u+='&origin_place_id='+encodeURIComponent(o.pid)+'&destination_place_id='+encodeURIComponent(d.pid);if(m.length)u+='&waypoint_place_ids='+m.map(x=>encodeURIComponent(x.pid)).join('%7C')}
 return u}
-let DR=[];
-function dayRoute(i){const P=S.items.filter(x=>x.day==i&&x.lat!=null);if(P.length<2){toast('위치가 등록된 일정이 2개 이상 있어야 경로를 열 수 있어요');return}
-const C=[];for(let k=0;k<P.length-1;k+=4)C.push(P.slice(k,k+5));DR=C;
-if(C.length==1){go2(routeUrl(C[0]));return}
-sheet(hd3('Day '+(i+1)+' 경로','구글 지도는 한 번에 최대 5곳까지 열려서 구간으로 나눴어요')+C.map((c,k)=>`<button class="btn g" style="width:100%;margin-bottom:8px;text-align:left" onclick="go2(routeUrl(DR[${k}]))">구간 ${k+1} · ${esc(c[0].title)} → ${esc(c[c.length-1].title)}</button>`).join('')+btns(bG('닫기','shut()')))}
+function legRoute(a,b){const A=S.items.find(i=>i.id==a),B=S.items.find(i=>i.id==b);if(A&&B)go2(routeUrl([A,B]))}
 function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(x.map||locUrl(x))}
 const dayDisp=i=>{const m={};let n=0;S.items.filter(x=>x.day==i).forEach(x=>{const ic=icon(x.type);if(ic)m[x.id]={ic};else m[x.id]={n:++n}});return m};
 function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
