@@ -159,6 +159,8 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gcard>.btn{display:block;width:100%}
 .gbt{display:flex;gap:10px}.gbt .btn{flex:1}
 .gsw{padding-left:8px}.gsw.on{background:var(--pl)}
+.gsr.big #gsl{display:none}.gsr.big #gsmap{flex:1!important;height:auto!important}
+.gscard{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px}.gscard>div{position:static!important;flex:1;min-width:0}.gscard b{display:block;font-size:14px}.gscard small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gscard .btn{flex:none;width:auto;padding:10px 18px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -608,7 +610,7 @@ if(!skipFit){const b=gBias();if(b){if(b.south!=null)GMAP.fitBounds(b,0);else GMA
 function gsReset(){GQM.forEach(k=>{k.m.map=null});GQM=[];GQ=[];GQS=-1;GSM='ac';const o=$('gsr');if(o)o.classList.remove('more');const b=$('gsok'),g=$('gsgo');if(g)g.disabled=true;if(b){b.disabled=true;b.textContent='장소를 선택해 주세요'}}
 async function gOpen(id){const el=$(id);if(!el)return;GSH=0;GTOK=null;GS=[];gsReset();
 const o=$('gsr');o.className='gsr on';
-o.innerHTML=`<div class="gsin" id="gsin"><div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn g" id="gsgo" disabled onclick="gsGo()">구글지도</button><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div></div>`;
+o.innerHTML=`<div class="gsin" id="gsin"><div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"><button class="gexp" id="gsx" onclick="gsBig()">${EXP}크게 보기</button></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn g" id="gsgo" disabled onclick="gsGo()">구글지도</button><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div></div>`;
 gsHint();gsVV();if(window.visualViewport){visualViewport.addEventListener('resize',gsVV);visualViewport.addEventListener('scroll',gsVV)}
 document.body.style.overflow='hidden';$('gs_q').focus();setTimeout(gsVV,350);await gsMap();if(el.value.trim().length>=2)gsAC()}
 function gsInput(){clearTimeout(GT);GT=setTimeout(()=>{if(GSM=='more')gsReset();gsAC()},500)}
@@ -617,7 +619,7 @@ try{await gmaps();const{AutocompleteSuggestion,AutocompleteSessionToken}=await g
 const req={input:gQ(t),sessionToken:GTOK,language:'ko'},bi=gBias();if(bi)req.locationBias=bi;
 const{suggestions}=await AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
 const cur=$('gs_q');if(GSM!='ac'||!cur||cur.value.trim()!=t)return;
-GS=suggestions.map(x=>x.placePrediction).filter(Boolean);GQM.forEach(k=>k.m.map=null);GQM=[];
+GS=suggestions.map(x=>x.placePrediction).filter(Boolean);GQM.forEach(k=>k.m.map=null);GQM=[];gsCardOff();
 $('gsl').innerHTML=(GS.map((p,i)=>`<div class="gsw" id="gsw_${i}"><span class="gsn">${i+1}</span><button class="gsm" onclick="gsAcPick(${i})"><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></button><button class="gsg" onclick="gsLink(${i})">지도↗</button></div>`).join('')||'<div class="hint">검색 결과가 없어요</div>')+`<button class="sgm" onclick="gsMore()">더 많은 결과 보기 (지도에서 최대 20곳)<small>누를 때만 추가 검색해요 · 이번 달 ${gmCnt()}/${GMAX}회</small></button>`;gsPins(t)}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
 /* --- 검색 결과 상위 5곳 지도 핀 (Place Details Essentials 무료 한도 보호용 월 상한) --- */
@@ -625,7 +627,12 @@ const GPMAX=8000,gpKey=()=>{const d=new Date();return 'gpin:'+d.getFullYear()+'-
 const gpCnt=()=>{try{return +localStorage.getItem(gpKey())||0}catch(e){return 0}};
 const gpInc=n=>{try{localStorage.setItem(gpKey(),String(gpCnt()+n))}catch(e){}};
 const GPC=new Map();
-function gsHi(i,sc){GQM.forEach(k=>k.c.classList.toggle('on',k.ix==i));GS.forEach((p,k)=>{const e=$('gsw_'+k);if(e)e.classList.toggle('on',k==i)});if(sc){const e=$('gsw_'+i);if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})}}
+function gsCard(i){const p=GS[i],h=$('gsmap');if(!p||!h)return;let c=$('gscard');if(!c){c=document.createElement('aside');c.id='gscard';c.className='gscard';h.appendChild(c)}
+c.innerHTML=`<div><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></div><button class="btn" onclick="gsAcPick(${i})">선택</button>`}
+const gsCardOff=()=>{const c=$('gscard');if(c)c.remove()};
+function gsBig(){const o=$('gsr');if(!o)return;const on=o.classList.toggle('big'),b=$('gsx');if(b)b.innerHTML=(on?'':EXP)+(on?EXP:'')+(on?'작게 보기':'크게 보기');if(on){const q=$('gs_q');if(q)q.blur()}else gsCardOff();
+setTimeout(()=>{if(!window.google||!GMAP)return;google.maps.event.trigger(GMAP,'resize');if(GQM.length){const bb=new google.maps.LatLngBounds();GQM.forEach(k=>bb.extend(k.pos));if(GQM.length>1)GMAP.fitBounds(bb,{top:30,right:30,bottom:30,left:30});else GMAP.moveCamera({center:GQM[0].pos,zoom:Math.max(GMAP.getZoom()||0,15)})}},80)}
+function gsHi(i,sc){if($('gsr').classList.contains('big'))gsCard(i);GQM.forEach(k=>k.c.classList.toggle('on',k.ix==i));GS.forEach((p,k)=>{const e=$('gsw_'+k);if(e)e.classList.toggle('on',k==i)});if(sc){const e=$('gsw_'+i);if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})}}
 async function gsPins(t){const list=GS;if(!GMAP||!list.length)return;
 try{const{AdvancedMarkerElement}=await google.maps.importLibrary('marker'),{Place}=await google.maps.importLibrary('places');
 const need=list.filter(p=>!GPC.has(p.placeId));
@@ -634,7 +641,7 @@ gpInc(need.length);
 await Promise.all(need.map(async p=>{try{const pl=new Place({id:p.placeId});await pl.fetchFields({fields:['location']});GPC.set(p.placeId,{lat:pl.location.lat(),lng:pl.location.lng()})}catch(e){}}));
 const cur=$('gs_q');if(GS!==list||GSM!='ac'||!cur||cur.value.trim()!=t)return;
 GQM.forEach(k=>k.m.map=null);GQM=[];const b=new google.maps.LatLngBounds();let n=0;
-list.forEach((p,i)=>{const c=GPC.get(p.placeId);if(!c)return;const e=document.createElement('div');e.className='gpin';e.style.background='var(--pri)';e.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:c,content:e,title:p.mainText.text});m.addListener('click',()=>gsHi(i,true));GQM.push({c:e,m,ix:i});b.extend(c);n++});
+list.forEach((p,i)=>{const c=GPC.get(p.placeId);if(!c)return;const e=document.createElement('div');e.className='gpin';e.style.background='var(--pri)';e.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:c,content:e,title:p.mainText.text});m.addListener('click',()=>gsHi(i,true));GQM.push({c:e,m,ix:i,pos:c});b.extend(c);n++});
 if(n>1)GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30});else if(n==1)GMAP.moveCamera({center:b.getCenter(),zoom:15})}catch(e){}}
 function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.text,p.placeId))}
 async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location']});GTOK=null;
@@ -650,7 +657,7 @@ const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method
 const j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
 GNEXT=j.nextPageToken||null;
 return(j.places||[]).map(p=>({id:p.id,title:(p.displayName&&p.displayName.text)||'',addr:p.formattedAddress,lat:p.location.latitude,lng:p.location.longitude}))}
-function gsMk(AE,r,i){const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AE({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m}}
+function gsMk(AE,r,i){const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AE({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m,pos:{lat:r.lat,lng:r.lng}}}
 function gsFit(){if(!GQ.length)return;const b=new google.maps.LatLngBounds();GQ.forEach(r=>b.extend({lat:r.lat,lng:r.lng}));GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30})}
 async function gsMore(){const inp=$('gs_q');if(!inp)return;const q=inp.value.trim();if(q.length<2)return;inp.blur();GTOK=null;gsReset();GSM='more';GNEXT=null;
 const l=$('gsl');
