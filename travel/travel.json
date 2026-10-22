@@ -987,12 +987,19 @@
         {
           "type": "restaurant",
           "label": "식당",
-          "title": "호로관",
+          "title": "호로콴",
           "sub": "호이안",
           "time": "",
           "memo": "점심 / 타미린새우 / 반쎄오 / 완탕",
           "id": 11,
-          "day": 1
+          "day": 1,
+          "map": "https://www.google.com/maps/search/?api=1&query=%ED%98%B8%EB%A1%9C%EC%BD%B4&query_place_id=ChIJTdI6JXoOQjERXatBrgN1ayY",
+          "ln": "",
+          "la": "",
+          "lat": 15.8833592,
+          "lng": 108.3261187,
+          "addr": "20 Đ. Trần Cao Vân, Hội An, Đà Nẵng 51000 베트남",
+          "pid": "ChIJTdI6JXoOQjERXatBrgN1ayY"
         },
         {
           "type": "cafe",
