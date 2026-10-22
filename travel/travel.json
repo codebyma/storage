@@ -413,10 +413,13 @@
           "sub": "제주시",
           "time": "",
           "memo": "",
-          "lat": 33.4927938,
-          "lng": 126.5020639,
-          "addr": "대한민국 제주특별자치도 제주시 특별자치도 오라삼동 2745-1",
-          "gx": 1
+          "lat": 33.492972,
+          "lng": 126.50261559999998,
+          "addr": "대한민국 제주특별자치도 제주시 특별자치도 오라삼동 2749-2",
+          "map": "https://www.google.com/maps/search/?api=1&query=%EC%A0%9C%EC%A3%BC%EB%85%B8%ED%8B%B0%EB%93%9CDT%EC%A0%90&query_place_id=ChIJP-WcaAD7DDURmwGbSlABu2M",
+          "ln": "",
+          "la": "",
+          "pid": "ChIJP-WcaAD7DDURmwGbSlABu2M"
         },
         {
           "id": 4,
