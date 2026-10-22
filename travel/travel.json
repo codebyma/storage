@@ -1692,10 +1692,13 @@
           "memo": "",
           "id": 5,
           "day": 0,
-          "lat": 22.1935334,
+          "lat": 22.193533400000003,
           "lng": 113.5397593,
           "addr": "11 Largo do Senado, 마카오",
-          "gx": 1
+          "map": "https://www.google.com/maps/search/?api=1&query=%EC%84%B8%EB%82%98%EB%8F%84%20%EA%B4%91%EC%9E%A5&query_place_id=ChIJhSGVke96ATQR91vVZIEul-0",
+          "ln": "",
+          "la": "",
+          "pid": "ChIJhSGVke96ATQR91vVZIEul-0"
         },
         {
           "type": "sight",
