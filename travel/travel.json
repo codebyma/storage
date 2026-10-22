@@ -5249,6 +5249,19 @@
       "rate": 200,
       "items": [
         {
+          "id": 15,
+          "day": -2,
+          "type": "activity",
+          "title": "테스트",
+          "sub": "",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "액티비티"
+        },
+        {
           "id": 11,
           "day": 0,
           "type": "hotel",
@@ -5309,7 +5322,7 @@
         }
       ],
       "exp": [],
-      "nid": 15
+      "nid": 16
     }
   ],
   "nid": 101
