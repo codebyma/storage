@@ -167,6 +167,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 #gsmap .gpb{left:auto;right:10px}.gsr.more #gsp{display:none}
 .xbar .btn{flex:1;width:100%}
 .lacts .tipb{margin-right:-2px}
+.rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc{background:var(--chip);color:var(--tx);border-radius:14px;padding:5px 11px;font-size:12px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -355,14 +356,17 @@ function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
 function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim()}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD,locActs(FD))}
 function fLocClear(){const a=FD.auto;FD={};if(a&&v('f_map')==a)$('f_map').value='';fLocSync()}
-function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.title;if(L){$('f_map').value=L;const dt=document.querySelector('.adv');if(dt)dt.open=true}fLocSync()}
+function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.title;const fs=$('f_s');if(d.area&&fs&&!fs.value.trim())fs.value=d.area;if(L){$('f_map').value=L;const dt=document.querySelector('.adv');if(dt)dt.open=true}fLocSync()}
 function fMapUrl(){const t=v('f_t').trim(),l=v('f_map').trim();return l||(FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):gm((t+' '+v('f_s').trim()).trim()))}
 function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
+function rcChips(day){const seen=new Set(),L=[],add=x=>{const t=(x.sub||'').trim();if(t&&t!='나만의 장소'&&!seen.has(t)){seen.add(t);L.push(t)}};
+S.items.filter(x=>x.day==day).forEach(add);[...S.items].reverse().forEach(add);
+return L.length?`<div class="rcs">${L.slice(0,6).map(t=>`<button type="button" class="rc" data-t="${esc(t)}" onclick="$('f_s').value=this.dataset.t">${esc(t)}</button>`).join('')}</div>`:''}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
 return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
 fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(0,1),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
 fg(`<span class="lrow"><span>이름</span>${gKey()&&gArea()?`<span class="lsh">검색 지역: ${esc(gArea())}</span>`:''}</span>`,`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div>${gKey()?'':'<div class="hint">설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요</div>'}<div id="f_loc">${locCard(FD,locActs(FD))}</div>`)+
-fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="지역"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>`)+
+fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="지역"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>${rcChips(x.day)}`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
 `<details class="adv"${x.ln||x.la?' open':''}><summary>현지어 이름 · 주소 (택시 기사님께 보여주기)</summary>${inp('f_ln',x.ln||'','placeholder="현지어 이름"')}${ta('f_la',x.la||'','현지어 주소')}<button class="btn g full" onclick="showLocal()">🚕 현지어로 크게 보여주기</button><div class="hint" id="f_lh"></div></details>`+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
 (isNew?'':recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`)+btns(isNew?bG('취소','shut()'):'',bP(isNew?'추가':'저장',`saveForm('${id}')`))}
@@ -660,8 +664,10 @@ GQM.forEach(k=>k.m.map=null);GQM=[];const b=new google.maps.LatLngBounds();let n
 list.forEach((p,i)=>{const c=GPC.get(p.placeId);if(!c)return;const e=document.createElement('div');e.className='gpin';e.style.background='var(--pri)';e.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:c,content:e,title:p.mainText.text});m.addListener('click',()=>gsHi(i,true));GQM.push({c:e,m,ix:i,pos:c});b.extend(c);n++});
 if(n>1)GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30});else if(n==1)GMAP.moveCamera({center:b.getCenter(),zoom:15})}catch(e){}}
 function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.text,p.placeId))}
-async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location']});GTOK=null;
-const d={title:p.mainText.text,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId};gCtr(d);gsClose();if(GCB)GCB(d)}
+const AREA_T=['sublocality_level_1','sublocality','neighborhood','locality','administrative_area_level_2','administrative_area_level_1'];
+const gsAreaOf=c=>{if(!c)return'';for(const t of AREA_T){const x=c.find(a=>(a.types||[]).includes(t));if(x)return x.longText||x.long_name||''}return''};
+async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location','addressComponents']});GTOK=null;
+const d={title:p.mainText.text,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId,area:gsAreaOf(pl.addressComponents)};gCtr(d);gsClose();if(GCB)GCB(d)}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
 let GNEXT=null,GREQ=null;
 const gsRow=(r,i)=>`<button class="gsi" id="gsi_${i}" onclick="gsSel(${i})"><span class="gsn">${i+1}</span><div><b>${esc(r.title)}</b><small>${esc(r.addr||'')}</small></div></button>`;
@@ -669,10 +675,10 @@ const gsNxBtn=()=>GNEXT?'<button class="btn lt" id="gs_nx" style="width:100%;mar
 async function gsFetch(tok){
 if(gmCnt()>=GMAX)throw new Error('이번 달 "더 많은 결과 보기" 한도('+GMAX.toLocaleString()+'회)에 도달했어요. 무료 한도를 넘지 않도록 막아 두었어요. 다음 달에 다시 쓸 수 있어요.');
 gmInc();
-const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':gKey(),'X-Goog-FieldMask':'places.id,places.displayName,places.formattedAddress,places.location,nextPageToken'},body:JSON.stringify(tok?{...GREQ,pageToken:tok}:GREQ)});
+const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':gKey(),'X-Goog-FieldMask':'places.id,places.displayName,places.formattedAddress,places.location,places.addressComponents,nextPageToken'},body:JSON.stringify(tok?{...GREQ,pageToken:tok}:GREQ)});
 const j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
 GNEXT=j.nextPageToken||null;
-return(j.places||[]).map(p=>({id:p.id,title:(p.displayName&&p.displayName.text)||'',addr:p.formattedAddress,lat:p.location.latitude,lng:p.location.longitude}))}
+return(j.places||[]).map(p=>({id:p.id,title:(p.displayName&&p.displayName.text)||'',addr:p.formattedAddress,lat:p.location.latitude,lng:p.location.longitude,area:gsAreaOf(p.addressComponents)}))}
 function gsMk(AE,r,i){const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AE({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m,pos:{lat:r.lat,lng:r.lng}}}
 function gsFit(){if(!GQ.length)return;const b=new google.maps.LatLngBounds();GQ.forEach(r=>b.extend({lat:r.lat,lng:r.lng}));GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30})}
 async function gsMore(){const inp=$('gs_q');if(!inp)return;const q=inp.value.trim();if(q.length<2)return;inp.blur();GTOK=null;gsReset();GSM='more';GNEXT=null;
@@ -706,7 +712,7 @@ if(sc){const e=$('gsi_'+i),l=$('gsl');if(e&&l)l.scrollTo({top:e.offsetTop-8,beha
 if(sc&&$('gsr').classList.contains('big'))gsKScroll(i);
 gFly({lat:r.lat,lng:r.lng},Math.max(GMAP.getZoom()||0,15))}
 function gsGo(){const r=GQ[GQS];if(r)go2(gmPlace(r.title+(r.addr?' '+r.addr:''),r.id))}
-function gsPick(){const r=GQ[GQS];if(!r)return;const d={title:r.title,addr:r.addr,lat:r.lat,lng:r.lng,id:r.id};gCtr(d);gsClose();if(GCB)GCB(d)}
+function gsPick(){const r=GQ[GQS];if(!r)return;const d={title:r.title,addr:r.addr,lat:r.lat,lng:r.lng,id:r.id,area:r.area};gCtr(d);gsClose();if(GCB)GCB(d)}
 function gsClose(){gsReset();clearTimeout(GT);if(GSW){GSM2=GMAP;GSEL2=GMAPEL;GMAP=GTRIP;GMAPEL=GTRIPEL;GSW=0}const o=$('gsr'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);
 if(window.visualViewport){visualViewport.removeEventListener('resize',gsVV);visualViewport.removeEventListener('scroll',gsVV)}
 document.body.style.overflow='';o.className='gsr';o.innerHTML='';if(GM.on&&view=='trip'&&!GM.full)drawMap()}
