@@ -5281,32 +5281,6 @@
           "pid": "ChIJn-DaXef97TURuJ6vujtaQYY"
         },
         {
-          "id": 16,
-          "day": -2,
-          "type": "place",
-          "title": "테스튼",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "장소"
-        },
-        {
-          "id": 17,
-          "day": -2,
-          "type": "place",
-          "title": "튜가 루 저장 암람",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "장소"
-        },
-        {
           "id": 11,
           "day": 0,
           "type": "hotel",
