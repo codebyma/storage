@@ -894,10 +894,13 @@
           "memo": "4시 도착 예정 / 다도 픽업",
           "id": 3,
           "day": 0,
-          "lat": 15.8996557,
+          "lat": 15.899655699999999,
           "lng": 108.3569681,
           "addr": "01 Đống Đa, Hội An Tây, Đà Nẵng 560000 베트남",
-          "gx": 1
+          "map": "https://www.google.com/maps/search/?api=1&query=%EC%8B%A4%ED%81%AC%20%EC%84%BC%EC%8A%A4%20%ED%98%B8%EC%9D%B4%EC%95%88%20%EB%A6%AC%EB%B2%84%20%EB%A6%AC%EC%A1%B0%ED%8A%B8&query_place_id=ChIJYfN2p5QNQjER6fTbelu1FDE",
+          "ln": "",
+          "la": "",
+          "pid": "ChIJYfN2p5QNQjER6fTbelu1FDE"
         },
         {
           "type": "restaurant",
