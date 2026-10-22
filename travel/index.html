@@ -664,7 +664,7 @@ GQM.forEach(k=>k.m.map=null);GQM=[];const b=new google.maps.LatLngBounds();let n
 list.forEach((p,i)=>{const c=GPC.get(p.placeId);if(!c)return;const e=document.createElement('div');e.className='gpin';e.style.background='var(--pri)';e.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:c,content:e,title:p.mainText.text});m.addListener('click',()=>gsHi(i,true));GQM.push({c:e,m,ix:i,pos:c});b.extend(c);n++});
 if(n>1)GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30});else if(n==1)GMAP.moveCamera({center:b.getCenter(),zoom:15})}catch(e){}}
 function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.text,p.placeId))}
-const AREA_T=['sublocality_level_1','sublocality','neighborhood','locality','administrative_area_level_2','administrative_area_level_1'];
+const AREA_T=['locality','administrative_area_level_2','administrative_area_level_1','sublocality_level_1','sublocality','neighborhood'];
 const gsAreaOf=c=>{if(!c)return'';for(const t of AREA_T){const x=c.find(a=>(a.types||[]).includes(t));if(x)return x.longText||x.long_name||''}return''};
 async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location','addressComponents']});GTOK=null;
 const d={title:p.mainText.text,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId,area:gsAreaOf(pl.addressComponents)};gCtr(d);gsClose();if(GCB)GCB(d)}
