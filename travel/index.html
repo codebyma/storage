@@ -160,7 +160,11 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gbt{display:flex;gap:10px}.gbt .btn{flex:1}
 .gsw{padding-left:8px}.gsw.on{background:var(--pl)}
 .gsr.big #gsl{display:none}.gsr.big #gsmap{flex:1!important;height:auto!important}
-.gscard{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:10px 10px 10px 14px;display:flex;align-items:center;gap:10px}.gscard>div{position:static!important;flex:1;min-width:0}.gscard b{display:block;font-size:14px}.gscard small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gscard .btn{flex:none;width:auto;padding:10px 18px}
+#gscw{display:none}.gsr.big #gscw{display:flex}.gsr.big .gsbar{display:none!important}
+.gsk{flex:none;width:78%;scroll-snap-align:start;border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--bg)}.gsk.on{border-color:var(--pri)}
+.gsh{display:flex;align-items:center;gap:8px}.gsh b{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.gsk small{display:block;color:var(--sub);font-size:12px;margin-top:4px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.gsa{display:flex;gap:8px;margin-top:10px}.gsa .btn{flex:1;width:auto;padding:10px}
+.gmapw{position:relative;contain:paint}#gmap>div{position:absolute!important;inset:0;width:auto!important;height:auto!important}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -574,7 +578,7 @@ function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(x.
 const dayDisp=i=>{const m={};let n=0;S.items.filter(x=>x.day==i).forEach(x=>{const ic=icon(x.type);if(ic)m[x.id]={ic};else m[x.id]={n:++n}});return m};
 async function drawMap(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
-host.appendChild(GMAPEL);if(GMAP&&window.google)google.maps.event.trigger(GMAP,'resize');
+host.appendChild(GMAPEL);if(GMAP&&window.google){google.maps.event.trigger(GMAP,'resize');setTimeout(()=>{if(GMAP)google.maps.event.trigger(GMAP,'resize')},250)}
 try{await gmaps();const{Map,Polyline}=await google.maps.importLibrary('maps'),{AdvancedMarkerElement}=await google.maps.importLibrary('marker');
 mkMap(Map);
 GOV.forEach(f=>f());GOV=[];GMK={};const b=new google.maps.LatLngBounds();let any=false;
@@ -598,41 +602,51 @@ function mkMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127
 const GMAX=4700,gmKey=()=>{const d=new Date();return 'gmore:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 const gmCnt=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}};
 const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmCnt()+1))}catch(e){}};
-let GQ=[],GQM=[],GQS=-1,GSM='ac';
+let GQ=[],GQM=[],GQS=-1,GSM='ac',GSW=0,GTRIP=null,GTRIPEL=null,GSM2=null,GSEL2=null,GSKL=0,GSKT=0;
 const gsHint=()=>{const l=$('gsl');if(l)l.innerHTML=(gArea()?`<div class="hint">🔎 검색 지역: ${esc(gArea())}</div>`:'')+'<div class="hint">장소 이름이나 주소를 입력해 보세요</div>'};
 let GSH=0;
 function gsVV(){const g=$('gsin'),v=window.visualViewport;if(g&&v){g.style.top=v.offsetTop+'px';g.style.height=v.height+'px'}
 const m=$('gsmap');if(m){GSH=Math.max(GSH,window.innerHeight);const hd=g?g.querySelector('.hd'):null,top=hd?hd.offsetHeight:60,vh=v?v.height:GSH;m.style.height=Math.max(140,Math.min(Math.round(GSH*.34),Math.round(vh-top-110)))+'px'}}
 async function gsMap(skipFit){try{await gmaps();const{Map}=await google.maps.importLibrary('maps');await google.maps.importLibrary('marker');
 if(!GMAPEL){GMAPEL=document.createElement('div');GMAPEL.style.cssText='width:100%;height:100%'}
-const mh=$('gsmap');if(!mh)return false;mh.appendChild(GMAPEL);GOV.forEach(f=>f());GOV=[];GMK={};mkMap(Map);google.maps.event.trigger(GMAP,'resize');
+const mh=$('gsmap');if(!mh)return false;mh.appendChild(GMAPEL);mkSMap(Map);google.maps.event.trigger(GMAP,'resize');
 if(!skipFit){const b=gBias();if(b){if(b.south!=null)GMAP.fitBounds(b,0);else GMAP.moveCamera({center:b.center,zoom:11})}}return true}catch(e){return false}}
+function mkSMap(Map){if(GMAP)return;GMAP=new Map(GMAPEL,{center:{lat:37.5,lng:127},zoom:5,mapId:'DEMO_MAP_ID',disableDefaultUI:true,zoomControl:true,gestureHandling:'greedy'})}
 function gsReset(){GQM.forEach(k=>{k.m.map=null});GQM=[];GQ=[];GQS=-1;GSM='ac';const o=$('gsr');if(o)o.classList.remove('more');const b=$('gsok'),g=$('gsgo');if(g)g.disabled=true;if(b){b.disabled=true;b.textContent='장소를 선택해 주세요'}}
 async function gOpen(id){const el=$(id);if(!el)return;GSH=0;GTOK=null;GS=[];gsReset();
 const o=$('gsr');o.className='gsr on';
-o.innerHTML=`<div class="gsin" id="gsin"><div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"><button class="gexp" id="gsx" onclick="gsBig()">${EXP}크게 보기</button></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn g" id="gsgo" disabled onclick="gsGo()">구글지도</button><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div></div>`;
+o.innerHTML=`<div class="gsin" id="gsin"><div class="hd"><button class="back" onclick="gsClose()">${XL}</button><input class="in" id="gs_q" value="${esc(el.value)}" placeholder="장소 이름·주소로 검색" oninput="gsInput()" onkeydown="if(event.key=='Enter')this.blur()"></div><div id="gsmap"><button class="gexp" id="gsx" onclick="gsBig()">${EXP}크게 보기</button></div><div class="gfcw" id="gscw"></div><div class="gsl" id="gsl"></div><div class="gsbar"><button class="btn g" id="gsgo" disabled onclick="gsGo()">구글지도</button><button class="btn" id="gsok" disabled onclick="gsPick()">장소를 선택해 주세요</button></div></div>`;
 gsHint();gsVV();if(window.visualViewport){visualViewport.addEventListener('resize',gsVV);visualViewport.addEventListener('scroll',gsVV)}
-document.body.style.overflow='hidden';$('gs_q').focus();setTimeout(gsVV,350);await gsMap();if(el.value.trim().length>=2)gsAC()}
+document.body.style.overflow='hidden';$('gs_q').focus();setTimeout(gsVV,350);if(!GSW){GSW=1;GTRIP=GMAP;GTRIPEL=GMAPEL;GMAP=GSM2;GMAPEL=GSEL2}
+await gsMap();if(el.value.trim().length>=2)gsAC()}
 function gsInput(){clearTimeout(GT);GT=setTimeout(()=>{if(GSM=='more')gsReset();gsAC()},500)}
 async function gsAC(){const inp=$('gs_q');if(!inp)return;const t=inp.value.trim();if(t.length<2){gsHint();return}
 try{await gmaps();const{AutocompleteSuggestion,AutocompleteSessionToken}=await google.maps.importLibrary('places');GTOK=GTOK||new AutocompleteSessionToken();
 const req={input:gQ(t),sessionToken:GTOK,language:'ko'},bi=gBias();if(bi)req.locationBias=bi;
 const{suggestions}=await AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
 const cur=$('gs_q');if(GSM!='ac'||!cur||cur.value.trim()!=t)return;
-GS=suggestions.map(x=>x.placePrediction).filter(Boolean);GQM.forEach(k=>k.m.map=null);GQM=[];gsCardOff();
-$('gsl').innerHTML=(GS.map((p,i)=>`<div class="gsw" id="gsw_${i}"><span class="gsn">${i+1}</span><button class="gsm" onclick="gsAcPick(${i})"><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></button><button class="gsg" onclick="gsLink(${i})">지도↗</button></div>`).join('')||'<div class="hint">검색 결과가 없어요</div>')+`<button class="sgm" onclick="gsMore()">더 많은 결과 보기 (지도에서 최대 20곳)<small>누를 때만 추가 검색해요 · 이번 달 ${gmCnt()}/${GMAX}회</small></button>`;gsPins(t)}
+GS=suggestions.map(x=>x.placePrediction).filter(Boolean);GQM.forEach(k=>k.m.map=null);GQM=[];
+$('gsl').innerHTML=(GS.map((p,i)=>`<div class="gsw" id="gsw_${i}"><span class="gsn">${i+1}</span><button class="gsm" onclick="gsAcPick(${i})"><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></button><button class="gsg" onclick="gsLink(${i})">지도↗</button></div>`).join('')||'<div class="hint">검색 결과가 없어요</div>')+`<button class="sgm" onclick="gsMore()">더 많은 결과 보기 (지도에서 최대 20곳)<small>누를 때만 추가 검색해요 · 이번 달 ${gmCnt()}/${GMAX}회</small></button>`;gsPins(t);if($('gsr').classList.contains('big'))gsCards()}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
 /* --- 검색 결과 상위 5곳 지도 핀 (Place Details Essentials 무료 한도 보호용 월 상한) --- */
 const GPMAX=8000,gpKey=()=>{const d=new Date();return 'gpin:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
 const gpCnt=()=>{try{return +localStorage.getItem(gpKey())||0}catch(e){return 0}};
 const gpInc=n=>{try{localStorage.setItem(gpKey(),String(gpCnt()+n))}catch(e){}};
 const GPC=new Map();
-function gsCard(i){const p=GS[i],h=$('gsmap');if(!p||!h)return;let c=$('gscard');if(!c){c=document.createElement('aside');c.id='gscard';c.className='gscard';h.appendChild(c)}
-c.innerHTML=`<div><b>${esc(p.mainText.text)}</b><small>${esc(p.secondaryText?p.secondaryText.text:'')}</small></div><button class="btn" onclick="gsAcPick(${i})">선택</button>`}
-const gsCardOff=()=>{const c=$('gscard');if(c)c.remove()};
-function gsBig(){const o=$('gsr');if(!o)return;const on=o.classList.toggle('big'),b=$('gsx');if(b)b.innerHTML=(on?'':EXP)+(on?EXP:'')+(on?'작게 보기':'크게 보기');if(on){const q=$('gs_q');if(q)q.blur()}else gsCardOff();
+function gsCards(){const c=$('gscw');if(!c)return;
+const L=GSM=='more'?GQ:GS.map(p=>({title:p.mainText.text,addr:p.secondaryText?p.secondaryText.text:''}));
+c.innerHTML=L.map((r,i)=>`<div class="gsk" id="gsk_${i}"><div class="gsh"><span class="gsn">${i+1}</span><b>${esc(r.title)}</b></div><small>${esc(r.addr||'')}</small><div class="gsa"><button class="btn lt" onclick="gsKGo(${i})">구글지도</button><button class="btn" onclick="gsKPick(${i})">선택</button></div></div>`).join('')||'<div class="hint" style="padding:8px 0">검색 결과가 없어요</div>'}
+function gsKGo(i){if(GSM=='more'){GQS=i;gsGo()}else gsLink(i)}
+function gsKPick(i){if(GSM=='more'){GQS=i;gsPick()}else gsAcPick(i)}
+function gsKOn(i){document.querySelectorAll('#gscw .gsk').forEach((e,k)=>e.classList.toggle('on',k==i))}
+function gsKScroll(i){const c=$('gscw'),k=c&&c.children[i];if(!k)return;gsKOn(i);GSKL=Date.now()+800;c.scrollTo({left:i*(k.offsetWidth+10),behavior:'smooth'})}
+function gsKScr(){if(Date.now()<GSKL)return;const c=$('gscw'),k=c&&c.children[0];if(!k)return;const i=Math.max(0,Math.min(c.children.length-1,Math.round(c.scrollLeft/(k.offsetWidth+10))));gsKOn(i);
+if(GSM=='more')gsSel(i);else{gsHi(i);const e=GQM.find(q=>q.ix==i);if(e&&GMAP)GMAP.panTo(e.pos)}}
+function gsBig(){const o=$('gsr');if(!o)return;const on=o.classList.toggle('big'),b=$('gsx');if(b)b.innerHTML=EXP+(on?'작게 보기':'크게 보기');
+if(on){const q=$('gs_q');if(q)q.blur();gsCards();const c=$('gscw');if(c){c.scrollLeft=0;c.onscroll=()=>{clearTimeout(GSKT);GSKT=setTimeout(gsKScr,90)}}
+if(GSM=='more'&&GQS>=0)gsKScroll(GQS);else gsKOn(0)}
 setTimeout(()=>{if(!window.google||!GMAP)return;google.maps.event.trigger(GMAP,'resize');if(GQM.length){const bb=new google.maps.LatLngBounds();GQM.forEach(k=>bb.extend(k.pos));if(GQM.length>1)GMAP.fitBounds(bb,{top:30,right:30,bottom:30,left:30});else GMAP.moveCamera({center:GQM[0].pos,zoom:Math.max(GMAP.getZoom()||0,15)})}},80)}
-function gsHi(i,sc){if($('gsr').classList.contains('big'))gsCard(i);GQM.forEach(k=>k.c.classList.toggle('on',k.ix==i));GS.forEach((p,k)=>{const e=$('gsw_'+k);if(e)e.classList.toggle('on',k==i)});if(sc){const e=$('gsw_'+i);if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})}}
+function gsHi(i,sc){if(sc&&$('gsr').classList.contains('big'))gsKScroll(i);GQM.forEach(k=>k.c.classList.toggle('on',k.ix==i));GS.forEach((p,k)=>{const e=$('gsw_'+k);if(e)e.classList.toggle('on',k==i)});if(sc){const e=$('gsw_'+i);if(e)e.scrollIntoView({block:'nearest',behavior:'smooth'})}}
 async function gsPins(t){const list=GS;if(!GMAP||!list.length)return;
 try{const{AdvancedMarkerElement}=await google.maps.importLibrary('marker'),{Place}=await google.maps.importLibrary('places');
 const need=list.filter(p=>!GPC.has(p.placeId));
@@ -687,10 +701,11 @@ function gsSel(i,sc){const r=GQ[i];if(!r)return;GQS=i;
 GQ.forEach((x,k)=>{const e=$('gsi_'+k);if(e)e.classList.toggle('on',k==i);if(GQM[k]){GQM[k].c.classList.toggle('on',k==i);GQM[k].m.zIndex=k==i?1000:null}});
 const b=$('gsok'),g=$('gsgo');if(g)g.disabled=false;if(b){b.disabled=false;b.textContent='이 장소로 선택'}
 if(sc){const e=$('gsi_'+i),l=$('gsl');if(e&&l)l.scrollTo({top:e.offsetTop-8,behavior:'smooth'})}
+if(sc&&$('gsr').classList.contains('big'))gsKScroll(i);
 gFly({lat:r.lat,lng:r.lng},Math.max(GMAP.getZoom()||0,15))}
 function gsGo(){const r=GQ[GQS];if(r)go2(gmPlace(r.title+(r.addr?' '+r.addr:''),r.id))}
 function gsPick(){const r=GQ[GQS];if(!r)return;const d={title:r.title,addr:r.addr,lat:r.lat,lng:r.lng,id:r.id};gCtr(d);gsClose();if(GCB)GCB(d)}
-function gsClose(){gsReset();clearTimeout(GT);const o=$('gsr'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);
+function gsClose(){gsReset();clearTimeout(GT);if(GSW){GSM2=GMAP;GSEL2=GMAPEL;GMAP=GTRIP;GMAPEL=GTRIPEL;GSW=0}const o=$('gsr'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);
 if(window.visualViewport){visualViewport.removeEventListener('resize',gsVV);visualViewport.removeEventListener('scroll',gsVV)}
 document.body.style.overflow='';o.className='gsr';o.innerHTML='';if(GM.on&&view=='trip'&&!GM.full)drawMap()}
 async function gLocate(){const msg=t=>{const e=$('gm_h');if(e)e.textContent=t};
