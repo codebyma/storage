@@ -5283,17 +5283,19 @@
         {
           "id": 13,
           "day": 0,
-          "type": "place",
-          "label": "장소",
-          "title": "和平路",
-          "sub": "",
+          "type": "restaurant",
+          "label": "식당",
+          "title": "北李妈妈菜",
+          "sub": "Tian Jin Shi",
           "time": "",
-          "map": "",
-          "memo": "",
-          "lat": 39.1360962,
-          "lng": 117.1903998,
-          "addr": "He Ping Lu, 南市 He Ping Qu, Tian Jin Shi, 중국",
-          "pid": "EizspJHqta0g7YaI7KeEIOyLnCDtl4jtlZEg6rWsIOWNl-W4guWSjOW5s-i3ryIuKiwKFAoSCfV-qUi-_e01EY222TFYcq2FEhQKEgkRwXkXjv3tNRFEu3eP66MZpw"
+          "map": "https://www.google.com/maps/search/?api=1&query=%E5%8C%97%E6%9D%8E%E5%A6%88%E5%A6%88%E8%8F%9C&query_place_id=ChIJRbHYabz97TUROO7qSBPvMhw",
+          "memo": "점심",
+          "lat": 39.126841299999995,
+          "lng": 117.20147019999999,
+          "addr": "46G2+PHQ, He Ping Lu, 劝业场 He Ping Qu, Tian Jin Shi, 중국 300022",
+          "pid": "ChIJRbHYabz97TUROO7qSBPvMhw",
+          "ln": "",
+          "la": ""
         },
         {
           "id": 12,
@@ -5341,10 +5343,27 @@
           "lng": 117.196648,
           "addr": "중국 톈진 시 허베이 구 邮政编码: 300143",
           "pid": "ChIJn-DaXef97TURuJ6vujtaQYY"
+        },
+        {
+          "id": 31,
+          "day": 0,
+          "type": "place",
+          "title": "天津万象城",
+          "sub": "Tian Jin Shi",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E4%B8%87%E8%B1%A1%E5%9F%8E&query_place_id=ChIJi7EB8CL97TURpSeW1uhMzVI",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소",
+          "lat": 39.090447499999996,
+          "lng": 117.2110678,
+          "addr": "Wan Xiang Cheng, 水上 He Xi Qu, Tian Jin Shi, 중국 300061",
+          "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
         }
       ],
       "exp": [],
-      "nid": 31
+      "nid": 32
     }
   ],
   "nid": 114
