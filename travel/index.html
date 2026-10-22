@@ -352,7 +352,7 @@ h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+
 h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
-h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd} · 경로</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
+h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
 <button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
 h+=`</div>${RM?'':`<button class="dadd" onclick="addItem('place',${i})">+ 일정 추가</button>`}</div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
@@ -526,7 +526,7 @@ const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*1
 if(E.id)Object.assign(S.exp.find(x=>x.id==E.id),o);else S.exp.push({id:S.nid++,...o});save();go('ledger')}
 /* --- 구글 지도 --- */
 const gKey=()=>{try{return localStorage.getItem('gmk')||''}catch(e){return''}};
-let GMK={},GM={on:false,day:-1,lock:0},GCB=null,G_NEW=null,GS=[],GT=null,GTOK=null,GMP=null,GMAP=null,GMAPEL=null,LMAP=null,LMAPEL=null,GOV=[],GIW=null;
+let GMK={},GM={on:(()=>{try{return localStorage.getItem('gmon')!=='0'}catch(e){return true}})(),day:0,lock:0},GCB=null,G_NEW=null,GS=[],GT=null,GTOK=null,GMP=null,GMAP=null,GMAPEL=null,LMAP=null,LMAPEL=null,GOV=[],GIW=null;
 const GCOL=['#13a99c','#7b61ff','#ff6b6b','#f5a524','#3b82f6','#e0457f'];
 const gErr=e=>{const m=(e&&e.message)||String(e);return /referer/i.test(m)?m+' → 구글 클라우드 API 키의 "웹사이트 제한"에 https://codebyma.github.io/* 를 추가하세요 (저장소 이름 경로는 넣지 마세요). 반영에 몇 분 걸릴 수 있어요':m};
 const GME={ApiNotActivatedMapError:'Maps JavaScript API가 켜져 있지 않아요 (구글 클라우드 > API 및 서비스 > 라이브러리에서 사용 설정)',BillingNotEnabledMapError:'결제 계정이 연결되지 않았어요',RefererNotAllowedMapError:'API 키의 웹사이트 제한에 이 주소가 없어요 (https://codebyma.github.io/*)',InvalidKeyMapError:'API 키가 올바르지 않아요',ApiTargetBlockedMapError:'API 키의 API 제한사항에 Maps JavaScript API가 없어요',MissingKeyMapError:'API 키가 입력되지 않았어요',ExpiredKeyMapError:'API 키가 만료됐어요',RequestDeniedMapError:'요청이 거부됐어요 (키 제한 설정 확인)'};
@@ -535,7 +535,7 @@ window.gm_authFailure=()=>{const m=$('gm_h')||$('gk_h');if(m)m.textContent='API 
 function gmaps(){if(GMP)return GMP;const k=gKey();if(!k)return Promise.reject(new Error('설정에서 구글 지도 API 키를 먼저 입력해 주세요'));
 GMP=new Promise((ok,no)=>{window.__gm=()=>ok();const sc=document.createElement('script');sc.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(k)}&loading=async&v=weekly&language=ko&callback=__gm`;sc.onerror=()=>{GMP=null;no(new Error('구글 지도를 불러오지 못했어요. 서버에 올린 버전에서 사용하세요'))};document.head.appendChild(sc)});return GMP}
 function saveKey(){const had=!!GMP;try{localStorage.setItem('gmk',v('g_key').trim())}catch(e){}const m=$('gk_h');if(m)m.textContent=had?'저장했어요. 새로고침하면 적용돼요':'저장했어요'}
-const toggleMap=()=>{GM.on=!GM.on;if(GM.on&&GM.day<0)GM.day=0;render()};
+const toggleMap=()=>{GM.on=!GM.on;try{localStorage.setItem('gmon',GM.on?'1':'0')}catch(e){}if(GM.on&&GM.day<0)GM.day=0;render()};
 const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
 const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button></div><div class="hint" id="gm_h"></div></div>`;
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
