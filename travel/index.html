@@ -254,7 +254,7 @@ const thumbs=x=>(x.ph||[]).map((p,i)=>`<button class="pt" onclick="viewPhoto(${x
 const recBlock=x=>fg('사진',`<div class="ph" id="phs">${thumbs(x)}</div><input type="file" id="pf" accept="image/*" multiple hidden onchange="addPhotos(${x.id},this.files)"><button class="btn g sm" style="margin-top:8px" onclick="$('pf').click()">+ 사진 추가</button><div class="hint" id="ph_h"></div>`);
 const loadImg=(f,max,q)=>new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=no;im.src=u});
 async function addPhotos(id,files){const c=GH(),h=$('ph_h');
-if(!c.repo||!c.token){h.textContent='사진은 GitHub 연결 후 올릴 수 있어요 (⋯ → GitHub 동기화 → 연결 설정)';return}
+if(!c.repo||!c.token){h.textContent='사진은 서버 연결 후 올릴 수 있어요 (⋯ → 서버 동기화 → 연결 설정)';return}
 const x=S.items.find(i=>i.id==id);x.ph=x.ph||[];
 for(const f of files){try{h.textContent='올리는 중…';const full=await loadImg(f,1600,.8),th=await loadImg(f,200,.7),name=`travel/photos/${S.id}/${id}-${Date.now()}.jpg`;
 await ghReq('PUT',{message:'사진 추가',content:full.split(',')[1],branch:c.branch||'main'},name);
@@ -407,7 +407,7 @@ const getTheme=()=>{try{return localStorage.getItem('theme1')||'auto'}catch(e){r
 function applyTheme(t){const r=document.documentElement;if(t=='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;
 const dk=t=='dark'||(t=='auto'&&matchMedia('(prefers-color-scheme:dark)').matches),m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#121214':'#ffffff'}
 function setTheme(t){try{localStorage.setItem('theme1',t)}catch(e){}applyTheme(t);document.querySelectorAll('.thm button').forEach(b=>b.classList.toggle('on',b.dataset.t==t))}
-function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')+`<div class="hint">바꾸면 이 여행의 ${S.cur} 지출이 모두 새 환율로 다시 계산돼요</div>`):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('구글 지도',`<div class="mr">${inp('g_key',gKey(),'type="password" placeholder="API 키"')}<button class="btn g sm" onclick="saveKey()">저장</button></div><div class="hint" id="gk_h">Maps JavaScript·Places(New)·Geocoding API를 켠 키를 입력해요. 이 기기에만 저장돼요</div>`)+fg('GitHub 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;S.exp.forEach(e=>{if(exC(e)==S.cur)e.rt=S.rate});save();shut();render()`)):btns('',bP('저장','ghPush()'))))}
+function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')+`<div class="hint">바꾸면 이 여행의 ${S.cur} 지출이 모두 새 환율로 다시 계산돼요</div>`):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('구글 지도',`<div class="mr">${inp('g_key',gKey(),'type="password" placeholder="API 키"')}<button class="btn g sm" onclick="saveKey()">저장</button></div><div class="hint" id="gk_h">Maps JavaScript·Places(New)·Geocoding API를 켠 키를 입력해요. 이 기기에만 저장돼요</div>`)+fg('서버 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;S.exp.forEach(e=>{if(exC(e)==S.cur)e.rt=S.rate});save();shut();render()`)):btns('',bP('저장','ghPush()'))))}
 const bkMsg=t=>{const e=$('bk_h');if(e)e.textContent=t};
 async function exportData(){const txt=JSON.stringify(ALL,null,2),name='travel.json';let d=null;try{d=window.claude&&await claude.use('downloads')}catch(e){}
 if(d){try{await d.save({filename:name,data:txt});bkMsg('파일로 내보냈어요')}catch(e){}return}
@@ -421,10 +421,10 @@ function ghAlert(k,ti,b,sv){ghBusy('');const old=$('gal');if(old)old.remove();co
 const ic={ok:'✓',merge:'✓',warn:'!',err:'!'}[k]||'i';
 o.innerHTML=`<div class="gcard ${k}"><div class="gt"><b>${esc(ti)}</b><button class="tipb" onclick="tip(event,'alert')">i</button></div><div class="gb">${esc(b)}</div>${sv?`<div class="gbt"><button class="btn lt" onclick="$('gal').remove()">확인</button><button class="btn" onclick="$('gal').remove();ghPush()">저장</button></div>`:`<button class="btn" onclick="$('gal').remove()">확인</button>`}</div>`;document.body.appendChild(o)}
 const ghMsg=t=>{ghBusy('');if(!t)return;if(/취소|않았/.test(t))ghAlert('warn','안내',t);else toast(t,/오류|실패|막혀/.test(t)?4500:1800)};
-const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n저장을 눌러야 GitHub에 반영돼요.')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
+const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n저장을 눌러야 서버에 반영돼요.')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
 async function ghDate(){try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/commits?path=${encodeURIComponent((c.path||'travel.json').replace(/^\/+/,''))}&sha=${encodeURIComponent(c.branch||'main')}&per_page=1`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'}});if(!r.ok)return'';const j=await r.json(),d=new Date(j[0].commit.committer.date),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}월 ${d.getDate()}일 ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}}
 const ghBar=a=>`<div class="gbar"><div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn" onclick="ghPush()">저장</button></div>`:`<button class="btn" onclick="ghPush()">저장</button>`}</div>`;
-function ghSheet(){const c=GH();sheet(hd3('GitHub 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('저장소 (소유자/이름)',inp('g_r',c.repo||'','placeholder="myname/travel-data"'))+fg('파일 경로',inp('g_p',c.path||'travel.json'))+fg('브랜치',inp('g_b',c.branch||'main'))+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({repo:v('g_r').trim(),path:v('g_p').trim(),branch:v('g_b').trim(),token:v('g_t').trim()}))}catch(e){}shut()`)))}
+function ghSheet(){const c=GH();sheet(hd3('서버 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('저장소 (소유자/이름)',inp('g_r',c.repo||'','placeholder="myname/travel-data"'))+fg('파일 경로',inp('g_p',c.path||'travel.json'))+fg('브랜치',inp('g_b',c.branch||'main'))+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({repo:v('g_r').trim(),path:v('g_p').trim(),branch:v('g_b').trim(),token:v('g_t').trim()}))}catch(e){}shut()`)))}
 const repoOf=c=>c.repo.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/|\/$/g,'');
 async function ghReq(method,body,pth){const c=GH();if(!c.repo||!c.token)throw new Error('먼저 연결 설정을 해주세요');
 const repo=repoOf(c),path=(pth||c.path||'travel.json').replace(/^\/+/,''),br=c.branch||'main',H={Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'};
@@ -432,9 +432,9 @@ const r=await fetch(`https://api.github.com/repos/${repo}/contents/${path}`+(met
 if(r.status==404){const rr=await fetch(`https://api.github.com/repos/${repo}`,{headers:H});
 if(!rr.ok)throw new Error('저장소를 찾을 수 없어요. 저장소 이름(아이디/저장소)과 토큰의 저장소 접근 권한을 확인하세요');
 if(method=='GET')return null;throw new Error('저장 실패(404): 브랜치 이름이나 토큰의 Contents 쓰기 권한을 확인하세요')}
-if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}throw new Error('GitHub 오류 '+r.status+(m?': '+m:''))}
+if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}throw new Error('서버 오류 '+r.status+(m?': '+m:''))}
 return r.json()}
-const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀 있어요. GitHub Pages에 올린 버전에서 사용하세요':e.message;
+const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀 있어요. 서버에 올린 버전에서 사용하세요':e.message;
 const hs=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return h+':'+t.length};
 const setSnap=()=>{try{localStorage.setItem('snap1',hs(JSON.stringify(ALL)));localStorage.setItem('base1',JSON.stringify(ALL))}catch(e){}};
 /* --- 두 기기 변경 합치기 (마지막 동기화본 base 기준 3-way 병합) --- */
@@ -462,7 +462,7 @@ return{trips:out,nid}}
 function applyMerged(m){const id=S&&S.id;ALL=m;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}}
 async function ghRemote(){const c=GH(),cur=await ghReq('GET');if(!cur)return{sha:null,d:null};
 const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});
-if(!r.ok)throw new Error('GitHub 오류 '+r.status);return{sha:cur.sha,d:JSON.parse(await r.text())}}
+if(!r.ok)throw new Error('서버 오류 '+r.status);return{sha:cur.sha,d:JSON.parse(await r.text())}}
 async function autoLoad(){try{const c=GH();let txt=null;
 if(c.repo&&c.token){const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(r.ok)txt=await r.text()}
 if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'});if(r.ok)txt=await r.text()}
@@ -470,7 +470,7 @@ if(!txt)return;const d=JSON.parse(txt);if(!d||!Array.isArray(d.trips)||$('ov').c
 const lh=hs(JSON.stringify(ALL));if(hs(JSON.stringify(d))==lh){setSnap();return}
 let snap=null,had=false;try{snap=localStorage.getItem('snap1');had=localStorage.getItem('trips2')!==null}catch(e){}
 if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};const dt=await ghDate();applyMerged(mergeAll(base,ALL,d,st));render();ghAlert('merge','저장 안 된 변경과 합쳤어요',mgBody(st,dt,'load'),1);return}
-if(!confirm('이 기기에 GitHub에 저장하지 않은 변경이 있어요.\nGitHub의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
+if(!confirm('이 기기에 서버에 저장하지 않은 변경이 있어요.\n서버의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
 const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
 S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
 try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghDate().then(dt=>ghAlert('ok','최신 파일을 불러왔어요','다른 사람이 '+(dt?dt+'에 ':'')+'저장한 최신 내용으로 바뀌었어요.'))}catch(e){}}
@@ -479,12 +479,12 @@ for(let n=0;n<3;n++){const R=await ghRemote();
 if(R.d){const base=getBase(),rj=hs(JSON.stringify(R.d));
 if(rj!=hs(JSON.stringify(ALL))){
 if(base){if(rj!=hs(JSON.stringify(base))){const st={auto:0,conf:0},dt=await ghDate();applyMerged(mergeAll(base,ALL,R.d,st));note=[st,dt]}}
-else if(!confirm('GitHub에 이 기기와 다른 내용이 있어요.\n그대로 저장하면 상대가 저장한 내용이 사라질 수 있어요. 저장할까요?')){ghMsg('저장을 취소했어요. 설정에서 먼저 불러오기를 해주세요');return}}}
+else if(!confirm('서버에 이 기기와 다른 내용이 있어요.\n그대로 저장하면 상대가 저장한 내용이 사라질 수 있어요. 저장할까요?')){ghMsg('저장을 취소했어요. 설정에서 먼저 불러오기를 해주세요');return}}}
 try{await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(ALL,null,2)),branch:c.branch||'main',...(R.sha?{sha:R.sha}:{})});
-setSnap();if(note){render();ghAlert('merge','변경 내용을 합쳐 저장했어요',mgBody(note[0],note[1],'push'))}else ghMsg('GitHub에 저장했어요');return}
+setSnap();if(note){render();ghAlert('merge','변경 내용을 합쳐 저장했어요',mgBody(note[0],note[1],'push'))}else ghMsg('서버에 저장했어요');return}
 catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){ghMsg(ghErr(e))}}
 async function ghPull(){ghBusy('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
-importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('GitHub에서 최신 파일을 불러왔어요')}catch(e){ghMsg(ghErr(e))}}
+importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('서버에서 최신 파일을 불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();save();shut();render()`)))}
 /* --- 가계부 --- */
 const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
@@ -523,7 +523,7 @@ const GME={ApiNotActivatedMapError:'Maps JavaScript API가 켜져 있지 않아�
 const _ce=console.error;console.error=function(...a){try{const t=a.map(String).join(' ');if(/Google Maps JavaScript API/i.test(t)){const k=(t.match(/(\w+MapError)/)||[])[1],msg=k?(GME[k]||k):t.slice(0,140),m=$('gm_h')||$('gk_h');if(m)m.textContent='지도 오류: '+msg}}catch(e){}return _ce.apply(console,a)};
 window.gm_authFailure=()=>{const m=$('gm_h')||$('gk_h');if(m)m.textContent='API 키가 올바르지 않거나, 이 사이트 주소가 허용되지 않았어요'};
 function gmaps(){if(GMP)return GMP;const k=gKey();if(!k)return Promise.reject(new Error('설정에서 구글 지도 API 키를 먼저 입력해 주세요'));
-GMP=new Promise((ok,no)=>{window.__gm=()=>ok();const sc=document.createElement('script');sc.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(k)}&loading=async&v=weekly&language=ko&callback=__gm`;sc.onerror=()=>{GMP=null;no(new Error('구글 지도를 불러오지 못했어요. GitHub Pages로 올린 버전에서 사용하세요'))};document.head.appendChild(sc)});return GMP}
+GMP=new Promise((ok,no)=>{window.__gm=()=>ok();const sc=document.createElement('script');sc.src=`https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(k)}&loading=async&v=weekly&language=ko&callback=__gm`;sc.onerror=()=>{GMP=null;no(new Error('구글 지도를 불러오지 못했어요. 서버에 올린 버전에서 사용하세요'))};document.head.appendChild(sc)});return GMP}
 function saveKey(){const had=!!GMP;try{localStorage.setItem('gmk',v('g_key').trim())}catch(e){}const m=$('gk_h');if(m)m.textContent=had?'저장했어요. 새로고침하면 적용돼요':'저장했어요'}
 const toggleMap=()=>{GM.on=!GM.on;if(GM.on&&GM.day<0)GM.day=0;render()};
 const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
