@@ -418,7 +418,8 @@ if(d){try{await d.save({filename:name,data:txt});bkMsg('파일로 내보냈어�
 const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);bkMsg('파일로 내보냈어요')}
 function importSheet(){const i=document.createElement('input');i.type='file';i.accept='.json,application/json';i.style.display='none';document.body.appendChild(i);
 i.onchange=async()=>{const f=i.files[0];i.remove();if(!f)return;try{importAll(JSON.parse(await f.text()));bkMsg('불러왔어요')}catch(e){bkMsg('올바른 백업 파일이 아니에요')}};i.click()}
-const GH=()=>{try{return JSON.parse(localStorage.getItem('gh1'))||{}}catch(e){return{}}};
+const GH_FIX={repo:'codebyma/storage',path:'travel/travel.json',branch:'main'};
+const GH=()=>{let t={};try{t=JSON.parse(localStorage.getItem('gh1'))||{}}catch(e){}return{...GH_FIX,token:t.token||''}};
 const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,''))));
 const ghBusy=t=>{['gh_h','gh_b'].forEach(i=>{const e=$(i);if(e)e.textContent=t})};
 function ghAlert(k,ti,b,sv){ghBusy('');const old=$('gal');if(old)old.remove();const o=document.createElement('div');o.id='gal';o.className='gal';
@@ -428,7 +429,7 @@ const ghMsg=t=>{ghBusy('');if(!t)return;if(/취소|않았/.test(t))ghAlert('warn
 const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n저장을 눌러야 서버에 반영돼요.')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
 async function ghDate(){try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/commits?path=${encodeURIComponent((c.path||'travel.json').replace(/^\/+/,''))}&sha=${encodeURIComponent(c.branch||'main')}&per_page=1`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'}});if(!r.ok)return'';const j=await r.json(),d=new Date(j[0].commit.committer.date),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}월 ${d.getDate()}일 ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}}
 const ghBar=a=>`<div class="gbar"><div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn" onclick="ghPush()">저장</button></div>`:`<button class="btn" onclick="ghPush()">저장</button>`}</div>`;
-function ghSheet(){const c=GH();sheet(hd3('서버 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('저장소 (소유자/이름)',inp('g_r',c.repo||'','placeholder="myname/travel-data"'))+fg('파일 경로',inp('g_p',c.path||'travel.json'))+fg('브랜치',inp('g_b',c.branch||'main'))+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({repo:v('g_r').trim(),path:v('g_p').trim(),branch:v('g_b').trim(),token:v('g_t').trim()}))}catch(e){}shut()`)))}
+function ghSheet(){const c=GH();sheet(hd3('서버 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소(codebyma/storage)의 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({token:v('g_t').trim()}))}catch(e){}shut()`)))}
 const repoOf=c=>c.repo.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/|\/$/g,'');
 async function ghReq(method,body,pth){const c=GH();if(!c.repo||!c.token)throw new Error('먼저 연결 설정을 해주세요');
 const repo=repoOf(c),path=(pth||c.path||'travel.json').replace(/^\/+/,''),br=c.branch||'main',H={Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'};
