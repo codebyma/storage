@@ -146,9 +146,15 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .lst.s1 b{color:var(--pri)}.lst.s2 b{color:#d98a00}.lst.s3 b{color:var(--red)}.lsi{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid currentColor;border-radius:50%;box-sizing:border-box;font:600 9px/1 Inter,sans-serif;margin-right:6px;padding-top:1px;color:inherit}
 .lrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px}.lsh{font-size:12px;color:var(--sub)}
 .lh{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px}.lh b{flex:0 1 auto}.lacts{margin-left:auto;display:flex;align-items:center;gap:6px}
-.lchip{padding:2px;background:none;color:var(--pri);font-size:12.5px;font-weight:600;white-space:nowrap}.lchip.del{color:var(--red)}.lbt,.lcp{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.lem{font-size:11px}.lchip{display:inline-flex;align-items:center;gap:1px;padding:2px;background:none;color:var(--pri);font-size:12.5px;font-weight:600;white-space:nowrap}.lchip.del{color:var(--red)}.lbt,.lcp{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .dlr{text-align:center;margin-top:24px}.dlr button{color:var(--red);font-size:13px;padding:8px 12px}
 #toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);transform:translateX(-50%);z-index:60;background:var(--tx);color:var(--bg);border-radius:20px;padding:10px 18px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;white-space:nowrap}#toast.on{opacity:1}
+.tipbub{z-index:80}
+.gal{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:24px}
+.gcard{background:var(--sheet);color:var(--tx);border-radius:20px;padding:20px 20px 16px;width:100%;max-width:340px}
+.gcard.ok,.gcard.merge{--k:var(--pri)}.gcard.warn{--k:#d98a00}.gcard.err{--k:var(--red)}.gcard .lsi{color:var(--k)}
+.gt{display:flex;align-items:center}.gt b{font-size:16px}.gt .tipb:last-child{margin-left:auto}
+.gb{font-size:14px;line-height:1.6;color:var(--tx);white-space:pre-line;margin:12px 0 18px;word-break:keep-all}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -399,7 +405,13 @@ function importSheet(){const i=document.createElement('input');i.type='file';i.a
 i.onchange=async()=>{const f=i.files[0];i.remove();if(!f)return;try{importAll(JSON.parse(await f.text()));bkMsg('불러왔어요')}catch(e){bkMsg('올바른 백업 파일이 아니에요')}};i.click()}
 const GH=()=>{try{return JSON.parse(localStorage.getItem('gh1'))||{}}catch(e){return{}}};
 const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(escape(atob(s.replace(/\n/g,''))));
-const ghMsg=t=>{['gh_h','gh_b'].forEach(i=>{const e=$(i);if(e)e.textContent=t});clearTimeout(ghMsg.t);if(/했어요|불러왔어요/.test(t))ghMsg.t=setTimeout(()=>ghMsg(''),2500)};
+const ghBusy=t=>{['gh_h','gh_b'].forEach(i=>{const e=$(i);if(e)e.textContent=t})};
+function ghAlert(k,ti,b){ghBusy('');const old=$('gal');if(old)old.remove();const o=document.createElement('div');o.id='gal';o.className='gal';
+const ic={ok:'✓',merge:'✓',warn:'!',err:'!'}[k]||'i';
+o.innerHTML=`<div class="gcard ${k}"><div class="gt"><span class="tipb lsi">${ic}</span><b>${esc(ti)}</b><button class="tipb" onclick="tip(event,'alert')">i</button></div><div class="gb">${esc(b)}</div><button class="btn" onclick="$('gal').remove()">확인</button></div>`;document.body.appendChild(o)}
+const ghMsg=t=>{if(!t){ghBusy('');return}const k=/오류|실패|막혀/.test(t)?'err':/취소|않았|없어요/.test(t)?'warn':'ok';ghAlert(k,{ok:'완료',warn:'안내',err:'오류'}[k],t)};
+const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n저장을 눌러야 GitHub에 반영돼요.')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
+async function ghDate(){try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/commits?path=${encodeURIComponent((c.path||'travel.json').replace(/^\/+/,''))}&sha=${encodeURIComponent(c.branch||'main')}&per_page=1`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'}});if(!r.ok)return'';const j=await r.json(),d=new Date(j[0].commit.committer.date),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}월 ${d.getDate()}일 ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}}
 const ghBar=a=>`<div class="gbar"><div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn" onclick="ghPush()">저장</button></div>`:`<button class="btn" onclick="ghPush()">저장</button>`}</div>`;
 function ghSheet(){const c=GH();sheet(hd3('GitHub 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('저장소 (소유자/이름)',inp('g_r',c.repo||'','placeholder="myname/travel-data"'))+fg('파일 경로',inp('g_p',c.path||'travel.json'))+fg('브랜치',inp('g_b',c.branch||'main'))+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({repo:v('g_r').trim(),path:v('g_p').trim(),branch:v('g_b').trim(),token:v('g_t').trim()}))}catch(e){}shut()`)))}
 const repoOf=c=>c.repo.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/|\/$/g,'');
@@ -437,7 +449,6 @@ out.push(mergeTrip(B,t,R,st))});
 r.trips.forEach(R=>{if(lm.has(R.id)&&!col.has(R.id))return;if(bm.has(R.id))return;out.push(R);st.auto++});
 return{trips:out,nid}}
 function applyMerged(m){const id=S&&S.id;ALL=m;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}}
-const mgMsg=st=>st.auto||st.conf?` (상대 변경 ${st.auto}건 반영${st.conf?`, 같은 항목을 둘 다 고친 ${st.conf}건은 이 기기 내용 유지`:''})`:'';
 async function ghRemote(){const c=GH(),cur=await ghReq('GET');if(!cur)return{sha:null,d:null};
 const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});
 if(!r.ok)throw new Error('GitHub 오류 '+r.status);return{sha:cur.sha,d:JSON.parse(await r.text())}}
@@ -447,22 +458,22 @@ if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'}
 if(!txt)return;const d=JSON.parse(txt);if(!d||!Array.isArray(d.trips)||$('ov').classList.contains('on'))return;
 const lh=hs(JSON.stringify(ALL));if(hs(JSON.stringify(d))==lh){setSnap();return}
 let snap=null,had=false;try{snap=localStorage.getItem('snap1');had=localStorage.getItem('trips2')!==null}catch(e){}
-if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};applyMerged(mergeAll(base,ALL,d,st));render();ghMsg('저장 안 된 변경과 최신 파일을 합쳤어요. 저장을 눌러 반영하세요'+mgMsg(st));return}
+if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};const dt=await ghDate();applyMerged(mergeAll(base,ALL,d,st));render();ghAlert('merge','저장 안 된 변경과 합쳤어요',mgBody(st,dt,'load'));return}
 if(!confirm('이 기기에 GitHub에 저장하지 않은 변경이 있어요.\nGitHub의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
 const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
 S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
-try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghMsg('최신 파일을 불러왔어요')}catch(e){}}
-async function ghPush(){ghMsg('저장 중…');try{const c=GH();let note='';
+try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghDate().then(dt=>ghAlert('ok','최신 파일을 불러왔어요','다른 사람이 '+(dt?dt+'에 ':'')+'저장한 최신 내용으로 바뀌었어요.'))}catch(e){}}
+async function ghPush(){ghBusy('저장 중…');try{const c=GH();let note=null;
 for(let n=0;n<3;n++){const R=await ghRemote();
 if(R.d){const base=getBase(),rj=hs(JSON.stringify(R.d));
 if(rj!=hs(JSON.stringify(ALL))){
-if(base){if(rj!=hs(JSON.stringify(base))){const st={auto:0,conf:0};applyMerged(mergeAll(base,ALL,R.d,st));note=mgMsg(st)||' (상대 변경과 합쳤어요)'}}
+if(base){if(rj!=hs(JSON.stringify(base))){const st={auto:0,conf:0},dt=await ghDate();applyMerged(mergeAll(base,ALL,R.d,st));note=[st,dt]}}
 else if(!confirm('GitHub에 이 기기와 다른 내용이 있어요.\n그대로 저장하면 상대가 저장한 내용이 사라질 수 있어요. 저장할까요?')){ghMsg('저장을 취소했어요. 설정에서 먼저 불러오기를 해주세요');return}}}
 try{await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(ALL,null,2)),branch:c.branch||'main',...(R.sha?{sha:R.sha}:{})});
-setSnap();if(note)render();ghMsg(note?'저장 완료'+note:'GitHub에 저장했어요');return}
+setSnap();if(note){render();ghAlert('merge','변경 내용을 합쳐 저장했어요',mgBody(note[0],note[1],'push'))}else ghMsg('GitHub에 저장했어요');return}
 catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){ghMsg(ghErr(e))}}
-async function ghPull(){ghMsg('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
-importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('불러왔어요')}catch(e){ghMsg(ghErr(e))}}
+async function ghPull(){ghBusy('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
+importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('GitHub에서 최신 파일을 불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();save();shut();render()`)))}
 /* --- 가계부 --- */
 const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
@@ -669,9 +680,9 @@ sheet(hd3('위치 확인',`${L.filter(x=>x.lat!=null).length}/${L.length}곳에 
 const locStat=x=>x.lat==null?{c:'s3',i:'!',b:'위치 미등록',t:'위치 미등록',d:'지도에 마커로 표시되지 않아요. 아래에서 장소를 검색해 지정해 보세요'}:x.gx?{c:'s2',i:'?',b:'위치 확인 필요',t:'자동으로 찾은 위치',d:(x.addr||x.lat+', '+x.lng)+' · 정확한지 확인이 필요해요',cp:x.addr||x.lat+', '+x.lng}:{c:'s1',i:'✓',b:'위치 등록됨',t:x.pid?'위치 등록됨 · 구글지도 장소 연결':'위치 등록됨 · 좌표만 저장',d:x.addr||x.lat+', '+x.lng,cp:x.addr||x.lat+', '+x.lng};
 const locBtn=(x,id)=>{const t=locStat(x);return `<button class="btn g loc ${t.c}" id="locbtn_${id}" onclick="locSheet(${id})">${t.i} ${t.b}</button>`};
 const locCard=(x,a)=>{const t=locStat(x);return `<div class="lst ${t.c}"><div><div class="lh"><b class="lbt" onclick="tip(event,'loc')"><span class="tipb lsi">${t.i}</span>${t.t}</b>${a?`<span class="lacts">${a}</span>`:''}</div><small${t.cp?` class="lcp" data-c="${esc(t.cp)}" onclick="copyTxt(this.dataset.c)"`:''}>${esc(t.d)}</small></div></div>`};
-const locActs=d=>`<button class="lchip" onclick="go2(fMapUrl())">구글지도</button><button class="tipb" onclick="tip(event,'map')">i</button>${d.lat!=null?'<button class="lchip del" onclick="fLocClear()">위치 삭제</button>':''}`;
+const locActs=d=>`<button class="tipb" onclick="tip(event,'map')">i</button><button class="lchip" onclick="go2(fMapUrl())"><span class="lem">📍</span>구글지도</button>${d.lat!=null?'<button class="lchip del" onclick="fLocClear()">위치 삭제</button>':''}`;
 const locSync=(x,id)=>{const b=$('locbtn_'+id);if(b)b.outerHTML=locBtn(x,id)};
-const TIPS={map:'<b>구글지도 버튼은 이렇게 열려요</b><br>① 지도 링크가 있으면 → 그 링크<br>② 링크가 없고 위치가 등록돼 있으면 → 그 위치<br>③ 둘 다 없으면 → 이름으로 검색<br><br>장소 검색으로 고르면 지도 링크 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요.',loc:'<b>위치 등록 상태</b><br>✓ 장소 연결: 검색으로 고른 정확한 장소<br>✓ 좌표만 저장: 위치만 저장돼 핀으로 열려요<br>? 자동으로 찾은 위치: 확인이 필요해요<br>! 미등록: 지도 탭에 마커가 나오지 않아요'};
+const TIPS={map:'<b>구글지도 버튼은 이렇게 열려요</b><br>① 지도 링크가 있으면 → 그 링크<br>② 링크가 없고 위치가 등록돼 있으면 → 그 위치<br>③ 둘 다 없으면 → 이름으로 검색<br><br>장소 검색으로 고르면 지도 링크 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요.',alert:'<b>이런 안내가 떠요</b><br>✓ 저장했어요 · 불러왔어요: 정상 처리됐어요<br>✓ 변경 내용을 합쳐 저장: 저장 전에 다른 사람이 올린 변경이 있어서 항목 단위로 합쳤어요. 날짜는 그 변경이 저장된 시각이에요<br>✓ 저장 안 된 변경과 합침: 앱을 열 때 최신 파일과 합쳤어요. 저장을 눌러야 반영돼요<br>✓ 최신 파일을 불러옴: 다른 사람이 저장한 내용으로 바뀌었어요<br>! 같은 항목을 둘 다 고침: 이 기기 내용이 남아요<br>! 저장 취소 · 불러오지 않음: 덮어쓰기 확인에서 취소했어요<br>! 오류: 토큰·저장소 설정이나 연결을 확인해 주세요',loc:'<b>위치 등록 상태</b><br>✓ 장소 연결: 검색으로 고른 정확한 장소<br>✓ 좌표만 저장: 위치만 저장돼 핀으로 열려요<br>? 자동으로 찾은 위치: 확인이 필요해요<br>! 미등록: 지도 탭에 마커가 나오지 않아요'};
 function tip(e,t){e.stopPropagation();const o=$('tipb');if(o){const same=o.dataset.t==t;o.remove();if(same)return}
 const r=e.currentTarget.getBoundingClientRect(),d=document.createElement('div'),w=Math.min(300,innerWidth-32);d.id='tipb';d.className='tipbub';d.dataset.t=t;d.innerHTML=TIPS[t];d.style.width=w+'px';d.style.left=Math.max(16,Math.min(innerWidth-w-16,r.right-w))+'px';d.style.top=(r.bottom+8)+'px';document.body.appendChild(d);
 if(r.bottom+8+d.offsetHeight>innerHeight-16)d.style.top=Math.max(16,r.top-8-d.offsetHeight)+'px'}
