@@ -5264,23 +5264,6 @@
       "rate": 200,
       "items": [
         {
-          "id": 15,
-          "day": -2,
-          "type": "activity",
-          "title": "이털리아 풍경구",
-          "sub": "톈진 시",
-          "time": "",
-          "map": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A9%E6%B4%A5%E6%84%8F%E5%BC%8F%E9%A3%8E%E6%83%85%E5%8C%BA&query_place_id=ChIJn-DaXef97TURuJ6vujtaQYY",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "액티비티",
-          "lat": 39.14786900000001,
-          "lng": 117.196648,
-          "addr": "중국 톈진 시 허베이 구 邮政编码: 300143",
-          "pid": "ChIJn-DaXef97TURuJ6vujtaQYY"
-        },
-        {
           "id": 11,
           "day": 0,
           "type": "hotel",
@@ -5341,6 +5324,23 @@
           "lng": 117.202339,
           "addr": "Ci Fang Zi, 黄家花园 He Ping Qu, Tian Jin Shi, 중국 300022",
           "pid": "ChIJ28dil7z97TURC3huJCcGEao"
+        },
+        {
+          "id": 15,
+          "day": 0,
+          "type": "activity",
+          "title": "이털리아 풍경구",
+          "sub": "톈진 시",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A9%E6%B4%A5%E6%84%8F%E5%BC%8F%E9%A3%8E%E6%83%85%E5%8C%BA&query_place_id=ChIJn-DaXef97TURuJ6vujtaQYY",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "액티비티",
+          "lat": 39.14786900000001,
+          "lng": 117.196648,
+          "addr": "중국 톈진 시 허베이 구 邮政编码: 300143",
+          "pid": "ChIJn-DaXef97TURuJ6vujtaQYY"
         }
       ],
       "exp": [],
