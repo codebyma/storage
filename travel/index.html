@@ -666,7 +666,7 @@ if(n>1)GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30});else if(n==1)GMAP.m
 function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.text,p.placeId))}
 const AREA_T=['locality','administrative_area_level_2','administrative_area_level_1','sublocality_level_1','sublocality','neighborhood'];
 const gsAreaOf=c=>{if(!c)return'';for(const t of AREA_T){const x=c.find(a=>(a.types||[]).includes(t));if(x)return x.longText||x.long_name||''}return''};
-async function gsAcPick(i){try{const p=GS[i],pl=p.toPlace();await pl.fetchFields({fields:['formattedAddress','location','addressComponents']});GTOK=null;
+async function gsAcPick(i){try{const p=GS[i],{Place}=await google.maps.importLibrary('places'),pl=new Place({id:p.placeId,requestedLanguage:'ko'});await pl.fetchFields({fields:['formattedAddress','location','addressComponents']});GTOK=null;
 const d={title:p.mainText.text,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId,area:gsAreaOf(pl.addressComponents)};gCtr(d);gsClose();if(GCB)GCB(d)}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
 let GNEXT=null,GREQ=null;
