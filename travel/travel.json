@@ -5306,14 +5306,16 @@
           "type": "place",
           "label": "장소",
           "title": "滨江道",
-          "sub": "",
+          "sub": "톈진 시",
           "time": "",
-          "map": "https://maps.app.goo.gl/dQXJ2TJsET1yMfr77?g_st=ic",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E6%BB%A8%E6%B1%9F%E9%81%93&query_place_id=EibspJHqta0g7YaI7KeEIOyLnCDtl4jtlZEg6rWsIOa7qOaxn-mBkyIuKiwKFAoSCWnHBYG8_e01EWsZbQPpxtH2EhQKEgk1xKBiof3tNRE0HeAePtNiXg",
           "memo": "",
           "lat": 39.12694,
           "lng": 117.2016,
           "addr": "Bin Jiang Dao, He Ping Qu, Tian Jin Shi, 중국",
-          "pid": "EiHspJHqta0g7YaI7KeEIOyLnCDlkozlubPmu6jmsZ_pgZMiLiosChQKEglpxwWBvP3tNRFrGW0D6cbR9hIUChIJNcSgYqH97TURNB3gHj7TYl4"
+          "pid": "EibspJHqta0g7YaI7KeEIOyLnCDtl4jtlZEg6rWsIOa7qOaxn-mBkyIuKiwKFAoSCWnHBYG8_e01EWsZbQPpxtH2EhQKEgk1xKBiof3tNRE0HeAePtNiXg",
+          "ln": "",
+          "la": ""
         },
         {
           "id": 14,
