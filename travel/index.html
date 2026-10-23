@@ -92,7 +92,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
 .dadd{display:block;width:100%;margin-top:8px;padding:12px 0;border:0;border-radius:12px;background:var(--pl);color:var(--pri);font-size:14px;font-weight:700;font-family:inherit}
 .dadd:active{opacity:.6}
-.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs{color:var(--pri);font-weight:600}.ex .l small.lk{color:var(--pri)}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
+.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs,.it .rv{color:var(--pri);font-weight:600}.ex .l small.lk{color:var(--pri)}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
 .leaflet-container{isolation:isolate;font:inherit;background:var(--chip)}.gpw{background:none;border:0}.gpw .gpin{translate:0 0}
 .row{display:flex;gap:8px;margin-bottom:8px;position:relative}
 .rail{width:24px;flex-shrink:0;position:relative}
@@ -262,30 +262,38 @@ else L.forEach(t=>{t.cur=t.cur||'CNY';const k=ALL.trips.findIndex(x=>x.title==t.
 S=null;save();go('home')}
 /* --- 사진·후기 --- */
 const PH={};
-const thumbs=x=>(x.ph||[]).map((p,i)=>`<button class="pt" onclick="viewPhoto(${x.id},${i})"><img src="${p.t}"></button>`).join('');
+const thumbs=(x,k='ph')=>(x[k]||[]).map((p,i)=>`<button class="pt" onclick="viewPhoto(${x.id},${i},'${k}')"><img src="${p.t}"></button>`).join('');
 const recBlock=x=>fg('사진',`<div class="ph" id="phs">${thumbs(x)}</div><input type="file" id="pf" accept="image/*" multiple hidden onchange="addPhotos(${x.id},this.files)"><button class="btn g sm" style="margin-top:8px" onclick="$('pf').click()">+ 사진 추가</button><div class="hint" id="ph_h"></div>`);
 const loadImg=(f,max,q)=>new Promise((ok,no)=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=no;im.src=u});
-async function addPhotos(id,files){const c=GH(),h=$('ph_h');
+async function addPhotos(id,files,k='ph'){const c=GH(),h=$(k=='vp'?'vp_h':'ph_h');
 if(!c.repo||!c.token){h.textContent='사진은 서버 연결 후 올릴 수 있어요 (⋯ → 서버 동기화 → 연결 설정)';return}
-const x=S.items.find(i=>i.id==id);x.ph=x.ph||[];
-for(const f of files){try{h.textContent='올리는 중…';const full=await loadImg(f,1600,.8),th=await loadImg(f,200,.7),name=`travel/photos/${S.id}/${id}-${Date.now()}.jpg`;
+const x=S.items.find(i=>i.id==id);x[k]=x[k]||[];
+for(const f of files){try{h.textContent='올리는 중…';const full=await loadImg(f,k=='vp'?2000:1600,k=='vp'?.85:.8),th=await loadImg(f,200,.7),name=`travel/photos/${S.id}/${id}-${k=='vp'?'v-':''}${Date.now()}.jpg`;
 await ghReq('PUT',{message:'사진 추가',content:full.split(',')[1],branch:c.branch||'main'},name);
-x.ph.push({p:name,t:th});save();$('phs').innerHTML=thumbs(x)}catch(e){h.textContent=ghErr(e);return}}
+x[k].push({p:name,t:th});save();$(k=='vp'?'vps':'phs').innerHTML=thumbs(x,k)}catch(e){h.textContent=ghErr(e);return}}
 h.textContent='';render()}
 const closeLb=()=>$('lb').classList.remove('on');
-async function viewPhoto(id,i){const x=S.items.find(a=>a.id==id),p=x.ph[i],lb=$('lb');
-lb.innerHTML=`<img id="lbi" src="${PH[p.p]||p.t}"><div class="lbb"><button class="dl" onclick="delPhoto(${id},${i})">삭제</button><button onclick="closeLb()">닫기</button></div>`;lb.classList.add('on');
+async function viewPhoto(id,i,k='ph'){const x=S.items.find(a=>a.id==id),p=x[k][i],lb=$('lb');
+lb.innerHTML=`<img id="lbi" src="${PH[p.p]||p.t}"><div class="lbb"><button class="dl" onclick="delPhoto(${id},${i},'${k}')">삭제</button><button onclick="closeLb()">닫기</button></div>`;lb.classList.add('on');
 if(PH[p.p])return;try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${p.p}`,{headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(!r.ok)throw 0;PH[p.p]=URL.createObjectURL(await r.blob());const im=$('lbi');if(im)im.src=PH[p.p]}catch(e){}}
-async function delPhoto(id,i){const x=S.items.find(a=>a.id==id),p=x.ph.splice(i,1)[0];save();closeLb();if($('phs'))$('phs').innerHTML=thumbs(x);render();
+async function delPhoto(id,i,k='ph'){const x=S.items.find(a=>a.id==id),p=x[k].splice(i,1)[0];save();closeLb();const bx=$(k=='vp'?'vps':'phs');if(bx)bx.innerHTML=thumbs(x,k);render();
 try{const c=GH(),cur=await ghReq('GET',null,p.p);if(cur)await ghReq('DELETE',{message:'사진 삭제',sha:cur.sha,branch:c.branch||'main'},p.p)}catch(e){}}
+/* --- 예약 정보 (확인번호·체크인 시간·링크·바우처) --- */
+const rvHas=x=>!!(x.rv&&(x.rv.no||x.rv.t||x.rv.url)||x.vp&&x.vp.length);
+const rvUrl=u=>{u=(u||'').trim();if(!u)return'';if(!/^https?:\/\//i.test(u))u='https://'+u;return/^https?:\/\/[^\s"'<>]+$/i.test(u)?u:''};
+const rvChip=x=>{if(!rvHas(x))return'';const r=x.rv||{},p=[];if(r.no)p.push('예약 '+esc(r.no));if(r.t)p.push('🕒 '+esc(r.t));if(r.url)p.push('🔗 링크');if(x.vp&&x.vp.length)p.push('📎 바우처 '+x.vp.length);return`<div class="m rv">🎫 ${p.join(' · ')}</div>`};
+const vBlock=x=>`<div class="ph" id="vps">${thumbs(x,'vp')}</div><input type="file" id="vf" accept="image/*" multiple hidden onchange="addPhotos(${x.id},this.files,'vp')"><button class="btn g sm" style="margin-top:8px" onclick="$('vf').click()">+ 바우처 · 예약 화면 사진</button><div class="hint" id="vp_h"></div>`;
+const rvBlock=(x,isNew)=>{const r=x.rv||{};return`<details class="adv"${rvHas(x)?' open':''}><summary>🎫 예약 정보 (확인번호 · 체크인 · 바우처)</summary><div class="mr">${inp('r_no',r.no||'','placeholder="예약번호 · 확인번호"')}<button class="btn g sm" onclick="copyTxt(v('r_no'))">복사</button></div><div class="mr" style="margin-top:8px"><div class="tmw${r.t?'':' empty'}">${inp('r_t',r.t||'','type="time" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">체크인 · 예약 시간</span></div></div><div class="mr">${inp('r_url',r.url||'','placeholder="예약 링크 (Booking, 항공사 등)" inputmode="url"')}<button class="btn g sm" onclick="openRv()">열기</button></div>${isNew||x.id==null?'<div class="hint">바우처 사진은 저장한 뒤에 올릴 수 있어요</div>':vBlock(x)}</details>`};
+function openRv(){const u=rvUrl(v('r_url'));if(!u){toast('예약 링크를 먼저 입력해 주세요');return}window.open(u,'_blank','noopener')}
+function rvRead(){const o={no:v('r_no').trim(),t:v('r_t'),url:rvUrl(v('r_url'))};Object.keys(o).forEach(k=>{if(!o[k])delete o[k]});return Object.keys(o).length?o:null}
 /* --- 항공편 --- */
 const flT=x=>`${x.fr||'출발'}${x.time?' '+x.time:''} - ${x.to||'도착'}`,flS=x=>`${x.al||''} ${x.fno||''}`.trim();
 const fixFlights=t=>(t.items||[]).forEach(x=>{if(x.type!='flight'||x.fno!==undefined||x.al!==undefined)return;
 const a=(x.title||'').match(/^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(.+)$/);if(a){x.fr=a[1];x.time=x.time||a[2];x.to=a[3]}else{x.fr=x.title||''}
 const b=(x.sub||'').match(/^(\S+)\s+(.*)$/);if(b){x.al=b[1];x.fno=b[2]}else{x.al=x.sub||'';x.fno=''}});
 function editFlight(id){const x=S.items.find(i=>i.id==id);
-sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))+recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`+btns('',bP('완료',`upFlight(${id})`)))}
-function upFlight(id){const x=S.items.find(i=>i.id==id);x.al=v('a_n').trim();x.fno=v('a_f').trim();x.fr=v('a_from').trim();x.to=v('a_to').trim();x.time=v('a_time');x.memo=v('e_m');x.title=flT(x);x.sub=flS(x);save();shut();render()}
+sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))+rvBlock(x)+recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`+btns('',bP('완료',`upFlight(${id})`)))}
+function upFlight(id){const x=S.items.find(i=>i.id==id);x.al=v('a_n').trim();x.fno=v('a_f').trim();x.fr=v('a_from').trim();x.to=v('a_to').trim();x.time=v('a_time');x.memo=v('e_m');{const q=rvRead();if(q)x.rv=q;else delete x.rv}x.title=flT(x);x.sub=flS(x);save();shut();render()}
 /* --- 순서 변경(드래그) --- */
 let RM=null,DG=null;
 const GR='<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/><circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/><circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/></svg>';
@@ -359,7 +367,7 @@ h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
+<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${rvChip(x)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${RM?'':`<button class="dadd" onclick="addItem('place',${i})">+ 일정 추가</button>`}</div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
 let FD={};
@@ -380,14 +388,14 @@ fg(`<span class="lrow"><span>이름</span>${gKey()&&gArea()?`<span class="lsh">�
 fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="지역"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>${rcChips(x.day)}`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
 `<details class="adv"${x.ln||x.la?' open':''}><summary>현지어 이름 · 주소 (택시 기사님께 보여주기)</summary>${inp('f_ln',x.ln||'','placeholder="현지어 이름"')}${ta('f_la',x.la||'','현지어 주소')}<button class="btn g full" onclick="showLocal()">🚕 현지어로 크게 보여주기</button><div class="hint" id="f_lh"></div></details>`+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
-(isNew?'':recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`)+btns(isNew?bG('취소','shut()'):'',bP('완료',`saveForm('${id}')`))}
+rvBlock(x,isNew)+(isNew?'':recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`)+btns(isNew?bG('취소','shut()'):'',bP('완료',`saveForm('${id}')`))}
 function addItem(type='place',day=0){if(type=='flight')return addFlight(day);
 FD={};GCB=fPick;
 sheet(itemForm({day,type,title:'',sub:'',time:'',map:'',memo:''},'new'))}
 function saveForm(id){const r=fRead(),d=FD,nw=id==='new';let x;
 if(nw){if(!r.title)return;x={id:S.nid++};S.items.push(x)}else{x=S.items.find(i=>i.id==id);if(!x)return;if(!r.title)r.title=x.title;if(!(x.day==-2||x.day>=0&&x.day<days().length))r.day=x.day}
 const ch=!nw&&r.day!=x.day,tc=nw||r.type!=x.type;
-Object.assign(x,r);if(tc)x.label=r.type=='hotel'?'호텔':TN[r.type];
+Object.assign(x,r);{const q=rvRead();if(q)x.rv=q;else delete x.rv}if(tc)x.label=r.type=='hotel'?'호텔':TN[r.type];
 if(d.lat!=null){x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.pid)x.pid=d.pid;else delete x.pid;if(d.gx)x.gx=1;else delete x.gx}else{delete x.lat;delete x.lng;delete x.addr;delete x.pid;delete x.gx}
 if(ch){S.items=S.items.filter(i=>i!==x);S.items.push(x)}
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
@@ -398,11 +406,11 @@ fg('종류',sel('f_type',Object.entries(TN),'flight',`onchange="addItem(this.val
 fg('항공사',inp('a_n','','placeholder="아시아나항공"'))+
 fg('항공편명',inp('a_f','','placeholder="OZ327"'))+
 fg('출발 · 도착',`<div class="mr">${inp('a_from','','placeholder="출발지"')}${inp('a_to','','placeholder="도착지"')}</div>`)+
-fg('출발 시간',inp('a_time','','type="time"'))+fg('메모',ta('f_m','','메모'))+
+fg('출발 시간',inp('a_time','','type="time"'))+fg('메모',ta('f_m','','메모'))+rvBlock({},true)+
 btns(bG('취소','shut()'),bP('완료','saveFlight()')))}
 function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').trim(),to=v('a_to').trim(),t=v('a_time');
 if(!f&&!al)return;
-const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:v('f_m')};x.title=flT(x);x.sub=flS(x);S.items.push(x);
+const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:v('f_m')};{const q=rvRead();if(q)x.rv=q}x.title=flT(x);x.sub=flS(x);S.items.push(x);
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function editItem(id){if(RM)return;fixFlights(S);const x=S.items.find(i=>i.id==id);if(x.type=='flight')return editFlight(id);
 FD=x.lat!=null?{lat:x.lat,lng:x.lng,addr:x.addr,pid:x.pid,gx:x.gx,auto:(x.pid&&/query_place_id=/.test(x.map||''))?x.map:''}:{};GCB=fPick;
