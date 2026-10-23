@@ -76,6 +76,9 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .row.sf{opacity:1!important;margin:0}.row.sf .it{outline:2px solid var(--pri);transform:scale(1.03);box-shadow:0 12px 28px rgba(0,0,0,.2);transition:transform .18s cubic-bezier(.2,.8,.2,1),box-shadow .18s}.row.sf .rail::before{display:none}
 .num{font-family:'Inter',-apple-system,'SF Pro Text',system-ui,sans-serif;font-variant-numeric:tabular-nums}.u{font-size:calc(1em - 1px)}
 .tg.past{background:var(--chip);color:var(--sub);font-weight:600}
+.tsec{display:flex;align-items:center;gap:6px;margin:4px 2px 10px;font-size:13px;font-weight:700}.tsec i{font-style:normal;color:var(--sub);font-weight:600}.tsec.past{margin-top:24px;color:var(--sub)}
+.tc.up{background:var(--pl)}.tc.up .tg{background:var(--pri);color:var(--on-pri)}.tc.up b{font-size:17px}
+.tc.past{background:var(--card);opacity:.78}.tc.past b{font-size:15px;font-weight:600}
 .gsticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdh,64px));z-index:4;background:var(--bg);border-bottom:1px solid var(--line)}.gmp{padding:12px var(--pad) 8px}.gtabs{display:flex;gap:6px;overflow-x:auto;padding:8px var(--pad)}.gtabs button{flex-shrink:0;background:var(--chip);border-radius:16px;padding:7px 14px;font-size:12px}.gtabs .on{background:var(--pri);color:var(--on-pri)}
 .gmapw{height:227px;border-radius:0;overflow:hidden;background:var(--chip)}.gact{display:flex;gap:8px}
 .gpin{width:26px;height:26px;border-radius:50%;color:#fff;font:600 12px/22px Inter,sans-serif;text-align:center;border:2px solid #fff;translate:0 50%;transform-origin:50% 50%;transition:transform .15s}.gpin.on{transform:scale(1.5)}
@@ -236,14 +239,16 @@ const sheet=h=>{const b=$('sh');b.innerHTML=h;const hh=b.querySelector&&b.queryS
 $('ov').onclick=e=>{if(e.target.id=='ov')shut()};
 const sheet2=h=>{const b=$('sh2');b.innerHTML=h;const hh=b.querySelector('.shh');if(hh)hh.insertAdjacentHTML('beforeend',`<button class="x" onclick="shut2()">${XI}</button>`);shl(b);scLock('b');$('ov2').classList.add('on')},shut2=()=>{$('ov2').classList.remove('on');scUnlock('b')};
 $('ov2').onclick=e=>{if(e.target.id=='ov2')shut2()};
-const go=n=>{view=n;scrollTo(0,0);render()};
+const go=n=>{view=n;render();scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0))};
 const setHdh=()=>{const h=document.querySelector('.hd');if(h)document.documentElement.style.setProperty('--hdh',h.offsetHeight+'px')};
 const render=()=>{document.body.classList.toggle('rmode',!!RM);$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();stickyFix();requestAnimationFrame(stickyFix);initSort();if(GM.on&&view=='trip'&&!RM){drawMap();gSpy(true)}};
 /* --- 여행 목록 --- */
 const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
 const dd=t=>{const a=new Date(t.start+'T00:00:00'),b=new Date(t.end+'T00:00:00'),n=today();return n<a?'D-'+Math.round((a-n)/864e5):n<=b?'여행 중':'지난 여행'};
-function home(){const L=[...ALL.trips].sort((a,b)=>b.start.localeCompare(a.start));
-return `<div class="hd"><h1>내 여행</h1>${MORE}</div>`+(L.length?`<div class="tl">${L.map(t=>`<button class="tc" onclick="openTrip(${t.id})"><span class="tg${dd(t)=='지난 여행'?' past':''}">${dd(t)}</span><b>${esc(t.title)}</b><small>${t.start.replace(/-/g,'.')} ~ ${t.end.replace(/-/g,'.')}</small></button>`).join('')}</div>`:'<p class="hint" style="text-align:center;margin-top:60px">아직 여행이 없어요</p>')+`<div class="gbar"><div class="hint" id="gh_b"></div><button class="btn" onclick="newTrip()">새 여행</button></div><div style="height:110px"></div>`}
+function home(){const L=ALL.trips,up=L.filter(t=>dd(t)!='지난 여행').sort((a,b)=>a.start.localeCompare(b.start)),pa=L.filter(t=>dd(t)=='지난 여행').sort((a,b)=>b.start.localeCompare(a.start));
+const card=(t,c)=>`<button class="tc ${c}" onclick="openTrip(${t.id})"><span class="tg${c=='past'?' past':''}">${dd(t)}</span><b>${esc(t.title)}</b><small>${t.start.replace(/-/g,'.')} ~ ${t.end.replace(/-/g,'.')}</small></button>`;
+const sec=(n,l,c)=>l.length?`<div class="tsec${c=='past'?' past':''}"><span>${n}</span><i>${l.length}</i></div>`+l.map(t=>card(t,c)).join(''):'';
+return `<div class="hd"><h1>내 여행</h1>${MORE}</div>`+(L.length?`<div class="tl">${sec('다가오는 여행',up,'up')}${sec('지난 여행',pa,'past')}</div>`:'<p class="hint" style="text-align:center;margin-top:60px">아직 여행이 없어요</p>')+`<div class="gbar"><div class="hint" id="gh_b"></div><button class="btn" onclick="newTrip()">새 여행</button></div><div style="height:110px"></div>`}
 const openTrip=id=>{RM=null;S=ALL.trips.find(t=>t.id==id);S.cur=S.cur||'CNY';go('trip')};
 function newTrip(){const t=new Date(),f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,e=new Date(t);e.setDate(e.getDate()+2);
 sheet(hd3('새 여행')+fg('여행 이름',inp('n_n','','placeholder="홍콩 여행"'))+fg('시작일',inp('n_s',f(t),'type="date"'))+fg('종료일',inp('n_e',f(e),'type="date"'))+fg('현지 통화',sel('n_c',Object.entries(CUR).map(([k,x])=>[k,`${k}(${x[0]})`]),'CNY',`onchange="$('n_r').value=CUR[this.value][1]"`))+fg('환율 (1 현지통화 = 원)',inp('n_r',CUR.CNY[1],'type="number" step="any"'))+`<div class="hint">환율은 대략값이에요. 실제 환율로 수정하세요</div>`+btns(bG('취소','shut()'),bP('만들기','saveTrip()')))}
