@@ -284,7 +284,7 @@ const fixFlights=t=>(t.items||[]).forEach(x=>{if(x.type!='flight'||x.fno!==undef
 const a=(x.title||'').match(/^(.+?)\s+(\d{1,2}:\d{2})\s*-\s*(.+)$/);if(a){x.fr=a[1];x.time=x.time||a[2];x.to=a[3]}else{x.fr=x.title||''}
 const b=(x.sub||'').match(/^(\S+)\s+(.*)$/);if(b){x.al=b[1];x.fno=b[2]}else{x.al=x.sub||'';x.fno=''}});
 function editFlight(id){const x=S.items.find(i=>i.id==id);
-sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))+recBlock(x)+btns(bD('삭제',`delItem(${id})`),bP('저장',`upFlight(${id})`)))}
+sheet(hd3(esc(flT(x)),'항공편')+fg('항공사',inp('a_n',x.al,'placeholder="아시아나항공"'))+fg('항공편명',inp('a_f',x.fno,'placeholder="OZ327"'))+fg('출발 · 도착',`<div class="mr">${inp('a_from',x.fr,'placeholder="출발지"')}${inp('a_to',x.to,'placeholder="도착지"')}</div>`)+fg('출발 시간',inp('a_time',x.time,'type="time"'))+fg('메모',ta('e_m',x.memo,'참고할 내용을 적어주세요.'))+recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`+btns('',bP('완료',`upFlight(${id})`)))}
 function upFlight(id){const x=S.items.find(i=>i.id==id);x.al=v('a_n').trim();x.fno=v('a_f').trim();x.fr=v('a_from').trim();x.to=v('a_to').trim();x.time=v('a_time');x.memo=v('e_m');x.title=flT(x);x.sub=flS(x);save();shut();render()}
 /* --- 순서 변경(드래그) --- */
 let RM=null,DG=null;
@@ -399,7 +399,7 @@ fg('항공사',inp('a_n','','placeholder="아시아나항공"'))+
 fg('항공편명',inp('a_f','','placeholder="OZ327"'))+
 fg('출발 · 도착',`<div class="mr">${inp('a_from','','placeholder="출발지"')}${inp('a_to','','placeholder="도착지"')}</div>`)+
 fg('출발 시간',inp('a_time','','type="time"'))+fg('메모',ta('f_m','','메모'))+
-btns(bG('취소','shut()'),bP('추가','saveFlight()')))}
+btns(bG('취소','shut()'),bP('완료','saveFlight()')))}
 function saveFlight(){const f=v('a_f').trim(),al=v('a_n').trim(),fr=v('a_from').trim(),to=v('a_to').trim(),t=v('a_time');
 if(!f&&!al)return;
 const x={id:S.nid++,day:+v('f_day'),type:'flight',al,fno:f,fr,to,time:t,memo:v('f_m')};x.title=flT(x);x.sub=flS(x);S.items.push(x);
