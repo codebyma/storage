@@ -92,6 +92,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
 .dadd{display:block;width:100%;margin-top:8px;padding:12px 0;border:0;border-radius:12px;background:var(--pl);color:var(--pri);font-size:14px;font-weight:700;font-family:inherit}
 .dadd:active{opacity:.6}
+.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs{color:var(--pri);font-weight:600}.ex .l small.lk{color:var(--pri)}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
 .leaflet-container{isolation:isolate;font:inherit;background:var(--chip)}.gpw{background:none;border:0}.gpw .gpin{translate:0 0}
 .row{display:flex;gap:8px;margin-bottom:8px;position:relative}
 .rail{width:24px;flex-shrink:0;position:relative}
@@ -239,7 +240,7 @@ const sheet=h=>{const b=$('sh');b.innerHTML=h;const hh=b.querySelector&&b.queryS
 $('ov').onclick=e=>{if(e.target.id=='ov')shut()};
 const sheet2=h=>{const b=$('sh2');b.innerHTML=h;const hh=b.querySelector('.shh');if(hh)hh.insertAdjacentHTML('beforeend',`<button class="x" onclick="shut2()">${XI}</button>`);shl(b);scLock('b');$('ov2').classList.add('on')},shut2=()=>{$('ov2').classList.remove('on');scUnlock('b')};
 $('ov2').onclick=e=>{if(e.target.id=='ov2')shut2()};
-const go=n=>{view=n;render();scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0))};
+const go=(n,y)=>{view=n;render();scrollTo(0,y||0);requestAnimationFrame(()=>scrollTo(0,y||0))};
 const setHdh=()=>{const h=document.querySelector('.hd');if(h)document.documentElement.style.setProperty('--hdh',h.offsetHeight+'px')};
 const render=()=>{document.body.classList.toggle('rmode',!!RM);$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();stickyFix();requestAnimationFrame(stickyFix);initSort();if(GM.on&&view=='trip'&&!RM){drawMap();gSpy(true)}};
 /* --- 여행 목록 --- */
@@ -358,7 +359,7 @@ h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:''}</div>`});
+<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&x.type!='flight'?`<div class="m">🕒 ${esc(x.time)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${RM?'':`<button class="dadd" onclick="addItem('place',${i})">+ 일정 추가</button>`}</div>`});
 return h+ghBar()+'<div style="height:110px"></div>'}
 let FD={};
@@ -406,7 +407,7 @@ S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function editItem(id){if(RM)return;fixFlights(S);const x=S.items.find(i=>i.id==id);if(x.type=='flight')return editFlight(id);
 FD=x.lat!=null?{lat:x.lat,lng:x.lng,addr:x.addr,pid:x.pid,gx:x.gx,auto:(x.pid&&/query_place_id=/.test(x.map||''))?x.map:''}:{};GCB=fPick;
 sheet(itemForm(x,id))}
-function delItem(id){S.items=S.items.filter(i=>i.id!=id);save();shut();render()}
+function delItem(id){S.items=S.items.filter(i=>i.id!=id);S.exp.forEach(e=>{if(e.iid==id)delete e.iid});save();shut();render()}
 /* --- 구글지도 연동(링크 방식) --- */
 const gm=q=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(q);
 const gmPlace=(q,id)=>gm(q)+(id?'&query_place_id='+encodeURIComponent(id):'');
@@ -503,6 +504,17 @@ importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('서버에서 최
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();save();shut();render()`)))}
 /* --- 가계부 --- */
 const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
+const itemEx=id=>S.exp.filter(e=>e.iid==id),itemOf=id=>S.items.find(i=>i.id==id);
+const CATOF={flight:'항공',hotel:'숙소',sight:'관광',activity:'관광',restaurant:'식비',cafe:'식비',shopping:'쇼핑',transport:'교통'};
+let EB='ledger',EBY=null;
+const xs=x=>{const l=itemEx(x.id);return l.length?`<div class="m xs">지출 ${won(l.reduce((a,e)=>a+exW(e),0))}${l.length>1?` (${l.length}건)`:''}</div>`:''};
+const xbtn=x=>`<button class="xb${itemEx(x.id).length?' has':''}" onclick="itemExp(${x.id})">지출</button>`;
+function goBack(){const b=EB,y=EBY;EB='ledger';EBY=null;go(b,y)}
+function newItemExp(id){const x=itemOf(id);if(!x)return;editExp(0,{day:x.day,cat:CATOF[x.type]||'기타',title:x.title,iid:id},'trip')}
+function itemExp(id){const x=itemOf(id);if(!x)return;const l=itemEx(id);if(!l.length)return newItemExp(id);
+sheet(hd3('지출 내역',esc(x.title))+`<div class="xl">`+l.map(e=>`<button class="ex" onclick="shut();editExp(${e.id},null,'trip')"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div></div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')+`</div>`+btns(bG('닫기','shut()'),bP('지출 추가',`shut();newItemExp(${id})`)))}
+function goItem(id){if(!itemOf(id))return;go('trip');const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const f=()=>{const h=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdh'))||56;scrollTo(0,scrollY+r.getBoundingClientRect().top-h-14)};f();requestAnimationFrame(f);r.classList.add('fc');setTimeout(()=>r.classList.remove('fc'),1800)}
+function lkField(){const o=S.items.filter(x=>x.day==E.day);if(!o.length&&!E.iid)return'';return fg('연결 일정',sel('x_i',[[0,'연결 안 함'],...o.map(x=>[x.id,esc(x.title)])],E.iid,'onchange="E.iid=+this.value"')+(E.id&&E.iid&&itemOf(E.iid)?`<button class="lkb" onclick="goItem(${E.iid})">일정 보기</button>`:''))}
 function ledger(){const tot=S.exp.reduce((a,e)=>a+exW(e),0),loc=S.exp.filter(e=>exC(e)==S.cur).reduce((a,e)=>a+e.cny,0);
 let h=`<div class="hd"><button class="back" onclick="go('trip')">${BK}</button><h1>가계부</h1>${MORE}</div>
 <div class="tot"><small>총 지출 금액</small><h2 class="num">${wonH(tot)}</h2>${S.cur=='KRW'?'':`<div class="num">${S.cur} ${Math.round(tot/(S.rate||1)).toLocaleString()}</div>`}</div>
@@ -510,25 +522,25 @@ let h=`<div class="hd"><button class="back" onclick="go('trip')">${BK}</button><
 if(tab=='stat'){const m={};S.exp.forEach(e=>m[e.cat]=(m[e.cat]||0)+exW(e));const T=Math.max(1,Object.values(m).reduce((a,b)=>a+b,0));
 h+='<div class="stat">'+(Object.keys(m).length?Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,x])=>`<div class="sr"><span>${k}</span><div class="bt"><i style="width:${x/T*100}%;background:${CATS[k][1]}"></i></div><em class="num"><b>${x/T*100<1?'&lt;1':Math.round(x/T*100)}%</b> ${wonH(x)}</em></div>`).join(''):'<p style="color:var(--sub);text-align:center">지출이 없어요</p>')+'</div>'}
 else{const grp=(lab,idx)=>{const l=S.exp.filter(e=>e.day==idx),s=l.reduce((a,e)=>a+exW(e),0);
-h+=`<div class="gh ${s?'':'z'}">${lab}<span class="num">총 ${wonH(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')};
+h+=`<div class="gh ${s?'':'z'}">${lab}<span class="num">총 ${wonH(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.iid&&itemOf(e.iid)?`<small class="lk">📍 ${esc(itemOf(e.iid).title)}</small>`:''}${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')};
 grp('여행 전',-1);days().forEach((d,i)=>grp(`Day ${i+1} - ${dl(d)}`,i));grp('여행 후',99)}
 return h+ghBar(['지출 내역 추가','editExp()'])+'<div style="height:110px"></div>'}
 /* --- 지출 입력 --- */
 const fm=s=>{if(s==='')return'';const[a,b]=s.split('.');return(a?(+a).toLocaleString('en-US'):'0')+(b!==undefined?'.'+b:'')};
 const rateE=()=>E.rt!=null?E.rt:(E.cur=='KRW'?1:S.rate),conv=()=>won((parseFloat(E.amt)||0)*rateE());
-function editExp(id){const x=id?S.exp.find(e=>e.id==id):null;E={id:id||0,cur:x?exC(x):S.cur,rt:x&&x.rt!=null?x.rt:null,amt:x?String(x.cny):'',day:x?x.day:0,cat:x?x.cat:'식비',title:x?x.title:'',memo:x?x.memo:''};go('exp')}
+function editExp(id,pre,from){const x=id?S.exp.find(e=>e.id==id):null;pre=pre||{};EB=from||'ledger';EBY=EB=='trip'?scrollY:null;E={id:id||0,cur:x?exC(x):S.cur,rt:x&&x.rt!=null?x.rt:null,amt:x?String(x.cny):'',day:x?x.day:(pre.day!=null?pre.day:0),cat:x?x.cat:(pre.cat||'식비'),title:x?x.title:(pre.title||''),memo:x?x.memo:'',iid:x?(x.iid||0):(pre.iid||0)};go('exp')}
 function expView(){
-return `<div class="scr"><div class="hd"><button class="back" onclick="go('ledger')">${XL}</button><h1 style="text-align:center">지출 내역 ${E.id?'수정':'추가'}</h1><div style="width:28px"></div></div>
+return `<div class="scr"><div class="hd"><button class="back" onclick="goBack()">${XL}</button><h1 style="text-align:center">지출 내역 ${E.id?'수정':'추가'}</h1><div style="width:28px"></div></div>
 <div class="xa"><select class="cs" onchange="E.cur=this.value;E.rt=null;render()">${[...new Set([S.cur,'KRW',E.cur])].map(c=>`<option value="${c}" ${E.cur==c?'selected':''}>${c}(${c=='KRW'?'원':(CUR[c]||[''])[0]})</option>`).join('')}</select>
 <input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1${E.cur} = ${rateE()}원</div></div>
-<div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value"'),1)+
+<div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value;E.iid=0;render()"'),1)+lkField()+
 fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
 fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
-(E.id?`<div class="dlr"><button onclick="if(confirm('이 지출 내역을 삭제할까요?')){S.exp=S.exp.filter(x=>x.id!=${E.id});save();go('ledger')}">이 내역 삭제</button></div>`:'')+btns('',bP('완료','saveExp()'),'xbar')+`</div>`}
+(E.id?`<div class="dlr"><button onclick="if(confirm('이 지출 내역을 삭제할까요?')){S.exp=S.exp.filter(x=>x.id!=${E.id});save();goBack()}">이 내역 삭제</button></div>`:'')+btns('',bP('완료','saveExp()'),'xbar')+`</div>`}
 function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').textContent=conv()}
 function saveExp(){let a=parseFloat(E.amt);if(!a||!E.title.trim())return;
-const o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE()};
-if(E.id)Object.assign(S.exp.find(x=>x.id==E.id),o);else S.exp.push({id:S.nid++,...o});save();go('ledger')}
+const iv=E.iid&&itemOf(E.iid)?E.iid:0,o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE(),...(iv?{iid:iv}:{})};
+if(E.id){const t=S.exp.find(x=>x.id==E.id);Object.assign(t,o);if(!iv)delete t.iid}else S.exp.push({id:S.nid++,...o});save();goBack()}
 /* --- 구글 지도 --- */
 const gKey=()=>{try{return localStorage.getItem('gmk')||''}catch(e){return''}};
 let GMK={},GM={on:false,day:0,lock:0},GCB=null,G_NEW=null,GS=[],GT=null,GTOK=null,GMP=null,GMAP=null,GMAPEL=null,LMAP=null,LMAPEL=null,TM='o',GOV=[],GIW=null;
