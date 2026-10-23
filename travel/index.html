@@ -141,8 +141,8 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .tipbub{position:fixed;z-index:40;background:var(--tx);color:var(--bg);border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.65}
 .btn.loc.s1{background:var(--pl);color:var(--pri)}.btn.loc.s2{background:rgba(245,165,36,.18);color:#d98a00}.btn.loc.s3{background:rgba(255,107,107,.16);color:#e5484d}
 .gpin svg,.gfn svg{width:13px;height:13px;display:inline-block;vertical-align:-2px}
-.adv{margin-top:14px;font-size:13px}.adv summary{color:var(--sub);padding:6px 0}.adv .in{margin-top:8px}
-.tmw{position:relative;flex:1;min-width:0}.tmw .in{width:100%}.tmph{display:none;position:absolute;left:var(--p-field);top:50%;transform:translateY(-50%);color:var(--sub);opacity:.6;pointer-events:none}.tmw.empty .tmph{display:block}.tmw.empty input::-webkit-datetime-edit{color:transparent}
+.adv{margin-top:14px;font-size:13px}.adv summary{color:var(--sub);padding:6px 0}.adv .in{margin-top:8px}.adv .mr{margin-top:8px}.adv .mr .in{margin-top:0}
+.tmw{position:relative;flex:1;min-width:0}.tmw .in{width:100%}.tmph{display:none;position:absolute;left:var(--p-field);top:50%;transform:translateY(-50%);font-size:var(--fs-body);line-height:1.2;color:var(--sub);opacity:.6;pointer-events:none}.in::placeholder{color:var(--sub);opacity:.6}.tmw.empty .tmph{display:block}.tmw.empty input::-webkit-datetime-edit{color:transparent}
 .row.dd{margin-top:18px}.row.dd .rail::before{top:-10px}.ddb{position:absolute;left:12px;top:-17px;transform:translateX(-50%);z-index:2;height:16px;padding:0 7px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--sub);font-size:10.5px;line-height:14px;white-space:nowrap;font-family:inherit;cursor:pointer}.ddb::after{content:'';position:absolute;inset:-8px -6px}.ddb:active{background:var(--chip)}
 .rmode .gmw,.rmode .gmp{display:none}.row.sg{transform:none!important}
 .crow{display:flex;gap:8px;margin-bottom:8px}.cdb{flex:none;width:52px;border-radius:12px;background:var(--pl);color:var(--pri);font-size:12px;font-weight:700;line-height:1.3}
@@ -283,7 +283,7 @@ const rvHas=x=>!!(x.rv&&(x.rv.no||x.rv.t||x.rv.url)||x.vp&&x.vp.length);
 const rvUrl=u=>{u=(u||'').trim();if(!u)return'';if(!/^https?:\/\//i.test(u))u='https://'+u;return/^https?:\/\/[^\s"'<>]+$/i.test(u)?u:''};
 const rvChip=x=>{if(!rvHas(x))return'';const r=x.rv||{},p=[];if(r.no)p.push('예약 '+esc(r.no));if(r.t)p.push('🕒 '+esc(r.t));if(r.url)p.push('🔗 링크');if(x.vp&&x.vp.length)p.push('📎 바우처 '+x.vp.length);return`<div class="m rv">🎫 ${p.join(' · ')}</div>`};
 const vBlock=x=>`<div class="ph" id="vps">${thumbs(x,'vp')}</div><input type="file" id="vf" accept="image/*" multiple hidden onchange="addPhotos(${x.id},this.files,'vp')"><button class="btn g sm" style="margin-top:8px" onclick="$('vf').click()">+ 바우처 · 예약 화면 사진</button><div class="hint" id="vp_h"></div>`;
-const rvBlock=(x,isNew)=>{const r=x.rv||{};return`<details class="adv"${rvHas(x)?' open':''}><summary>🎫 예약 정보 (확인번호 · 체크인 · 바우처)</summary><div class="mr">${inp('r_no',r.no||'','placeholder="예약번호 · 확인번호"')}<button class="btn g sm" onclick="copyTxt(v('r_no'))">복사</button></div><div class="mr" style="margin-top:8px"><div class="tmw${r.t?'':' empty'}">${inp('r_t',r.t||'','type="time" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">체크인 · 예약 시간</span></div></div><div class="mr">${inp('r_url',r.url||'','placeholder="예약 링크 (Booking, 항공사 등)" inputmode="url"')}<button class="btn g sm" onclick="openRv()">열기</button></div>${isNew||x.id==null?'<div class="hint">바우처 사진은 저장한 뒤에 올릴 수 있어요</div>':vBlock(x)}</details>`};
+const rvBlock=(x,isNew)=>{const r=x.rv||{};return`<details class="adv"${rvHas(x)?' open':''}><summary>🎫 예약 정보 (확인번호 · 체크인 · 바우처)</summary><div class="mr">${inp('r_no',r.no||'','placeholder="예약번호 · 확인번호"')}<button class="btn g sm" onclick="copyTxt(v('r_no'))">복사</button></div><div class="mr"><div class="tmw${r.t?'':' empty'}">${inp('r_t',r.t||'','type="time" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">체크인 · 예약 시간</span></div></div><div class="mr">${inp('r_url',r.url||'','placeholder="예약 링크 (Booking, 항공사 등)" inputmode="url"')}<button class="btn g sm" onclick="openRv()">열기</button></div>${isNew||x.id==null?'<div class="hint">바우처 사진은 저장한 뒤에 올릴 수 있어요</div>':vBlock(x)}</details>`};
 function openRv(){const u=rvUrl(v('r_url'));if(!u){toast('예약 링크를 먼저 입력해 주세요');return}window.open(u,'_blank','noopener')}
 function rvRead(){const o={no:v('r_no').trim(),t:v('r_t'),url:rvUrl(v('r_url'))};Object.keys(o).forEach(k=>{if(!o[k])delete o[k]});return Object.keys(o).length?o:null}
 /* --- 항공편 --- */
@@ -375,7 +375,7 @@ function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
 function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim()}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD,locActs(FD))}
 function fLocClear(){const a=FD.auto;FD={};if(a&&v('f_map')==a)$('f_map').value='';fLocSync()}
-function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.q||d.title;const fs=$('f_s');if(d.area&&fs&&!fs.value.trim())fs.value=d.area;if(L){$('f_map').value=L;const dt=document.querySelector('.adv');if(dt)dt.open=true}fLocSync()}
+function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.q||d.title;const fs=$('f_s');if(d.area&&fs&&!fs.value.trim())fs.value=d.area;if(L){$('f_map').value=L;const dt=$('f_map').closest('details');if(dt)dt.open=true}fLocSync()}
 function fMapUrl(){const t=v('f_t').trim(),l=v('f_map').trim();return l||(FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):gm((t+' '+v('f_s').trim()).trim()))}
 function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
 function rcChips(day){const seen=new Set(),L=[],add=x=>{const t=(x.sub||'').trim();if(t&&t!='나만의 장소'&&!seen.has(t)){seen.add(t);L.push(t)}};
@@ -386,9 +386,9 @@ return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||'
 fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(0,1),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
 fg(`<span class="lrow"><span>이름</span>${gKey()&&gArea()?`<span class="lsh">검색 지역: ${esc(gArea())}</span>`:''}</span>`,`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div>${gKey()?'':'<div class="hint">설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요</div>'}<div id="f_loc">${locCard(FD,locActs(FD))}</div>`)+
 fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="지역"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>${rcChips(x.day)}`)+
-fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+
+fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+rvBlock(x,isNew)+
 `<details class="adv"${x.ln||x.la?' open':''}><summary>현지어 이름 · 주소 (택시 기사님께 보여주기)</summary>${inp('f_ln',x.ln||'','placeholder="현지어 이름"')}${ta('f_la',x.la||'','현지어 주소')}<button class="btn g full" onclick="showLocal()">🚕 현지어로 크게 보여주기</button><div class="hint" id="f_lh"></div></details>`+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
-rvBlock(x,isNew)+(isNew?'':recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`)+btns(isNew?bG('취소','shut()'):'',bP('완료',`saveForm('${id}')`))}
+(isNew?'':recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`)+btns(isNew?bG('취소','shut()'):'',bP('완료',`saveForm('${id}')`))}
 function addItem(type='place',day=0){if(type=='flight')return addFlight(day);
 FD={};GCB=fPick;
 sheet(itemForm({day,type,title:'',sub:'',time:'',map:'',memo:''},'new'))}
