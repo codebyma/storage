@@ -177,6 +177,9 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .xbar .btn{flex:1;width:100%}
 .lacts .tipb{margin-right:-2px}
 .rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc{background:var(--chip);color:var(--tx);border-radius:14px;padding:5px 11px;font-size:12px}
+.svd{display:none;flex:none;font-size:12px;font-weight:700;color:#d98a00;background:rgba(217,138,0,.14);padding:6px 10px;border-radius:14px;white-space:nowrap}html.dirty .svd{display:inline-block}
+.swr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:14px 16px;background:var(--chip);border-radius:var(--r-field);font-size:var(--fs-body);color:var(--tx);cursor:pointer}
+.sw{position:relative;flex:none;width:46px;height:28px;border-radius:14px;background:rgba(128,128,128,.4);transition:background .2s}.sw::after{content:;position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}.sw.on{background:var(--pri)}.sw.on::after{transform:translateX(18px)}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -200,7 +203,20 @@ let ALL;try{ALL=JSON.parse(localStorage.getItem('trips2'))}catch(e){}
 if(!ALL||!Array.isArray(ALL.trips)){let o=null;try{o=JSON.parse(localStorage.getItem('trip1'))}catch(e){}
 const t=o||JSON.parse(JSON.stringify(DEF));t.id=1;t.cur='CNY';ALL={trips:[t],nid:2}}
 let S=null;
-const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}};
+/* --- 저장 안 됨 표시 + 자동 저장 --- */
+let AUTO_T=0,PUSHING=0,AUTO_OFF=0,DIRTY_T=0;
+const autoOn=()=>{try{return localStorage.getItem('autosave1')!=='0'}catch(e){return true}};
+const asHint=on=>(on?'수정하고 30초가 지나면 자동으로 저장돼요':'꺼져 있어요. 오른쪽 위 ‘● 저장’이 보이면 직접 눌러 저장해 주세요')+' (이 기기 설정)'+(GH().token?'':' · 연결 설정 후 동작해요');
+function setAutoSave(on){try{localStorage.setItem('autosave1',on?'1':'0')}catch(e){}const b=$('as_sw'),h=$('as_h');if(b){b.classList.toggle('on',on);b.setAttribute('aria-checked',on)}if(h)h.textContent=asHint(on);dirtyTick()}
+const isDirty=()=>{try{return hs(JSON.stringify(ALL))!=localStorage.getItem('snap1')}catch(e){return false}};
+function dirtyTick(){try{const on=!!GH().token&&isDirty();document.documentElement.classList.toggle('dirty',on);clearTimeout(AUTO_T);
+if(on){if(!DIRTY_T)DIRTY_T=Date.now();if(!PUSHING&&!AUTO_OFF&&autoOn())AUTO_T=setTimeout(autoPush,Math.max(3000,Math.min(30000,120000-(Date.now()-DIRTY_T))))}else DIRTY_T=0}catch(e){}}
+function autoPush(){clearTimeout(AUTO_T);try{if(AUTO_OFF||!autoOn()||!GH().token||!isDirty())return;
+if(PUSHING&&Date.now()-PUSHING<60000||$('ov').classList.contains('on')||$('ov2').classList.contains('on')){AUTO_T=setTimeout(autoPush,10000);return}
+ghPush(true)}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')autoPush();else dirtyTick()});
+addEventListener('online',dirtyTick);
+const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}dirtyTick()};
 let view='home',tab='list',E=null;
 const $=id=>document.getElementById(id),v=id=>$(id).value;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -225,7 +241,7 @@ const hd3=(t,sub)=>`<div class="shh"><h3 class="ttl">${t}</h3>${sub?`<div class=
 const XI='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 2l10 10M12 2 2 12"/></svg>';
 const BK='<svg width="10" height="18" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 1 1 9l8 8"/></svg>';
 const XL='<svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3l12 12M15 3 3 15"/></svg>';
-const MORE='<span class="ic" onclick="settings()">⋯</span>';
+const MORE='<span class="svd" onclick="ghPush()">● 저장</span><span class="ic" onclick="settings()">⋯</span>';
 const SL={};let SYo=0;
 function stickyFix(){document.querySelectorAll('#app .hd,.gsticky').forEach(e=>{e.style.position='relative';void e.offsetHeight;e.style.position=''})}
 function scLock(k){if(!(SL.a||SL.b))SYo=window.scrollY;SL[k]=1;document.documentElement.style.overflow='hidden';document.body.style.overflow='hidden'}
@@ -430,7 +446,7 @@ const getTheme=()=>{try{return localStorage.getItem('theme1')||'auto'}catch(e){r
 function applyTheme(t){const r=document.documentElement;if(t=='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;
 const dk=t=='dark'||(t=='auto'&&matchMedia('(prefers-color-scheme:dark)').matches),m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#121214':'#ffffff'}
 function setTheme(t){try{localStorage.setItem('theme1',t)}catch(e){}applyTheme(t);document.querySelectorAll('.thm button').forEach(b=>b.classList.toggle('on',b.dataset.t==t))}
-function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')+`<div class="hint">바꾸면 이 여행의 ${S.cur} 지출이 모두 새 환율로 다시 계산돼요</div>`):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('구글 지도',`<div class="mr">${inp('g_key',gKey(),'type="password" placeholder="API 키"')}<button class="btn g sm" onclick="saveKey()">저장</button></div><div class="hint" id="gk_h">Maps JavaScript·Places(New)·Geocoding API를 켠 키를 입력해요. 이 기기에만 저장돼요</div><div class="hint">지도 로드 오늘 ${gmlCnt()}/${GML_DAY} · 이번 달 ${gmlMon()} (이 기기 기준). 오늘 한도에 닿으면 무료 지도로 자동 전환돼요</div>`)+fg('서버 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;S.exp.forEach(e=>{if(exC(e)==S.cur)e.rt=S.rate});save();shut();render()`)):btns('',bP('저장','ghPush()'))))}
+function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')+`<div class="hint">바꾸면 이 여행의 ${S.cur} 지출이 모두 새 환율로 다시 계산돼요</div>`):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('구글 지도',`<div class="mr">${inp('g_key',gKey(),'type="password" placeholder="API 키"')}<button class="btn g sm" onclick="saveKey()">저장</button></div><div class="hint" id="gk_h">Maps JavaScript·Places(New)·Geocoding API를 켠 키를 입력해요. 이 기기에만 저장돼요</div><div class="hint">지도 로드 오늘 ${gmlCnt()}/${GML_DAY} · 이번 달 ${gmlMon()} (이 기기 기준). 오늘 한도에 닿으면 무료 지도로 자동 전환돼요</div>`)+fg('서버 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="swr" onclick="setAutoSave(!autoOn())"><span>자동 저장</span><span class="sw${autoOn()?' on':''}" id="as_sw" role="switch" aria-checked="${autoOn()}"></span></div><div class="hint" id="as_h">${asHint(autoOn())}</div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요. 오른쪽 위 ‘● 저장’은 아직 서버에 안 올라간 변경이 있다는 표시예요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;S.exp.forEach(e=>{if(exC(e)==S.cur)e.rt=S.rate});save();shut();render()`)):btns('',bP('저장','ghPush()'))))}
 const bkMsg=t=>{const e=$('bk_h');if(e)e.textContent=t};
 async function exportData(){const txt=JSON.stringify(ALL,null,2),name='travel.json';let d=null;try{d=window.claude&&await claude.use('downloads')}catch(e){}
 if(d){try{await d.save({filename:name,data:txt});bkMsg('파일로 내보냈어요')}catch(e){}return}
@@ -445,7 +461,7 @@ function ghAlert(k,ti,b,sv){ghBusy('');const old=$('gal');if(old)old.remove();co
 const ic={ok:'✓',merge:'✓',warn:'!',err:'!'}[k]||'i';
 o.innerHTML=`<div class="gcard ${k}"><div class="gt"><b>${esc(ti)}</b><button class="tipb" onclick="tip(event,'alert')">i</button></div><div class="gb">${esc(b)}</div>${sv?`<div class="gbt"><button class="btn lt" onclick="$('gal').remove()">확인</button><button class="btn" onclick="$('gal').remove();ghPush()">저장</button></div>`:`<button class="btn" onclick="$('gal').remove()">확인</button>`}</div>`;document.body.appendChild(o)}
 const ghMsg=t=>{ghBusy('');if(!t)return;if(/취소|않았/.test(t))ghAlert('warn','안내',t);else toast(t,/오류|실패|막혀/.test(t)?4500:1800)};
-const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n저장을 눌러야 서버에 반영돼요.')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
+const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n'+(autoOn()?'잠시 뒤 자동으로 저장돼요. 바로 올리려면 오른쪽 위 ‘● 저장’을 누르세요.':'오른쪽 위 ‘● 저장’을 눌러야 서버에 반영돼요.')+'')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
 async function ghDate(){try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/commits?path=${encodeURIComponent((c.path||'travel.json').replace(/^\/+/,''))}&sha=${encodeURIComponent(c.branch||'main')}&per_page=1`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'}});if(!r.ok)return'';const j=await r.json(),d=new Date(j[0].commit.committer.date),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}월 ${d.getDate()}일 ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}}
 const ghBar=a=>`<div class="gbar"><div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn" onclick="ghPush()">저장</button></div>`:`<button class="btn" onclick="ghPush()">저장</button>`}</div>`;
 function ghSheet(){const c=GH();sheet(hd3('서버 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소(codebyma/storage)의 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({token:v('g_t').trim()}))}catch(e){}shut()`)))}
@@ -460,7 +476,7 @@ if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}throw new Error('서
 return r.json()}
 const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀 있어요. 서버에 올린 버전에서 사용하세요':e.message;
 const hs=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return h+':'+t.length};
-const setSnap=()=>{try{localStorage.setItem('snap1',hs(JSON.stringify(ALL)));localStorage.setItem('base1',JSON.stringify(ALL))}catch(e){}};
+const setSnap=o=>{o=o||ALL;try{localStorage.setItem('snap1',hs(JSON.stringify(o)));localStorage.setItem('base1',JSON.stringify(o))}catch(e){}AUTO_OFF=0;dirtyTick()};
 /* --- 두 기기 변경 합치기 (마지막 동기화본 base 기준 3-way 병합) --- */
 const jeq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const getBase=()=>{try{return JSON.parse(localStorage.getItem('base1'))}catch(e){return null}};
@@ -487,7 +503,8 @@ function applyMerged(m){const id=S&&S.id;ALL=m;ALL.trips.forEach(t=>t.cur=t.cur|
 async function ghRemote(){const c=GH(),cur=await ghReq('GET');if(!cur)return{sha:null,d:null};
 const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});
 if(!r.ok)throw new Error('서버 오류 '+r.status);return{sha:cur.sha,d:JSON.parse(await r.text())}}
-async function autoLoad(){try{const c=GH();let txt=null;
+async function autoLoad(){try{await autoLoad0()}finally{dirtyTick()}}
+async function autoLoad0(){try{const c=GH();let txt=null;
 if(c.repo&&c.token){const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(r.ok)txt=await r.text()}
 if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'});if(r.ok)txt=await r.text()}
 if(!txt)return;const d=JSON.parse(txt);if(!d||!Array.isArray(d.trips)||$('ov').classList.contains('on'))return;
@@ -498,15 +515,16 @@ if(!confirm('이 기기에 서버에 저장하지 않은 변경이 있어요.\n�
 const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
 S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
 try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghDate().then(dt=>ghAlert('ok','최신 파일을 불러왔어요','다른 사람이 '+(dt?dt+'에 ':'')+'저장한 최신 내용으로 바뀌었어요.'))}catch(e){}}
-async function ghPush(){ghBusy('저장 중…');try{const c=GH();let note=null;
+async function ghPush(auto){if(PUSHING&&Date.now()-PUSHING<60000){if(!auto)toast('저장 중이에요');return}PUSHING=Date.now();try{await ghPush0(auto)}finally{PUSHING=0;dirtyTick()}}
+async function ghPush0(auto){if(!auto)ghBusy('저장 중…');try{const c=GH();let note=null;
 for(let n=0;n<3;n++){const R=await ghRemote();
 if(R.d){const base=getBase(),rj=hs(JSON.stringify(R.d));
 if(rj!=hs(JSON.stringify(ALL))){
 if(base){if(rj!=hs(JSON.stringify(base))){const st={auto:0,conf:0},dt=await ghDate();applyMerged(mergeAll(base,ALL,R.d,st));note=[st,dt]}}
-else if(!confirm('서버에 이 기기와 다른 내용이 있어요.\n그대로 저장하면 상대가 저장한 내용이 사라질 수 있어요. 저장할까요?')){ghMsg('저장을 취소했어요. 설정에서 먼저 불러오기를 해주세요');return}}}
-try{await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(JSON.stringify(ALL,null,2)),branch:c.branch||'main',...(R.sha?{sha:R.sha}:{})});
-setSnap();if(note){render();ghAlert('merge','변경 내용을 합쳐 저장했어요',mgBody(note[0],note[1],'push'))}else ghMsg('서버에 저장했어요');return}
-catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){ghMsg(ghErr(e))}}
+else if(auto){AUTO_OFF=1;return}else if(!confirm('서버에 이 기기와 다른 내용이 있어요.\n그대로 저장하면 상대가 저장한 내용이 사라질 수 있어요. 저장할까요?')){ghMsg('저장을 취소했어요. 설정에서 먼저 불러오기를 해주세요');return}}}
+const SENT=JSON.stringify(ALL,null,2);try{await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(SENT),branch:c.branch||'main',...(R.sha?{sha:R.sha}:{})});
+setSnap(JSON.parse(SENT));if(note){render();if(!auto||note[0].conf)ghAlert('merge','변경 내용을 합쳐 저장했어요',mgBody(note[0],note[1],'push'));else toast('자동 저장됨 · 상대 변경을 합쳤어요')}else if(auto)toast('자동 저장됨');else ghMsg('서버에 저장했어요');return}
+catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){if(!auto)ghMsg(ghErr(e))}}
 async function ghPull(){ghBusy('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
 importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('서버에서 최신 파일을 불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();save();shut();render()`)))}
