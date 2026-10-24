@@ -92,7 +92,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
 .dadd{display:block;width:100%;margin-top:8px;padding:12px 0;border:0;border-radius:12px;background:var(--pl);color:var(--pri);font-size:14px;font-weight:700;font-family:inherit}
 .dadd:active{opacity:.6}
-.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs,.it .rv{color:var(--pri);font-weight:600}.row>.it{min-width:0}.it .ml{display:flex;align-items:baseline;gap:4px;min-width:0}.it .ml .mt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .ml .mm{flex:none;white-space:nowrap}.ex .l small.lk{color:var(--pri)}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
+.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs,.it .m.rv{color:var(--pri);font-weight:600}.it .m.rv{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row>.it{min-width:0}.it .ml{display:flex;align-items:baseline;gap:4px;min-width:0}.it .ml .mt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .ml .mm{flex:none;white-space:nowrap}.ex .l small.lk{color:var(--pri)}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
 .leaflet-container{isolation:isolate;font:inherit;background:var(--chip)}.gpw{background:none;border:0}.gpw .gpin{translate:0 0}
 .row{display:flex;gap:8px;margin-bottom:8px;position:relative}
 .rail{width:24px;flex-shrink:0;position:relative}
@@ -205,7 +205,8 @@ if(!ALL||!Array.isArray(ALL.trips)){let o=null;try{o=JSON.parse(localStorage.get
 const t=o||JSON.parse(JSON.stringify(DEF));t.id=1;t.cur='CNY';ALL={trips:[t],nid:2}}
 let S=null;
 /* --- 저장 안 됨 표시 + 자동 저장 --- */
-let AUTO_T=0,PUSHING=0,AUTO_OFF=0,DIRTY_T=0;
+let AUTO_T=0,PUSHING=0,AUTO_OFF=0,DIRTY_T=0,LAST_LOAD=Date.now();
+function fgLoad(){try{if(!GH().token||PUSHING||Date.now()-LAST_LOAD<45000)return;if($('ov').classList.contains('on')||$('ov2').classList.contains('on'))return;autoLoad(true)}catch(e){}}
 const autoOn=()=>{try{return localStorage.getItem('autosave1')!=='0'}catch(e){return true}};
 const asHint=on=>(on?'수정하고 30초가 지나면 자동으로 저장돼요':'꺼져 있어요. ⋯ 버튼에 주황 점이 보이면 직접 저장해 주세요')+' (이 기기 설정)'+(GH().token?'':' · 연결 설정 후 동작해요');
 function setAutoSave(on){try{localStorage.setItem('autosave1',on?'1':'0')}catch(e){}const b=$('as_sw'),h=$('as_h');if(b){b.classList.toggle('on',on);b.setAttribute('aria-checked',on)}if(h)h.textContent=asHint(on);dirtyTick()}
@@ -215,7 +216,7 @@ if(on){if(!DIRTY_T)DIRTY_T=Date.now();if(!PUSHING&&!AUTO_OFF&&autoOn())AUTO_T=se
 function autoPush(){clearTimeout(AUTO_T);try{if(AUTO_OFF||!autoOn()||!GH().token||!isDirty())return;
 if(PUSHING&&Date.now()-PUSHING<60000||$('ov').classList.contains('on')||$('ov2').classList.contains('on')){AUTO_T=setTimeout(autoPush,10000);return}
 ghPush(true)}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')autoPush();else dirtyTick()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='hidden')autoPush();else{dirtyTick();fgLoad()}});
 addEventListener('online',dirtyTick);
 const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}dirtyTick()};
 let view='home',tab='list',E=null;
@@ -298,9 +299,10 @@ try{const c=GH(),cur=await ghReq('GET',null,p.p);if(cur)await ghReq('DELETE',{me
 /* --- 예약 정보 (확인번호·체크인 시간·링크·바우처) --- */
 const rvHas=x=>!!(x.rv&&(x.rv.no||x.rv.t||x.rv.url)||x.vp&&x.vp.length);
 const rvUrl=u=>{u=(u||'').trim();if(!u)return'';if(!/^https?:\/\//i.test(u))u='https://'+u;return/^https?:\/\/[^\s"'<>]+$/i.test(u)?u:''};
-const rvChip=x=>{if(!rvHas(x))return'';const r=x.rv||{},p=[];if(r.no)p.push('예약 '+esc(r.no));if(r.t)p.push('🕒 '+esc(r.t));if(r.url)p.push('🔗 링크');if(x.vp&&x.vp.length)p.push('📎 바우처 '+x.vp.length);return`<div class="m rv">🎫 ${p.join(' · ')}</div>`};
+const RVI='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>';
+const rvChip=x=>{if(!rvHas(x))return'';const r=x.rv||{},p=[];if(r.no)p.push(esc(r.no));if(r.t)p.push('🕒 '+esc(r.t));if(r.url)p.push('🔗');if(x.vp&&x.vp.length)p.push('📎 '+x.vp.length);return`<div class="m rv">${RVI} ${p.join(' · ')}</div>`};
 const vBlock=x=>`<div class="ph" id="vps">${thumbs(x,'vp')}</div><input type="file" id="vf" accept="image/*" multiple hidden onchange="addPhotos(${x.id},this.files,'vp')"><button class="btn g sm" style="margin-top:8px" onclick="$('vf').click()">+ 바우처 · 예약 화면 사진</button><div class="hint" id="vp_h"></div>`;
-const rvBlock=(x,isNew)=>{const r=x.rv||{};return`<details class="adv"${rvHas(x)?' open':''}><summary>🎫 예약 정보 (확인번호 · 체크인 · 바우처)</summary><div class="mr">${inp('r_no',r.no||'','placeholder="예약번호 · 확인번호"')}<button class="btn g sm" onclick="copyTxt(v('r_no'))">복사</button></div><div class="mr"><div class="tmw${r.t?'':' empty'}">${inp('r_t',r.t||'','type="time" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">체크인 · 예약 시간</span></div></div><div class="mr">${inp('r_url',r.url||'','placeholder="예약 링크 (Booking, 항공사 등)" inputmode="url"')}<button class="btn g sm" onclick="openRv()">열기</button></div>${isNew||x.id==null?'<div class="hint">바우처 사진은 저장한 뒤에 올릴 수 있어요</div>':vBlock(x)}</details>`};
+const rvBlock=(x,isNew)=>{const r=x.rv||{};return`<details class="adv"${rvHas(x)?' open':''}><summary>${RVI} 예약 정보 (확인번호 · 체크인 · 바우처)</summary><div class="mr">${inp('r_no',r.no||'','placeholder="예약번호 · 확인번호"')}<button class="btn g sm" onclick="copyTxt(v('r_no'))">복사</button></div><div class="mr"><div class="tmw${r.t?'':' empty'}">${inp('r_t',r.t||'','type="time" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">체크인 · 예약 시간</span></div></div><div class="mr">${inp('r_url',r.url||'','placeholder="예약 링크 (Booking, 항공사 등)" inputmode="url"')}<button class="btn g sm" onclick="openRv()">열기</button></div>${isNew||x.id==null?'<div class="hint">바우처 사진은 저장한 뒤에 올릴 수 있어요</div>':vBlock(x)}</details>`};
 function openRv(){const u=rvUrl(v('r_url'));if(!u){toast('예약 링크를 먼저 입력해 주세요');return}window.open(u,'_blank','noopener')}
 function rvRead(){const o={no:v('r_no').trim(),t:v('r_t'),url:rvUrl(v('r_url'))};Object.keys(o).forEach(k=>{if(!o[k])delete o[k]});return Object.keys(o).length?o:null}
 /* --- 항공편 --- */
@@ -504,15 +506,15 @@ function applyMerged(m){const id=S&&S.id;ALL=m;ALL.trips.forEach(t=>t.cur=t.cur|
 async function ghRemote(){const c=GH(),cur=await ghReq('GET');if(!cur)return{sha:null,d:null};
 const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});
 if(!r.ok)throw new Error('서버 오류 '+r.status);return{sha:cur.sha,d:JSON.parse(await r.text())}}
-async function autoLoad(){try{await autoLoad0()}finally{dirtyTick()}}
-async function autoLoad0(){try{const c=GH();let txt=null;
+async function autoLoad(fg){LAST_LOAD=Date.now();try{await autoLoad0(fg)}finally{dirtyTick()}}
+async function autoLoad0(fg){try{const c=GH();let txt=null;
 if(c.repo&&c.token){const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(r.ok)txt=await r.text()}
 if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'});if(r.ok)txt=await r.text()}
 if(!txt)return;const d=JSON.parse(txt);if(!d||!Array.isArray(d.trips)||$('ov').classList.contains('on'))return;
 const lh=hs(JSON.stringify(ALL));if(hs(JSON.stringify(d))==lh){setSnap();return}
 let snap=null,had=false;try{snap=localStorage.getItem('snap1');had=localStorage.getItem('trips2')!==null}catch(e){}
 if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};const dt=await ghDate();applyMerged(mergeAll(base,ALL,d,st));render();ghAlert('merge','저장 안 된 변경과 합쳤어요',mgBody(st,dt,'load'),1);return}
-if(!confirm('이 기기에 서버에 저장하지 않은 변경이 있어요.\n서버의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
+if(fg)return;if(!confirm('이 기기에 서버에 저장하지 않은 변경이 있어요.\n서버의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
 const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
 S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
 try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghDate().then(dt=>ghAlert('ok','최신 파일을 불러왔어요','다른 사람이 '+(dt?dt+'에 ':'')+'저장한 최신 내용으로 바뀌었어요.'))}catch(e){}}
