@@ -238,7 +238,7 @@ const inp=(id,val='',x='')=>`<input class="in" id="${id}" value="${esc(val)}" ${
 const ta=(id,v,ph='')=>`<textarea class="in ta" id="${id}" rows="1" placeholder="${ph}" oninput="grow(this)">${esc(v)}</textarea>`;
 const grow=e=>{e.style.height='auto';e.style.height=e.scrollHeight+'px'};
 const sel=(id,opts,cur,x='')=>`<select class="in" id="${id}" ${x}>${opts.map(([o,t])=>`<option value="${o}" ${o==cur?'selected':''}>${t}</option>`).join('')}</select>`;
-const dayOpts=(ex,cd)=>[...(cd?[[-2,'후보 (날짜 미정)']]:[]),...(ex?[[-1,'여행 전']]:[]),...days().map((d,i)=>[i,`Day ${i+1} - ${dl(d)}`]),...(ex?[[99,'여행 후']]:[])];
+const dayOpts=(ex,cd,pr)=>[...(cd?[[-2,'후보 (날짜 미정)']]:[]),...(pr&&!ex?[[-1,'여행 준비']]:[]),...(ex?[[-1,'여행 전']]:[]),...days().map((d,i)=>[i,`Day ${i+1} - ${dl(d)}`]),...(ex?[[99,'여행 후']]:[])];
 const bD=(t,f)=>`<button class="btn dl" onclick="${f}">${t}</button>`;
 const bG=(t,f)=>`<button class="btn g" onclick="${f}">${t}</button>`,bP=(t,f)=>`<button class="btn" onclick="${f}">${t}</button>`;
 const btns=(a,b,c='')=>`<div class="btns ${c}">${a}${b}</div>`;
@@ -387,14 +387,15 @@ function trip(){const D=days();
 let h=`<div class="hd"><button class="back" onclick="go('home')">${BK}</button><h1><span class="tt"><span class="tn">${esc(S.title)}</span><button class="ed" onclick="editTrip()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button></span><small>${S.start.replace(/-/g,'.')}~${S.end.replace(/-/g,'.')}</small></h1><button class="hmc${GM.on?' on':''}" onclick="toggleMap()">${GM.on?'지도 닫기':'지도'}</button><button class="hmc" onclick="go('ledger')">가계부</button>${MORE}</div>
 ${GM.on?mapPanel():''}`;
 h+=candSec();
-D.forEach((d,i)=>{const its=S.items.filter(x=>x.day==i);
-h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">Day ${i+1}</span><h2>${dl(d)}</h2><u onclick="reorder()">${RM?'완료':'순서변경'}</u></div>`;
+const sec=(i,tg,tt)=>{const its=S.items.filter(x=>x.day==i);
+h+=`<div class="day" data-day="${i}"><div class="dh"><span class="dtag">${tg}</span><h2>${tt}</h2><u onclick="reorder()">${RM?'완료':'순서변경'}</u></div>`;
 h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
-let dd='',pi=0;if(!RM&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
-h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${COL[i%4]}">${icon(x.type)||n}</div></div>
+let dd='',pi=0;if(!RM&&i>=0&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
+h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${i<0?'var(--sub)':COL[i%4]}">${icon(x.type)||n}</div></div>
 <button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub&&x.time?`<div class="m ml"><span class="mt">${esc(x.sub)}</span><span class="mm">· ${CLK} ${esc(x.time)}</span></div>`:x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&!x.sub&&x.type!='flight'?`<div class="m">${CLK} ${esc(x.time)}</div>`:''}${rvChip(x)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
-h+=`</div>${RM?'':`<button class="dadd" onclick="addItem('place',${i})">+ 일정 추가</button>`}</div>`});
+h+=`</div>${i<0&&!its.length&&!RM?'<div class="hint" style="margin:0 0 12px">항공·숙소 예약, 환전, 유심 같은 출발 전 할 일을 적어두세요</div>':''}${RM?'':`<button class="dadd" onclick="addItem('${i<0?'other':'place'}',${i})">${i<0?'+ 준비 추가':'+ 일정 추가'}</button>`}</div>`};
+sec(-1,'준비','여행 준비');D.forEach((d,i)=>sec(i,`Day ${i+1}`,dl(d)));
 return h+ghBar()+'<div style="height:110px"></div>'}
 let FD={};
 function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
@@ -409,7 +410,7 @@ S.items.filter(x=>x.day==day).forEach(add);[...S.items].reverse().forEach(add);
 return L.length?`<div class="rcs">${L.slice(0,6).map(t=>`<button type="button" class="rc" data-t="${esc(t)}" onclick="$('f_s').value=this.dataset.t">${esc(t)}</button>`).join('')}</div>`:''}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
 return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
-fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(0,1),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
+fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(0,1,1),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
 fg(`<span class="lrow"><span>이름</span>${gKey()&&gArea()?`<span class="lsh">검색 지역: ${esc(gArea())}</span>`:''}</span>`,`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div>${gKey()?'':'<div class="hint">설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요</div>'}<div id="f_loc">${locCard(FD,locActs(FD))}</div>`)+
 fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="지역"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>${rcChips(x.day)}`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+rvBlock(x,isNew)+
@@ -419,7 +420,7 @@ function addItem(type='place',day=0){if(type=='flight')return addFlight(day);
 FD={};GCB=fPick;
 sheet(itemForm({day,type,title:'',sub:'',time:'',map:'',memo:''},'new'))}
 function saveForm(id){const r=fRead(),d=FD,nw=id==='new';let x;
-if(nw){if(!r.title)return;x={id:S.nid++};S.items.push(x)}else{x=S.items.find(i=>i.id==id);if(!x)return;if(!r.title)r.title=x.title;if(!(x.day==-2||x.day>=0&&x.day<days().length))r.day=x.day}
+if(nw){if(!r.title)return;x={id:S.nid++};S.items.push(x)}else{x=S.items.find(i=>i.id==id);if(!x)return;if(!r.title)r.title=x.title;if(!(x.day==-2||x.day==-1||x.day>=0&&x.day<days().length))r.day=x.day}
 const ch=!nw&&r.day!=x.day,tc=nw||r.type!=x.type;
 Object.assign(x,r);{const q=rvRead();if(q)x.rv=q;else delete x.rv}if(tc)x.label=r.type=='hotel'?'호텔':TN[r.type];
 if(d.lat!=null){x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.pid)x.pid=d.pid;else delete x.pid;if(d.gx)x.gx=1;else delete x.gx}else{delete x.lat;delete x.lng;delete x.addr;delete x.pid;delete x.gx}
@@ -427,7 +428,7 @@ if(ch){S.items=S.items.filter(i=>i!==x);S.items.push(x)}
 S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
 function addFlight(day=0){
 sheet(hd3('일정 추가','항공편')+
-fg('날짜',sel('f_day',dayOpts(),day))+
+fg('날짜',sel('f_day',dayOpts(0,0,1),day))+
 fg('종류',sel('f_type',Object.entries(TN),'flight',`onchange="addItem(this.value,+v('f_day'))"`))+
 fg('항공사',inp('a_n','','placeholder="아시아나항공"'))+
 fg('항공편명',inp('a_f','','placeholder="OZ327"'))+
@@ -634,7 +635,7 @@ function gSpy(force){if(!GM.on||GM.full||RM||view!='trip'||(!force&&Date.now()<G
 const line=st.getBoundingClientRect().bottom+10,
 sec=[...document.querySelectorAll('.day[data-day]')].find(x=>x.getBoundingClientRect().bottom>line),
 row=[...document.querySelectorAll('.row[data-id]')].find(x=>x.getBoundingClientRect().bottom>line);
-if(sec&&GM.day>=0&&+sec.dataset.day!=GM.day)gSetDay(+sec.dataset.day);
+if(sec&&GM.day>=0&&+sec.dataset.day>=0&&+sec.dataset.day!=GM.day)gSetDay(+sec.dataset.day);
 gFocus(row?+row.dataset.id:null,force)}
 let GFL=[],GFT=0;
 function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const dp=dayDisp(i);S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{o.push({x,lbl:dp[x.id].ic||dp[x.id].n,col:GCOL[i%GCOL.length]})})});return o}
