@@ -5399,8 +5399,20 @@
           "label": "관광지"
         }
       ],
-      "exp": [],
-      "nid": 41
+      "exp": [
+        {
+          "id": 41,
+          "day": 0,
+          "cat": "숙소",
+          "title": "Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin",
+          "memo": "",
+          "cny": 200000,
+          "cu": "KRW",
+          "rt": 1,
+          "iid": 11
+        }
+      ],
+      "nid": 42
     }
   ],
   "nid": 121
