@@ -177,8 +177,8 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .xbar .btn{flex:1;width:100%}
 .lacts .tipb{margin-right:-2px}
 .rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc{background:var(--chip);color:var(--tx);border-radius:14px;padding:5px 11px;font-size:12px}
-#svp{display:none;position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 96px);transform:translateX(-50%);z-index:8;align-items:center;gap:10px;padding:8px 8px 8px 14px;border:0;border-radius:22px;background:var(--tx);color:var(--bg);font-size:13px;font-weight:600;font-family:inherit;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.22)}
-html.dirty body.ishome #svp{display:inline-flex}.svb .s1{display:none}html.dirty .svb .s0{display:none}html.dirty .svb .s1{display:inline}html.dirty .svb{background:#d98a00}html.saving .svb{opacity:.6;pointer-events:none}html.saving #svp{opacity:.6;pointer-events:none}
+#svp{display:none;position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 104px);transform:translateX(-50%);z-index:8;align-items:center;gap:10px;padding:8px 8px 8px 14px;border:0;border-radius:22px;background:var(--tx);color:var(--bg);font-size:13px;font-weight:600;font-family:inherit;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.22)}
+html.dirty #svp{display:inline-flex}html.saving #svp{opacity:.6;pointer-events:none}
 #svp i{flex:none;width:8px;height:8px;border-radius:50%;background:#f5a524}#svp b{background:var(--pri);color:#fff;font-weight:700;padding:6px 12px;border-radius:14px}
 .dbn{display:none;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:10px 12px 10px 14px;border-radius:var(--r-field);background:rgba(217,138,0,.14);color:#d98a00;font-size:13px;font-weight:600}html.dirty .dbn{display:flex}.dbb{flex:none;font-size:13px;font-weight:700;color:#fff;background:#d98a00;padding:7px 12px;border-radius:14px}
 .swr{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;padding:14px 16px;background:var(--chip);border-radius:var(--r-field);font-size:var(--fs-body);color:var(--tx);cursor:pointer}
@@ -263,7 +263,7 @@ const sheet2=h=>{const b=$('sh2');b.innerHTML=h;const hh=b.querySelector('.shh')
 $('ov2').onclick=e=>{if(e.target.id=='ov2')shut2()};
 const go=(n,y)=>{view=n;render();scrollTo(0,y||0);requestAnimationFrame(()=>scrollTo(0,y||0))};
 const setHdh=()=>{const h=document.querySelector('.hd');if(h)document.documentElement.style.setProperty('--hdh',h.offsetHeight+'px')};
-const render=()=>{document.body.classList.toggle('rmode',!!RM);document.body.classList.toggle('ishome',view=='home');$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();stickyFix();requestAnimationFrame(stickyFix);initSort();if(GM.on&&view=='trip'&&!RM){drawMap();gSpy(true)}};
+const render=()=>{document.body.classList.toggle('rmode',!!RM);$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();stickyFix();requestAnimationFrame(stickyFix);initSort();if(GM.on&&view=='trip'&&!RM){drawMap();gSpy(true)}};
 /* --- 여행 목록 --- */
 const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
 const dd=t=>{const a=new Date(t.start+'T00:00:00'),b=new Date(t.end+'T00:00:00'),n=today();return n<a?'D-'+Math.round((a-n)/864e5):n<=b?'여행 중':'지난 여행'};
@@ -474,7 +474,7 @@ o.innerHTML=`<div class="gcard ${k}"><div class="gt"><b>${esc(ti)}</b><button cl
 const ghMsg=t=>{ghBusy('');if(!t)return;if(/취소|않았/.test(t))ghAlert('warn','안내',t);else toast(t,/오류|실패|막혀/.test(t)?4500:1800)};
 const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n'+(autoOn()?'잠시 뒤 자동으로 저장돼요. 바로 올리려면 화면 아래 ‘저장 안 됨’을 누르세요.':'화면 아래 ‘저장 안 됨’을 눌러야 서버에 반영돼요.')+'')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
 async function ghDate(){try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/commits?path=${encodeURIComponent((c.path||'travel.json').replace(/^\/+/,''))}&sha=${encodeURIComponent(c.branch||'main')}&per_page=1`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'}});if(!r.ok)return'';const j=await r.json(),d=new Date(j[0].commit.committer.date),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}월 ${d.getDate()}일 ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}}
-const ghBar=a=>`<div class="gbar"><div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn svb" onclick="ghPush()"><span class="s0">저장</span><span class="s1">● 저장 안 됨</span></button></div>`:`<button class="btn svb" onclick="ghPush()"><span class="s0">저장</span><span class="s1">● 저장 안 됨</span></button>`}</div>`;
+const ghBar=a=>`<div class="gbar"><div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn" onclick="ghPush()">저장</button></div>`:`<button class="btn" onclick="ghPush()">저장</button>`}</div>`;
 function ghSheet(){const c=GH();sheet(hd3('서버 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소(codebyma/storage)의 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({token:v('g_t').trim()}))}catch(e){}shut()`)))}
 const repoOf=c=>c.repo.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/^\/|\/$/g,'');
 async function ghReq(method,body,pth){const c=GH();if(!c.repo||!c.token)throw new Error('먼저 연결 설정을 해주세요');
