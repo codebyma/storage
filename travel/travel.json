@@ -5438,36 +5438,6 @@
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
         },
         {
-          "id": 32,
-          "day": 0,
-          "type": "hotel",
-          "title": "ㅁㅁㅁ테스트",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "rv": {
-            "no": "38;&;₩:&:",
-            "t": "22:15"
-          },
-          "label": "호텔"
-        },
-        {
-          "id": 40,
-          "day": 0,
-          "type": "sight",
-          "title": "시간 테스트ㅁ",
-          "sub": "톈진 시",
-          "time": "08:50",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "관광지"
-        },
-        {
           "id": 71,
           "day": 1,
           "type": "hotel",
