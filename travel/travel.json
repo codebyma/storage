@@ -5337,7 +5337,7 @@
           "day": 0,
           "type": "place",
           "label": "장소",
-          "title": "瓷房子",
+          "title": "츠팡쯔(瓷房子)",
           "sub": "",
           "time": "",
           "map": "",
@@ -5345,7 +5345,9 @@
           "lat": 39.1248698,
           "lng": 117.202339,
           "addr": "Ci Fang Zi, 黄家花园 He Ping Qu, Tian Jin Shi, 중국 300022",
-          "pid": "ChIJ28dil7z97TURC3huJCcGEao"
+          "pid": "ChIJ28dil7z97TURC3huJCcGEao",
+          "ln": "",
+          "la": ""
         },
         {
           "id": 67,
