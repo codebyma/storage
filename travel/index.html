@@ -165,6 +165,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gb{font-size:14px;line-height:1.6;color:var(--tx);white-space:pre-line;margin:12px 0 18px;word-break:keep-all}
 .hmc{flex:none;font-size:13px;font-weight:600;color:var(--tx);background:var(--chip);padding:6px 10px;border-radius:14px;white-space:nowrap}.hmc.on{color:var(--pri);background:var(--pl)}
 .gcard>.btn{display:block;width:100%}
+.ud{display:inline-flex;align-items:center;gap:4px;margin-left:8px;font-size:11px;font-weight:700;color:#d98a00;white-space:nowrap;vertical-align:1px}.ud i{flex:none;width:7px;height:7px;border-radius:50%;background:#f5a524}.m .ud{margin-left:0}
 .gb2{font-size:12px;line-height:1.5;color:var(--sub);margin:-10px 0 18px;word-break:keep-all}
 .gbt{display:flex;gap:10px}.gbt .btn{flex:1}
 .gsw{padding-left:8px}.gsw.on{background:var(--pl)}
@@ -208,6 +209,17 @@ if(!ALL||!Array.isArray(ALL.trips)){let o=null;try{o=JSON.parse(localStorage.get
 const t=o||JSON.parse(JSON.stringify(DEF));t.id=1;t.cur='CNY';ALL={trips:[t],nid:2}}
 let S=null;
 /* --- 저장 안 됨 표시 + 자동 저장 --- */
+/* --- 저장 안 된 항목 표시 (마지막 서버 저장본과 항목별 비교) --- */
+const UDB={k:'',v:null};
+function udBase(){try{const k=localStorage.getItem('base1');if(!k||!GH().token)return null;
+if(UDB.k!==k){const o=JSON.parse(k),m={t:{},i:{},e:{}};(o.trips||[]).forEach(t=>{const{items,exp,...meta}=t;m.t[t.id]=JSON.stringify(meta);(items||[]).forEach(x=>m.i[t.id+':'+x.id]=JSON.stringify(x));(exp||[]).forEach(x=>m.e[t.id+':'+x.id]=JSON.stringify(x))});UDB.k=k;UDB.v=m}
+return UDB.v}catch(e){return null}}
+const UDT='<span class="ud"><i></i>저장 안 됨</span>';
+const udI=(x,blk)=>{const b=udBase();return b&&S&&b.i[S.id+':'+x.id]!==JSON.stringify(x)?(blk?'<div class="m">'+UDT+'</div>':UDT):''};
+const udE=e=>{const b=udBase();return b&&S&&b.e[S.id+':'+e.id]!==JSON.stringify(e)?UDT:''};
+function udT(t){const b=udBase();if(!b)return'';const{items,exp,...meta}=t;if(b.t[t.id]!==JSON.stringify(meta))return UDT;const L=items||[],X=exp||[];
+if(L.some(x=>b.i[t.id+':'+x.id]!==JSON.stringify(x))||X.some(x=>b.e[t.id+':'+x.id]!==JSON.stringify(x)))return UDT;
+const n=Object.keys(b.i).filter(k=>k.indexOf(t.id+':')==0).length+Object.keys(b.e).filter(k=>k.indexOf(t.id+':')==0).length;return n!==L.length+X.length?UDT:''}
 const SVP='<button class="svp" onclick="ghPush()"><i></i><span>저장 안 됨</span><b>저장</b></button>';
 let AUTO_T=0,PUSHING=0,AUTO_OFF=0,DIRTY_T=0,LAST_LOAD=Date.now();
 function fgLoad(){try{if(!GH().token||PUSHING||Date.now()-LAST_LOAD<45000)return;if($('ov').classList.contains('on')||$('ov2').classList.contains('on'))return;autoLoad(true)}catch(e){}}
@@ -269,7 +281,7 @@ const render=()=>{document.body.classList.toggle('rmode',!!RM);$('app').innerHTM
 const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
 const dd=t=>{const a=new Date(t.start+'T00:00:00'),b=new Date(t.end+'T00:00:00'),n=today();return n<a?'D-'+Math.round((a-n)/864e5):n<=b?'여행 중':'지난 여행'};
 function home(){const L=ALL.trips,up=L.filter(t=>dd(t)!='지난 여행').sort((a,b)=>a.start.localeCompare(b.start)),pa=L.filter(t=>dd(t)=='지난 여행').sort((a,b)=>b.start.localeCompare(a.start));
-const card=(t,c)=>`<button class="tc ${c}" onclick="openTrip(${t.id})"><span class="tg${c=='past'?' past':''}">${dd(t)}</span><b>${esc(t.title)}</b><small>${t.start.replace(/-/g,'.')} ~ ${t.end.replace(/-/g,'.')}</small></button>`;
+const card=(t,c)=>`<button class="tc ${c}" onclick="openTrip(${t.id})"><span class="tg${c=='past'?' past':''}">${dd(t)}</span><b>${esc(t.title)}${udT(t)}</b><small>${t.start.replace(/-/g,'.')} ~ ${t.end.replace(/-/g,'.')}</small></button>`;
 const sec=(n,l,c)=>l.length?`<div class="tsec${c=='past'?' past':''}"><span>${n}</span><i>${l.length}</i></div>`+l.map(t=>card(t,c)).join(''):'';
 return `<div class="hd"><h1>내 여행</h1>${MORE}</div>`+(L.length?`<div class="tl">${sec('다가오는 여행',up,'up')}${sec('지난 여행',pa,'past')}</div>`:'<p class="hint" style="text-align:center;margin-top:60px">아직 여행이 없어요</p>')+`<div class="gbar">${SVP}<div class="hint" id="gh_b"></div><button class="btn" onclick="newTrip()">새 여행</button></div><div style="height:110px"></div>`}
 const openTrip=id=>{RM=null;S=ALL.trips.find(t=>t.id==id);S.cur=S.cur||'CNY';go('trip')};
@@ -380,7 +392,7 @@ const closeLocal=()=>$('lcl').classList.remove('on');
 /* --- 후보 장소 보관함 (day=-2) --- */
 let CO=true;
 function candSec(){const L=S.items.filter(x=>x.day==-2);
-return `<div class="day cand"><div class="dh"><span class="dtag">후보</span><h2 onclick="CO=!CO;render()" style="cursor:pointer">가고 싶은 곳 ${L.length}${CO?'':' ▸'}</h2><u onclick="addItem('place',-2)">추가</u></div>`+(CO?(L.length?L.map(x=>`<div class="crow"><button class="it" onclick="editItem(${x.id})"><small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}</button><button class="cdb" onclick="candAssign(${x.id})">Day<br>배정</button></div>`).join(''):'<div class="hint" style="margin:0 0 12px">날짜를 정하기 전에 가고 싶은 곳을 모아두세요. 나중에 Day에 배정할 수 있어요</div>'):'')+`</div>`}
+return `<div class="day cand"><div class="dh"><span class="dtag">후보</span><h2 onclick="CO=!CO;render()" style="cursor:pointer">가고 싶은 곳 ${L.length}${CO?'':' ▸'}</h2><u onclick="addItem('place',-2)">추가</u></div>`+(CO?(L.length?L.map(x=>`<div class="crow"><button class="it" onclick="editItem(${x.id})"><small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}${udI(x)}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}</button><button class="cdb" onclick="candAssign(${x.id})">Day<br>배정</button></div>`).join(''):'<div class="hint" style="margin:0 0 12px">날짜를 정하기 전에 가고 싶은 곳을 모아두세요. 나중에 Day에 배정할 수 있어요</div>'):'')+`</div>`}
 function candAssign(id){const x=S.items.find(i=>i.id==id);
 sheet(hd3('Day 배정',esc(x.title))+`<div style="display:flex;flex-direction:column;gap:8px">${days().map((d,i)=>bG(`Day ${i+1} · ${dl(d)}`,`candTo(${id},${i})`)).join('')}</div>`)}
 function candTo(id,i){const x=S.items.find(a=>a.id==id);x.day=i;S.items=S.items.filter(a=>a!==x);S.items.push(x);S.items.sort((a,b)=>a.day-b.day);save();shut();render()}
@@ -394,7 +406,7 @@ h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&i>=0&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${i<0?'var(--sub)':COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub&&x.time?`<div class="m ml"><span class="mt">${esc(x.sub)}</span><span class="mm">· ${CLK} ${esc(x.time)}</span></div>`:x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&!x.sub&&x.type!='flight'?`<div class="m">${CLK} ${esc(x.time)}</div>`:''}${rvChip(x)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
+<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>${udI(x,1)}`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}${udI(x)}</small><b>${esc(x.title)}</b>${x.sub&&x.time?`<div class="m ml"><span class="mt">${esc(x.sub)}</span><span class="mm">· ${CLK} ${esc(x.time)}</span></div>`:x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&!x.sub&&x.type!='flight'?`<div class="m">${CLK} ${esc(x.time)}</div>`:''}${rvChip(x)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${i<0&&!its.length&&!RM?'<div class="hint" style="margin:0 0 12px">항공·숙소 예약, 환전, 유심 같은 출발 전 할 일을 적어두세요</div>':''}${RM?'':`<button class="dadd" onclick="addItem('${i<0?'other':'place'}',${i})">${i<0?'+ 준비 추가':'+ 일정 추가'}</button>`}</div>`};
 sec(-1,'준비','여행 준비');D.forEach((d,i)=>sec(i,`Day ${i+1}`,dl(d)));
 return h+ghBar()+'<div style="height:110px"></div>'}
@@ -490,7 +502,7 @@ if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}throw new Error('서
 return r.json()}
 const ghErr=e=>e.name=='TypeError'?'연결 실패: 이 페이지에서는 막혀 있어요. 서버에 올린 버전에서 사용하세요':e.message;
 const hs=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return h+':'+t.length};
-const setSnap=o=>{o=o||ALL;try{localStorage.setItem('snap1',hs(JSON.stringify(o)));localStorage.setItem('base1',JSON.stringify(o))}catch(e){}AUTO_OFF=0;dirtyTick()};
+const setSnap=o=>{o=o||ALL;try{localStorage.setItem('snap1',hs(JSON.stringify(o)));localStorage.setItem('base1',JSON.stringify(o))}catch(e){}AUTO_OFF=0;dirtyTick();try{if(!RM&&!$('ov').classList.contains('on')&&!$('ov2').classList.contains('on'))render()}catch(e){}};
 /* --- 두 기기 변경 합치기 (마지막 동기화본 base 기준 3-way 병합) --- */
 const jeq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const getBase=()=>{try{return JSON.parse(localStorage.getItem('base1'))}catch(e){return null}};
@@ -524,7 +536,7 @@ if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'}
 if(!txt)return;const d=JSON.parse(txt);if(!d||!Array.isArray(d.trips)||$('ov').classList.contains('on'))return;
 const lh=hs(JSON.stringify(ALL));if(hs(JSON.stringify(d))==lh){setSnap();return}
 let snap=null,had=false;try{snap=localStorage.getItem('snap1');had=localStorage.getItem('trips2')!==null}catch(e){}
-if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};const dt=await ghDate();applyMerged(mergeAll(base,ALL,d,st));render();ghAlert('merge','저장 안 된 변경과 합쳤어요',mgBody(st,dt,'load'),1);return}
+if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};const dt=await ghDate();applyMerged(mergeAll(base,ALL,d,st));{const nd=JSON.parse(JSON.stringify(d));nd.trips.forEach(t=>t.cur=t.cur||'CNY');nd.nid=nd.nid||Math.max(0,...nd.trips.map(t=>t.id))+1;setSnap(nd)}render();ghAlert('merge','저장 안 된 변경과 합쳤어요',mgBody(st,dt,'load'),1);return}
 if(fg)return;if(!confirm('이 기기에 서버에 저장하지 않은 변경이 있어요.\n서버의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
 const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
 S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
@@ -562,7 +574,7 @@ let h=`<div class="hd"><button class="back" onclick="go('trip')">${BK}</button><
 if(tab=='stat'){const m={};S.exp.forEach(e=>m[e.cat]=(m[e.cat]||0)+exW(e));const T=Math.max(1,Object.values(m).reduce((a,b)=>a+b,0));
 h+='<div class="stat">'+(Object.keys(m).length?Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,x])=>`<div class="sr"><span>${k}</span><div class="bt"><i style="width:${x/T*100}%;background:${CATS[k][1]}"></i></div><em class="num"><b>${x/T*100<1?'&lt;1':Math.round(x/T*100)}%</b> ${wonH(x)}</em></div>`).join(''):'<p style="color:var(--sub);text-align:center">지출이 없어요</p>')+'</div>'}
 else{const grp=(lab,idx)=>{const l=S.exp.filter(e=>e.day==idx),s=l.reduce((a,e)=>a+exW(e),0);
-h+=`<div class="gh ${s?'':'z'}">${lab}<span class="num">총 ${wonH(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.iid&&itemOf(e.iid)&&itemOf(e.iid).title.trim()!==e.title.trim()?`<small class="lk">📍 ${esc(itemOf(e.iid).title)}</small>`:''}${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')};
+h+=`<div class="gh ${s?'':'z'}">${lab}<span class="num">총 ${wonH(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}${udE(e)}</div>${e.iid&&itemOf(e.iid)&&itemOf(e.iid).title.trim()!==e.title.trim()?`<small class="lk">📍 ${esc(itemOf(e.iid).title)}</small>`:''}${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')};
 grp('여행 전',-1);days().forEach((d,i)=>grp(`Day ${i+1} - ${dl(d)}`,i));grp('여행 후',99)}
 return h+ghBar(['지출 내역 추가','editExp()'])+'<div style="height:110px"></div>'}
 /* --- 지출 입력 --- */
