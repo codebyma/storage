@@ -165,6 +165,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gb{font-size:14px;line-height:1.6;color:var(--tx);white-space:pre-line;margin:12px 0 18px;word-break:keep-all}
 .hmc{flex:none;font-size:13px;font-weight:600;color:var(--tx);background:var(--chip);padding:6px 10px;border-radius:14px;white-space:nowrap}.hmc.on{color:var(--pri);background:var(--pl)}
 .gcard>.btn{display:block;width:100%}
+.gb2{font-size:12px;line-height:1.5;color:var(--sub);margin:-10px 0 18px;word-break:keep-all}
 .gbt{display:flex;gap:10px}.gbt .btn{flex:1}
 .gsw{padding-left:8px}.gsw.on{background:var(--pl)}
 .gsr.big #gsl{display:none}.gsr.big #gsmap{flex:1!important;height:auto!important}
@@ -470,9 +471,11 @@ const b64=s=>btoa(unescape(encodeURIComponent(s))),unb64=s=>decodeURIComponent(e
 const ghBusy=t=>{['gh_h','gh_b'].forEach(i=>{const e=$(i);if(e)e.textContent=t});document.documentElement.classList.toggle('gbusy',!!t)};
 function ghAlert(k,ti,b,sv){ghBusy('');const old=$('gal');if(old)old.remove();const o=document.createElement('div');o.id='gal';o.className='gal';
 const ic={ok:'✓',merge:'✓',warn:'!',err:'!'}[k]||'i';
-o.innerHTML=`<div class="gcard ${k}"><div class="gt"><b>${esc(ti)}</b><button class="tipb" onclick="tip(event,'alert')">i</button></div><div class="gb">${esc(b)}</div>${sv?`<div class="gbt"><button class="btn lt" onclick="$('gal').remove()">확인</button><button class="btn" onclick="$('gal').remove();ghPush()">저장</button></div>`:`<button class="btn" onclick="$('gal').remove()">확인</button>`}</div>`;document.body.appendChild(o)}
+o.innerHTML=`<div class="gcard ${k}"><div class="gt"><b>${esc(ti)}</b><button class="tipb" onclick="tip(event,'alert')">i</button></div><div class="gb">${esc(String(b).split('\u0001')[0])}</div>${String(b).split('\u0001')[1]?`<div class="gb2">${esc(String(b).split('\u0001')[1])}</div>`:''}${sv?`<div class="gbt"><button class="btn lt" onclick="$('gal').remove()">확인</button><button class="btn" onclick="$('gal').remove();ghPush()">저장</button></div>`:`<button class="btn" onclick="$('gal').remove()">확인</button>`}</div>`;document.body.appendChild(o)}
 const ghMsg=t=>{ghBusy('');if(!t)return;if(/취소|않았/.test(t))ghAlert('warn','안내',t);else toast(t,/오류|실패|막혀/.test(t)?4500:1800)};
-const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'');return (k=='push'?w+'을 합쳐서 저장했어요.':w+'을 이 기기의 저장 안 된 변경과 합쳤어요.\n'+(autoOn()?'잠시 뒤 자동으로 저장돼요. 바로 올리려면 화면 아래 ‘저장 안 됨’을 누르세요.':'화면 아래 ‘저장 안 됨’을 눌러야 서버에 반영돼요.')+'')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'')};
+const mgBody=(st,dt,k)=>{const w='다른 사람이 '+(dt?dt+'에 ':'')+'저장한 변경'+(st.auto?' '+st.auto+'건':'')+' 포함';
+const m=(k=='push'?'서버의 최신 내용과 합쳐서 저장했어요.':autoOn()?'잠시 뒤 자동으로 저장돼요.\n바로 올리려면 화면 아래 ‘저장 안 됨’을 누르세요.':'화면 아래 ‘저장 안 됨’을 눌러야 서버에 반영돼요.')+(st.conf?'\n같은 항목을 둘 다 고친 '+st.conf+'건은 이 기기 내용을 유지했어요.':'');
+return m+'\u0001'+w};
 async function ghDate(){try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/commits?path=${encodeURIComponent((c.path||'travel.json').replace(/^\/+/,''))}&sha=${encodeURIComponent(c.branch||'main')}&per_page=1`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github+json'}});if(!r.ok)return'';const j=await r.json(),d=new Date(j[0].commit.committer.date),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}월 ${d.getDate()}일 ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}}
 const ghBar=a=>`<div class="gbar">${SVP}<div class="hint" id="gh_b"></div>${a?`<div class="gr"><button class="btn lt" onclick="${a[1]}">${a[0]}</button><button class="btn" onclick="ghPush()">저장</button></div>`:`<button class="btn" onclick="ghPush()">저장</button>`}</div>`;
 function ghSheet(){const c=GH();sheet(hd3('서버 연결','토큰은 이 기기 브라우저에만 저장돼요')+fg('토큰',inp('g_t',c.token||'','type="password" placeholder="github_pat_..."'))+`<div class="hint">저장소(codebyma/storage)의 Contents 읽기/쓰기 권한이 있는 토큰이 필요해요</div>`+btns(bG('취소','shut()'),bP('저장',`try{localStorage.setItem('gh1',JSON.stringify({token:v('g_t').trim()}))}catch(e){}shut()`)))}
