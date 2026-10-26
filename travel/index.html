@@ -206,13 +206,13 @@ let S=null;
 /* --- 돌아올 때 불러오기 · 일정 저장 --- */
 let PUSHING=0,LAST_LOAD=Date.now();
 function fgLoad(){try{if(!GH().token||PUSHING||Date.now()-LAST_LOAD<45000)return;if($('ov').classList.contains('on')||$('ov2').classList.contains('on'))return;autoLoad(true)}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='visible')fgLoad()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState=='visible')fgLoad();else if(usDirty())usSync()});
 let BADT=0;
 function needFocus(sel){clearTimeout(BADT);document.querySelectorAll('.bad').forEach(e=>e.classList.remove('bad'));const L=[...document.querySelectorAll(sel)];if(!L.length)return;L.forEach(e=>e.classList.add('bad'));try{L[0].focus()}catch(x){}BADT=setTimeout(()=>L.forEach(e=>e.classList.remove('bad')),2500)}
 const syncNow=()=>{try{const c=GH();if(c.repo&&c.token)ghPush()}catch(e){}};
 const isDirty=()=>{try{return hs(JSON.stringify(ALL))!=localStorage.getItem('snap1')}catch(e){return false}};
 function retryPush(){try{const c=GH();if(c.repo&&c.token&&localStorage.getItem('base1')&&isDirty()&&!PUSHING)ghPush(true)}catch(e){}}
-addEventListener('online',retryPush);
+addEventListener('online',()=>{retryPush();usSync()});
 const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}};
 let view='home',tab='list',E=null;
 const $=id=>document.getElementById(id),v=id=>$(id).value;
@@ -450,7 +450,7 @@ const getTheme=()=>{try{return localStorage.getItem('theme1')||'auto'}catch(e){r
 function applyTheme(t){const r=document.documentElement;if(t=='auto')r.removeAttribute('data-theme');else r.dataset.theme=t;
 const dk=t=='dark'||(t=='auto'&&matchMedia('(prefers-color-scheme:dark)').matches),m=document.querySelector('meta[name=theme-color]');if(m)m.content=dk?'#121214':'#ffffff'}
 function setTheme(t){try{localStorage.setItem('theme1',t)}catch(e){}applyTheme(t);document.querySelectorAll('.thm button').forEach(b=>b.classList.toggle('on',b.dataset.t==t))}
-function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')+`<div class="hint">바꾸면 이 여행의 ${S.cur} 지출이 모두 새 환율로 다시 계산돼요</div>`):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('구글 지도',`<div class="mr">${inp('g_key',gKey(),'type="password" placeholder="API 키"')}<button class="btn g sm" onclick="saveKey()">저장</button></div><div class="hint" id="gk_h">Maps JavaScript·Places(New)·Geocoding API를 켠 키를 입력해요. 이 기기에만 저장돼요</div><div class="hint">지도 로드 오늘 ${gmlCnt()}/${GML_DAY} · 이번 달 ${gmlMon()} (이 기기 기준). 오늘 한도에 닿으면 무료 지도로 자동 전환돼요</div>`)+fg('서버 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;S.exp.forEach(e=>{if(exC(e)==S.cur)e.rt=S.rate});save();shut();render();syncNow()`)):btns('',bP('저장','ghPush()'))))}
+function settings(){const T=view!='home'&&S;sheet(hd3('설정')+(T?fg(`환율 (1 ${S.cur} = 원)`,inp('r',S.rate,'type="number" step="any"')+`<div class="hint">바꾸면 이 여행의 ${S.cur} 지출이 모두 새 환율로 다시 계산돼요</div>`):'')+fg('화면 모드',`<div class="mr thm">${THEMES.map(([k,n])=>`<button class="btn g sm ${getTheme()==k?'on':''}" data-t="${k}" onclick="setTheme('${k}')">${n}</button>`).join('')}</div>`)+fg('데이터 백업',`<div class="mr"><button class="btn g sm" onclick="exportData()">내보내기</button><button class="btn g sm" onclick="importSheet()">불러오기</button></div><div class="hint" id="bk_h">JSON 파일로 내보내고 불러와요. 같은 이름·날짜의 여행은 덮어쓰고, 나머지는 추가돼요</div>`)+fg('구글 지도',`<div class="mr">${inp('g_key',gKey(),'type="password" placeholder="API 키"')}<button class="btn g sm" onclick="saveKey()">저장</button></div><div class="hint" id="gk_h">Maps JavaScript·Places(New)·Geocoding API를 켠 키를 입력해요. 이 기기에만 저장돼요</div><div class="hint">지도 로드 오늘 ${gmlCnt()}/${GML_DAY} · 이번 달 ${gmlMon()} (${usLbl()}). 오늘 한도에 닿으면 무료 지도로 자동 전환돼요</div><div class="hint">이번 달 더 많은 결과 ${gmCnt()}/${GMAX} · 핀 표시 ${gpCnt()}/${GPMAX} (${usLbl()})</div>`)+fg('서버 동기화',`<div class="mr"><button class="btn g sm" onclick="ghPush()">저장</button><button class="btn g sm" onclick="ghPull()">불러오기</button><button class="btn g sm" onclick="ghSheet()">연결 설정</button></div><div class="hint" id="gh_h">연결 설정에 토큰을 입력하면 버튼 하나로 커밋돼요</div>`)+(T?btns(bG('취소','shut()'),bP('저장',`S.rate=parseFloat(v('r'))||S.rate;S.exp.forEach(e=>{if(exC(e)==S.cur)e.rt=S.rate});save();shut();render();syncNow()`)):btns('',bP('저장','ghPush()'))))}
 const bkMsg=t=>{const e=$('bk_h');if(e)e.textContent=t};
 async function exportData(){const txt=JSON.stringify(ALL,null,2),name='travel.json';let d=null;try{d=window.claude&&await claude.use('downloads')}catch(e){}
 if(d){try{await d.save({filename:name,data:txt});bkMsg('파일로 내보냈어요')}catch(e){}return}
@@ -509,7 +509,7 @@ function applyMerged(m){const id=S&&S.id;ALL=m;ALL.trips.forEach(t=>t.cur=t.cur|
 async function ghRemote(){const c=GH(),cur=await ghReq('GET');if(!cur)return{sha:null,d:null};
 const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});
 if(!r.ok)throw new Error('서버 오류 '+r.status);return{sha:cur.sha,d:JSON.parse(await r.text())}}
-async function autoLoad(fg){LAST_LOAD=Date.now();await autoLoad0(fg);retryPush()}
+async function autoLoad(fg){LAST_LOAD=Date.now();await autoLoad0(fg);retryPush();usSync()}
 async function autoLoad0(fg){try{const c=GH();let txt=null;
 if(c.repo&&c.token){const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${(c.path||'travel.json').replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(r.ok)txt=await r.text()}
 if(txt==null){const r=await fetch('travel.json?t='+Date.now(),{cache:'no-store'});if(r.ok)txt=await r.text()}
@@ -589,10 +589,12 @@ const toggleMap=()=>{GM.on=!GM.on;if(GM.on&&GM.day<0)GM.day=0;render()};
 const GML_DAY=300;
 const mapKind=()=>{try{return localStorage.getItem('mapk')==='o'?'o':'g'}catch(e){return'g'}};
 const gmlD=()=>{const d=new Date(),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())};
-const gmlCnt=()=>{try{return +localStorage.getItem('gml:'+gmlD())||0}catch(e){return 0}};
-const gmlMon=()=>{try{return +localStorage.getItem('gmlm:'+gmlD().slice(0,7))||0}catch(e){return 0}};
-function gmlInc(){try{const t='gml:'+gmlD(),m='gmlm:'+gmlD().slice(0,7);for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('gml:')&&k!==t)localStorage.removeItem(k)}localStorage.setItem(t,String(gmlCnt()+1));localStorage.setItem(m,String(gmlMon()+1))}catch(e){}gmlUi()}
-function gmlUi(){const e=$('gm_u');if(e)e.textContent='구글 지도 로드 오늘 '+gmlCnt()+'/'+GML_DAY+' · 이번 달 '+gmlMon()+' (이 기기 기준)'}
+const gmlRaw=()=>{try{return +localStorage.getItem('gml:'+gmlD())||0}catch(e){return 0}};
+const gmlMonRaw=()=>{try{return +localStorage.getItem('gmlm:'+gmlD().slice(0,7))||0}catch(e){return 0}};
+const gmlCnt=()=>gmlRaw()+oth('dl');
+const gmlMon=()=>gmlMonRaw()+oth('ml');
+function gmlInc(){try{const t='gml:'+gmlD(),m='gmlm:'+gmlD().slice(0,7);for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('gml:')&&k!==t)localStorage.removeItem(k)}localStorage.setItem(t,String(gmlRaw()+1));localStorage.setItem(m,String(gmlMonRaw()+1))}catch(e){}gmlUi();usSoon()}
+function gmlUi(){const e=$('gm_u');if(e)e.textContent='구글 지도 로드 오늘 '+gmlCnt()+'/'+GML_DAY+' · 이번 달 '+gmlMon()+' ('+usLbl()+')'}
 function mapKindSwitch(){try{localStorage.setItem('mapk',mapKind()=='g'?'o':'g')}catch(e){}render()}
 const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
 const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button><button class="btn g sm" onclick="mapKindSwitch()">지도: ${mapKind()=='g'?'구글':'무료'}</button></div><div class="hint" id="gm_h"></div><div class="hint" id="gm_u"></div></div>`;
@@ -700,9 +702,39 @@ if(A.length){const md=a=>{const b=[...a].sort((p,q)=>p-q);return b[Math.floor(b.
 return{south:Math.min(...la)-m,north:Math.max(...la)+m,west:Math.min(...ln)-m,east:Math.max(...ln)+m}}
 if(S&&S.ctr)return{center:S.ctr,radius:50000};return null};
 function mkMapO(){if(LMAP)return;LMAP=L.map(LMAPEL,{zoomControl:false,zoomSnap:.5,worldCopyJump:true}).setView([37.5,127],5);L.control.zoom({position:'bottomright'}).addTo(LMAP);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(LMAP);LMAP.on('click',()=>{const c=$('gfcard');if(c)c.innerHTML=''});LMAP.on('dragstart',()=>{FLYING=false});LMAP.on('zoomend',()=>{if(!FLYING&&Date.now()-(GM.pt||0)>500)GM.uz=LMAP.getZoom()});GM.fresh=true}
+/* --- 두 기기 사용량 합산 (서버: travel/usage.json) --- */
+const usDid=()=>{try{let d=localStorage.getItem('did');if(!d){d='d'+Math.random().toString(36).slice(2,8);localStorage.setItem('did',d)}return d}catch(e){return'd0'}};
+const usMon=()=>gmlD().slice(0,7);
+const usOth=()=>{try{return JSON.parse(localStorage.getItem('usgo'))||{}}catch(e){return{}}};
+const oth=k=>{const o=usOth();return(k=='dl'?o.day==gmlD():o.mon==usMon())?(+o[k]||0):0};
+const usLbl=()=>usOth().t?'두 기기 합계':'이 기기 기준';
+const usPath=()=>(GH().path||'travel.json').replace(/[^/]*$/,'usage.json');
+const usMe=()=>({mr:gmRaw(),pn:gpRaw(),ml:gmlMonRaw()});
+const usSig=()=>JSON.stringify([usMe(),gmlRaw(),usMon(),gmlD()]);
+const usDirty=()=>{try{return usSig()!=localStorage.getItem('usgp')}catch(e){return false}};
+let US_T=0,US_BUSY=0;
+function usSoon(){clearTimeout(US_T);US_T=setTimeout(usSync,30000)}
+async function usSync(){clearTimeout(US_T);if(US_BUSY)return;const c=GH();if(!c.repo||!c.token)return;US_BUSY=1;
+try{for(let n=0;n<2;n++){
+const cur=await ghReq('GET',null,usPath());let R={};
+if(cur){const r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${usPath().replace(/^\/+/,'')}?ref=${encodeURIComponent(c.branch||'main')}`,{cache:'no-store',headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(r.ok){try{R=JSON.parse(await r.text())||{}}catch(e){R={}}}}
+const mon=usMon(),day=gmlD(),did=usDid(),sig=usSig();R.v=1;R.m=R.m&&typeof R.m=='object'?R.m:{};R.d=R.d&&typeof R.d=='object'?R.d:{};
+Object.keys(R.m).forEach(k=>{if(k!=mon)delete R.m[k]});Object.keys(R.d).forEach(k=>{if(k!=day)delete R.d[k]});
+const me=usMe(),pm=R.m[mon]||(R.m[mon]={}),old=pm[did]||{},pd=R.d[day]||(R.d[day]={});
+const nm={mr:Math.max(+old.mr||0,me.mr),pn:Math.max(+old.pn||0,me.pn),ml:Math.max(+old.ml||0,me.ml)},nd=Math.max(+pd[did]||0,gmlRaw());
+const changed=JSON.stringify(old)!=JSON.stringify(nm)||(+pd[did]||0)!=nd,zero=!nm.mr&&!nm.pn&&!nm.ml&&!nd;
+pm[did]=nm;pd[did]=nd;
+const o={mon,day,mr:0,pn:0,ml:0,dl:0,t:Date.now()};
+Object.keys(pm).forEach(k=>{if(k!=did){o.mr+=+pm[k].mr||0;o.pn+=+pm[k].pn||0;o.ml+=+pm[k].ml||0}});Object.keys(pd).forEach(k=>{if(k!=did)o.dl+=+pd[k]||0});
+try{localStorage.setItem('usgo',JSON.stringify(o))}catch(e){}
+if(!changed||(!cur&&zero)){try{localStorage.setItem('usgp',sig)}catch(e){}break}
+try{await ghReq('PUT',{message:'사용량 업데이트',content:b64(JSON.stringify(R)),branch:c.branch||'main',...(cur?{sha:cur.sha}:{})},usPath());try{localStorage.setItem('usgp',sig)}catch(e){}break}
+catch(e){if(/오류 (409|422)/.test(e.message)&&n<1)continue;throw e}}}
+catch(e){}finally{US_BUSY=0;try{gmlUi()}catch(e){}}}
 const GMAX=4700,gmKey=()=>{const d=new Date();return 'gmore:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
-const gmCnt=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}};
-const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmCnt()+1))}catch(e){}};
+const gmRaw=()=>{try{return +localStorage.getItem(gmKey())||0}catch(e){return 0}};
+const gmCnt=()=>gmRaw()+oth('mr');
+const gmInc=()=>{try{localStorage.setItem(gmKey(),String(gmRaw()+1))}catch(e){}usSoon()};
 let GQ=[],GQM=[],GQS=-1,GSM='ac',GSW=0,GTRIP=null,GTRIPEL=null,GSM2=null,GSEL2=null,GSKL=0,GSKT=0;
 const gsHint=()=>{const l=$('gsl');if(l)l.innerHTML=(gArea()?`<div class="hint">🔎 검색 지역: ${esc(gArea())}</div>`:'')+'<div class="hint">장소 이름이나 주소를 입력해 보세요</div>'};
 let GSH=0;
@@ -731,8 +763,9 @@ $('gsl').innerHTML=(GS.map((p,i)=>`<div class="gsw" id="gsw_${i}"><span class="g
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
 /* --- 검색 결과 상위 5곳 지도 핀 (Place Details Essentials 무료 한도 보호용 월 상한) --- */
 const GPMAX=8000,gpKey=()=>{const d=new Date();return 'gpin:'+d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')};
-const gpCnt=()=>{try{return +localStorage.getItem(gpKey())||0}catch(e){return 0}};
-const gpInc=n=>{try{localStorage.setItem(gpKey(),String(gpCnt()+n))}catch(e){}};
+const gpRaw=()=>{try{return +localStorage.getItem(gpKey())||0}catch(e){return 0}};
+const gpCnt=()=>gpRaw()+oth('pn');
+const gpInc=n=>{try{localStorage.setItem(gpKey(),String(gpRaw()+n))}catch(e){}usSoon()};
 const GPC=new Map();
 function gsCards(){const c=$('gscw');if(!c)return;
 const L=GSM=='more'?GQ:GS.map(p=>({title:p.mainText.text,addr:p.secondaryText?p.secondaryText.text:''}));
