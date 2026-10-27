@@ -6,12 +6,13 @@
 <link rel="shortcut icon" href="icon-180.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="theme-color" content="#4a33ff">
+<link rel="manifest" href="manifest.json">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'"><noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
 /* ===== 디자인 가이드: 값은 :root 변수에서만 수정 / 화면은 공통 컴포넌트만 사용 ===== */
 :root{--bg:#fff;--card:#f7f8fa;--tx:#1b1b1f;--sub:#9a9aa3;--line:#e6e6ea;--pri:#13a99c;--pl:#e2f6f3;--on-pri:#fff;--red:#e5484d;--rl:#fdeceb;--chip:#f1f1f3;--sheet:#fff;--green:#d3e8c4;--yellow:#f2e4b5;--pink:#f1d3de;--sky:#cfe3f1;
@@ -181,6 +182,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .lacts .tipb{margin-right:-2px}
 .rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc{background:var(--chip);color:var(--tx);border-radius:14px;padding:5px 11px;font-size:12px}
 .wx{font-size:12px;color:var(--sub);white-space:nowrap}.it .m.wn{color:var(--red);font-weight:600}.cdr{display:flex;gap:6px;margin-top:8px}.cdc{flex:1;height:34px;border:0;border-radius:17px;background:var(--chip);color:var(--sub);font-size:13px;font-weight:600}.cdc.on{background:var(--rl);color:var(--red)}
+#offp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);left:50%;transform:translateX(-50%);z-index:90;background:var(--tx);color:var(--bg);font-size:11px;font-weight:600;line-height:1;padding:6px 11px;border-radius:12px;opacity:.92;white-space:nowrap;pointer-events:none;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -213,8 +215,8 @@ function needFocus(sel){clearTimeout(BADT);document.querySelectorAll('.bad').for
 const syncNow=()=>{try{const c=GH();if(c.repo&&c.token)ghPush()}catch(e){}};
 const isDirty=()=>{try{return hs(JSON.stringify(ALL))!=localStorage.getItem('snap1')}catch(e){return false}};
 function retryPush(){try{const c=GH();if(c.repo&&c.token&&localStorage.getItem('base1')&&isDirty()&&!PUSHING)ghPush(true)}catch(e){}}
-addEventListener('online',()=>{retryPush();usSync()});
-const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}};
+addEventListener('online',()=>{offUi();retryPush();usSync()});addEventListener('offline',()=>offUi());
+const save=()=>{try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}offUi()};
 let view='home',tab='list',E=null;
 const $=id=>document.getElementById(id),v=id=>$(id).value;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -265,6 +267,13 @@ const card=(t,c)=>`<button class="tc ${c}" onclick="openTrip(${t.id})"><span cla
 const sec=(n,l,c)=>l.length?`<div class="tsec${c=='past'?' past':''}"><span>${n}</span><i>${l.length}</i></div>`+l.map(t=>card(t,c)).join(''):'';
 return `<div class="hd"><h1>내 여행</h1>${MORE}</div>`+(L.length?`<div class="tl">${sec('다가오는 여행',up,'up')}${sec('지난 여행',pa,'past')}</div>`:'<p class="hint" style="text-align:center;margin-top:60px">아직 여행이 없어요</p>')+`<div class="gbar"><div class="hint" id="gh_b"></div><button class="btn" onclick="newTrip()">새 여행</button></div><div style="height:110px"></div>`}
 const openTrip=id=>{RM=null;S=ALL.trips.find(t=>t.id==id);S.cur=S.cur||'CNY';go('trip')};
+let OFFT=0;
+const syncTs=()=>{try{const t=+localStorage.getItem('syncT');if(!t)return'';const d=new Date(t),p=n=>String(n).padStart(2,'0');return`${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`}catch(e){return''}};
+function syncFail(e){if(e&&e.name=='TypeError'){OFFT=Date.now();offUi()}}
+function offUi(){try{let e=document.getElementById('offp');const off=!!GH().token&&(!navigator.onLine||(OFFT&&Date.now()-OFFT<3e5));
+if(!off){if(e)e.remove();return}
+if(!e){e=document.createElement('div');e.id='offp';document.body.appendChild(e)}
+const t=syncTs();e.textContent=(navigator.onLine?'서버 연결 안 됨':'오프라인')+(t?' · 마지막 동기화 '+t:'')+(isDirty()?' · 저장 대기':'')}catch(e){}}
 const wxYmd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const dayDow=i=>{const d=new Date(S.start+'T00:00:00');d.setDate(d.getDate()+i);return d.getDay()};
 const tmMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
@@ -512,7 +521,7 @@ if(!r.ok){let m='';try{m=(await r.json()).message}catch(e){}throw new Error('서
 return r.json()}
 const ghErr=e=>e.name=='TypeError'?(location.protocol=='file:'?'연결 실패: 이 페이지에서는 막혀 있어요. 서버에 올린 버전에서 사용하세요':'인터넷 연결을 확인해 주세요. 변경 내용은 이 기기에 저장돼 있고, 연결되면 자동으로 다시 저장돼요'):e.message;
 const hs=t=>{let h=5381;for(let i=0;i<t.length;i++)h=((h<<5)+h+t.charCodeAt(i))|0;return h+':'+t.length};
-const setSnap=o=>{o=o||ALL;try{localStorage.setItem('snap1',hs(JSON.stringify(o)));localStorage.setItem('base1',JSON.stringify(o))}catch(e){}};
+const setSnap=o=>{o=o||ALL;try{localStorage.setItem('snap1',hs(JSON.stringify(o)));localStorage.setItem('base1',JSON.stringify(o))}catch(e){}OFFT=0;try{localStorage.setItem('syncT',String(Date.now()))}catch(e){}offUi()};
 /* --- 두 기기 변경 합치기 (마지막 동기화본 base 기준 3-way 병합) --- */
 const jeq=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 const getBase=()=>{try{return JSON.parse(localStorage.getItem('base1'))}catch(e){return null}};
@@ -550,7 +559,7 @@ if(had&&snap!==lh){const base=getBase();if(base){const st={auto:0,conf:0};const 
 if(fg)return;if(!confirm('이 기기에 서버에 저장하지 않은 변경이 있어요.\n서버의 최신 파일로 덮어쓸까요?')){ghMsg('저장 안 된 변경이 있어 최신 파일을 불러오지 않았어요');return}}
 const id=S&&S.id;ALL=d;ALL.nid=ALL.nid||Math.max(0,...ALL.trips.map(t=>t.id))+1;ALL.trips.forEach(t=>t.cur=t.cur||'CNY');
 S=id!=null?ALL.trips.find(t=>t.id==id)||null:null;if(!S&&view!='home')view='home';
-try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghDate().then(dt=>ghAlert('ok','최신 파일을 불러왔어요','다른 사람이 '+(dt?dt+'에 ':'')+'저장한 최신 내용으로 바뀌었어요.'))}catch(e){}}
+try{localStorage.setItem('trips2',JSON.stringify(ALL))}catch(e){}setSnap();render();ghDate().then(dt=>ghAlert('ok','최신 파일을 불러왔어요','다른 사람이 '+(dt?dt+'에 ':'')+'저장한 최신 내용으로 바뀌었어요.'))}catch(e){syncFail(e)}}
 let PENDING=0;
 async function ghPush(quiet){if(PUSHING&&Date.now()-PUSHING<60000){PENDING=1;return}PUSHING=Date.now();try{await ghPush0(quiet)}finally{PUSHING=0;if(PENDING){PENDING=0;ghPush()}}}
 async function ghPush0(quiet){if(!quiet)ghBusy('저장 중…');try{const c=GH();let note=null;
@@ -561,7 +570,7 @@ if(base){if(rj!=hs(JSON.stringify(base))){const st={auto:0,conf:0},dt=await ghDa
 else if(quiet){return}else if(!confirm('서버에 이 기기와 다른 내용이 있어요.\n그대로 저장하면 상대가 저장한 내용이 사라질 수 있어요. 저장할까요?')){ghMsg('저장을 취소했어요. 설정에서 먼저 불러오기를 해주세요');return}}}
 const SENT=JSON.stringify(ALL,null,2);try{await ghReq('PUT',{message:'여행 데이터 업데이트 '+new Date().toLocaleString('ko-KR'),content:b64(SENT),branch:c.branch||'main',...(R.sha?{sha:R.sha}:{})});
 setSnap(JSON.parse(SENT));if(note){render();if(!quiet)ghAlert('merge','변경 내용을 합쳐 저장했어요',mgBody(note[0],note[1],'push'))}else if(!quiet)ghMsg('서버에 저장했어요');return}
-catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){if(!quiet)ghMsg(ghErr(e))}}
+catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){syncFail(e);if(!quiet)ghMsg(ghErr(e))}}
 async function ghPull(){ghBusy('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
 importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('서버에서 최신 파일을 불러왔어요')}catch(e){ghMsg(ghErr(e))}}
 function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();save();shut();render();syncNow()`)))}
@@ -903,5 +912,6 @@ function locDel(id,from){const x=S.items.find(i=>i.id==id);delete x.lat;delete x
 applyTheme(getTheme());
 render();
 dgInit();addEventListener('resize',setHdh);let spyT=0;addEventListener('scroll',()=>{if(spyT)return;spyT=requestAnimationFrame(()=>{spyT=0;gSpy()})},{passive:true});
-autoLoad();
+autoLoad();offUi();
+if('serviceWorker' in navigator&&(location.protocol=='https:'||location.hostname=='localhost'))addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
 </script></body></html>
