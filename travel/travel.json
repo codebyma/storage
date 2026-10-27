@@ -5282,6 +5282,19 @@
           "label": "기타"
         },
         {
+          "id": 130,
+          "day": 0,
+          "type": "flight",
+          "al": "아시아나항공",
+          "fno": "OZ327",
+          "fr": "인천",
+          "to": "톈진",
+          "time": "08:55",
+          "memo": "",
+          "title": "인천 08:55 - 톈진",
+          "sub": "아시아나항공 OZ327"
+        },
+        {
           "id": 66,
           "day": 0,
           "type": "place",
@@ -5451,19 +5464,6 @@
           "lng": 117.2110678,
           "addr": "Wan Xiang Cheng, 水上 He Xi Qu, Tian Jin Shi, 중국 300061",
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
-        },
-        {
-          "id": 130,
-          "day": 0,
-          "type": "flight",
-          "al": "아시아나항공",
-          "fno": "OZ327",
-          "fr": "인천",
-          "to": "톈진",
-          "time": "08:55",
-          "memo": "",
-          "title": "인천 08:55 - 톈진",
-          "sub": "아시아나항공 OZ327"
         },
         {
           "id": 71,
