@@ -5282,19 +5282,6 @@
           "sub": "아시아나항공 OZ327"
         },
         {
-          "id": 66,
-          "day": 0,
-          "type": "place",
-          "label": "공항",
-          "title": "톈진 공항",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "도착",
-          "ln": "",
-          "la": ""
-        },
-        {
           "id": 11,
           "day": 0,
           "type": "hotel",
