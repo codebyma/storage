@@ -95,7 +95,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
 .dadd{display:block;width:100%;margin-top:8px;padding:12px 0;border:0;border-radius:12px;background:var(--pl);color:var(--pri);font-size:14px;font-weight:700;font-family:inherit}
 .dadd:active{opacity:.6}
-.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs{color:var(--pri);font-weight:600}.it .m.rv{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mi{color:var(--pri);vertical-align:-2px}.row>.it{min-width:0}.it .ml{display:flex;align-items:baseline;gap:4px;min-width:0}.it .ml .mt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .ml .mm{flex:none;white-space:nowrap}.ex .l small.lk{color:var(--pri)}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
+.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs{color:var(--pri);font-weight:600}.it .m.rv{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mi{color:var(--pri);vertical-align:-2px}.row>.it{min-width:0}.it .ml{display:flex;align-items:baseline;gap:4px;min-width:0}.it .ml .mt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .ml .mm{flex:none;white-space:nowrap}.ex .l small.lk{color:var(--pri);display:flex;align-items:flex-start;gap:4px}.ex .l small.lk i{font-style:normal;flex:none}.ex .l small.lk span{min-width:0}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
 .leaflet-container{isolation:isolate;font:inherit;background:var(--chip)}.gpw{background:none;border:0}.gpw .gpin{translate:0 0}
 .row{display:flex;gap:8px;margin-bottom:8px;position:relative}
 .rail{width:24px;flex-shrink:0;position:relative}
@@ -111,7 +111,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gh{display:flex;justify-content:space-between;padding:18px var(--pad) 6px;font-weight:700;font-size:14px}.gh span{color:var(--pri)}.gh.z span{color:var(--sub)}
 .ex{display:flex;justify-content:space-between;padding:16px var(--pad);align-items:center;text-align:left;width:100%}
 .tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 7px;border-radius:6px;margin-bottom:6px}
-.ex .l div{font-size:14px}.ex .l small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.ex .r{text-align:right}.ex .r b{font-size:16px;display:block}.ex .r small{color:var(--sub);font-size:13px}
+.ex .l div{font-size:14px}.ex .l small{display:block;color:var(--sub);font-size:12px;margin-top:4px}.gh .num,.sr em,.tot .num{white-space:nowrap}.ex .l{flex:1;min-width:0;overflow-wrap:anywhere}.ex .r{text-align:right;flex:none;white-space:nowrap;padding-left:14px}.ex .r b{font-size:16px;display:block}.ex .r small{color:var(--sub);font-size:13px}
 .stat{padding:8px var(--pad)}.sr{display:flex;align-items:center;gap:10px;margin:12px 0}.sr .bt{flex:1;height:10px;background:var(--chip);border-radius:5px;overflow:hidden}.sr i{height:100%;border-radius:5px;display:block}.sr span{width:48px;font-size:14px}.sr em{font-style:normal;color:var(--sub);font-size:13px;white-space:nowrap}.sr em b{color:var(--tx);font-weight:600;margin-right:4px}
 /* --- 지출 입력 화면 전용 요소 --- */
 .xa{padding:var(--pad);border-bottom:8px solid var(--card)}
@@ -355,6 +355,7 @@ function upFlight(id){const x=S.items.find(i=>i.id==id);if(!v('a_n').trim()&&!v(
 let RM=null,DG=null;
 const GR='<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.4"/><circle cx="11" cy="3" r="1.4"/><circle cx="5" cy="8" r="1.4"/><circle cx="11" cy="8" r="1.4"/><circle cx="5" cy="13" r="1.4"/><circle cx="11" cy="13" r="1.4"/></svg>';
 const reorder=()=>{RM=!RM;render()};
+function rmSave(){save();syncNow();RM=null;render()}
 function dgTarget(y){let best=null,bd=1e9;
 document.querySelectorAll('.day[data-day]').forEach(d=>{const b=d.getBoundingClientRect(),dist=y<b.top?b.top-y:y>b.bottom?y-b.bottom:0;if(dist<bd){bd=dist;best=d}});
 const rows=[...best.querySelectorAll('.row[data-id]')].filter(r=>r!==DG.r),beforeEl=rows.find(r=>{const b=r.getBoundingClientRect();return y<b.top+b.height/2});
@@ -427,7 +428,7 @@ h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" o
 <button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub&&x.time?`<div class="m ml"><span class="mt">${esc(x.sub)}</span><span class="mm">· ${CLK} ${esc(x.time)}</span></div>`:x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&!x.sub&&x.type!='flight'?`<div class="m">${CLK} ${esc(x.time)}</div>`:''}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${i<0&&!its.length&&!RM?'<div class="hint" style="margin:0 0 12px">항공·숙소 예약, 환전, 유심 같은 출발 전 할 일을 적어두세요</div>':''}${RM?'':`<button class="dadd" onclick="addItem('${i<0?'other':'place'}',${i})">${i<0?'+ 준비 추가':'+ 일정 추가'}</button>`}</div>`};
 sec(-1,'준비','여행 준비');D.forEach((d,i)=>sec(i,`Day ${i+1}`,dl(d)));
-return h+ghBar()+'<div style="height:48px"></div>'}
+return h+(RM?ghBar(['저장','rmSave()'])+'<div style="height:110px"></div>':ghBar()+'<div style="height:48px"></div>')}
 let FD={};
 function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
 function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim(),oh:v('f_oh').trim(),cd:[...document.querySelectorAll('.cdc.on')].map(b=>+b.dataset.d)}}
@@ -594,7 +595,7 @@ let h=`<div class="hd"><button class="back" onclick="go('trip')">${BK}</button><
 if(tab=='stat'){const m={};S.exp.forEach(e=>m[e.cat]=(m[e.cat]||0)+exW(e));const T=Math.max(1,Object.values(m).reduce((a,b)=>a+b,0));
 h+='<div class="stat">'+(Object.keys(m).length?Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,x])=>`<div class="sr"><span>${k}</span><div class="bt"><i style="width:${x/T*100}%;background:${CATS[k][1]}"></i></div><em class="num"><b>${x/T*100<1?'&lt;1':Math.round(x/T*100)}%</b> ${wonH(x)}</em></div>`).join(''):'<p style="color:var(--sub);text-align:center">지출이 없어요</p>')+'</div>'}
 else{const grp=(lab,idx)=>{const l=S.exp.filter(e=>e.day==idx),s=l.reduce((a,e)=>a+exW(e),0);
-h+=`<div class="gh ${s?'':'z'}">${lab}<span class="num">총 ${wonH(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.iid&&itemOf(e.iid)&&itemOf(e.iid).title.trim()!==e.title.trim()?`<small class="lk">📍 ${esc(itemOf(e.iid).title)}</small>`:''}${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')};
+h+=`<div class="gh ${s?'':'z'}">${lab}<span class="num">총 ${wonH(s)}</span></div>`+l.map(e=>`<button class="ex" onclick="editExp(${e.id})"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div>${e.iid&&itemOf(e.iid)&&itemOf(e.iid).title.trim()!==e.title.trim()?`<small class="lk"><i>📍</i><span>${esc(itemOf(e.iid).title)}</span></small>`:''}${e.memo?`<small>${esc(e.memo)}</small>`:''}</div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')};
 grp('여행 전',-1);days().forEach((d,i)=>grp(`Day ${i+1} - ${dl(d)}`,i));grp('여행 후',99)}
 return h+ghBar(['지출 내역 추가','editExp()'])+'<div style="height:110px"></div>'}
 /* --- 지출 입력 --- */
