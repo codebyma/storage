@@ -5269,19 +5269,6 @@
       "rate": 200,
       "items": [
         {
-          "id": 93,
-          "day": -1,
-          "type": "other",
-          "title": "테스트",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "기타"
-        },
-        {
           "id": 130,
           "day": 0,
           "type": "flight",
