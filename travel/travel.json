@@ -5737,19 +5737,6 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
-          "id": 92,
-          "day": 3,
-          "type": "place",
-          "label": "공항",
-          "title": "톈진 공항",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "오전 귀국편이므로 별도 관광 없이 체크아웃 후 공항으로 이동",
-          "ln": "",
-          "la": ""
-        },
-        {
           "id": 131,
           "day": 3,
           "type": "flight",
