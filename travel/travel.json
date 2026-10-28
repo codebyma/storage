@@ -5638,10 +5638,14 @@
           "title": "구러우(天津鼓楼)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E5%A4%A9%E6%B4%A5%E9%BC%93%E6%A5%BC&query_place_id=ChIJp9eY--397TURnsmi98IWyWA",
           "memo": "산책",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.1416968,
+          "lng": 117.18583489999999,
+          "addr": "중국 Tian Jin Shi, Nan Kai Qu, 老城厢 Cheng Xiang Dong Lu, 鼓楼北 邮政编码: 300090",
+          "pid": "ChIJp9eY--397TURnsmi98IWyWA"
         },
         {
           "id": 82,
