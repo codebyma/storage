@@ -5583,10 +5583,14 @@
           "title": "Oeat(天津万象城店)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E4%B8%87%E8%B1%A1%E5%9F%8E&query_place_id=ChIJzbkPOSL97TUR_-BfVcLe8OM",
           "memo": "저녁",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.0899712,
+          "lng": 117.2134107,
+          "addr": "Wan Xiang Cheng, Hutong, He Xi Qu, Tian Jin Shi, 중국 300061",
+          "pid": "ChIJzbkPOSL97TUR_-BfVcLe8OM"
         },
         {
           "id": 79,
