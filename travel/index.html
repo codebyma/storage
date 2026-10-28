@@ -674,11 +674,11 @@ row=[...document.querySelectorAll('.row[data-id]')].find(x=>x.getBoundingClientR
 if(sec&&GM.day>=0&&+sec.dataset.day>=0&&+sec.dataset.day!=GM.day)gSetDay(+sec.dataset.day);
 gFocus(row?+row.dataset.id:null,force)}
 let GFL=[],GFT=0;
-function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const dp=dayDisp(i);S.items.filter(x=>x.day==i&&x.lat!=null).forEach(x=>{o.push({x,lbl:dp[x.id].ic||dp[x.id].n,col:GCOL[i%GCOL.length]})})});return o}
+function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const dp=dayDisp(i);S.items.filter(x=>x.day==i).forEach(x=>{o.push({x,lbl:dp[x.id].ic||dp[x.id].n,col:GCOL[i%GCOL.length]})})});return o}
 function gfCards(keep){GFL=gfList();const c=$('gfc');if(!c)return;let st=0;
 if(keep){const k=GFL.findIndex(o=>o.x.id==GM.focus);if(k>0)st=k}
 GM.focus=GFL[st]?GFL[st].x.id:null;
-c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
+c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||(o.x.lat!=null||o.x.type=='flight'?'':'위치 미등록'))}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button>${o.x.type=='flight'?'':`<button class="btn g" onclick="gOpenMap(${o.x.id})">${o.x.lat!=null?'구글지도':'구글지도 검색'}</button>`}</div></div>`).join(''):'<div class="hint" style="padding:10px 4px">일정이 없어요</div>';
 c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)}
 function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true,true)}
 function gFull(){if(!(TM=='g'?GMAP:LMAP)){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
@@ -695,7 +695,7 @@ if(m.length)u+='&waypoints='+m.map(x=>encodeURIComponent(rLL(x))).join('%7C');
 if(c.every(x=>x.pid)){u+='&origin_place_id='+encodeURIComponent(o.pid)+'&destination_place_id='+encodeURIComponent(d.pid);if(m.length)u+='&waypoint_place_ids='+m.map(x=>encodeURIComponent(x.pid)).join('%7C')}
 return u}
 function legRoute(a,b){const A=S.items.find(i=>i.id==a),B=S.items.find(i=>i.id==b);if(A&&B)go2(routeUrl([A,B]))}
-function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.lat!=null)go2(x.map||locUrl(x))}
+function gOpenMap(id){const x=S.items.find(i=>i.id==id);if(x&&x.type!='flight')go2(mapOf(id))}
 const dayDisp=i=>{const m={};let n=0;S.items.filter(x=>x.day==i).forEach(x=>{const ic=icon(x.type);if(ic)m[x.id]={ic};else m[x.id]={n:++n}});return m};
 function drawMapO(){const host=GM.full?$('gfmap'):$('gmap');if(!host)return;
 if(!window.L){const m=$('gm_h');if(m)m.textContent='지도를 불러오지 못했어요. 인터넷 연결을 확인해 주세요';return}
