@@ -183,7 +183,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc{background:var(--chip);color:var(--tx);border-radius:14px;padding:5px 11px;font-size:12px}
 .wx{font-size:12px;color:var(--sub);white-space:nowrap}.it .m.wn{color:var(--red);font-weight:600}.cdr{display:flex;gap:6px;margin-top:8px}.cdc{flex:1;height:34px;border:0;border-radius:17px;background:var(--chip);color:var(--sub);font-size:13px;font-weight:600}.cdc.on{background:var(--rl);color:var(--red)}
 #offp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);left:50%;transform:translateX(-50%);z-index:90;background:var(--tx);color:var(--bg);font-size:11px;font-weight:600;line-height:1;padding:6px 11px;border-radius:12px;opacity:.92;white-space:nowrap;pointer-events:none;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
-.it small.ilb{display:flex;align-items:center;gap:6px}.it small.ilb i{font-style:normal;color:var(--sub);font-weight:500}
+.it small.ilb{display:flex;align-items:center;gap:6px}.it small.ilb i{font-style:normal;color:var(--tx);font-weight:600;font-size:12px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -426,7 +426,7 @@ h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&i>=0&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${i<0?'var(--sub)':COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small class="ilb"><span style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</span>${x.time?`<i>${CLK} ${esc(x.time)}</i>`:''}</small><b>${esc(x.title)}</b>`}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
+<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small class="ilb">${x.time?`<i>${esc(x.time)}</i>`:''}<span style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</span></small><b>${esc(x.title)}</b>`}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${i<0&&!its.length&&!RM?'<div class="hint" style="margin:0 0 12px">항공·숙소 예약, 환전, 유심 같은 출발 전 할 일을 적어두세요</div>':''}${RM?'':`<button class="dadd" onclick="addItem('${i<0?'other':'place'}',${i})">${i<0?'+ 준비 추가':'+ 일정 추가'}</button>`}</div>`};
 sec(-1,'준비','여행 준비');D.forEach((d,i)=>sec(i,`Day ${i+1}`,dl(d)));
 return h+(RM?ghBar(['저장','rmSave()'])+'<div style="height:110px"></div>':ghBar()+'<div style="height:48px"></div>')}
