@@ -5754,10 +5754,14 @@
           "title": "金掌勺",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E9%87%91%E6%8E%8C%E5%8B%BA&query_place_id=ChIJoRlR84AH7jURykYy7xnpJSk",
           "memo": "저녁 · 꿔바로우",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.118618999999995,
+          "lng": 117.172029,
+          "addr": "459C+CRR, Xi Hu Cun Da Jie, Nan Kai Qu, Tian Jin Shi, 중국 300073",
+          "pid": "ChIJoRlR84AH7jURykYy7xnpJSk"
         },
         {
           "id": 90,
