@@ -5698,10 +5698,14 @@
           "title": "오대도(五大道)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%ED%97%88%ED%95%91%20%EA%B5%AC%20%E4%BA%94%E5%A4%A7%E9%81%93&query_place_id=ChIJWzFivQv97TURHV1y-SQDoas",
           "memo": "산책 · 선택 관광",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.110499999999995,
+          "lng": 117.20084999999999,
+          "addr": "Wudadao Neighborhood, Heping, Tianjin, 중국 300050",
+          "pid": "ChIJWzFivQv97TURHV1y-SQDoas"
         },
         {
           "id": 86,
