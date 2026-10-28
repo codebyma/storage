@@ -5489,10 +5489,14 @@
           "title": "톈진대학교(天津大学)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=Tianjin%20University&query_place_id=ChIJSYV7k2L97TURw83T4LK6OIs",
           "memo": "동문 및 옛 생활권 산책",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.10946,
+          "lng": 117.17485,
+          "addr": "중국 Tian Jin Shi, Nan Kai Qu, Wei Jin Lu, 92号92号 邮政编码: 300072",
+          "pid": "ChIJSYV7k2L97TURw83T4LK6OIs"
         },
         {
           "id": 73,
