@@ -435,7 +435,7 @@ function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
 function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim(),oh:v('f_oh').trim(),cd:[...document.querySelectorAll('.cdc.on')].map(b=>+b.dataset.d)}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD,locActs(FD))}
 function fLocClear(){const a=FD.auto;FD={};if(a&&v('f_map')==a)$('f_map').value='';fLocSync()}
-function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.q||d.title;if(L){$('f_map').value=L;const dt=$('f_map').closest('details');if(dt)dt.open=true}fLocSync()}
+function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};{const ft=$('f_t');if(!ft.value.trim())ft.value=d.q||d.title}if(L){$('f_map').value=L;const dt=$('f_map').closest('details');if(dt)dt.open=true}fLocSync()}
 function fMapUrl(){const t=v('f_t').trim(),l=v('f_map').trim();return l||(FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):gm(t))}
 function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
