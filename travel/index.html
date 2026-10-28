@@ -183,6 +183,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .rcs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.rc{background:var(--chip);color:var(--tx);border-radius:14px;padding:5px 11px;font-size:12px}
 .wx{font-size:12px;color:var(--sub);white-space:nowrap}.it .m.wn{color:var(--red);font-weight:600}.cdr{display:flex;gap:6px;margin-top:8px}.cdc{flex:1;height:34px;border:0;border-radius:17px;background:var(--chip);color:var(--sub);font-size:13px;font-weight:600}.cdc.on{background:var(--rl);color:var(--red)}
 #offp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);left:50%;transform:translateX(-50%);z-index:90;background:var(--tx);color:var(--bg);font-size:11px;font-weight:600;line-height:1;padding:6px 11px;border-radius:12px;opacity:.92;white-space:nowrap;pointer-events:none;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
+.it small.ilb{display:flex;align-items:center;gap:6px}.it small.ilb i{font-style:normal;color:var(--sub);font-weight:500}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -411,7 +412,7 @@ const closeLocal=()=>$('lcl').classList.remove('on');
 /* --- 후보 장소 보관함 (day=-2) --- */
 let CO=true;
 function candSec(){const L=S.items.filter(x=>x.day==-2);
-return `<div class="day cand"><div class="dh"><span class="dtag">후보</span><h2 onclick="CO=!CO;render()" style="cursor:pointer">가고 싶은 곳 ${L.length}${CO?'':' ▸'}</h2><u onclick="addItem('place',-2)">추가</u></div>`+(CO?(L.length?L.map(x=>`<div class="crow"><button class="it" onclick="editItem(${x.id})"><small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub?`<div class="m">${esc(x.sub)}</div>`:''}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}</button><button class="cdb" onclick="candAssign(${x.id})">Day<br>배정</button></div>`).join(''):'<div class="hint" style="margin:0 0 12px">날짜를 정하기 전에 가고 싶은 곳을 모아두세요. 나중에 Day에 배정할 수 있어요</div>'):'')+`</div>`}
+return `<div class="day cand"><div class="dh"><span class="dtag">후보</span><h2 onclick="CO=!CO;render()" style="cursor:pointer">가고 싶은 곳 ${L.length}${CO?'':' ▸'}</h2><u onclick="addItem('place',-2)">추가</u></div>`+(CO?(L.length?L.map(x=>`<div class="crow"><button class="it" onclick="editItem(${x.id})"><small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}</button><button class="cdb" onclick="candAssign(${x.id})">Day<br>배정</button></div>`).join(''):'<div class="hint" style="margin:0 0 12px">날짜를 정하기 전에 가고 싶은 곳을 모아두세요. 나중에 Day에 배정할 수 있어요</div>'):'')+`</div>`}
 function candAssign(id){const x=S.items.find(i=>i.id==id);
 sheet(hd3('Day 배정',esc(x.title))+`<div style="display:flex;flex-direction:column;gap:8px">${days().map((d,i)=>bG(`Day ${i+1} · ${dl(d)}`,`candTo(${id},${i})`)).join('')}</div>`)}
 function candTo(id,i){const x=S.items.find(a=>a.id==id);x.day=i;S.items=S.items.filter(a=>a!==x);S.items.push(x);S.items.sort((a,b)=>a.day-b.day);save();shut();render();syncNow()}
@@ -425,26 +426,23 @@ h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&i>=0&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="background:${i<0?'var(--sub)':COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.sub&&x.time?`<div class="m ml"><span class="mt">${esc(x.sub)}</span><span class="mm">· ${CLK} ${esc(x.time)}</span></div>`:x.sub?`<div class="m">${esc(x.sub)}</div>`:''}`}${x.time&&!x.sub&&x.type!='flight'?`<div class="m">${CLK} ${esc(x.time)}</div>`:''}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
+<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small class="ilb"><span style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</span>${x.time?`<i>${CLK} ${esc(x.time)}</i>`:''}</small><b>${esc(x.title)}</b>`}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${i<0&&!its.length&&!RM?'<div class="hint" style="margin:0 0 12px">항공·숙소 예약, 환전, 유심 같은 출발 전 할 일을 적어두세요</div>':''}${RM?'':`<button class="dadd" onclick="addItem('${i<0?'other':'place'}',${i})">${i<0?'+ 준비 추가':'+ 일정 추가'}</button>`}</div>`};
 sec(-1,'준비','여행 준비');D.forEach((d,i)=>sec(i,`Day ${i+1}`,dl(d)));
 return h+(RM?ghBar(['저장','rmSave()'])+'<div style="height:110px"></div>':ghBar()+'<div style="height:48px"></div>')}
 let FD={};
 function tmChk(e){e.parentNode.classList.toggle('empty',!e.value)}
-function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),sub:v('f_s').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim(),oh:v('f_oh').trim(),cd:[...document.querySelectorAll('.cdc.on')].map(b=>+b.dataset.d)}}
+function fRead(){return{day:+v('f_day'),type:v('f_type'),title:v('f_t').trim(),time:v('f_time'),map:v('f_map').trim(),memo:v('f_m'),ln:v('f_ln').trim(),la:v('f_la').trim(),oh:v('f_oh').trim(),cd:[...document.querySelectorAll('.cdc.on')].map(b=>+b.dataset.d)}}
 function fLocSync(){const c=$('f_loc');if(c)c.innerHTML=locCard(FD,locActs(FD))}
 function fLocClear(){const a=FD.auto;FD={};if(a&&v('f_map')==a)$('f_map').value='';fLocSync()}
-function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.q||d.title;const fs=$('f_s');if(d.area&&fs&&!fs.value.trim())fs.value=d.area;if(L){$('f_map').value=L;const dt=$('f_map').closest('details');if(dt)dt.open=true}fLocSync()}
-function fMapUrl(){const t=v('f_t').trim(),l=v('f_map').trim();return l||(FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):gm((t+' '+v('f_s').trim()).trim()))}
+function fPick(d){const L=d.id?gmPlace(d.title,d.id):'';FD={lat:d.lat,lng:d.lng,addr:d.addr,pid:d.id,auto:L};$('f_t').value=d.q||d.title;if(L){$('f_map').value=L;const dt=$('f_map').closest('details');if(dt)dt.open=true}fLocSync()}
+function fMapUrl(){const t=v('f_t').trim(),l=v('f_map').trim();return l||(FD.lat!=null?(FD.pid?gmPlace(t,FD.pid):gm(FD.lat+','+FD.lng)):gm(t))}
 function fType(){if(v('f_type')=='flight')addFlight(+v('f_day'))}
-function rcChips(day){const seen=new Set(),L=[],add=x=>{const t=(x.sub||'').trim();if(t&&t!='나만의 장소'&&!seen.has(t)){seen.add(t);L.push(t)}};
-S.items.filter(x=>x.day==day).forEach(add);[...S.items].reverse().forEach(add);
-return L.length?`<div class="rcs">${L.slice(0,6).map(t=>`<button type="button" class="rc" data-t="${esc(t)}" onclick="$('f_s').value=this.dataset.t">${esc(t)}</button>`).join('')}</div>`:''}
 function itemForm(x,id){const isNew=id==='new',tys=Object.entries(TN).filter(([k])=>isNew||k!='flight');
-return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(isNew?(TN[x.type]||''):(x.sub||TN[x.type]||'')))+
+return hd3(isNew?'일정 추가':esc(x.title||'일정'),esc(TN[x.type]||''))+
 fg('날짜 · 종류',`<div class="mr">${sel('f_day',dayOpts(0,1,1),x.day)}${sel('f_type',tys,x.type,isNew?'onchange="fType()"':'')}</div>`)+
 fg(`<span class="lrow"><span>이름</span>${gKey()&&gArea()?`<span class="lsh">검색 지역: ${esc(gArea())}</span>`:''}</span>`,`<div class="mr">${inp('f_t',x.title||'','placeholder="장소 이름"')}${gKey()?`<button class="btn g sm" onclick="gOpen('f_t')">장소 검색</button>`:''}</div>${gKey()?'':'<div class="hint">설정에서 구글 지도 API 키를 입력하면 장소를 검색해 지도에 표시할 수 있어요</div>'}<div id="f_loc">${locCard(FD,locActs(FD))}</div>`)+
-fg('지역 · 시간',`<div class="mr">${inp('f_s',x.sub||'','placeholder="지역"')}<div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>${rcChips(x.day)}`)+fg('영업시간 · 휴무일',inp('f_oh',x.oh||'','placeholder="10:00-21:00"')+`<div class="cdr">${WD.map((w,d)=>`<button type="button" class="cdc${(x.cd||[]).includes(d)?' on':''}" data-d="${d}" onclick="this.classList.toggle('on')">${w}</button>`).join('')}</div><div class="hint">눌러서 휴무 요일을 표시해요. 그 요일에 일정을 넣거나 영업시간 밖 시간을 적으면 경고가 떠요</div>`)+
+fg('시간',`<div class="mr"><div class="tmw${x.time?'':' empty'}">${inp('f_time',x.time||'','type="time" placeholder="시간" oninput="tmChk(this)" onchange="tmChk(this)"')}<span class="tmph">시간</span></div></div>`)+fg('영업시간 · 휴무일',inp('f_oh',x.oh||'','placeholder="10:00-21:00"')+`<div class="cdr">${WD.map((w,d)=>`<button type="button" class="cdc${(x.cd||[]).includes(d)?' on':''}" data-d="${d}" onclick="this.classList.toggle('on')">${w}</button>`).join('')}</div><div class="hint">눌러서 휴무 요일을 표시해요. 그 요일에 일정을 넣거나 영업시간 밖 시간을 적으면 경고가 떠요</div>`)+
 fg('메모',ta('f_m',x.memo||'','참고할 내용을 적어주세요.'))+rvBlock(x,isNew)+
 `<details class="adv"${x.ln||x.la?' open':''}><summary>현지어 이름 · 주소 (택시 기사님께 보여주기)</summary>${inp('f_ln',x.ln||'','placeholder="현지어 이름"')}${ta('f_la',x.la||'','현지어 주소')}<button class="btn g full" onclick="showLocal()">🚕 현지어로 크게 보여주기</button><div class="hint" id="f_lh"></div></details>`+`<details class="adv"${x.map?' open':''}><summary>지도 링크 (선택)</summary>${inp('f_map',x.map||'','placeholder="구글지도 공유 링크" oninput="mapFill()"')}<div class="hint">장소 검색으로 고르면 이 칸에 그 장소 링크가 자동으로 채워져요. 다른 링크를 붙여넣으면 그 링크가 열려요</div></details>`+
 (isNew?'':recBlock(x)+`<div class="dlr"><button onclick="if(confirm('이 일정을 삭제할까요?'))delItem(${id})">이 일정 삭제</button></div>`)+btns(isNew?bG('취소','shut()'):'',bP('저장',`saveForm('${id}')`))}
@@ -483,7 +481,7 @@ function go2(u){const a=document.createElement('a');a.href=u;a.target='_blank';a
 function srch(){const q=v('f_t').trim();go2(q?gm(q):'https://www.google.com/maps')}
 function mapFill(){const m=v('f_map').match(/\/place\/([^\/@?]+)/);if(m&&!v('f_t').trim()){try{$('f_t').value=decodeURIComponent(m[1].replace(/\+/g,' '))}catch(e){}}}
 const locUrl=x=>x.lat==null?null:x.pid?gmPlace(x.title,x.pid):gm(x.lat+','+x.lng);
-const mapOf=id=>{const x=S.items.find(i=>i.id==id);return x.map||locUrl(x)||gm((x.title+' '+(x.sub||'')).trim())};
+const mapOf=id=>{const x=S.items.find(i=>i.id==id);return x.map||locUrl(x)||gm(x.title)};
 /* --- 설정/여행정보 --- */
 const THEMES=[['auto','시스템'],['light','라이트'],['dark','다크']];
 const getTheme=()=>{try{return localStorage.getItem('theme1')||'auto'}catch(e){return'auto'}};
@@ -680,7 +678,7 @@ function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)retu
 function gfCards(keep){GFL=gfList();const c=$('gfc');if(!c)return;let st=0;
 if(keep){const k=GFL.findIndex(o=>o.x.id==GM.focus);if(k>0)st=k}
 GM.focus=GFL[st]?GFL[st].x.id:null;
-c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||o.x.sub||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
+c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||'')}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button><button class="btn g" onclick="gOpenMap(${o.x.id})">구글지도</button></div></div>`).join(''):'<div class="hint" style="padding:10px 4px">위치가 있는 일정이 없어요</div>';
 c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)}
 function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true,true)}
 function gFull(){if(!(TM=='g'?GMAP:LMAP)){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
@@ -833,11 +831,8 @@ GQM.forEach(k=>k.m.map=null);GQM=[];const b=new google.maps.LatLngBounds();let n
 list.forEach((p,i)=>{const c=GPC.get(p.placeId);if(!c)return;const e=document.createElement('div');e.className='gpin';e.style.background='var(--pri)';e.textContent=i+1;const m=new AdvancedMarkerElement({map:GMAP,position:c,content:e,title:p.mainText.text});m.addListener('click',()=>gsHi(i,true));GQM.push({c:e,m,ix:i,pos:c});b.extend(c);n++});
 if(n>1)GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30});else if(n==1)GMAP.moveCamera({center:b.getCenter(),zoom:15})}catch(e){}}
 function gsLink(i){const p=GS[i];if(p)go2(gmPlace(p.text?p.text.text:p.mainText.text,p.placeId))}
-const AREA_T=['locality','administrative_area_level_2','administrative_area_level_1','sublocality_level_1','sublocality','neighborhood'];
-const gsAreaOf=c=>{if(!c)return'';for(const t of AREA_T){const x=c.find(a=>(a.types||[]).includes(t));if(x)return x.longText||x.long_name||''}return''};
-const gsKoArea=t=>{if(!t)return'';const w=t.replace(/,/g,' ').split(/\s+/).filter(Boolean);for(let i=0;i<w.length;i++){if(!/[가-힣]/.test(w[i]))continue;if(w[i]=='시'&&i>0&&/[가-힣]/.test(w[i-1]))return w[i-1]+' 시';if(/[가-힣]{2,}시$/.test(w[i]))return w[i]}return''};
-async function gsAcPick(i){try{const p=GS[i],qi=$('gs_q'),qv=qi?qi.value.trim():'',{Place}=await google.maps.importLibrary('places'),pl=new Place({id:p.placeId,requestedLanguage:'ko'});await pl.fetchFields({fields:['formattedAddress','location','addressComponents']});GTOK=null;
-const d={title:p.mainText.text,q:qv,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId,area:gsKoArea(p.secondaryText&&p.secondaryText.text)||gsAreaOf(pl.addressComponents)};gCtr(d);gsClose();if(GCB)GCB(d)}
+async function gsAcPick(i){try{const p=GS[i],qi=$('gs_q'),qv=qi?qi.value.trim():'',{Place}=await google.maps.importLibrary('places'),pl=new Place({id:p.placeId,requestedLanguage:'ko'});await pl.fetchFields({fields:['formattedAddress','location']});GTOK=null;
+const d={title:p.mainText.text,q:qv,addr:pl.formattedAddress,lat:pl.location.lat(),lng:pl.location.lng(),id:p.placeId};gCtr(d);gsClose();if(GCB)GCB(d)}
 catch(e){const l=$('gsl');if(l)l.innerHTML=`<div class="hint">${esc(gErr(e))}</div>`}}
 let GNEXT=null,GREQ=null;
 const gsRow=(r,i)=>`<button class="gsi" id="gsi_${i}" onclick="gsSel(${i})"><span class="gsn">${i+1}</span><div><b>${esc(r.title)}</b><small>${esc(r.addr||'')}</small></div></button>`;
@@ -845,10 +840,10 @@ const gsNxBtn=()=>GNEXT?'<button class="btn lt" id="gs_nx" style="width:100%;mar
 async function gsFetch(tok){
 if(gmCnt()>=GMAX)throw new Error('이번 달 "더 많은 결과 보기" 한도('+GMAX.toLocaleString()+'회)에 도달했어요. 무료 한도를 넘지 않도록 막아 두었어요. 다음 달에 다시 쓸 수 있어요.');
 gmInc();
-const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':gKey(),'X-Goog-FieldMask':'places.id,places.displayName,places.formattedAddress,places.location,places.addressComponents,nextPageToken'},body:JSON.stringify(tok?{...GREQ,pageToken:tok}:GREQ)});
+const r=await fetch('https://places.googleapis.com/v1/places:searchText',{method:'POST',headers:{'Content-Type':'application/json','X-Goog-Api-Key':gKey(),'X-Goog-FieldMask':'places.id,places.displayName,places.formattedAddress,places.location,nextPageToken'},body:JSON.stringify(tok?{...GREQ,pageToken:tok}:GREQ)});
 const j=await r.json();if(!r.ok)throw new Error((j.error&&j.error.message)||('HTTP '+r.status));
 GNEXT=j.nextPageToken||null;
-return(j.places||[]).map(p=>({id:p.id,title:(p.displayName&&p.displayName.text)||'',addr:p.formattedAddress,lat:p.location.latitude,lng:p.location.longitude,area:gsAreaOf(p.addressComponents)}))}
+return(j.places||[]).map(p=>({id:p.id,title:(p.displayName&&p.displayName.text)||'',addr:p.formattedAddress,lat:p.location.latitude,lng:p.location.longitude}))}
 function gsMk(AE,r,i){const c=document.createElement('div');c.className='gpin';c.style.background='var(--pri)';c.textContent=i+1;const m=new AE({map:GMAP,position:{lat:r.lat,lng:r.lng},content:c,title:r.title});m.addListener('click',()=>gsSel(i,true));return{c,m,pos:{lat:r.lat,lng:r.lng}}}
 function gsFit(){if(!GQ.length)return;const b=new google.maps.LatLngBounds();GQ.forEach(r=>b.extend({lat:r.lat,lng:r.lng}));GMAP.fitBounds(b,{top:30,right:30,bottom:30,left:30})}
 async function gsMore(){const inp=$('gs_q');if(!inp)return;const q=inp.value.trim();if(q.length<2)return;inp.blur();GTOK=null;gsReset();GSM='more';GNEXT=null;
@@ -882,7 +877,7 @@ if(sc){const e=$('gsi_'+i),l=$('gsl');if(e&&l)l.scrollTo({top:e.offsetTop-8,beha
 if(sc&&$('gsr').classList.contains('big'))gsKScroll(i);
 gsFly({lat:r.lat,lng:r.lng},Math.max(GMAP.getZoom()||0,15))}
 function gsGo(){const r=GQ[GQS];if(r)go2(gmPlace(r.title+(r.addr?' '+r.addr:''),r.id))}
-function gsPick(){const r=GQ[GQS];if(!r)return;const qi=$('gs_q'),d={title:r.title,q:qi?qi.value.trim():'',addr:r.addr,lat:r.lat,lng:r.lng,id:r.id,area:r.area};gCtr(d);gsClose();if(GCB)GCB(d)}
+function gsPick(){const r=GQ[GQS];if(!r)return;const qi=$('gs_q'),d={title:r.title,q:qi?qi.value.trim():'',addr:r.addr,lat:r.lat,lng:r.lng,id:r.id};gCtr(d);gsClose();if(GCB)GCB(d)}
 function gsClose(){gsReset();clearTimeout(GT);if(GSW){GSM2=GMAP;GSEL2=GMAPEL;GMAP=GTRIP;GMAPEL=GTRIPEL;GSW=0}const o=$('gsr'),h=$('gmap');if(h&&GMAPEL)h.appendChild(GMAPEL);
 if(window.visualViewport){visualViewport.removeEventListener('resize',gsVV);visualViewport.removeEventListener('scroll',gsVV)}
 document.body.style.overflow='';o.className='gsr';o.innerHTML='';if(GM.on&&view=='trip'&&!GM.full)drawMap()}
@@ -890,7 +885,7 @@ async function gLocate(){const msg=t=>{const e=$('gm_h');if(e)e.textContent=t};
 try{await gmaps();const{Geocoder}=await google.maps.importLibrary('geocoding'),g=new Geocoder(),todo=S.items.filter(x=>x.lat==null&&x.type!='flight'&&x.type!='other');let ok=0,i=0;
 if(!todo.length){msg('위치를 찾을 일정이 없어요');return}
 for(const x of todo){i++;msg(`위치 찾는 중 ${i}/${todo.length}`);
-const q=[x.title,x.sub&&x.sub!='나만의 장소'?x.sub:'',gArea()].filter(Boolean).join(' ');
+const q=[x.title,gArea()].filter(Boolean).join(' ');
 try{const r=await g.geocode({address:q,language:'ko'});if(r.results&&r.results[0]){const pr=r.results[0];x.lat=pr.geometry.location.lat();x.lng=pr.geometry.location.lng();x.addr=pr.formatted_address;x.gx=1;ok++}}catch(e){}
 await new Promise(r=>setTimeout(r,120))}
 save();render();syncNow();msg(`${ok}곳 위치를 찾았어요 (${todo.length-ok}곳은 못 찾았어요). "위치 확인"에서 맞는지 확인해 보세요`)}
