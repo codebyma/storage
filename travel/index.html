@@ -126,7 +126,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .gfull .gtabs{flex:none}
 .gfcw{flex:none;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--pad);padding:2px var(--pad) calc(12px + env(safe-area-inset-bottom,0px))}
 .gfk{flex:none;width:84%;scroll-snap-align:start;background:var(--sheet);border:1px solid var(--line);border-radius:var(--r-field);padding:14px 16px;min-width:0}
-.gfk .gfh{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}.gfk .gfn{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font:600 11px/22px Inter,sans-serif;text-align:center}
+.gfk .gfh{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--sub)}.gfd{margin-left:auto;height:22px;padding:0 9px;border:1px solid var(--line);border-radius:11px;background:var(--bg);color:var(--sub);font-size:11px;white-space:nowrap;font-family:inherit}.gfk .gfn{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font:600 11px/22px Inter,sans-serif;text-align:center}
 .gfk b,.gfk small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gfk b{font-size:15px;margin-top:8px}.gfk small{color:var(--sub);font-size:12px;margin-top:3px;min-height:15px}
 .gfk .btns{margin-top:12px}.gfk .btn{padding:11px}
 .sgm{display:block;width:100%;padding:12px 4px;text-align:center;color:var(--pri);font-size:13px}.sgm small{display:block;color:var(--sub);font-size:11px;margin-top:2px}
@@ -674,11 +674,11 @@ row=[...document.querySelectorAll('.row[data-id]')].find(x=>x.getBoundingClientR
 if(sec&&GM.day>=0&&+sec.dataset.day>=0&&+sec.dataset.day!=GM.day)gSetDay(+sec.dataset.day);
 gFocus(row?+row.dataset.id:null,force)}
 let GFL=[],GFT=0;
-function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const dp=dayDisp(i);S.items.filter(x=>x.day==i).forEach(x=>{o.push({x,lbl:dp[x.id].ic||dp[x.id].n,col:GCOL[i%GCOL.length]})})});return o}
+function gfList(){const o=[];days().forEach((d,i)=>{if(GM.day>=0&&GM.day!=i)return;const dp=dayDisp(i);const its=S.items.filter(x=>x.day==i);its.forEach((x,j)=>{let dd='',pi=0;if(x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}o.push({x,lbl:dp[x.id].ic||dp[x.id].n,col:GCOL[i%GCOL.length],dd,pi})})});return o}
 function gfCards(keep){GFL=gfList();const c=$('gfc');if(!c)return;let st=0;
 if(keep){const k=GFL.findIndex(o=>o.x.id==GM.focus);if(k>0)st=k}
 GM.focus=GFL[st]?GFL[st].x.id:null;
-c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||(o.x.lat!=null||o.x.type=='flight'?'':'위치 미등록'))}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button>${o.x.type=='flight'?'':`<button class="btn g" onclick="gOpenMap(${o.x.id})">${o.x.lat!=null?'구글지도':'구글지도 검색'}</button>`}</div></div>`).join(''):'<div class="hint" style="padding:10px 4px">일정이 없어요</div>';
+c.innerHTML=GFL.length?GFL.map(o=>`<div class="gfk"><div class="gfh"><span class="gfn" style="background:${o.col}">${o.lbl}</span>${esc(TN[o.x.type]||'')}${o.dd?`<button class="gfd" onclick="legRoute(${o.pi},${o.x.id})">이전 장소에서 ${o.dd}</button>`:''}</div><b>${esc(o.x.title)}</b><small>${esc(o.x.addr||(o.x.lat!=null||o.x.type=='flight'?'':'위치 미등록'))}</small><div class="btns"><button class="btn lt" onclick="gFullGo(${o.x.id})">일정으로 이동</button>${o.x.type=='flight'?'':`<button class="btn g" onclick="gOpenMap(${o.x.id})">${o.x.lat!=null?'구글지도':'구글지도 검색'}</button>`}</div></div>`).join(''):'<div class="hint" style="padding:10px 4px">일정이 없어요</div>';
 c.scrollLeft=0;const k=c.children[0];if(k&&st)c.scrollLeft=st*(k.offsetWidth+10)}
 function gfScroll(){const c=$('gfc');if(!c||!c.children[0])return;const i=Math.round(c.scrollLeft/(c.children[0].offsetWidth+10)),o=GFL[i];if(!o||o.x.id==GM.focus)return;GM.focus=o.x.id;gEmph();gZoom(true,true)}
 function gFull(){if(!(TM=='g'?GMAP:LMAP)){const m=$('gm_h');if(m)m.textContent='지도가 아직 준비되지 않았어요';return}
