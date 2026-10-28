@@ -5448,23 +5448,6 @@
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
         },
         {
-          "id": 133,
-          "day": 0,
-          "type": "transport",
-          "title": "테그트",
-          "sub": "톈진 시",
-          "time": "13:18",
-          "map": "",
-          "memo": "메모를 입력해요",
-          "ln": "",
-          "la": "",
-          "oh": "10:00",
-          "cd": [
-            0
-          ],
-          "label": "교통"
-        },
-        {
           "id": 71,
           "day": 1,
           "type": "hotel",
