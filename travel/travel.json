@@ -5506,10 +5506,14 @@
           "title": "수상공원(水上公园)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%EB%82%9C%EC%B9%B4%EC%9D%B4%20%EA%B5%AC%20%E6%B0%B4%E4%B8%8A%E5%85%AC%E5%9B%AD&query_place_id=ChIJ2wv0S-YH7jURsyurc9JRXrE",
           "memo": "산책",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.0956,
+          "lng": 117.1535,
+          "addr": "Water Pk Neighborhood, Nankai District, Tianjin, 중국 300384",
+          "pid": "ChIJ2wv0S-YH7jURsyurc9JRXrE"
         },
         {
           "id": 74,
