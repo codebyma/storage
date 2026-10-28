@@ -5357,10 +5357,14 @@
           "title": "종서각(钟书阁)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=Tianjin%20Book%20Building&query_place_id=ChIJdd7qMlX87TURtPi0ibr19Ng",
           "memo": "",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.110399,
+          "lng": 117.21984499999998,
+          "addr": "362 Da Gu Nan Lu, He Xi Qu, Tian Jin Shi, 중국 300203",
+          "pid": "ChIJdd7qMlX87TURtPi0ibr19Ng"
         },
         {
           "id": 15,
