@@ -5404,10 +5404,14 @@
           "title": "하이허강(海河)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E6%B5%B7%E6%B2%B3&query_place_id=ChIJ4ZwYldnz7TURHZpb4mBDb5A",
           "memo": "야경 및 맥주",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.0337899,
+          "lng": 117.46463,
+          "addr": "Haihe River, 중국",
+          "pid": "ChIJ4ZwYldnz7TURHZpb4mBDb5A"
         },
         {
           "id": 70,
