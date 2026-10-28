@@ -5685,10 +5685,14 @@
           "title": "타이안다오(泰安道五大院)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E6%B3%B0%E5%AE%89%E9%81%93%E4%BA%94%E5%A4%A7%E9%99%A2&query_place_id=ChIJS_9vPbH97TURQaygn1WmN3g",
           "memo": "유럽식 건축물",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.1231,
+          "lng": 117.2140485,
+          "addr": "46F7+6JM, Jie Fang Bei Lu, He Ping Qu, Tian Jin Shi, 중국 300040",
+          "pid": "ChIJS_9vPbH97TURQaygn1WmN3g"
         },
         {
           "id": 85,
