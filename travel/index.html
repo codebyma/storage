@@ -906,8 +906,9 @@ document.addEventListener('click',()=>{const o=$('tipb');if(o)o.remove()});
 function locSheet(id,from){const x=S.items.find(i=>i.id==id);GCB=d=>{x.lat=d.lat;x.lng=d.lng;x.addr=d.addr;if(d.id){x.pid=d.id;x.map=gmPlace(d.title,d.id)}else delete x.pid;delete x.gx;save();shut2();render();syncNow();locSync(x,id);if(from=='geo')geoCheck()};
 sheet2(hd3(esc(x.title),'위치 지정')+locCard(x)+fg('장소 검색',`<input class="in" id="g_q" value="${esc(x.title)}" placeholder="장소 이름·주소" readonly onclick="gOpen('g_q')"><div id="g_sg" class="sg"></div><div class="hint">${gArea()?'🔎 검색 지역: '+esc(gArea()):''}</div>`)+btns(bD('위치 삭제',`locDel(${id},'${from||''}')`),bG('닫기','shut2()')))}
 function locDel(id,from){const x=S.items.find(i=>i.id==id);delete x.lat;delete x.lng;delete x.addr;delete x.gx;delete x.pid;save();shut2();render();syncNow();locSync(x,id);if(from=='geo')geoCheck()}
+try{history.scrollRestoration='manual'}catch(e){}
 applyTheme(getTheme());
-render();
+render();scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0));addEventListener('pageshow',e=>{if(!e.persisted)scrollTo(0,0)});
 dgInit();addEventListener('resize',setHdh);let spyT=0;addEventListener('scroll',()=>{if(spyT)return;spyT=requestAnimationFrame(()=>{spyT=0;gSpy()})},{passive:true});
 autoLoad();offUi();
 if('serviceWorker' in navigator&&(location.protocol=='https:'||location.hostname=='localhost'))addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
