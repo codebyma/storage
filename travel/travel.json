@@ -5715,10 +5715,14 @@
           "title": "선농대원(先农大院)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E5%85%88%E5%86%9C%E5%A4%A7%E9%99%A2&query_place_id=ChIJ____Fqf97TURnYE5ZoD6kGs",
           "memo": "",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.114833399999995,
+          "lng": 117.20459019999998,
+          "addr": "중국 톈진 시 허핑 구 邮政编码: 300074",
+          "pid": "ChIJ____Fqf97TURnYE5ZoD6kGs"
         },
         {
           "id": 87,
