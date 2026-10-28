@@ -5655,10 +5655,14 @@
           "title": "라오청샹(老城厢)",
           "sub": "",
           "time": "",
-          "map": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E8%80%81%E5%9F%8E%E5%8E%A2&query_place_id=ChIJsUc9Y-397TUR_otpCIGVmp4",
           "memo": "산책",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.1419753,
+          "lng": 117.1764723,
+          "addr": "중국 天津市南开区老城厢",
+          "pid": "ChIJsUc9Y-397TUR_otpCIGVmp4"
         },
         {
           "id": 83,
