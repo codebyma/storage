@@ -185,7 +185,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 #offp{position:fixed;top:calc(env(safe-area-inset-top,0px) + 4px);left:50%;transform:translateX(-50%);z-index:90;background:var(--tx);color:var(--bg);font-size:11px;font-weight:600;line-height:1;padding:6px 11px;border-radius:12px;opacity:.92;white-space:nowrap;pointer-events:none;max-width:94vw;overflow:hidden;text-overflow:ellipsis}
 .it small.ilb{display:flex;align-items:center;gap:6px}.it small.ilb i{font-style:normal;color:var(--tx);font-weight:600;font-size:12px}
 .cpt{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;position:relative;top:-1px;margin-left:0;width:28px;height:28px;background:none;color:var(--sub)}.cpt svg{width:17px;height:17px}
-.dqs{margin:0;padding:var(--pad);background:var(--card);border-radius:0;cursor:pointer}.dql{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--sub)}.dql b{color:var(--tx);font-weight:600}.dqb{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.dqb i{display:block;height:100%;border-radius:3px;background:var(--pri)}.dqs.lo .dqb i{background:var(--red)}.dqd{display:block;margin:-4px 0 10px;padding:0;font-size:12px;color:var(--sub);text-align:left}.dqd b{color:var(--tx);font-weight:600}
+.dqs{margin:0;padding:var(--pad);background:var(--card);border-radius:0;cursor:pointer}.dql{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--sub)}.dql b{color:var(--tx);font-weight:600}.dqb{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.dqb i{display:block;height:100%;border-radius:3px;background:var(--pri)}.dqr+.dqr{margin-top:14px}.dqr.lo .dqb i{background:var(--red)}.dqw{margin:-4px 0 10px}.dqw .dqd+.dqd{margin-top:4px}.dqd{display:block;margin:0;padding:0;font-size:12px;color:var(--sub);text-align:left}.dqd b{color:var(--tx);font-weight:600}
 .it .m.mo{line-height:1.5}textarea.ta{line-height:1.5}
 .it .m.mo.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mmore{display:none;font-size:12px;font-weight:600;color:var(--pri);margin-top:2px}
 .gresz{height:20px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:ns-resize}.gresz i{width:40px;height:4px;border-radius:2px;background:var(--line)}
@@ -282,18 +282,26 @@ if(!off){if(e)e.remove();return}
 if(!e){e=document.createElement('div');e.id='offp';document.body.appendChild(e)}
 const t=syncTs();e.textContent=(navigator.onLine?'서버 연결 안 됨':'오프라인')+(t?' · 마지막 동기화 '+t:'')+(isDirty()?' · 저장 대기':'')}catch(e){}}
 const dqF=n=>String(+(+n).toFixed(2));
-function dqUsed(){const u=(S.es&&S.es.u)||{};let m=0;for(const k in u)m=Math.max(m,+u[k]||0);return m}
-function esSet(x){const t=parseFloat(x);if(t>0){S.es=S.es||{u:{}};S.es.t=t}else if(S.es)S.es.t=0}
-function esSum(){if(!(S.es&&S.es.t>0))return'';const t=+S.es.t,u=dqUsed(),r=Math.max(0,t-u),p=Math.min(100,u/t*100);
-return`<div class="dqs${r/t<.2?' lo':''}" onclick="editTrip()"><div class="dql"><span>eSIM 데이터</span><span><b>${dqF(u)}</b> / ${dqF(t)}GB · 남은 ${dqF(r)}GB</span></div><div class="dqb"><i style="width:${p}%"></i></div></div>`}
-function esDay(i){if(RM||!(S.es&&S.es.t>0))return'';const u=S.es.u||{},c=u[i];
-if(c==null)return`<button class="dqd" onclick="esIn(${i})">데이터 사용량 입력</button>`;
+/* eSIM: 사람별(회선별)로 총량·일별 누적 사용량을 따로 관리. S.es={l:[{id,n,t,u:{dayIndex:누적GB}}]} (예전 단일 형식 {t,u}는 자동 변환) */
+function esNorm(e){if(!e)return[];if(Array.isArray(e.l))return e.l;if(e.t>0||(e.u&&Object.keys(e.u).length))return[{id:'e0',n:'나',t:+e.t||0,u:e.u||{}}];return[]}
+function esL(){if(S.es&&!Array.isArray(S.es.l))S.es={l:esNorm(S.es)};return(S.es&&S.es.l)||[]}
+const esV=()=>esL().filter(x=>x.t>0);
+function dqUsed(x){const u=(x&&x.u)||{};let m=0;for(const k in u)m=Math.max(m,+u[k]||0);return m}
+function esRow(x){return`<div class="mr esr" data-id="${x&&x.id||''}" data-u="${x&&x.u&&Object.keys(x.u).length?1:''}"><input class="in esn" value="${esc(x?x.n:'')}" placeholder="이름 (예: 나)"><input class="in est" type="number" step="any" inputmode="decimal" placeholder="총 GB" value="${x&&x.t>0?x.t:''}" style="flex:none;width:92px"><button class="btn dl sm" onclick="esRowDel(this)">삭제</button></div>`}
+function esRowAdd(){const box=$('es_rows'),n=box.querySelectorAll('.esr').length;box.insertAdjacentHTML('beforeend',esRow({n:n==1?'와이프':'',t:0,u:{}}));const r=box.lastElementChild;try{r.querySelector(n==1?'.est':'.esn').focus()}catch(e){}}
+function esRowDel(b){const r=b.closest('.esr');if(r.dataset.u&&!b.dataset.s){b.dataset.s=1;b.textContent='한 번 더';return}r.remove()}
+function esSetAll(){const old=esL(),out=[];document.querySelectorAll('#es_rows .esr').forEach(r=>{const id=r.dataset.id,o=id?old.find(a=>a.id==id):null,n=r.querySelector('.esn').value.trim(),t=parseFloat(r.querySelector('.est').value)||0,hu=o&&Object.keys(o.u||{}).length>0;if(!(t>0)&&!hu)return;out.push({id:o?o.id:'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,5),n:n||'eSIM '+(out.length+1),t:t>0?t:0,u:o?o.u:{}})});if(out.length)S.es={l:out};else delete S.es}
+function esSum(){const L=esV();if(!L.length)return'';
+return`<div class="dqs" onclick="editTrip()">`+L.map(x=>{const t=+x.t,u=dqUsed(x),r=Math.max(0,t-u),p=Math.min(100,u/t*100);return`<div class="dqr${r/t<.2?' lo':''}"><div class="dql"><span>${esc(x.n)} eSIM</span><span><b>${dqF(u)}</b> / ${dqF(t)}GB · 남은 ${dqF(r)}GB</span></div><div class="dqb"><i style="width:${p}%"></i></div></div>`}).join('')+`</div>`}
+function esDay(i){const L=esV();if(RM||!L.length)return'';
+return`<div class="dqw">`+L.map(x=>{const u=x.u||{},c=u[i],q=`onclick="esIn(${i},'${x.id}')"`;
+if(c==null)return`<button class="dqd" ${q}>${esc(x.n)} 데이터 사용량 입력</button>`;
 let pv=0;for(let k=i-1;k>=0;k--)if(u[k]!=null){pv=+u[k];break}
-return`<button class="dqd" onclick="esIn(${i})">데이터 <b>오늘 ${dqF(Math.max(0,+c-pv))}GB</b> · 누적 ${dqF(c)}GB</button>`}
-function esIn(i){const c=S.es&&S.es.u&&S.es.u[i];
-sheet(hd3('데이터 사용량',`Day ${i+1}`)+fg('누적 사용량',`<div class="mr">${inp('es_v',c==null?'':String(Math.round(c*1000)),'type="number" step="any" inputmode="decimal" placeholder="0"')}${sel('es_u',[['MB','MB'],['GB','GB']],'MB')}</div><div class="hint">폰 설정 > 셀룰러에 보이는 누적 사용량을 입력하세요. 오늘 사용량은 앱이 계산해요</div>`)+btns(c==null?'':bG('지우기',`esDel(${i})`),bP('저장',`esSave(${i})`)))}
-function esSave(i){const n=parseFloat(v('es_v'));if(!(n>=0)){needFocus('#es_v');return}const g=v('es_u')=='MB'?n/1000:n;S.es.u=S.es.u||{};S.es.u[i]=Math.round(g*1000)/1000;save();shut();render();syncNow()}
-function esDel(i){if(S.es&&S.es.u)delete S.es.u[i];save();shut();render();syncNow()}
+return`<button class="dqd" ${q}>${esc(x.n)} 데이터 <b>오늘 ${dqF(Math.max(0,+c-pv))}GB</b> · 누적 ${dqF(c)}GB</button>`}).join('')+`</div>`}
+function esIn(i,id){const x=esL().find(a=>a.id==id);if(!x)return;const c=x.u&&x.u[i];
+sheet(hd3('데이터 사용량',`Day ${i+1} · ${esc(x.n)}`)+fg('누적 사용량',`<div class="mr">${inp('es_v',c==null?'':String(Math.round(c*1000)),'type="number" step="any" inputmode="decimal" placeholder="0"')}${sel('es_u',[['MB','MB'],['GB','GB']],'MB')}</div><div class="hint">폰 설정 > 셀룰러에 보이는 누적 사용량을 입력하세요. 오늘 사용량은 앱이 계산해요</div>`)+btns(c==null?'':bG('지우기',`esDel(${i},'${id}')`),bP('저장',`esSave(${i},'${id}')`)))}
+function esSave(i,id){const x=esL().find(a=>a.id==id);if(!x)return;const n=parseFloat(v('es_v'));if(!(n>=0)){needFocus('#es_v');return}const g=v('es_u')=='MB'?n/1000:n;x.u=x.u||{};x.u[i]=Math.round(g*1000)/1000;save();shut();render();syncNow()}
+function esDel(i,id){const x=esL().find(a=>a.id==id);if(x&&x.u)delete x.u[i];save();shut();render();syncNow()}
 function curDay(){const hh=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hdh'))||64)+60;let r=0;document.querySelectorAll('.day[data-day]').forEach(e=>{const d=+e.dataset.day;if(d>=0&&e.getBoundingClientRect().top<=hh)r=d});return r}
 function addItemHere(){addItem('place',curDay())}
 function memoFit(){document.querySelectorAll('.mo.clamp').forEach(d=>{const t=d.nextElementSibling;if(t&&t.classList.contains('mmore'))t.style.display=d.scrollHeight>d.clientHeight+1?'inline-block':'none'})}
@@ -562,9 +570,16 @@ if(!R){if(jeq(x,B))st.auto++;else out.push(x);return}
 if(jeq(x,B)){out.push(R);if(!jeq(R,B))st.auto++}else{out.push(x);if(!jeq(R,B)&&!jeq(x,R))st.conf++}});
 r.forEach(R=>{if(lm.has(R.id)&&!col.has(R.id))return;const B=bm.get(R.id);if(B){if(!jeq(R,B)){out.push(R);st.conf++}return}out.push(R);st.auto++});
 return out}
+function mergeEs(b,l,r){const bm=new Map(esNorm(b).map(x=>[x.id,x])),L=esNorm(l),R=esNorm(r),lm=new Map(L.map(x=>[x.id,x])),rm=new Map(R.map(x=>[x.id,x])),out=[];
+new Set([...L.map(x=>x.id),...R.map(x=>x.id)]).forEach(id=>{const bx=bm.get(id),lx=lm.get(id),rx=rm.get(id);
+if(!lx){if(rx&&!jeq(rx,bx))out.push(rx);return}
+if(!rx){if(!jeq(lx,bx))out.push(lx);return}
+const o={id};['n','t'].forEach(k=>{o[k]=jeq(lx[k],bx&&bx[k])?rx[k]:lx[k]});
+const u={};new Set([...Object.keys(lx.u||{}),...Object.keys(rx.u||{})]).forEach(k=>{const bv=((bx||{}).u||{})[k],lv=(lx.u||{})[k],rv=(rx.u||{})[k],y=jeq(lv,bv)?rv:lv;if(y!==undefined)u[k]=y});o.u=u;out.push(o)});
+return out}
 function mergeTrip(b,l,r,st){const o={};
-new Set([...Object.keys(l),...Object.keys(r)]).forEach(k=>{if(k=='items'||k=='exp'||k=='nid')return;const v=jeq(l[k],b?b[k]:undefined)?r[k]:l[k];if(v!==undefined)o[k]=v});
-if(l.es||r.es){const be=(b&&b.es)||{},le=l.es||{},re=r.es||{},u={};new Set([...Object.keys(le.u||{}),...Object.keys(re.u||{})]).forEach(k=>{const bv=(be.u||{})[k],lv=(le.u||{})[k],rv=(re.u||{})[k],x=jeq(lv,bv)?rv:lv;if(x!==undefined)u[k]=x});o.es={t:(jeq(le.t,be.t)?re.t:le.t)||0,u}}
+new Set([...Object.keys(l),...Object.keys(r)]).forEach(k=>{if(k=='items'||k=='exp'||k=='nid'||k=='es')return;const v=jeq(l[k],b?b[k]:undefined)?r[k]:l[k];if(v!==undefined)o[k]=v});
+if(l.es||r.es||(b&&b.es)){const m=mergeEs(b&&b.es,l.es,r.es);if(m.length)o.es={l:m}}
 const ids=[l,r,b||{}].flatMap(t=>[...(t.items||[]),...(t.exp||[])].map(x=>+x.id||0)),ct={n:Math.max(l.nid||0,r.nid||0,0,...ids)+1};
 o.items=mergeList(b&&b.items,l.items||[],r.items||[],st,ct);o.exp=mergeList(b&&b.exp,l.exp||[],r.exp||[],st,ct);o.nid=ct.n;return o}
 function mergeAll(b,l,r,st){const bm=new Map(((b&&b.trips)||[]).map(t=>[t.id,t])),lm=new Map(l.trips.map(t=>[t.id,t])),rm=new Map(r.trips.map(t=>[t.id,t])),out=[],col=new Set();
@@ -604,7 +619,7 @@ setSnap(JSON.parse(SENT));if(note){render();if(!quiet)ghAlert('merge','변경 �
 catch(e){if(/오류 (409|422)/.test(e.message)&&n<2)continue;throw e}}}catch(e){syncFail(e);if(!quiet)ghMsg(ghErr(e))}}
 async function ghPull(){ghBusy('불러오는 중…');try{const cur=await ghReq('GET');if(!cur){ghMsg('저장된 파일이 없어요');return}
 importAll(JSON.parse(unb64(cur.content)),true);setSnap();ghMsg('서버에서 최신 파일을 불러왔어요')}catch(e){ghMsg(ghErr(e))}}
-function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+fg('eSIM 총 데이터 (GB)',inp('t_es',S.es&&S.es.t?S.es.t:'','type="number" step="any" inputmode="decimal" placeholder="비우면 사용 안 함"'))+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();esSet(v('t_es'));save();shut();render();syncNow()`)))}
+function editTrip(){sheet(hd3('여행 정보')+fg('여행 이름',inp('t_n',S.title))+fg('시작일',inp('t_s',S.start,'type="date"'))+fg('종료일',inp('t_e',S.end,'type="date"'))+fg('지역 (장소 검색 기준)',inp('t_a',S.area||'','placeholder="비우면 여행 제목으로 검색해요"'))+fg('eSIM (이름 / 총 데이터)',`<div id="es_rows" style="display:flex;flex-direction:column;gap:8px">${(esL().length?esL():[{n:'나',t:0,u:{}}]).map(esRow).join('')}</div><div class="mr" style="margin-top:8px"><button class="btn g sm" onclick="esRowAdd()">+ eSIM 추가</button></div><div class="hint">회선마다 총 데이터를 넣으면 사용량도 따로 기록돼요. 총 데이터를 비우면 표시하지 않아요</div>`)+btns(bD('삭제','delTrip(this)'),bP('저장',`S.title=v('t_n');S.start=v('t_s');S.end=v('t_e');S.area=v('t_a').trim();esSetAll();save();shut();render();syncNow()`)))}
 /* --- 가계부 --- */
 const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
 const itemEx=id=>S.exp.filter(e=>e.iid==id),itemOf=id=>S.items.find(i=>i.id==id);
