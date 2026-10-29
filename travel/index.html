@@ -287,7 +287,7 @@ if(c==null)return`<button class="dqd" onclick="esIn(${i})">데이터 사용량 �
 let pv=0;for(let k=i-1;k>=0;k--)if(u[k]!=null){pv=+u[k];break}
 return`<button class="dqd" onclick="esIn(${i})">데이터 <b>오늘 ${dqF(Math.max(0,+c-pv))}GB</b> · 누적 ${dqF(c)}GB</button>`}
 function esIn(i){const c=S.es&&S.es.u&&S.es.u[i];
-sheet(hd3('데이터 사용량',`Day ${i+1}`)+fg('누적 사용량',`<div class="mr">${inp('es_v',c==null?'':dqF(c),'type="number" step="any" inputmode="decimal" placeholder="0.0"')}${sel('es_u',[['GB','GB'],['MB','MB']],'GB')}</div><div class="hint">폰 설정 > 셀룰러에 보이는 누적 사용량을 입력하세요. 오늘 사용량은 앱이 계산해요</div>`)+btns(c==null?'':bG('지우기',`esDel(${i})`),bP('저장',`esSave(${i})`)))}
+sheet(hd3('데이터 사용량',`Day ${i+1}`)+fg('누적 사용량',`<div class="mr">${inp('es_v',c==null?'':String(Math.round(c*1000)),'type="number" step="any" inputmode="decimal" placeholder="0"')}${sel('es_u',[['MB','MB'],['GB','GB']],'MB')}</div><div class="hint">폰 설정 > 셀룰러에 보이는 누적 사용량을 입력하세요. 오늘 사용량은 앱이 계산해요</div>`)+btns(c==null?'':bG('지우기',`esDel(${i})`),bP('저장',`esSave(${i})`)))}
 function esSave(i){const n=parseFloat(v('es_v'));if(!(n>=0)){needFocus('#es_v');return}const g=v('es_u')=='MB'?n/1000:n;S.es.u=S.es.u||{};S.es.u[i]=Math.round(g*1000)/1000;save();shut();render();syncNow()}
 function esDel(i){if(S.es&&S.es.u)delete S.es.u[i];save();shut();render();syncNow()}
 function curDay(){const hh=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hdh'))||64)+60;let r=0;document.querySelectorAll('.day[data-day]').forEach(e=>{const d=+e.dataset.day;if(d>=0&&e.getBoundingClientRect().top<=hh)r=d});return r}
