@@ -186,6 +186,8 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .it small.ilb{display:flex;align-items:center;gap:6px}.it small.ilb i{font-style:normal;color:var(--tx);font-weight:600;font-size:12px}
 .cpt{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;position:relative;top:-1px;margin-left:0;width:28px;height:28px;background:none;color:var(--sub)}.cpt svg{width:17px;height:17px}
 .dqs{margin:0;padding:var(--pad);background:var(--card);border-radius:0;cursor:pointer}.dql{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--sub)}.dql b{color:var(--tx);font-weight:600}.dqb{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.dqb i{display:block;height:100%;border-radius:3px;background:var(--pri)}.dqs.lo .dqb i{background:var(--red)}.dqd{display:block;margin:-4px 0 10px;padding:0;font-size:12px;color:var(--sub);text-align:left}.dqd b{color:var(--tx);font-weight:600}
+.it .m.mo{line-height:1.5}textarea.ta{line-height:1.5}
+.it .m.mo.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mmore{display:none;font-size:12px;font-weight:600;color:var(--pri);margin-top:2px}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -261,7 +263,7 @@ const sheet2=h=>{const b=$('sh2');b.innerHTML=h;const hh=b.querySelector('.shh')
 $('ov2').onclick=e=>{if(e.target.id=='ov2')shut2()};
 const go=(n,y)=>{view=n;render();scrollTo(0,y||0);requestAnimationFrame(()=>scrollTo(0,y||0))};
 const setHdh=()=>{const h=document.querySelector('.hd');if(h)document.documentElement.style.setProperty('--hdh',h.offsetHeight+'px')};
-const render=()=>{document.body.classList.toggle('rmode',!!RM);$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();if(view=='trip')wxLoad();stickyFix();requestAnimationFrame(stickyFix);initSort();if(GM.on&&view=='trip'&&!RM){drawMap();gSpy(true)}};
+const render=()=>{document.body.classList.toggle('rmode',!!RM);$('app').innerHTML=view=='home'?home():view=='trip'?trip():view=='ledger'?ledger():expView();setHdh();if(view=='trip'){wxLoad();memoFit()}stickyFix();requestAnimationFrame(stickyFix);initSort();if(GM.on&&view=='trip'&&!RM){drawMap();gSpy(true)}};
 /* --- 여행 목록 --- */
 const today=()=>{const n=new Date();return new Date(n.getFullYear(),n.getMonth(),n.getDate())};
 const dd=t=>{const a=new Date(t.start+'T00:00:00'),b=new Date(t.end+'T00:00:00'),n=today();return n<a?'D-'+Math.round((a-n)/864e5):n<=b?'여행 중':'지난 여행'};
@@ -292,6 +294,8 @@ function esSave(i){const n=parseFloat(v('es_v'));if(!(n>=0)){needFocus('#es_v');
 function esDel(i){if(S.es&&S.es.u)delete S.es.u[i];save();shut();render();syncNow()}
 function curDay(){const hh=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--hdh'))||64)+60;let r=0;document.querySelectorAll('.day[data-day]').forEach(e=>{const d=+e.dataset.day;if(d>=0&&e.getBoundingClientRect().top<=hh)r=d});return r}
 function addItemHere(){addItem('place',curDay())}
+function memoFit(){document.querySelectorAll('.mo.clamp').forEach(d=>{const t=d.nextElementSibling;if(t&&t.classList.contains('mmore'))t.style.display=d.scrollHeight>d.clientHeight+1?'inline-block':'none'})}
+function memoTgl(t){const d=t.previousElementSibling;d.classList.toggle('clamp');t.textContent=d.classList.contains('clamp')?'더보기':'접기'}
 const wxYmd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const dayDow=i=>{const d=new Date(S.start+'T00:00:00');d.setDate(d.getDate()+i);return d.getDay()};
 const tmMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
@@ -429,7 +433,7 @@ const closeLocal=()=>$('lcl').classList.remove('on');
 /* --- 후보 장소 보관함 (day=-2) --- */
 let CO=true;
 function candSec(){const L=S.items.filter(x=>x.day==-2);if(!L.length)return'';
-return `<div class="day cand"><div class="dh"><span class="dtag">후보</span><h2 onclick="CO=!CO;render()" style="cursor:pointer">가고 싶은 곳 ${L.length}${CO?'':' ▸'}</h2><u onclick="addItem('place',-2)">추가</u></div>`+(CO?(L.length?L.map(x=>`<div class="crow"><button class="it" onclick="editItem(${x.id})"><small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}</button><button class="cdb" onclick="candAssign(${x.id})">Day<br>배정</button></div>`).join(''):'<div class="hint" style="margin:0 0 12px">날짜를 정하기 전에 가고 싶은 곳을 모아두세요. 나중에 Day에 배정할 수 있어요</div>'):'')+`</div>`}
+return `<div class="day cand"><div class="dh"><span class="dtag">후보</span><h2 onclick="CO=!CO;render()" style="cursor:pointer">가고 싶은 곳 ${L.length}${CO?'':' ▸'}</h2><u onclick="addItem('place',-2)">추가</u></div>`+(CO?(L.length?L.map(x=>`<div class="crow"><button class="it" onclick="editItem(${x.id})"><small style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</small><b>${esc(x.title)}</b>${x.memo?`<div class="m mo clamp">${nl(x.memo)}</div><span class="mmore" onclick="event.stopPropagation();memoTgl(this)">더보기</span>`:''}</button><button class="cdb" onclick="candAssign(${x.id})">Day<br>배정</button></div>`).join(''):'<div class="hint" style="margin:0 0 12px">날짜를 정하기 전에 가고 싶은 곳을 모아두세요. 나중에 Day에 배정할 수 있어요</div>'):'')+`</div>`}
 function candAssign(id){const x=S.items.find(i=>i.id==id);
 sheet(hd3('Day 배정',esc(x.title))+`<div style="display:flex;flex-direction:column;gap:8px">${days().map((d,i)=>bG(`Day ${i+1} · ${dl(d)}`,`candTo(${id},${i})`)).join('')}</div>`)}
 function candTo(id,i){const x=S.items.find(a=>a.id==id);x.day=i;S.items=S.items.filter(a=>a!==x);S.items.push(x);S.items.sort((a,b)=>a.day-b.day);save();shut();render();syncNow()}
@@ -443,7 +447,7 @@ h+=`<div class="dl${RM?' rm':''}" data-day="${i}">`;
 its.forEach((x,j)=>{const n=its.slice(0,j).filter(y=>!icon(y.type)).length+1;
 let dd='',pi=0;if(!RM&&i>=0&&x.lat!=null){const pv=its.slice(0,j).reverse().find(y=>y.lat!=null);if(pv){dd=fmtKm(hav(pv,x));pi=pv.id}}
 h+=`<div class="row${dd?' dd':''}" data-id="${x.id}">${dd?`<button class="ddb" onclick="legRoute(${pi},${x.id})">${dd}</button>`:''}<div class="rail ${j==0?'f':''} ${j==its.length-1?'l':''}"><div class="dot" style="${i<0?'background:var(--line);color:var(--tx)':'background:'+COL[i%4]}">${icon(x.type)||n}</div></div>
-<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small class="ilb">${x.time?`<i>${esc(x.time)}</i>`:''}<span style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</span></small><b>${esc(x.title)}</b>`}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m">${nl(x.memo)}</div>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
+<button class="it${RM?'':' hx'}" onclick="editItem(${x.id})">${x.type=='flight'?`<b>${esc(x.title)}</b><div class="s">${esc(x.sub)}</div>`:`<small class="ilb">${x.time?`<i>${esc(x.time)}</i>`:''}<span style="color:${(CATS[x.label]||CATS['장소'])[1]};font-weight:600">${esc(x.label||'장소')}</span></small><b>${esc(x.title)}</b>`}${rvChip(x)}${ohLn(x,i)}${x.memo?`<div class="m mo clamp">${nl(x.memo)}</div><span class="mmore" onclick="event.stopPropagation();memoTgl(this)">더보기</span>`:''}${xs(x)}${x.ph&&x.ph.length?`<div class="ph">${x.ph.slice(0,4).map(q=>`<img src="${q.t}">`).join('')}</div>`:''}</button>${RM?`<button class="dgh">${GR}</button>`:xbtn(x)}</div>`});
 h+=`</div>${i<0&&!its.length&&!RM?'<div class="hint" style="margin:0 0 12px">항공·숙소 예약, 환전, 유심 같은 출발 전 할 일을 적어두세요</div>':''}${RM?'':`<button class="dadd" onclick="addItem('${i<0?'other':'place'}',${i})">${i<0?'+ 준비 추가':'+ 일정 추가'}</button>`}</div>`};
 if(S.items.some(x=>x.day==-1))sec(-1,'준비','여행 준비');D.forEach((d,i)=>sec(i,`Day ${i+1}`,dl(d)));
 return h+(RM?ghBar(['저장','rmSave()']):ghBar(['일정 추가','addItemHere()']))+'<div style="height:110px"></div>'}
@@ -926,7 +930,7 @@ function locDel(id,from){const x=S.items.find(i=>i.id==id);delete x.lat;delete x
 try{history.scrollRestoration='manual'}catch(e){}
 {const up=ALL.trips.filter(t=>dd(t)!='지난 여행').sort((a,b)=>a.start.localeCompare(b.start))[0];if(up){RM=null;S=up;S.cur=S.cur||'CNY';view='trip'}}
 applyTheme(getTheme());
-render();scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0));addEventListener('pageshow',e=>{if(!e.persisted)scrollTo(0,0)});
+render();scrollTo(0,0);requestAnimationFrame(()=>scrollTo(0,0));addEventListener('pageshow',e=>{if(!e.persisted)scrollTo(0,0)});if(document.fonts&&document.fonts.ready)document.fonts.ready.then(memoFit);addEventListener('resize',memoFit);
 dgInit();addEventListener('resize',setHdh);let spyT=0;addEventListener('scroll',()=>{if(spyT)return;spyT=requestAnimationFrame(()=>{spyT=0;gSpy()})},{passive:true});
 autoLoad();offUi();
 if('serviceWorker' in navigator&&(location.protocol=='https:'||location.hostname=='localhost'))addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{})});
