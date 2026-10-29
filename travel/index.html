@@ -83,7 +83,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .tc.up{background:var(--pl)}.tc.up .tg{background:var(--pri);color:var(--on-pri)}.tc.up b{font-size:17px}
 .tc.past{background:var(--card);opacity:.78}.tc.past b{font-size:15px;font-weight:600}
 .gsticky{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--hdh,64px));z-index:4;background:var(--bg);border-bottom:1px solid var(--line)}.gmp{padding:12px var(--pad) 8px}.gtabs{display:flex;gap:6px;overflow-x:auto;padding:8px var(--pad)}.gtabs button{flex-shrink:0;background:var(--chip);border-radius:16px;padding:7px 14px;font-size:12px}.gtabs .on{background:var(--pri);color:var(--on-pri)}
-.gmapw{height:227px;border-radius:0;overflow:hidden;background:var(--chip)}.gact{display:flex;gap:8px}
+.gmapw{height:var(--gmh,227px);border-radius:0;overflow:hidden;background:var(--chip)}.gact{display:flex;gap:8px}
 .gpin{width:26px;height:26px;border-radius:50%;color:#fff;font:600 12px/22px Inter,sans-serif;text-align:center;border:2px solid #fff;translate:0 50%;transform-origin:50% 50%;transition:transform .15s}.gpin.on{transform:scale(1.5)}
 .sg{max-height:220px;overflow:auto}.sgi{display:block;width:100%;text-align:left;padding:12px 4px;border-bottom:1px solid var(--line);font-size:14px}.sgi small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
 .gl .gi{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}.gi small{display:block;color:var(--sub);font-size:12px;margin-top:2px}.gi span{font-weight:700;width:24px;text-align:center;flex-shrink:0}.gi .ok{color:var(--pri)}.gi .warn{color:#e0a000}.gi .bad{color:var(--red)}
@@ -188,6 +188,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dqs{margin:0;padding:var(--pad);background:var(--card);border-radius:0;cursor:pointer}.dql{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--sub)}.dql b{color:var(--tx);font-weight:600}.dqb{height:6px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.dqb i{display:block;height:100%;border-radius:3px;background:var(--pri)}.dqs.lo .dqb i{background:var(--red)}.dqd{display:block;margin:-4px 0 10px;padding:0;font-size:12px;color:var(--sub);text-align:left}.dqd b{color:var(--tx);font-weight:600}
 .it .m.mo{line-height:1.5}textarea.ta{line-height:1.5}
 .it .m.mo.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mmore{display:none;font-size:12px;font-weight:600;color:var(--pri);margin-top:2px}
+.gresz{height:20px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:ns-resize}.gresz i{width:40px;height:4px;border-radius:2px;background:var(--line)}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -296,6 +297,14 @@ function curDay(){const hh=(parseFloat(getComputedStyle(document.documentElement
 function addItemHere(){addItem('place',curDay())}
 function memoFit(){document.querySelectorAll('.mo.clamp').forEach(d=>{const t=d.nextElementSibling;if(t&&t.classList.contains('mmore'))t.style.display=d.scrollHeight>d.clientHeight+1?'inline-block':'none'})}
 function memoTgl(t){const d=t.previousElementSibling;d.classList.toggle('clamp');t.textContent=d.classList.contains('clamp')?'더보기':'접기'}
+(function(){let sy=0,sh=0,on=false;
+const fit=()=>{try{if(LMAP)LMAP.invalidateSize({pan:false});if(GMAP&&window.google)google.maps.event.trigger(GMAP,'resize')}catch(e){}};
+document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.gresz'),m=document.getElementById('gmap');if(!h||!m)return;on=true;sy=e.clientY;sh=m.getBoundingClientRect().height;try{h.setPointerCapture(e.pointerId)}catch(_){}});
+document.addEventListener('pointermove',e=>{if(!on)return;const h=Math.max(140,Math.min(Math.round(innerHeight*.7),sh+e.clientY-sy));document.documentElement.style.setProperty('--gmh',h+'px');requestAnimationFrame(fit)});
+const end=()=>{if(!on)return;on=false;try{localStorage.setItem('gmh',document.documentElement.style.getPropertyValue('--gmh').trim())}catch(e){}fit();setTimeout(fit,200)};
+document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+try{const v=localStorage.getItem('gmh');if(v)document.documentElement.style.setProperty('--gmh',v)}catch(e){}
+})();
 const wxYmd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const dayDow=i=>{const d=new Date(S.start+'T00:00:00');d.setDate(d.getDate()+i);return d.getDay()};
 const tmMin=t=>{const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?+m[1]*60+ +m[2]:null};
@@ -657,7 +666,7 @@ function gmlInc(){try{const t='gml:'+gmlD(),m='gmlm:'+gmlD().slice(0,7);for(let 
 function gmlUi(){const e=$('gm_u');if(e)e.textContent='구글 지도 로드 오늘 '+gmlCnt()+'/'+GML_DAY+' · 이번 달 '+gmlMon()+' ('+usLbl()+')'}
 function mapKindSwitch(){try{localStorage.setItem('mapk',mapKind()=='g'?'o':'g')}catch(e){}render()}
 const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
-const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button><button class="btn g sm" onclick="mapKindSwitch()">지도: ${mapKind()=='g'?'구글':'무료'}</button></div><div class="hint" id="gm_h"></div><div class="hint" id="gm_u"></div></div>`;
+const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div><div class="gresz"><i></i></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button><button class="btn g sm" onclick="mapKindSwitch()">지도: ${mapKind()=='g'?'구글':'무료'}</button></div><div class="hint" id="gm_h"></div><div class="hint" id="gm_u"></div></div>`;
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
 const GZ=13;
@@ -767,7 +776,7 @@ const usDid=()=>{try{let d=localStorage.getItem('did');if(!d){d='d'+Math.random(
 const usMon=()=>gmlD().slice(0,7);
 const usOth=()=>{try{return JSON.parse(localStorage.getItem('usgo'))||{}}catch(e){return{}}};
 const oth=k=>{const o=usOth();return(k=='dl'?o.day==gmlD():o.mon==usMon())?(+o[k]||0):0};
-const usLbl=()=>usOth().t?'두 기기 합계':'이 기기 기준';
+const usLbl=()=>usOth().t?'합계':'이 기기 기준';
 const usPath=()=>(GH().path||'travel.json').replace(/[^/]*$/,'usage.json');
 const usMe=()=>({mr:gmRaw(),pn:gpRaw(),ml:gmlMonRaw()});
 const usSig=()=>JSON.stringify([usMe(),gmlRaw(),usMon(),gmlD()]);
