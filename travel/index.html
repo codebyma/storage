@@ -596,7 +596,7 @@ const exW=e=>e.cny*(e.rt!=null?e.rt:(e.cu=='KRW'?1:S.rate)),exC=e=>e.cu||S.cur;
 const itemEx=id=>S.exp.filter(e=>e.iid==id),itemOf=id=>S.items.find(i=>i.id==id);
 const CATOF={flight:'항공',hotel:'숙소',sight:'관광',activity:'관광',restaurant:'식비',cafe:'식비',shopping:'쇼핑',transport:'교통'};
 let EB='ledger',EBY=null;
-const xs=x=>{const l=itemEx(x.id);return l.length?`<div class="m xs">지출 ${won(l.reduce((a,e)=>a+exW(e),0))}${l.length>1?` (${l.length}건)`:''}</div>`:''};
+const xs=x=>{const l=itemEx(x.id);return l.length?`<div class="m xs">지출 ${wonH(l.reduce((a,e)=>a+exW(e),0))}${l.length>1?` (${l.length}건)`:''}</div>`:''};
 const xbtn=x=>`<button class="xb${itemEx(x.id).length?' has':''}" onclick="itemExp(${x.id})">지출</button>`;
 function goBack(){const b=EB,y=EBY;EB='ledger';EBY=null;go(b,y)}
 function newItemExp(id){const x=itemOf(id);if(!x)return;editExp(0,{day:x.day,cat:CATOF[x.type]||'기타',title:x.title,iid:id},'trip')}
@@ -616,7 +616,7 @@ grp('여행 전',-1);days().forEach((d,i)=>grp(`Day ${i+1} - ${dl(d)}`,i));grp('
 return h+ghBar(['지출 내역 추가','editExp()'])+'<div style="height:110px"></div>'}
 /* --- 지출 입력 --- */
 const fm=s=>{if(s==='')return'';const[a,b]=s.split('.');return(a?(+a).toLocaleString('en-US'):'0')+(b!==undefined?'.'+b:'')};
-const rateE=()=>E.rt!=null?E.rt:(E.cur=='KRW'?1:S.rate),conv=()=>won((parseFloat(E.amt)||0)*rateE());
+const rateE=()=>E.rt!=null?E.rt:(E.cur=='KRW'?1:S.rate),conv=()=>wonH((parseFloat(E.amt)||0)*rateE());
 function editExp(id,pre,from){const x=id?S.exp.find(e=>e.id==id):null;pre=pre||{};EB=from||'ledger';EBY=EB=='trip'?scrollY:null;E={id:id||0,cur:x?exC(x):S.cur,rt:x&&x.rt!=null?x.rt:null,amt:x?String(x.cny):'',day:x?x.day:(pre.day!=null?pre.day:0),cat:x?x.cat:(pre.cat||'식비'),title:x?x.title:(pre.title||''),memo:x?x.memo:'',iid:x?(x.iid||0):(pre.iid||0)};go('exp')}
 function expView(){
 return `<div class="scr"><div class="hd"><button class="back" onclick="goBack()">${XL}</button><h1 style="text-align:center">지출 내역 ${E.id?'수정':'추가'}</h1><div style="width:28px"></div></div>
@@ -626,7 +626,7 @@ return `<div class="scr"><div class="hd"><button class="back" onclick="goBack()"
 fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
 fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
 (E.id?`<div class="dlr"><button onclick="if(confirm('이 지출 내역을 삭제할까요?')){S.exp=S.exp.filter(x=>x.id!=${E.id});save();goBack();syncNow()}">이 내역 삭제</button></div>`:'')+btns('',bP('저장','saveExp()'),'xbar')+`</div>`}
-function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').textContent=conv()}
+function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').innerHTML=conv()}
 function saveExp(){let a=parseFloat(E.amt);const noA=!a,noT=!E.title.trim();if(noA||noT){needFocus((noA?'.am':'')+(noA&&noT?',':'')+(noT?'#x_t':''));return}
 const iv=E.iid&&itemOf(E.iid)?E.iid:0,o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE(),...(iv?{iid:iv}:{})};
 if(E.id){const t=S.exp.find(x=>x.id==E.id);Object.assign(t,o);if(!iv)delete t.iid}else S.exp.push({id:S.nid++,...o});save();goBack();syncNow()}
