@@ -189,6 +189,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .it .m.mo{line-height:1.5}textarea.ta{line-height:1.5}
 .it .m.mo.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.mmore{display:none;font-size:12px;font-weight:600;color:var(--pri);margin-top:2px}
 .gresz{height:20px;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:ns-resize}.gresz i{width:40px;height:4px;border-radius:2px;background:var(--line)}
+.gsticky.gmst{border-bottom:0}
 </style></head><body><div id="app"></div>
 <div class="lb" id="lb"></div>
 <div class="gfull" id="gfull"></div>
@@ -666,7 +667,7 @@ function gmlInc(){try{const t='gml:'+gmlD(),m='gmlm:'+gmlD().slice(0,7);for(let 
 function gmlUi(){const e=$('gm_u');if(e)e.textContent='구글 지도 로드 오늘 '+gmlCnt()+'/'+GML_DAY+' · 이번 달 '+gmlMon()+' ('+usLbl()+')'}
 function mapKindSwitch(){try{localStorage.setItem('mapk',mapKind()=='g'?'o':'g')}catch(e){}render()}
 const EXP='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
-const mapPanel=()=>`<div class="gsticky"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div><div class="gresz"><i></i></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button><button class="btn g sm" onclick="mapKindSwitch()">지도: ${mapKind()=='g'?'구글':'무료'}</button></div><div class="hint" id="gm_h"></div><div class="hint" id="gm_u"></div></div>`;
+const mapPanel=()=>`<div class="gsticky gmst"><div class="gtabs"><button class="${GM.day<0?'on':''}" onclick="gDay(-1)">전체</button>${days().map((d,i)=>`<button class="${GM.day==i?'on':''}" onclick="gDay(${i})">Day ${i+1}</button>`).join('')}</div><div class="gmw"><div id="gmap" class="gmapw"></div><button class="gexp" onclick="gFull()">${EXP}크게 보기</button></div><div class="gresz"><i></i></div></div><div class="gmp"><div class="gact"><button class="btn g sm" onclick="gLocate()">위치 찾기</button><button class="btn g sm" onclick="geoCheck()">위치 확인</button><button class="btn g sm" onclick="mapKindSwitch()">지도: ${mapKind()=='g'?'구글':'무료'}</button></div><div class="hint" id="gm_h"></div><div class="hint" id="gm_u"></div></div>`;
 function gGoto(id){const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const st=document.querySelector('.gsticky'),top=(st?st.getBoundingClientRect().bottom:0)+14;
 GM.lock=Date.now()+1000;gFocus(id);scrollTo({top:scrollY+r.getBoundingClientRect().top-top,behavior:'smooth'})}
 const GZ=13;
