@@ -95,7 +95,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .dh h2{font-size:15px;margin:0;flex:1}.dh u{color:var(--sub);font-size:12px}
 .dadd{display:block;width:100%;margin-top:8px;padding:12px 0;border:0;border-radius:12px;background:var(--pl);color:var(--pri);font-size:14px;font-weight:700;font-family:inherit}
 .dadd:active{opacity:.6}
-.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs{color:var(--pri);font-weight:600}.it .m.rv{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mi{color:var(--pri);vertical-align:-2px}.row>.it{min-width:0}.it .ml{display:flex;align-items:baseline;gap:4px;min-width:0}.it .ml .mt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .ml .mm{flex:none;white-space:nowrap}.ex .l small.lk{color:var(--pri);display:flex;align-items:flex-start;gap:4px}.ex .l small.lk i{font-style:normal;flex:none}.ex .l small.lk span{min-width:0}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
+.it.hx{padding-right:62px}.xb{position:absolute;right:10px;top:10px;height:26px;padding:0 10px;border-radius:13px;background:var(--bg);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}.xb.has{background:var(--pl);border-color:transparent;color:var(--pri)}.it .xs{color:var(--pri);font-weight:600;font-family:'Inter',-apple-system,'SF Pro Text',system-ui,sans-serif;font-variant-numeric:tabular-nums}.it .m.rv{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mi{color:var(--pri);vertical-align:-2px}.row>.it{min-width:0}.it .ml{display:flex;align-items:baseline;gap:4px;min-width:0}.it .ml .mt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.it .ml .mm{flex:none;white-space:nowrap}.ex .l small.lk{color:var(--pri);display:flex;align-items:flex-start;gap:4px}.ex .l small.lk i{font-style:normal;flex:none}.ex .l small.lk span{min-width:0}.lkb{margin-top:8px;color:var(--pri);font-size:13px;font-weight:600}.xl{margin:0 calc(var(--pad)*-1)}
 .leaflet-container{isolation:isolate;font:inherit;background:var(--chip)}.gpw{background:none;border:0}.gpw .gpin{translate:0 0}
 .row{display:flex;gap:8px;margin-bottom:8px;position:relative}
 .rail{width:24px;flex-shrink:0;position:relative}
@@ -106,7 +106,7 @@ input.sb.in{font-size:var(--fs-lbl);color:var(--sub)}
 .it small{display:block;color:var(--sub);font-size:11px;margin-bottom:4px}.it b{font-size:14px;font-weight:600;line-height:1.45}
 .it .s{color:var(--pri);font-size:12px;margin-top:4px}.it .m{color:var(--sub);font-size:12px;margin-top:4px;white-space:pre-line}
 /* --- 가계부 --- */
-.tot{padding:22px var(--pad);border-bottom:8px solid var(--card)}.tot small{color:var(--sub);font-size:12px}.tot h2{color:var(--pri);font-size:36px;font-weight:400;margin:6px 0}.tot h2 .u{font-size:34px}.tot div{color:var(--sub);opacity:.8;font-weight:400;font-size:15px}
+.tot{padding:22px var(--pad);border-bottom:8px solid var(--card)}.tot small{color:var(--sub);font-size:12px}.tot h2{color:var(--pri);font-size:34px;font-weight:500;margin:6px 0}.tot h2 .u{font-size:32px}.tot div{color:var(--sub);opacity:.8;font-weight:400;font-size:15px}
 .seg{display:flex;background:var(--chip);border-radius:24px;padding:5px;width:max-content;margin:20px auto}.seg button{padding:9px 24px;border-radius:20px;color:var(--sub);font-size:13px}.seg .on{background:var(--bg);color:var(--tx);font-weight:700}
 .gh{display:flex;justify-content:space-between;padding:18px var(--pad) 6px;font-weight:700;font-size:14px}.gh span{color:var(--pri)}.gh.z span{color:var(--sub)}
 .ex{display:flex;justify-content:space-between;padding:16px var(--pad);align-items:center;text-align:left;width:100%}
@@ -224,8 +224,8 @@ let view='home',tab='list',E=null;
 const $=id=>document.getElementById(id),v=id=>$(id).value;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const nl=t=>esc(t).replace(/\r?\n/g,'<br>');
-const won=n=>Math.round(n).toLocaleString('ko-KR')+'원';
-const wonH=n=>`${Math.round(n).toLocaleString('ko-KR')}<span class="u">원</span>`;
+const won=n=>'₩'+Math.round(n).toLocaleString('ko-KR');
+const wonH=n=>`<span class="u">₩</span>${Math.round(n).toLocaleString('ko-KR')}`;
 const days=()=>{const a=[];let d=new Date(S.start+'T00:00:00'),e=new Date(S.end+'T00:00:00');while(d<=e){a.push(new Date(d));d.setDate(d.getDate()+1)}return a};
 const dl=d=>`${d.getMonth()+1}/${d.getDate()} (${WD[d.getDay()]})`;
 const SV=p=>`<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">${p}</svg>`;
@@ -318,7 +318,7 @@ WXP=null}
 async function rateFetch(c){const r=await fetch('https://open.er-api.com/v6/latest/'+c,{cache:'no-store'});if(!r.ok)throw 0;const j=await r.json(),x=j&&j.rates&&j.rates.KRW;if(!x)throw 0;return x>=10?Math.round(x*100)/100:Number(x.toPrecision(3))}
 async function rateGet(b,id,c,hid,past){const L='오늘 환율 불러오기';if(past&&!b.dataset.s){b.dataset.s=1;b.textContent='지난 여행이에요 · 한 번 더 눌러 불러오기';return}
 const h=$(hid);b.disabled=true;b.textContent='불러오는 중';
-try{const x=await rateFetch(c);$(id).value=x;$(id).dataset.u=1;if(h)h.textContent=id=='n_r'?`오늘 1 ${c} = ${x}원이에요`:`오늘 1 ${c} = ${x}원 · 저장을 눌러야 적용돼요`}catch(e){if(h)h.textContent='환율을 불러오지 못했어요. 인터넷 연결을 확인해 주세요'}
+try{const x=await rateFetch(c);$(id).value=x;$(id).dataset.u=1;if(h)h.textContent=id=='n_r'?`오늘 1 ${c} = ₩${x}이에요`:`오늘 1 ${c} = ₩${x} · 저장을 눌러야 적용돼요`}catch(e){if(h)h.textContent='환율을 불러오지 못했어요. 인터넷 연결을 확인해 주세요'}
 b.disabled=false;b.textContent=L;delete b.dataset.s}
 async function ntAuto(){const c=$('n_c')&&$('n_c').value;if(!c||c=='KRW')return;try{const x=await rateFetch(c),e=$('n_r');if(e&&$('n_c').value==c&&!e.dataset.u){e.value=x;const h=$('n_h');if(h)h.textContent='오늘 환율이에요. 필요하면 수정하세요'}}catch(e){}}
 function newTrip(){const t=new Date(),f=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,e=new Date(t);e.setDate(e.getDate()+2);
@@ -621,7 +621,7 @@ function editExp(id,pre,from){const x=id?S.exp.find(e=>e.id==id):null;pre=pre||{
 function expView(){
 return `<div class="scr"><div class="hd"><button class="back" onclick="goBack()">${XL}</button><h1 style="text-align:center">지출 내역 ${E.id?'수정':'추가'}</h1><div style="width:28px"></div></div>
 <div class="xa"><select class="cs" onchange="E.cur=this.value;E.rt=null;render()">${[...new Set([S.cur,'KRW',E.cur])].map(c=>`<option value="${c}" ${E.cur==c?'selected':''}>${c}(${c=='KRW'?'원':(CUR[c]||[''])[0]})</option>`).join('')}</select>
-<input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1${E.cur} = ${rateE()}원</div></div>
+<input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1${E.cur} = ₩${rateE()}</div></div>
 <div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value;E.iid=0;render()"'),1)+lkField()+
 fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
 fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
