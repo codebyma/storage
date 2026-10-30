@@ -54,7 +54,7 @@
     {
       "id": "stk_ciu0vbl",
       "accountId": "acc_aioddia",
-      "quantity": 208,
+      "quantity": 228,
       "buys": [
         {
           "id": "tx_cklblvk",
@@ -76,6 +76,13 @@
           "quantity": 10,
           "price": 26020,
           "amount": 260200
+        },
+        {
+          "id": "tx_5oxqcpo",
+          "date": "2026-10-30",
+          "quantity": 20,
+          "price": 25350,
+          "amount": 507000
         }
       ],
       "sells": [],
@@ -1208,14 +1215,14 @@
     {
       "date": "2026-10-30",
       "totals": {
-        "me": 30433930,
+        "me": 30945430,
         "wife": 86553705,
-        "ALL": 116987635
+        "ALL": 117499135
       },
       "costs": {
-        "me": 22336523,
+        "me": 22843523,
         "wife": 55599566,
-        "ALL": 77936089
+        "ALL": 78443089
       }
     }
   ],
