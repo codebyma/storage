@@ -5395,6 +5395,18 @@
           "label": "식당"
         },
         {
+          "id": 166,
+          "day": 0,
+          "type": "place",
+          "title": "모어요거트(茉酸奶)",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 14,
           "day": 0,
           "type": "place",
@@ -5504,18 +5516,6 @@
           "lng": 117.2110678,
           "addr": "Wan Xiang Cheng, 水上 He Xi Qu, Tian Jin Shi, 중국 300061",
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
-        },
-        {
-          "id": 166,
-          "day": 0,
-          "type": "place",
-          "title": "모어요거트(茉酸奶)",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "장소"
         },
         {
           "id": 71,
