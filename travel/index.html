@@ -419,7 +419,8 @@ else{let last=-1;S.items.forEach((x,n)=>{if(x.day==t.day)last=n});S.items.splice
 render();setTimeout(()=>{save();syncNow()},80)}
 let SRT=[],SRAF=0;
 function sortMove(e){const r=e.related;return!(r&&r.matches&&r.matches('.row[data-id]')&&e.dragged&&r.parentNode===e.dragged.parentNode)}
-function sortLoop(){const g=document.querySelector('.row.sf'),p=document.querySelector('.row.sg');
+function sortLockX(g){if(!g)return;try{const m=new DOMMatrix(getComputedStyle(g).transform);if(Math.abs(m.m41)>.5)g.style.transform=`translate3d(0px,${m.m42}px,0)`}catch(e){}}
+function sortLoop(){const g=document.querySelector('.row.sf'),p=document.querySelector('.row.sg');sortLockX(g);
 if(g&&p&&p.parentNode){const gr=g.getBoundingClientRect(),M=3,geo=r=>{const b=r.getBoundingClientRect();let dy=0;try{dy=new DOMMatrix(getComputedStyle(r).transform).m42||0}catch(x){}return{t:b.top-dy,h:b.height}};
 const nx=p.nextElementSibling,pv=p.previousElementSibling;let mv=null;
 if(nx&&nx.matches('.row[data-id]')){const c=geo(nx);if(gr.bottom>c.t+c.h/2+M)mv=()=>nx.after(p)}
