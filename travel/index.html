@@ -282,11 +282,11 @@ if(!off){if(e)e.remove();return}
 if(!e){e=document.createElement('div');e.id='offp';document.body.appendChild(e)}
 const t=syncTs();e.textContent=(navigator.onLine?'서버 연결 안 됨':'오프라인')+(t?' · 마지막 동기화 '+t:'')+(isDirty()?' · 저장 대기':'')}catch(e){}}
 const dqF=n=>String(+(+n).toFixed(2));
-/* eSIM: 사람별(회선별)로 총량·일별 누적 사용량을 따로 관리. S.es={l:[{id,n,t,u:{dayIndex:누적GB}}]} (예전 단일 형식 {t,u}는 자동 변환) */
+/* eSIM: 사람별(회선별)로 총량·일별 누적 사용량을 따로 관리. S.es={l:[{id,n,t,u:{dayIndex:그날 사용GB}}]} (예전 단일 형식 {t,u}는 자동 변환) */
 function esNorm(e){if(!e)return[];if(Array.isArray(e.l))return e.l;if(e.t>0||(e.u&&Object.keys(e.u).length))return[{id:'e0',n:'나',t:+e.t||0,u:e.u||{}}];return[]}
 function esL(){if(S.es&&!Array.isArray(S.es.l))S.es={l:esNorm(S.es)};return(S.es&&S.es.l)||[]}
 const esV=()=>esL().filter(x=>x.t>0);
-function dqUsed(x){const u=(x&&x.u)||{};let m=0;for(const k in u)m=Math.max(m,+u[k]||0);return m}
+function dqUsed(x){const u=(x&&x.u)||{};let m=0;for(const k in u)m+=+u[k]||0;return Math.round(m*1000)/1000}
 function esRow(x){return`<div class="mr esr" data-id="${x&&x.id||''}" data-u="${x&&x.u&&Object.keys(x.u).length?1:''}"><input class="in esn" value="${esc(x?x.n:'')}" placeholder="이름 (예: 나)"><input class="in est" type="number" step="any" inputmode="decimal" placeholder="총 GB" value="${x&&x.t>0?x.t:''}" style="flex:none;width:92px"><button class="btn dl sm" onclick="esRowDel(this)">삭제</button></div>`}
 function esRowAdd(){const box=$('es_rows'),n=box.querySelectorAll('.esr').length;box.insertAdjacentHTML('beforeend',esRow({n:n==1?'와이프':'',t:0,u:{}}));const r=box.lastElementChild;try{r.querySelector(n==1?'.est':'.esn').focus()}catch(e){}}
 function esRowDel(b){const r=b.closest('.esr');if(r.dataset.u&&!b.dataset.s){b.dataset.s=1;b.textContent='한 번 더';return}r.remove()}
@@ -296,10 +296,10 @@ return`<div class="dqs" onclick="editTrip()">`+L.map(x=>{const t=+x.t,u=dqUsed(x
 function esDay(i){const L=esV();if(RM||!L.length)return'';
 if(!L.some(x=>x.u&&x.u[i]!=null))return`<button class="dqd" onclick="esIn(${i})">데이터 사용량 입력</button>`;
 return`<button class="dqd" onclick="esIn(${i})">`+L.map(x=>{const u=x.u||{},c=u[i];if(c==null)return`<span class="dqx">${esc(x.n)} 데이터 미입력</span>`;
-let pv=0;for(let k=i-1;k>=0;k--)if(u[k]!=null){pv=+u[k];break}
-return`<span class="dqx">${esc(x.n)} 데이터 <b>오늘 ${dqF(Math.max(0,+c-pv))}GB</b> · 누적 ${dqF(c)}GB</span>`}).join('')+`</button>`}
+let sum=0;for(let k=0;k<=i;k++)sum+=+u[k]||0;
+return`<span class="dqx">${esc(x.n)} 데이터 <b>오늘 ${dqF(c)}GB</b> · 누적 ${dqF(sum)}GB</span>`}).join('')+`</button>`}
 function esIn(i){const L=esV();if(!L.length)return;const any=L.some(x=>x.u&&x.u[i]!=null);
-sheet(hd3('데이터 사용량',`Day ${i+1}`)+L.map(x=>{const c=x.u&&x.u[i];return fg(esc(x.n),`<div class="mr">${inp('es_v_'+x.id,c==null?'':String(Math.round(c*1000)),'type="number" step="any" inputmode="decimal" placeholder="0"')}${sel('es_u_'+x.id,[['MB','MB'],['GB','GB']],'MB')}</div>`)}).join('')+`<div class="hint">폰 설정 > 셀룰러에 보이는 누적 사용량을 입력하세요. 오늘 사용량은 앱이 계산해요. 비워 두면 입력 안 한 걸로 처리돼요</div>`+btns(any?bG('지우기',`esDel(${i})`):'',bP('저장',`esSave(${i})`)))}
+sheet(hd3('오늘 데이터 사용량',`Day ${i+1}`)+L.map(x=>{const c=x.u&&x.u[i];return fg(esc(x.n),`<div class="mr">${inp('es_v_'+x.id,c==null?'':String(Math.round(c*1000)),'type="number" step="any" inputmode="decimal" placeholder="0"')}${sel('es_u_'+x.id,[['MB','MB'],['GB','GB']],'MB')}</div>`)}).join('')+`<div class="hint">그날 하루 쓴 데이터를 입력하세요. 누적은 앱이 합산해요. 비워 두면 입력 안 한 걸로 처리돼요</div>`+btns(any?bG('지우기',`esDel(${i})`):'',bP('저장',`esSave(${i})`)))}
 function esSave(i){const L=esV(),ch=[];for(const x of L){const t=v('es_v_'+x.id).trim();if(t==='')ch.push([x,null]);else{const n=parseFloat(t);if(!(n>=0)){needFocus('#es_v_'+x.id);return}ch.push([x,v('es_u_'+x.id)=='MB'?n/1000:n])}}
 ch.forEach(([x,g])=>{x.u=x.u||{};if(g==null)delete x.u[i];else x.u[i]=Math.round(g*1000)/1000});save();shut();render();syncNow()}
 function esDel(i){esV().forEach(x=>{if(x.u)delete x.u[i]});save();shut();render();syncNow()}
