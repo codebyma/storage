@@ -5349,18 +5349,6 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
-          "id": 163,
-          "day": 0,
-          "type": "restaurant",
-          "title": "떡튀김",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "식당"
-        },
-        {
           "id": 13,
           "day": 0,
           "type": "restaurant",
@@ -5405,6 +5393,18 @@
           "ln": "",
           "la": "",
           "label": "장소"
+        },
+        {
+          "id": 163,
+          "day": 0,
+          "type": "restaurant",
+          "title": "떡튀김",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "식당"
         },
         {
           "id": 14,
