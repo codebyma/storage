@@ -5506,6 +5506,18 @@
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
         },
         {
+          "id": 166,
+          "day": 0,
+          "type": "place",
+          "title": "모어요거트(茉酸奶)",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 71,
           "day": 1,
           "type": "hotel",
@@ -6038,7 +6050,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 166
+      "nid": 167
     }
   ],
   "nid": 189
