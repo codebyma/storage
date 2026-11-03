@@ -5383,6 +5383,18 @@
           "la": ""
         },
         {
+          "id": 163,
+          "day": 0,
+          "type": "restaurant",
+          "title": "떡튀김",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "식당"
+        },
+        {
           "id": 14,
           "day": 0,
           "type": "place",
@@ -5432,18 +5444,6 @@
           "lng": 117.201,
           "addr": "중국 300143",
           "pid": "ChIJPb7fE9_97TUR7zQ0OX2BVxA"
-        },
-        {
-          "id": 163,
-          "day": 0,
-          "type": "restaurant",
-          "title": "떡튀김",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "식당"
         },
         {
           "id": 68,
