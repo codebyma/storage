@@ -5494,6 +5494,18 @@
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
         },
         {
+          "id": 163,
+          "day": 0,
+          "type": "restaurant",
+          "title": "떡튀김",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "식당"
+        },
+        {
           "id": 71,
           "day": 1,
           "type": "hotel",
@@ -6005,7 +6017,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 163
+      "nid": 164
     }
   ],
   "nid": 189
