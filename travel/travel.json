@@ -5434,6 +5434,18 @@
           "pid": "ChIJPb7fE9_97TUR7zQ0OX2BVxA"
         },
         {
+          "id": 163,
+          "day": 0,
+          "type": "restaurant",
+          "title": "떡튀김",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "식당"
+        },
+        {
           "id": 68,
           "day": 0,
           "type": "restaurant",
@@ -5492,18 +5504,6 @@
           "lng": 117.2110678,
           "addr": "Wan Xiang Cheng, 水上 He Xi Qu, Tian Jin Shi, 중국 300061",
           "pid": "ChIJi7EB8CL97TURpSeW1uhMzVI"
-        },
-        {
-          "id": 163,
-          "day": 0,
-          "type": "restaurant",
-          "title": "떡튀김",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "식당"
         },
         {
           "id": 71,
