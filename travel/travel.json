@@ -5670,19 +5670,6 @@
           "pid": "ChIJzbkPOSL97TUR_-BfVcLe8OM"
         },
         {
-          "id": 69,
-          "day": 1,
-          "type": "sight",
-          "label": "관광지",
-          "title": "하이허강(海河)",
-          "sub": "",
-          "time": "",
-          "map": "",
-          "memo": "야경 및 맥주",
-          "ln": "",
-          "la": ""
-        },
-        {
           "id": 79,
           "day": 1,
           "type": "hotel",
@@ -5726,6 +5713,19 @@
           "ln": "",
           "la": "",
           "label": "기타"
+        },
+        {
+          "id": 69,
+          "day": 1,
+          "type": "sight",
+          "label": "관광지",
+          "title": "하이허강(海河)",
+          "sub": "",
+          "time": "",
+          "map": "",
+          "memo": "야경 및 맥주",
+          "ln": "",
+          "la": ""
         },
         {
           "id": 80,
