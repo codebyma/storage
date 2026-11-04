@@ -5947,18 +5947,6 @@
           "pid": "ChIJ1WlqIrz97TUR8e3JZd-U7ys"
         },
         {
-          "id": 210,
-          "day": 2,
-          "type": "other",
-          "title": "마사지",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "기타"
-        },
-        {
           "id": 69,
           "day": 2,
           "type": "sight",
@@ -5970,6 +5958,18 @@
           "memo": "야경 및 맥주",
           "ln": "",
           "la": ""
+        },
+        {
+          "id": 210,
+          "day": 2,
+          "type": "other",
+          "title": "마사지",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "기타"
         },
         {
           "id": 212,
