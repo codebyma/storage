@@ -6212,9 +6212,20 @@
           "cu": "CNY",
           "rt": 198.85,
           "iid": 182
+        },
+        {
+          "id": 185,
+          "day": 1,
+          "cat": "식비",
+          "title": "LECLAIR DE GENIE",
+          "memo": "",
+          "cny": 48,
+          "cu": "CNY",
+          "rt": 198.85,
+          "iid": 183
         }
       ],
-      "nid": 185
+      "nid": 186
     }
   ],
   "nid": 189
