@@ -5670,6 +5670,18 @@
           "pid": "ChIJzbkPOSL97TUR_-BfVcLe8OM"
         },
         {
+          "id": 192,
+          "day": 1,
+          "type": "place",
+          "title": "빈장따오",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 187,
           "day": 1,
           "type": "cafe",
@@ -5713,18 +5725,6 @@
           "ln": "",
           "la": "",
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
-        },
-        {
-          "id": 192,
-          "day": 1,
-          "type": "place",
-          "title": "빈장따오",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "장소"
         },
         {
           "id": 80,
