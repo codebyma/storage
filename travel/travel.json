@@ -5407,6 +5407,22 @@
           "label": "식당"
         },
         {
+          "id": 168,
+          "day": 0,
+          "type": "place",
+          "title": "유니클로",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=166%20Xing'an%20Road&query_place_id=ChIJ1WlqIrz97TUR8e3JZd-U7ys",
+          "memo": "긴팔 구매",
+          "ln": "",
+          "la": "",
+          "label": "장소",
+          "lat": 39.12731,
+          "lng": 117.20091,
+          "addr": "166 Xing An Lu, He Ping Qu, Tian Jin Shi, 중국 300022",
+          "pid": "ChIJ1WlqIrz97TUR8e3JZd-U7ys"
+        },
+        {
           "id": 14,
           "day": 0,
           "type": "sight",
@@ -5422,22 +5438,6 @@
           "pid": "ChIJ28dil7z97TURC3huJCcGEao",
           "ln": "",
           "la": ""
-        },
-        {
-          "id": 168,
-          "day": 0,
-          "type": "place",
-          "title": "유니클로",
-          "time": "",
-          "map": "https://www.google.com/maps/search/?api=1&query=166%20Xing'an%20Road&query_place_id=ChIJ1WlqIrz97TUR8e3JZd-U7ys",
-          "memo": "긴팔 구매",
-          "ln": "",
-          "la": "",
-          "label": "장소",
-          "lat": 39.12731,
-          "lng": 117.20091,
-          "addr": "166 Xing An Lu, He Ping Qu, Tian Jin Shi, 중국 300022",
-          "pid": "ChIJ1WlqIrz97TUR8e3JZd-U7ys"
         },
         {
           "id": 67,
