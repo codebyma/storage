@@ -5920,15 +5920,11 @@
           "type": "cafe",
           "title": "오대도 카페(天津市和平区壹两叁咖啡厅)",
           "time": "",
-          "map": "https://www.google.com/maps/search/?api=1&query=%E5%92%96%E5%95%A1&query_place_id=ChIJeZYZdVX87TUR1hPu57TtGk8",
+          "map": "",
           "memo": "",
           "ln": "",
           "la": "",
-          "label": "카페",
-          "lat": 39.109563,
-          "lng": 117.22337200000001,
-          "addr": "중국 톈진 시 허시 구 邮政编码: 300203",
-          "pid": "ChIJeZYZdVX87TUR1hPu57TtGk8"
+          "label": "카페"
         },
         {
           "id": 91,
