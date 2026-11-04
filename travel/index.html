@@ -643,7 +643,7 @@ function newItemExp(id){const x=itemOf(id);if(!x)return;editExp(0,{day:x.day,cat
 function itemExp(id){const x=itemOf(id);if(!x)return;const l=itemEx(id);if(!l.length)return newItemExp(id);
 sheet(hd3('지출 내역',esc(x.title))+`<div class="xl">`+l.map(e=>`<button class="ex" onclick="shut();editExp(${e.id},null,'trip')"><div class="l"><span class="tag" style="background:${CATS[e.cat][0]};color:${CATS[e.cat][1]}">${e.cat}</span><div>${esc(e.title)}</div></div><div class="r"><b class="num">${wonH(exW(e))}</b>${exC(e)=='KRW'?'':`<small class="num">${exC(e)} ${e.cny.toLocaleString()}</small>`}</div></button>`).join('')+`</div>`+btns(bG('닫기','shut()'),bP('지출 추가',`shut();newItemExp(${id})`)))}
 function goItem(id){if(!itemOf(id))return;go('trip');const r=document.querySelector(`.row[data-id="${id}"]`);if(!r)return;const f=()=>{const h=parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hdh'))||56;scrollTo(0,scrollY+r.getBoundingClientRect().top-h-14)};f();requestAnimationFrame(f);r.classList.add('fc');setTimeout(()=>r.classList.remove('fc'),1800)}
-function lkField(){const o=S.items.filter(x=>x.day==E.day);if(!o.length&&!E.iid)return'';return fg('연결 일정',sel('x_i',[[0,'연결 안 함'],...o.map(x=>[x.id,esc(x.title)])],E.iid,'onchange="E.iid=+this.value"')+(E.id&&E.iid&&itemOf(E.iid)?`<button class="lkb" onclick="goItem(${E.iid})">일정 보기</button>`:''))}
+function lkField(){const o=S.items.filter(x=>x.day==E.day);if(!o.length&&!E.iid)return'';return fg('연결 일정',sel('x_i',[[0,'연결 안 함'],...o.map(x=>[x.id,esc(x.title)])],E.iid,'onchange="E.iid=+this.value;render()"')+(E.id&&E.iid&&itemOf(E.iid)?`<button class="lkb" onclick="goItem(${E.iid})">일정 보기</button>`:''))}
 function ledger(){const tot=S.exp.reduce((a,e)=>a+exW(e),0),loc=S.exp.filter(e=>exC(e)==S.cur).reduce((a,e)=>a+e.cny,0);
 let h=`<div class="hd"><button class="back" onclick="RM=null;go('trip')">${BK}</button><h1>가계부</h1>${MORE}</div>
 <div class="tot"><small>총 지출 금액</small><h2 class="num">${wonH(tot)}</h2>${S.cur=='KRW'?'':`<div class="num">${S.cur} ${Math.round(tot/(S.rate||1)).toLocaleString()}</div>`}</div>
@@ -665,11 +665,11 @@ return `<div class="scr"><div class="hd"><button class="back" onclick="goBack()"
 <div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value;E.iid=0;render()"'),1)+lkField()+
 fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
 (E.cat=='교통'?fg('출발 → 도착',`<div class="mr" style="align-items:center">${inp('x_f',E.fr,'placeholder="출발" oninput="E.fr=this.value"')}<span style="color:var(--sub);line-height:1;flex:none">→</span>${inp('x_to',E.to,'placeholder="도착" oninput="E.to=this.value"')}</div>`):'')+
-fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
+fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'+(E.iid&&itemOf(E.iid)?' placeholder="비우면 연결한 일정 이름으로 저장돼요"':'')),E.iid&&itemOf(E.iid)?0:1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
 (E.id?`<div class="dlr"><button onclick="if(confirm('이 지출 내역을 삭제할까요?')){S.exp=S.exp.filter(x=>x.id!=${E.id});save();goBack();syncNow()}">이 내역 삭제</button></div>`:'')+btns('',bP('저장','saveExp()'),'xbar')+`</div>`}
 function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').innerHTML=conv()}
-function saveExp(){let a=parseFloat(E.amt);const noA=!a,noT=!E.title.trim();if(noA||noT){needFocus((noA?'.am':'')+(noA&&noT?',':'')+(noT?'#x_t':''));return}
-const iv=E.iid&&itemOf(E.iid)?E.iid:0,o={day:E.day,cat:E.cat,title:E.title.trim(),memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE(),...(iv?{iid:iv}:{}),...(E.cat=='교통'&&E.fr.trim()?{fr:E.fr.trim()}:{}),...(E.cat=='교통'&&E.to.trim()?{to:E.to.trim()}:{})};
+function saveExp(){let a=parseFloat(E.amt);const lk=E.iid&&itemOf(E.iid),T=E.title.trim()||(lk?String(lk.title||'').trim():''),noA=!a,noT=!T;if(noA||noT){needFocus((noA?'.am':'')+(noA&&noT?',':'')+(noT?'#x_t':''));return}
+const iv=E.iid&&itemOf(E.iid)?E.iid:0,o={day:E.day,cat:E.cat,title:T,memo:E.memo,cny:Math.round(a*100)/100,cu:E.cur,rt:rateE(),...(iv?{iid:iv}:{}),...(E.cat=='교통'&&E.fr.trim()?{fr:E.fr.trim()}:{}),...(E.cat=='교통'&&E.to.trim()?{to:E.to.trim()}:{})};
 if(E.id){const t=S.exp.find(x=>x.id==E.id);Object.assign(t,o);if(!iv)delete t.iid;if(!o.fr)delete t.fr;if(!o.to)delete t.to}else S.exp.push({id:S.nid++,...o});save();goBack();syncNow()}
 /* --- 구글 지도 --- */
 const gKey=()=>{try{return localStorage.getItem('gmk')||''}catch(e){return''}};
