@@ -5487,6 +5487,18 @@
           "la": ""
         },
         {
+          "id": 174,
+          "day": 0,
+          "type": "place",
+          "title": "마사지",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 70,
           "day": 0,
           "type": "hotel",
@@ -5502,18 +5514,6 @@
           "ln": "",
           "la": "",
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
-        },
-        {
-          "id": 174,
-          "day": 0,
-          "type": "place",
-          "title": "마사지",
-          "time": "",
-          "map": "",
-          "memo": "",
-          "ln": "",
-          "la": "",
-          "label": "장소"
         },
         {
           "id": 69,
