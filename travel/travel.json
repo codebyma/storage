@@ -5409,8 +5409,8 @@
         {
           "id": 14,
           "day": 0,
-          "type": "place",
-          "label": "장소",
+          "type": "sight",
+          "label": "관광지",
           "title": "츠팡쯔(瓷房子)",
           "sub": "",
           "time": "",
