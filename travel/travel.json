@@ -5665,6 +5665,22 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
+          "id": 176,
+          "day": 1,
+          "type": "place",
+          "title": "전병(真素诚)",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E7%9C%9F%E7%B4%A0%E8%AF%9A&query_place_id=ChIJ3bln8pz-7TURYeaWqXSToHg",
+          "memo": "아침",
+          "ln": "",
+          "la": "",
+          "label": "장소",
+          "lat": 39.147698,
+          "lng": 117.23473699999998,
+          "addr": "46XM+3VH, Hong Xing Lu, He Dong Qu, Tian Jin Shi, 중국 300150",
+          "pid": "ChIJ3bln8pz-7TURYeaWqXSToHg"
+        },
+        {
           "id": 80,
           "day": 2,
           "type": "hotel",
@@ -6128,7 +6144,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 176
+      "nid": 177
     }
   ],
   "nid": 189
