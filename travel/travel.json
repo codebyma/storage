@@ -5339,10 +5339,14 @@
           "title": "Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin",
           "sub": "톈진 시",
           "time": "",
-          "map": "https://maps.app.goo.gl/xoxx9cmkWUeFzwnk7?g_st=ic",
+          "map": "https://www.google.com/maps/search/?api=1&query=Jinhaohan%20Express%20Hotel&query_place_id=ChIJXUrXDr397TURejLM-h8Dq9c",
           "memo": "",
           "ln": "",
-          "la": ""
+          "la": "",
+          "lat": 39.126244299999996,
+          "lng": 117.198986,
+          "addr": "131 Xin Hua Lu, 金街 He Ping Qu, Tian Jin Shi, 중국 300022",
+          "pid": "ChIJXUrXDr397TURejLM-h8Dq9c"
         },
         {
           "id": 13,
