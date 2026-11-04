@@ -5681,6 +5681,18 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
+          "id": 182,
+          "day": 1,
+          "type": "place",
+          "title": "瑭所",
+          "time": "",
+          "map": "",
+          "memo": "유자 케이크",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 80,
           "day": 2,
           "type": "hotel",
@@ -6191,7 +6203,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 182
+      "nid": 183
     }
   ],
   "nid": 189
