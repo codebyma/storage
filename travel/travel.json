@@ -5341,12 +5341,11 @@
           "time": "",
           "map": "https://www.google.com/maps/search/?api=1&query=Jinhaohan%20Express%20Hotel&query_place_id=ChIJXUrXDr397TURejLM-h8Dq9c",
           "memo": "",
-          "ln": "",
-          "la": "",
           "lat": 39.126244299999996,
           "lng": 117.198986,
           "addr": "131 Xin Hua Lu, 金街 He Ping Qu, Tian Jin Shi, 중국 300022",
-          "pid": "ChIJXUrXDr397TURejLM-h8Dq9c"
+          "pid": "ChIJXUrXDr397TURejLM-h8Dq9c",
+          "sid": "stmw1te9laail"
         },
         {
           "id": 13,
