@@ -664,7 +664,7 @@ return `<div class="scr"><div class="hd"><button class="back" onclick="goBack()"
 <input class="am" inputmode="decimal" placeholder="0" value="${fm(E.amt)}" oninput="xa(this)"><div class="kw" id="kw">${conv()}</div><div class="rt">1${E.cur} = ₩${rateE()}</div></div>
 <div class="form">`+fg('날짜',sel('x_d',dayOpts(true),E.day,'onchange="E.day=+this.value;E.iid=0;render()"'),1)+lkField()+
 fg('카테고리',`<div class="cats">${CL.map(c=>`<button class="${E.cat==c?'on':''}" ${E.cat==c?`style="background:${CATS[c][0]};border-color:${CATS[c][1]};color:${CATS[c][1]}"`:''} onclick="E.cat='${c}';render()">${c}</button>`).join('')}</div>`,1)+
-(E.cat=='교통'?fg('출발 → 도착',`<div class="mr">${inp('x_f',E.fr,'placeholder="출발" oninput="E.fr=this.value"')}<span style="color:var(--sub)">→</span>${inp('x_to',E.to,'placeholder="도착" oninput="E.to=this.value"')}</div>`):'')+
+(E.cat=='교통'?fg('출발 → 도착',`<div class="mr" style="align-items:center">${inp('x_f',E.fr,'placeholder="출발" oninput="E.fr=this.value"')}<span style="color:var(--sub);line-height:1;flex:none">→</span>${inp('x_to',E.to,'placeholder="도착" oninput="E.to=this.value"')}</div>`):'')+
 fg('내역',inp('x_t',E.title,'oninput="E.title=this.value"'),1)+fg('메모',inp('x_m',E.memo,'oninput="E.memo=this.value"'))+`</div>`+
 (E.id?`<div class="dlr"><button onclick="if(confirm('이 지출 내역을 삭제할까요?')){S.exp=S.exp.filter(x=>x.id!=${E.id});save();goBack();syncNow()}">이 내역 삭제</button></div>`:'')+btns('',bP('저장','saveExp()'),'xbar')+`</div>`}
 function xa(el){let s=el.value.replace(/[^\d.]/g,'');const p=s.split('.');if(p.length>2)s=p[0]+'.'+p.slice(1).join('');E.amt=s;el.value=fm(s);$('kw').innerHTML=conv()}
