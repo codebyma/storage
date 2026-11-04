@@ -5887,23 +5887,6 @@
           "la": ""
         },
         {
-          "id": 89,
-          "day": 2,
-          "type": "restaurant",
-          "label": "식당",
-          "title": "北李妈妈菜",
-          "sub": "",
-          "time": "",
-          "map": "https://www.google.com/maps/search/?api=1&query=%E9%87%91%E6%8E%8C%E5%8B%BA&query_place_id=ChIJoRlR84AH7jURykYy7xnpJSk",
-          "memo": "저녁\n꿔바로우 / 궁보계정",
-          "ln": "",
-          "la": "",
-          "lat": 39.118618999999995,
-          "lng": 117.172029,
-          "addr": "459C+CRR, Xi Hu Cun Da Jie, Nan Kai Qu, Tian Jin Shi, 중국 300073",
-          "pid": "ChIJoRlR84AH7jURykYy7xnpJSk"
-        },
-        {
           "id": 203,
           "day": 2,
           "type": "restaurant",
