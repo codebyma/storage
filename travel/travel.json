@@ -5907,6 +5907,22 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
+          "id": 206,
+          "day": 2,
+          "type": "place",
+          "title": "모어요거트(茉酸奶)",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=166%20Xing'an%20Road&query_place_id=ChIJ1WlqIrz97TUR8e3JZd-U7ys",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소",
+          "lat": 39.12731,
+          "lng": 117.20091,
+          "addr": "166 Xing An Lu, He Ping Qu, Tian Jin Shi, 중국 300022",
+          "pid": "ChIJ1WlqIrz97TUR8e3JZd-U7ys"
+        },
+        {
           "id": 91,
           "day": 3,
           "type": "hotel",
@@ -6381,7 +6397,7 @@
           "iid": 203
         }
       ],
-      "nid": 206
+      "nid": 207
     }
   ],
   "nid": 190
