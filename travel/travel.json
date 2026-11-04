@@ -5716,6 +5716,18 @@
           "pid": "ChIJ1WlqIrz97TUR8e3JZd-U7ys"
         },
         {
+          "id": 189,
+          "day": 1,
+          "type": "other",
+          "title": "마사지",
+          "time": "",
+          "map": "",
+          "memo": "전신",
+          "ln": "",
+          "la": "",
+          "label": "기타"
+        },
+        {
           "id": 80,
           "day": 2,
           "type": "hotel",
@@ -6251,7 +6263,7 @@
           "iid": 187
         }
       ],
-      "nid": 189
+      "nid": 190
     }
   ],
   "nid": 189
