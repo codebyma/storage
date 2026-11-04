@@ -5693,6 +5693,18 @@
           "label": "장소"
         },
         {
+          "id": 183,
+          "day": 1,
+          "type": "place",
+          "title": "LECLAIR DE GENIE",
+          "time": "",
+          "map": "",
+          "memo": "에끌레어",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 80,
           "day": 2,
           "type": "hotel",
@@ -6203,7 +6215,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 183
+      "nid": 184
     }
   ],
   "nid": 189
