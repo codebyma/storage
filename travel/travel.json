@@ -5715,6 +5715,18 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
+          "id": 192,
+          "day": 1,
+          "type": "place",
+          "title": "빈장따오",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "장소"
+        },
+        {
           "id": 80,
           "day": 2,
           "type": "hotel",
@@ -6264,7 +6276,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 192
+      "nid": 193
     }
   ],
   "nid": 189
