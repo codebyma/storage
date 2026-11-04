@@ -5700,6 +5700,22 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
+          "id": 187,
+          "day": 1,
+          "type": "cafe",
+          "title": "모어요거트",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=166%20Xing'an%20Road&query_place_id=ChIJ1WlqIrz97TUR8e3JZd-U7ys",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "카페",
+          "lat": 39.12731,
+          "lng": 117.20091,
+          "addr": "166 Xing An Lu, He Ping Qu, Tian Jin Shi, 중국 300022",
+          "pid": "ChIJ1WlqIrz97TUR8e3JZd-U7ys"
+        },
+        {
           "id": 80,
           "day": 2,
           "type": "hotel",
@@ -6224,7 +6240,7 @@
           "to": "리버사이드66"
         }
       ],
-      "nid": 187
+      "nid": 188
     }
   ],
   "nid": 189
