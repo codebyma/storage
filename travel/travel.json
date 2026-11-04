@@ -5915,6 +5915,22 @@
           "pid": "ChIJF4pq67f97TURb7lv0yT4Uyw"
         },
         {
+          "id": 200,
+          "day": 2,
+          "type": "cafe",
+          "title": "오대도 카페(天津市和平区壹两叁咖啡厅)",
+          "time": "",
+          "map": "https://www.google.com/maps/search/?api=1&query=%E5%92%96%E5%95%A1&query_place_id=ChIJeZYZdVX87TUR1hPu57TtGk8",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "카페",
+          "lat": 39.109563,
+          "lng": 117.22337200000001,
+          "addr": "중국 톈진 시 허시 구 邮政编码: 300203",
+          "pid": "ChIJeZYZdVX87TUR1hPu57TtGk8"
+        },
+        {
           "id": 91,
           "day": 3,
           "type": "hotel",
@@ -6355,7 +6371,7 @@
           "rt": 198.85
         }
       ],
-      "nid": 200
+      "nid": 201
     }
   ],
   "nid": 189
