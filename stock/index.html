@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>주식 현황</title>
-<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#f9fafb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121214" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -18,59 +18,61 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1115;
-    --surface1:#171a20;
-    --surface2:#1e232b;
-    --border:#2a3038;
-    --border-strong:#3a4149;
-    --text1:#edf0f3;
-    --text2:#aab3c0;
-    --text3:#8a94a3;
-    --mint:#4ade9a;
-    --mint-dim:#1f3a2c;
-    --gold:#e8b04b;
-    --gold-dim:#3a2f18;
-    --blue:#5b9bd5;
-    --blue-dim:#1c2c3a;
-    --red:#e2635a;
-    --red-dim:#3a1e1c;
+    --bg:#121214;
+    --surface1:#1c1c20;
+    --surface2:#26262c;
+    --border:#2a2a30;
+    --border-strong:#34343b;
+    --text1:#f2f2f5;
+    --text2:#a3a3ae;
+    --text3:#8b8b95;
+    --mint:#2ed3c4;
+    --mint-dim:#17302d;
+    --gold:#e4b85c;
+    --gold-dim:#332b17;
+    --blue:#6aa6ea;
+    --blue-dim:#1d2b3a;
+    --red:#ff7b80;
+    --red-dim:#3b2224;
     --lime:#a3e635;
-    --bar-up:#f2574d;
-    --bar-down:#4a9af0;
-    --divider-gray:#3a4149;
-    --cta-bg:#00a38d;
-    --cta-text:#ffffff;
-    --fs-display:28px;  /* 앱 대타이틀 */
-    --fs-title:24px;    /* 섹션·시트 타이틀 */
+    --bar-up:#ef5b5b;
+    --bar-down:#5a9be8;
+    --divider-gray:#1a1a1e;
+    --cta-bg:#2ed3c4;
+    --cta-text:#06302c;
+    --r-field:12px;     /* 입력칸·버튼 둥글기 */
+    --r-card:16px;      /* 카드 둥글기 */
+    --fs-display:24px;  /* 앱 대타이틀 */
+    --fs-title:20px;    /* 섹션·시트 타이틀 */
     --fs-num:20px;      /* 핵심 숫자 강조 */
-    --fs-lead:18px;     /* 포트폴리오 카드 종목명 */
-    --fs-body:16px;     /* 기본 본문·입력·종목명 */
+    --fs-lead:17px;     /* 포트폴리오 카드 종목명 */
+    --fs-body:15px;     /* 기본 본문·입력 */
     --fs-sub:14px;      /* 버튼·탭·목록 행 */
     --fs-caption:13px;  /* 라벨·설명·보조 */
     --fs-micro:12px;    /* 공간 제약(막대 라벨·뱃지) 전용 */
   }
   body.light-theme{
-    --bg:#f9fafb;
-    --surface1:#ffffff;
-    --surface2:#e9ecf0;
-    --border:#e2e5ea;
-    --border-strong:#d6dae1;
-    --text1:#3b4452;
-    --text2:#444f5d;
-    --text3:#626c79;
-    --mint:#147c52;
-    --mint-dim:#e6f7f0;
-    --gold:#90620c;
+    --bg:#ffffff;
+    --surface1:#f7f8fa;
+    --surface2:#f1f1f3;
+    --border:#ececf0;
+    --border-strong:#e0e0e6;
+    --text1:#1b1b1f;
+    --text2:#62626c;
+    --text3:#7b7b86;
+    --mint:#0f9d90;
+    --mint-dim:#e2f6f3;
+    --gold:#9a6a10;
     --gold-dim:#fbf3e2;
-    --blue:#2f6fb0;
-    --blue-dim:#eaf3fb;
-    --red:#c33a2f;
-    --red-dim:#fcebe9;
+    --blue:#3b78c4;
+    --blue-dim:#eaf2fb;
+    --red:#e5484d;
+    --red-dim:#fdeceb;
     --lime:#65a30d;
-    --bar-up:#e5382c;
-    --bar-down:#2f80ed;
-    --divider-gray:#e2e5ea;
-    --cta-bg:#00a38d;
+    --bar-up:#e5484d;
+    --bar-down:#3b82e0;
+    --divider-gray:#f4f4f6;
+    --cta-bg:#13a99c;
     --cta-text:#ffffff;
   }
   /* 라이트 모드: 바닥 페이지와 바텀시트는 아주 옅은 회색, 카드·입력 박스는 흰색/진한 회색으로 올려서 구분 */
@@ -1166,6 +1168,126 @@
   .account-total-value{font-size:var(--fs-body);color:var(--text1);}
   .account-pl-line{font-size:var(--fs-caption);}
   .account-row-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+
+  
+  /* ===================================================================
+     여행 페이지 디자인 톤 적용 (차분한 면 배경 · 얇은 글씨 · 넉넉한 여백)
+     원칙: 테두리 대신 옅은 배경면 / 굵기는 400·500, 제목만 600 / 색은 민트 1개 포인트
+     값은 맨 위 :root·body.light-theme 변수에서만 조정
+     =================================================================== */
+  html,body{-webkit-font-smoothing:antialiased;}
+  body{font-weight:400;line-height:1.45;}
+  .num{font-weight:inherit;}
+
+  /* 앱 헤더 */
+  .app-header{padding:28px 20px 0;}
+  .app-title{font-weight:600;letter-spacing:-0.3px;}
+  .theme-icon-btn{border:0;background:var(--surface1);color:var(--text2);border-radius:50%;}
+  .save-status{color:var(--text3);}
+
+  /* 섹션 타이틀: 얇게, 간격은 넓게 */
+  .panel-title,.breakdown-title,.section-title{font-weight:600;letter-spacing:-0.2px;margin:28px 0 12px;}
+  .panel-title.sub-title{font-weight:500;margin:0 0 10px;}
+  .sheet-body .panel-title.sub-title{font-size:var(--fs-lead);font-weight:500;}
+  .sheet-header{font-weight:600;}
+
+  /* 소유자 탭 · 기간 탭 : 테두리 없는 칩 */
+  .owner-tabs{gap:8px;padding:20px 20px 0;}
+  .owner-tab,.range-tab{border:0;background:var(--surface1);color:var(--text2);border-radius:var(--r-field);font-weight:400;}
+  .owner-tab{padding:12px 0;}
+  .owner-tab.active,.range-tab.active{background:var(--mint-dim);color:var(--mint);font-weight:500;}
+
+  /* 요약 카드 */
+  .summary{gap:12px;padding:16px 20px 0;}
+  .metric{border:0;background:var(--surface1);border-radius:var(--r-card);padding:16px;}
+  .metric .label{color:var(--text2);margin-bottom:8px;}
+  .metric .value{font-weight:500;}
+
+  /* 메인 탭: 얇은 밑줄 */
+  .main-tabs{margin-top:36px;border-bottom:1px solid var(--border);}
+  .main-tab{font-weight:400;color:var(--text2);padding:14px 0;}
+  .main-tab.active{font-weight:500;color:var(--text1);border-bottom-color:var(--text1);}
+
+  /* 구분선: 굵은 회색띠 → 아주 연하게 */
+  .section-divider-gray{height:8px;}
+  .entry-row{border-bottom:1px solid var(--border);}
+  .pension-owner-divider{border-top:1px dashed var(--border-strong);}
+
+  /* 포트폴리오 카드 */
+  .breakdown-row{padding:24px 0;}
+  .breakdown-name{font-weight:400;}
+  .breakdown-ratio{font-weight:500;}
+  .breakdown-bar-track{height:6px;border-radius:3px;background:var(--surface2);}
+  .breakdown-bar-target{background:var(--text2);opacity:0.7;}
+  .rebal-badge{font-weight:400;border-radius:8px;padding:3px 9px;}
+  .stale-price-badge{font-weight:400;border-radius:6px;}
+  .price-highlight,.stock-stat-value.price-highlight{font-weight:400;}
+
+  /* 버튼: 테두리 제거, 옅은 면 */
+  .add-btn,.btn-ghost,.snap-prune-btn{
+    border:0;background:var(--surface2);color:var(--text1);
+    border-radius:var(--r-field);font-weight:400;
+  }
+  .add-btn{padding:8px 14px;}
+  .btn-primary{border:0;background:var(--mint-dim);color:var(--mint);border-radius:var(--r-field);padding:9px 16px;font-weight:500;}
+  .cta-btn{border:0;background:var(--cta-bg);color:var(--cta-text);border-radius:14px;padding:14px 12px;font-weight:500;}
+  .action-btn-prominent{border:0;background:var(--surface2);color:var(--text1);border-radius:var(--r-field);padding:11px 10px;font-weight:500;}
+  .mini-add{border:0;background:var(--surface2);color:var(--text2);border-radius:10px;}
+  .text-link-btn{font-weight:400;color:var(--text2);}
+  .entry-row .del{border:0;background:var(--red-dim);color:var(--red);border-radius:6px;padding:3px 8px;}
+  .snap-prune-btn:active,.add-btn:active,.btn-ghost:active{background:var(--border);}
+
+  /* 입력칸: 테두리 없이 옅은 면 */
+  .form-row input,.form-row select,
+  .date-display-wrap,
+  .search-sort-row input[type="text"],.search-sort-row select,
+  .sim-input,
+  .json-panel textarea{
+    border:0;background:var(--surface2);border-radius:var(--r-field);outline:none;
+  }
+  .form-row input,.form-row select,.date-display-wrap{padding-left:14px;padding-right:14px;}
+  .search-sort-row input[type="text"],.sim-input{padding-left:14px;padding-right:14px;}
+  .search-sort-row select{padding-left:14px;}
+  .json-panel textarea{border-radius:var(--r-field);padding:14px;}
+  .form-panel{border-top:0;border-bottom:0;padding:6px 0;margin:8px 0;}
+
+  /* 바텀시트: 둥글게, 그림자 약하게 */
+  .sheet-overlay,.sheet-overlay2{background:rgba(0,0,0,0.5);}
+  .bottom-sheet,.bottom-sheet2{border-radius:26px 26px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,0.14);}
+  body.light-theme .bottom-sheet,body.light-theme .bottom-sheet2{background:var(--bg);}
+  .sheet-close-btn{color:var(--text2);}
+
+  /* 툴팁·토스트: 테두리 대신 부드러운 그림자 */
+  .trend-tip,.yield-tooltip,#pensionTip,.toast{
+    border:1px solid var(--border);border-radius:12px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.12);
+  }
+  .toast{border-radius:100px;}
+  .yield-tooltip-arrow,#pensionTip .tip-arrow{border-color:var(--border);}
+  .trend-guide{background:var(--border-strong);}
+
+  /* 안내·칩·카드류 */
+  .yield-card,.pension-acc-card,.realized-sum{border-radius:12px;background:var(--surface2);}
+  .yield-value{font-weight:500;}
+  .pension-entry{border:0;background:var(--surface1);border-radius:var(--r-card);padding:16px;}
+  .pension-entry-value{font-weight:500;}
+  .pension-sum{border:0;border-radius:12px;}
+  .pension-sum-owner{background:var(--blue-dim);}
+  .pension-sum-total{background:var(--mint-dim);}
+  .pension-badge{border:0;background:var(--surface2);border-radius:6px;padding:2px 7px;}
+  .pension-chip{border:0;background:var(--surface2);border-radius:14px;padding:6px 12px;}
+  .pension-chip.rec{background:var(--blue-dim);color:var(--blue);}
+  .pension-help-toggle,.pension-help-body{background:var(--surface2);}
+  .tip-q{border:0;background:var(--surface2);}
+  .bs-acc.open .bs-acc-body{border-radius:12px;padding:8px 14px;}
+  .pension-help-body b,.pension-help-body .ph-h{font-weight:500;}
+  .realized-sum-row .num{font-weight:400;}
+  .trend-latest{font-weight:500;}
+  .div-bar{border-radius:4px 4px 0 0;}
+  .div-bar-col.current .div-bar-label,.div-bar-col.current .div-bar-amount{font-weight:500;}
+  .sim-row-ratio .sim-arrow-val{font-weight:500;}
+  .bs-group-head{font-weight:500;}
+  .empty-state{color:var(--text2);}
 
   /* ===== 유틸리티 클래스 (자주 반복되는 단일 속성 — 항상 이 파일의 마지막에 위치해 컴포넌트 클래스보다 우선 적용됨) ===== */
   /* !important를 붙인 이유: .panel-title.sub-title 처럼 클래스 2개가 합쳐진 규칙은
