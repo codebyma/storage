@@ -5319,6 +5319,18 @@
           "ph": []
         },
         {
+          "id": 217,
+          "day": -1,
+          "type": "other",
+          "title": "지출 내역 모아보기",
+          "time": "",
+          "map": "",
+          "memo": "",
+          "ln": "",
+          "la": "",
+          "label": "기타"
+        },
+        {
           "id": 130,
           "day": 0,
           "type": "flight",
@@ -6568,7 +6580,7 @@
           "sub": "음료"
         }
       ],
-      "nid": 217,
+      "nid": 218,
       "stays": [
         {
           "title": "Atour S Hotel, Henglong Plaza, Binjiang Road, Tianjin",
