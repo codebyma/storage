@@ -1,8 +1,8 @@
 /* 여행 앱 오프라인용 서비스 워커
-   - 앱 화면(index.html)은 네트워크 우선, 3.5초 안에 응답이 없거나 오프라인이면 저장해 둔 화면을 사용
+   - 앱 화면(index.html)은 저장해 둔 화면을 먼저 바로 보여주고, 뒤에서 최신본을 받아 다음 실행부터 적용 (저장본이 없을 때만 네트워크 대기)
    - Leaflet·Sortable·폰트는 한 번 받으면 저장해 두고 이후엔 저장본 사용
    - GitHub 서버(api.github.com), 구글 지도, travel.json 요청은 건드리지 않음 */
-const V = 'travel-v1';
+const V = 'travel-v2';
 const SC = self.registration.scope;
 const CORE = [SC, SC + 'index.html'];
 const EXTRA = [
@@ -32,22 +32,18 @@ self.addEventListener('activate', e => {
 
 const okRes = r => r && (r.ok || r.type === 'opaque');
 
-async function nav(req) {
+async function nav(e) {
+  const req = e.request;
   const c = await caches.open(V);
   const key = new URL(req.url); key.search = ''; key.hash = '';
-  const net = fetch(req).then(res => {
+  const net = fetch(key.href, { cache: 'no-cache' }).then(res => {
     if (res && res.ok && !res.redirected && res.type === 'basic') {
       for (const k of new Set([key.href, SC, SC + 'index.html'])) c.put(k, res.clone());
     }
     return res;
   });
-  const first = await Promise.race([
-    net.catch(() => null),
-    new Promise(r => setTimeout(() => r(null), 3500))
-  ]);
-  if (first) return first;
   const hit = (await c.match(key.href)) || (await c.match(SC)) || (await c.match(SC + 'index.html'));
-  if (hit) return hit;
+  if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
   return net.catch(() => Response.error());
 }
 
@@ -74,7 +70,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   const u = new URL(r.url);
   if (u.origin === location.origin) {
-    if (r.mode === 'navigate') { e.respondWith(nav(r)); return; }
+    if (r.mode === 'navigate') { e.respondWith(nav(e)); return; }
     if (/\/(manifest\.json|icon-\d+\.png)$/.test(u.pathname)) e.respondWith(swr(r));
     return;
   }
