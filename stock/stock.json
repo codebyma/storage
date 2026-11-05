@@ -1510,6 +1510,173 @@
           "amount": 24242
         }
       ]
+    },
+    {
+      "id": "divrec_1qxtz67",
+      "key": "133690",
+      "name": "Ⓣ 나스닥100",
+      "ticker": "133690",
+      "month": "2026-10",
+      "date": "2026-10-29",
+      "perShare": 220,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 33,
+          "amount": 7260
+        },
+        {
+          "accountId": "acc_1ynxc3d",
+          "quantity": 47,
+          "amount": 10340
+        },
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 34,
+          "amount": 7480
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 14,
+          "amount": 3080
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 14,
+          "amount": 3080
+        }
+      ]
+    },
+    {
+      "id": "divrec_qhbeebl",
+      "key": "360750",
+      "name": "Ⓣ S&P500",
+      "ticker": "360750",
+      "month": "2026-10",
+      "date": "2026-10-29",
+      "perShare": 60,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 208,
+          "amount": 12480
+        },
+        {
+          "accountId": "acc_1ynxc3d",
+          "quantity": 385,
+          "amount": 23100
+        },
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 249,
+          "amount": 14940
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 137,
+          "amount": 8220
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 56,
+          "amount": 3360
+        }
+      ]
+    },
+    {
+      "id": "divrec_ayt8pej",
+      "key": "458730",
+      "name": "Ⓣ 미국배당다우존스",
+      "ticker": "458730",
+      "month": "2026-10",
+      "date": "2026-10-29",
+      "perShare": 35,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 26,
+          "amount": 910
+        },
+        {
+          "accountId": "acc_brrccwl",
+          "quantity": 335,
+          "amount": 11725
+        },
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 194,
+          "amount": 6790
+        }
+      ]
+    },
+    {
+      "id": "divrec_0gj7baq",
+      "key": "329650",
+      "name": "Ⓚ TRF3070",
+      "ticker": "329650",
+      "month": "2026-10",
+      "date": "2026-10-14",
+      "perShare": 29,
+      "accounts": [
+        {
+          "accountId": "acc_5ma36fu",
+          "quantity": 395,
+          "amount": 11455
+        }
+      ]
+    },
+    {
+      "id": "divrec_p1dc8qw",
+      "key": "379800",
+      "name": "Ⓚ 미국S&P500",
+      "ticker": "379800",
+      "month": "2026-10",
+      "date": "2026-10-29",
+      "perShare": 117,
+      "accounts": [
+        {
+          "accountId": "acc_o4bjqgm",
+          "quantity": 143,
+          "amount": 16731
+        }
+      ]
+    },
+    {
+      "id": "divrec_ev90pij",
+      "key": "466940",
+      "name": "Ⓣ 은행고배당플러스TOP10",
+      "ticker": "466940",
+      "month": "2026-10",
+      "date": "2026-10-29",
+      "perShare": 104,
+      "accounts": [
+        {
+          "accountId": "acc_1q4nsbn",
+          "quantity": 23,
+          "amount": 2392
+        }
+      ]
+    },
+    {
+      "id": "divrec_e7u2ew9",
+      "key": "182480",
+      "name": "Ⓣ 미국MSCI리츠(합성H)",
+      "ticker": "182480",
+      "month": "2026-10",
+      "date": "2026-10-29",
+      "perShare": 41,
+      "accounts": [
+        {
+          "accountId": "acc_aioddia",
+          "quantity": 35,
+          "amount": 1435
+        },
+        {
+          "accountId": "acc_o4bjqgm",
+          "quantity": 83,
+          "amount": 3403
+        }
+      ]
     }
   ],
   "stockCatalog": [
