@@ -1295,6 +1295,11 @@
   html:has(body.light-theme){background:#ffffff;}
   body{min-height:100vh;background:var(--bg);}
 
+  
+  /* 사파리 하단 주소창 뒤로 내용이 비치지 않게: 여행 페이지의 하단 고정바처럼 배경색 띠로 덮음 */
+  body::after{content:"";position:fixed;left:0;right:0;bottom:0;height:calc(env(safe-area-inset-bottom,0px) + 76px);background:var(--bg);z-index:40;pointer-events:none;}
+  body{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px));}
+
   /* ===== 유틸리티 클래스 (자주 반복되는 단일 속성 — 항상 이 파일의 마지막에 위치해 컴포넌트 클래스보다 우선 적용됨) ===== */
   /* !important를 붙인 이유: .panel-title.sub-title 처럼 클래스 2개가 합쳐진 규칙은
      명시도가 더 높아서, 유틸리티가 나중에 나와도 밀려버리는 문제가 반복적으로 있었음.
