@@ -483,7 +483,7 @@ const HRT=(z=18)=>`<svg class="hsv" width="${z}" height="${z}" viewBox="0 0 24 2
 let bestF='';
 const favs=()=>(S&&S.items||[]).filter(x=>x.fav);
 const favBtn=x=>RM||x.type=='flight'||x.day<0?'':`<span class="hrt${x.fav?' on':''}" role="button" aria-label="마음에 든 곳" onclick="event.stopPropagation();favTog(${x.id})">${HRT(18)}</span>`;
-const favBar=()=>{const n=favs().length;if(!n&&dd(S)!='지난 여행')return'';return`<button class="fvb" onclick="bestF='';go('best')"><span>${HRT(16)}마음에 든 곳</span><b>${n}곳 ›</b></button>`};
+const favBar=()=>{const n=favs().length;if(!n)return'';return`<button class="fvb" onclick="bestF='';go('best')"><span>${HRT(16)}마음에 든 곳</span><b>${n}곳 ›</b></button>`};
 function favTog(id){const x=S.items.find(i=>i.id==id);if(!x)return;const y=scrollY;if(x.fav)delete x.fav;else x.fav=1;save();render();scrollTo(0,y);syncNow()}
 function favMap(id){const x=S.items.find(i=>i.id==id);if(!x)return;const u=x.map||(x.lat!=null?gmPlace(x.title,x.pid):'');if(u)go2(u)}
 function favShowMap(){GM.on=true;GM.fav=true;GM.day=-1;go('trip')}
