@@ -371,14 +371,18 @@ x[k].push({p:name,t:th});save();$(k=='vp'?'vps':'phs').innerHTML=thumbs(x,k)}cat
 h.textContent='';render();syncNow()}
 const closeLb=()=>$('lb').classList.remove('on');
 let LB={};
-async function lbLoad(j){const x=S.items.find(a=>a.id==LB.id),p=x&&x[LB.k]&&x[LB.k][j];if(!p)return;const im=document.querySelector(`#lbs img[data-j="${j}"]`);if(!im)return;
-if(PH[p.p]){im.src=PH[p.p];return}
-try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${p.p}`,{headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(!r.ok)throw 0;PH[p.p]=URL.createObjectURL(await r.blob());const u=PH[p.p],pre=new Image();pre.onload=()=>{const n=document.querySelector(`#lbs img[data-j="${j}"]`);if(!n)return;const f=new Image();f.className='lf';f.src=u;n.parentNode.appendChild(f);requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.add('on')))};pre.src=u}catch(e){}}
+const LBL={};
+async function lbLoad(j){const x=S.items.find(a=>a.id==LB.id),p=x&&x[LB.k]&&x[LB.k][j];if(!p)return;const q=()=>document.querySelector(`#lbs img[data-j="${j}"]`);if(!q())return;
+if(PH[p.p]){q().src=PH[p.p];return}
+if(!LBL[p.p])LBL[p.p]=(async()=>{try{const c=GH(),r=await fetch(`https://api.github.com/repos/${repoOf(c)}/contents/${p.p}`,{headers:{Authorization:'Bearer '+c.token,Accept:'application/vnd.github.raw'}});if(!r.ok)throw 0;PH[p.p]=URL.createObjectURL(await r.blob())}catch(e){}finally{delete LBL[p.p]}})();
+await LBL[p.p];const u=PH[p.p];if(!u)return;
+const pre=new Image();pre.onload=()=>{const n=q();if(!n||n.parentNode.querySelector('.lf'))return;const f=new Image();f.className='lf';f.src=u;n.parentNode.appendChild(f);requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.add('on')))};pre.src=u}
+async function lbAll(i){const x=S.items.find(a=>a.id==LB.id),L=x&&x[LB.k]||[];await lbLoad(i);L.map((_,j)=>j).filter(j=>j!=i).sort((a,b)=>Math.abs(a-i)-Math.abs(b-i)).forEach(j=>lbLoad(j))}
 function lbScr(){const s=$('lbs');if(!s||!s.clientWidth)return;const j=Math.max(0,Math.min(Math.round(s.scrollLeft/s.clientWidth),s.children.length-1));if(j==LB.i)return;LB.i=j;const c=$('lbc');if(c)c.textContent=`${j+1} / ${s.children.length}`;lbLoad(j)}
 function lbDel(){delPhoto(LB.id,LB.i,LB.k)}
 async function viewPhoto(id,i,k='ph'){const x=S.items.find(a=>a.id==id),L=x&&x[k]||[],lb=$('lb');if(!L[i])return;LB={id,k,i};
 lb.innerHTML=`<div class="lbs" id="lbs" onscroll="lbScr()">${L.map((p,j)=>`<div class="lbp"><img data-j="${j}" src="${PH[p.p]||p.t}"></div>`).join('')}</div>${L.length>1?`<div class="lbc" id="lbc">${i+1} / ${L.length}</div>`:''}<div class="lbb"><button class="dl" onclick="lbDel()">삭제</button><button onclick="closeLb()">닫기</button></div>`;lb.classList.add('on');
-const sc=$('lbs');sc.scrollLeft=sc.clientWidth*i;lbLoad(i)}
+const sc=$('lbs');sc.scrollLeft=sc.clientWidth*i;lbAll(i)}
 async function delPhoto(id,i,k='ph'){const x=S.items.find(a=>a.id==id),p=x[k].splice(i,1)[0];save();closeLb();const bx=$(k=='vp'?'vps':'phs');if(bx)bx.innerHTML=thumbs(x,k);render();syncNow();
 try{const c=GH(),cur=await ghReq('GET',null,p.p);if(cur)await ghReq('DELETE',{message:'사진 삭제',sha:cur.sha,branch:c.branch||'main'},p.p)}catch(e){}}
 /* --- 예약 정보 (확인번호·체크인 시간·링크·바우처) --- */
