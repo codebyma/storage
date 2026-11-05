@@ -1302,6 +1302,9 @@
   .bottom-sheet,.bottom-sheet2{box-shadow:none;}
   .bottom-sheet.open,.bottom-sheet2.open{box-shadow:0 -6px 24px rgba(0,0,0,0.14);}
 
+    /* 회색 카드 안의 버튼은 카드와 같은 회색이라 묻혀 보임 → 배경색(흰색/다크)으로 구분 */
+  .pension-acc-card .add-btn,.pension-acc-card .btn-ghost,.pension-entry .add-btn,.pension-entry .btn-ghost,.yield-card .add-btn{background:var(--bg);padding:9px 16px;}
+
   /* ===== 유틸리티 클래스 (자주 반복되는 단일 속성 — 항상 이 파일의 마지막에 위치해 컴포넌트 클래스보다 우선 적용됨) ===== */
   /* !important를 붙인 이유: .panel-title.sub-title 처럼 클래스 2개가 합쳐진 규칙은
      명시도가 더 높아서, 유틸리티가 나중에 나와도 밀려버리는 문제가 반복적으로 있었음.
