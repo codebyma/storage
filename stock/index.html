@@ -802,7 +802,7 @@
     color:var(--text2);
     font-size:var(--fs-sub);
   }
-  #assetTrendSection{padding-top:20px;}
+  #assetTrendSection{padding-top:0;}
   .json-panel{
     border-radius:12px;
   }
@@ -1395,12 +1395,15 @@
 
 <div id="pensionEntry"></div>
 
-<div id="assetTrendSection"></div>
-
 <div class="main-tabs" id="mainTabs">
+  <div class="main-tab" data-tab="trend" onclick="setMainTab('trend')">자산</div>
   <div class="main-tab" data-tab="breakdown" onclick="setMainTab('breakdown')">포트폴리오</div>
   <div class="main-tab" data-tab="accounts" onclick="setMainTab('accounts')">계좌</div>
-  <div class="main-tab" data-tab="dividend" onclick="setMainTab('dividend')">월별 배당</div>
+  <div class="main-tab" data-tab="dividend" onclick="setMainTab('dividend')">배당</div>
+</div>
+
+<div class="tab-panel" id="tabPanel_trend">
+<div id="assetTrendSection"></div>
 </div>
 
 <div class="tab-panel" id="tabPanel_breakdown">
@@ -1521,7 +1524,7 @@ let currentOwner = null;
 let openStocks = new Set();
 let openTxSections = new Set();
 let breakdownOpen = true;
-let currentMainTab = 'breakdown'; // 'breakdown' | 'accounts' | 'dividend'
+let currentMainTab = 'trend'; // 'trend' | 'breakdown' | 'accounts' | 'dividend'
 let breakdownSearch = '';
 let breakdownSort = 'plpct'; // 'value' | 'plpct'
 
@@ -1686,7 +1689,7 @@ function applyMainTab(){
   document.querySelectorAll('#mainTabs .main-tab').forEach(t=>{
     t.classList.toggle('active', t.dataset.tab === currentMainTab);
   });
-  ['breakdown','accounts','dividend'].forEach(k=>{
+  ['trend','breakdown','accounts','dividend'].forEach(k=>{
     const panel = document.getElementById('tabPanel_'+k);
     if(panel) panel.classList.toggle('active', k === currentMainTab);
   });
@@ -1695,6 +1698,7 @@ function setMainTab(tab){
   if(currentMainTab === tab) return;
   currentMainTab = tab;
   applyMainTab();
+  if(tab === 'trend') renderAssetTrend(); // 숨겨진 상태에서 그려진 그래프를 보일 때 다시 그림
 }
 
 function render(){
@@ -2437,7 +2441,7 @@ function renderAssetTrend(){
     trendChart = null;
     el.innerHTML = `
       <div class="panel-wrap">
-        <div class="panel-title title-row">
+        <div class="panel-title title-row mt-40">
           <span>자산 추이</span>
           ${saveBtnHtml}
         </div>
@@ -2625,7 +2629,7 @@ function renderAssetTrend(){
 
   el.innerHTML = `
     <div class="panel-wrap">
-      <div class="panel-title title-row">
+      <div class="panel-title title-row mt-40">
         <span>자산 추이</span>
         ${saveBtnHtml}
       </div>
