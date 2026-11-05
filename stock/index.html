@@ -35,6 +35,7 @@
     --red:#ff7b80;
     --red-dim:#3b2224;
     --lime:#a3e635;
+    --adj:#b794f6;
     --bar-up:#ef5b5b;
     --bar-down:#5a9be8;
     --divider-gray:#1a1a1e;
@@ -69,6 +70,7 @@
     --red:#e5484d;
     --red-dim:#fdeceb;
     --lime:#65a30d;
+    --adj:#7c5cd6;
     --bar-up:#e5484d;
     --bar-down:#3b82e0;
     --divider-gray:#f4f4f6;
@@ -2369,7 +2371,7 @@ function showTrendTip(i){
     <div class="trend-tip-row"><span>평가금액</span><span class="num">${fmtWon(v)}</span></div>`;
   if(c.on.adj && c.adjValues && c.adjValues[i] !== null && c.adjValues[i] !== undefined){
     rows += `
-    <div class="trend-tip-row"><span>원금 증가 제외</span><span class="num" style="color:var(--blue)">${fmtWon(c.adjValues[i])}</span></div>`;
+    <div class="trend-tip-row"><span>원금 증가 제외</span><span class="num" style="color:var(--adj)">${fmtWon(c.adjValues[i])}</span></div>`;
   }
   if(c.on.cost && cost !== null){
     const pl = v - cost;
@@ -2604,7 +2606,7 @@ function renderAssetTrend(){
           ${trendOn('eval') ? `<polygon points="${areaPoints}" fill="${areaColor}" opacity="0.6"></polygon>` : ''}
           ${hasCost && trendOn('cost') ? `<polyline points="${costPts.join(' ')}" fill="none" stroke="var(--text3)" stroke-width="1" stroke-dasharray="4 3" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>` : ''}
           ${trendOn('eval') ? `<polyline points="${polyPoints}" fill="none" stroke="${lineColor}" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline>` : ''}
-          ${hasAdj && trendOn('adj') ? `<polyline points="${adjPts.join(' ')}" fill="none" stroke="var(--blue)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline>` : ''}
+          ${hasAdj && trendOn('adj') ? `<polyline points="${adjPts.join(' ')}" fill="none" stroke="var(--adj)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"></polyline>` : ''}
           ${hasTotalReturn && trendOn('ret') ? `<polyline points="${totalReturnPts.join(' ')}" fill="none" stroke="var(--gold)" stroke-width="1" stroke-dasharray="1 3.5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"></polyline>` : ''}
           ${plOverlaySvg}
         </svg>
@@ -2616,7 +2618,7 @@ function renderAssetTrend(){
         <span>${fmtDateDot(snaps[0].date)}</span>
         <span>${fmtDateDot(snaps[snaps.length-1].date)}</span>
       </div>
-      ${hasCost || hasAdj || hasTotalReturn || canPl ? `<div class="trend-legend"><button type="button" class="lg-chip${trendOn('eval') ? '' : ' off'}" onclick="toggleTrendSeries('eval')"><i class="lg-line"></i>평가금액</button>${hasAdj ? `<button type="button" class="lg-chip${trendOn('adj') ? '' : ' off'}" onclick="toggleTrendSeries('adj')"><i class="lg-line" style="border-top-color:var(--blue)"></i>원금 증가 제외</button>` : ''}${hasCost ? `<button type="button" class="lg-chip${trendOn('cost') ? '' : ' off'}" onclick="toggleTrendSeries('cost')"><i class="lg-dash"></i>투자원금</button>` : ''}${hasTotalReturn ? `<button type="button" class="lg-chip${trendOn('ret') ? '' : ' off'}" onclick="toggleTrendSeries('ret')"><i class="lg-dot"></i>배당 포함 총수익</button>` : ''}${canPl ? `<button type="button" class="lg-chip${trendOn('pl') ? '' : ' off'}" onclick="toggleTrendSeries('pl')"><i class="lg-bar"></i>직전 대비 손익${plUnit} (왼쪽 축)</button>` : ''}</div>` : ''}
+      ${hasCost || hasAdj || hasTotalReturn || canPl ? `<div class="trend-legend"><button type="button" class="lg-chip${trendOn('eval') ? '' : ' off'}" onclick="toggleTrendSeries('eval')"><i class="lg-line"></i>평가금액</button>${hasAdj ? `<button type="button" class="lg-chip${trendOn('adj') ? '' : ' off'}" onclick="toggleTrendSeries('adj')"><i class="lg-line" style="border-top-color:var(--adj)"></i>원금 증가 제외</button>` : ''}${hasCost ? `<button type="button" class="lg-chip${trendOn('cost') ? '' : ' off'}" onclick="toggleTrendSeries('cost')"><i class="lg-dash"></i>투자원금</button>` : ''}${hasTotalReturn ? `<button type="button" class="lg-chip${trendOn('ret') ? '' : ' off'}" onclick="toggleTrendSeries('ret')"><i class="lg-dot"></i>배당 포함 총수익</button>` : ''}${canPl ? `<button type="button" class="lg-chip${trendOn('pl') ? '' : ' off'}" onclick="toggleTrendSeries('pl')"><i class="lg-bar"></i>직전 대비 손익${plUnit} (왼쪽 축)</button>` : ''}</div>` : ''}
     `;
 
   }
