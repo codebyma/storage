@@ -4073,7 +4073,7 @@ function openGroupDividendForm(key, sid){
   panel.classList.toggle('open', willOpen);
   if(willOpen){
     document.getElementById(`divgrp_amount_${sid}`).value = '';
-    scrollToId(`divgrpform_${sid}`);
+    scrollFormIntoViewMinimal(`divgrpform_${sid}`);
   }
 }
 
@@ -4395,6 +4395,22 @@ function txFormHtml(stockId, field){
   `;
 }
 
+// 폼이 이미 보이면 스크롤하지 않고, 가려질 때만 필요한 만큼만 살짝 이동
+function scrollFormIntoViewMinimal(id){
+  setTimeout(()=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const sb2 = document.getElementById('sheetBody2');
+    const sb = document.getElementById('sheetBody');
+    const container = (sb2 && sb2.contains(el)) ? sb2 : (sb && sb.contains(el)) ? sb : null;
+    if(!container) return;
+    const c = container.getBoundingClientRect();
+    const e = el.getBoundingClientRect();
+    const pad = 16;
+    if(e.bottom > c.bottom - pad) container.scrollBy({ top: e.bottom - c.bottom + pad, behavior:'smooth' });
+    else if(e.top < c.top + pad) container.scrollBy({ top: e.top - c.top - pad, behavior:'smooth' });
+  }, 260);
+}
 function scrollToId(id){
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
