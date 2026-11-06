@@ -3086,7 +3086,7 @@ function buildTargetSheetContent(key, sid){
           <span class="field-label">배당락일</span>
           <div class="date-display-wrap">
             <span class="date-display-text" id="divgrp_date_${sid}_display" data-placeholder="날짜 선택">날짜 선택</span>
-            <input type="date" id="divgrp_date_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this); if(this.value){ const a=document.getElementById('divgrp_amount_${sid}'); if(a){ a.focus(); a.select(); } }">
+            <input type="date" id="divgrp_date_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)" onblur="if(this.value){ setTimeout(()=>{ const a=document.getElementById('divgrp_amount_${sid}'); if(a){ a.focus(); a.select(); } }, 100); }">
           </div>
         </div>
         <div class="field">
