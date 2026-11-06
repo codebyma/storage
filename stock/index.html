@@ -3086,7 +3086,7 @@ function buildTargetSheetContent(key, sid){
           <span class="field-label">배당락일</span>
           <div class="date-display-wrap">
             <span class="date-display-text" id="divgrp_date_${sid}_display" data-placeholder="날짜 선택">날짜 선택</span>
-            <input type="date" id="divgrp_date_${sid}" class="date-native-hidden" onchange="syncDateDisplay(this)" onblur="if(this.value){ setTimeout(()=>{ const a=document.getElementById('divgrp_amount_${sid}'); if(a){ a.focus(); a.select(); } }, 100); }">
+            <input type="date" id="divgrp_date_${sid}" class="date-native-hidden" onpointerdown="this.dataset.t=Date.now()" onfocus="this.dataset.t=Date.now()" onchange="syncDateDisplay(this); divDateAdvance(this,'${sid}',false)" onblur="divDateAdvance(this,'${sid}',true)">
           </div>
         </div>
         <div class="field">
@@ -4396,6 +4396,18 @@ function txFormHtml(stockId, field){
 }
 
 // 폼이 이미 보이면 스크롤하지 않고, 가려질 때만 필요한 만큼만 살짝 이동
+// 배당락일 선택이 끝나면 주당 배당금 칸으로 이동 (iOS가 선택창을 열 때 자동으로 보내는 change는 무시)
+let _divAdvanceTimer = null;
+function divDateAdvance(el, sid, fromBlur){
+  if(!el.value) return;
+  const opened = parseInt(el.dataset.t || '0', 10);
+  if(!fromBlur && Date.now() - opened < 700) return; // 열자마자 들어온 자동 선택
+  clearTimeout(_divAdvanceTimer);
+  _divAdvanceTimer = setTimeout(()=>{
+    const a = document.getElementById('divgrp_amount_' + sid);
+    if(a && document.activeElement !== a){ a.focus(); a.select(); }
+  }, fromBlur ? 120 : 350);
+}
 function scrollFormIntoViewMinimal(id){
   setTimeout(()=>{
     const el = document.getElementById(id);
