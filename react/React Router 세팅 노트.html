@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>React Router 세팅 노트</title>
+<meta name="color-scheme" content="light">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 /* Layout: single reading column, sticky-free; chip TOC on top, numbered setup steps, then reference tables */
 :root {
@@ -22,18 +23,7 @@
   --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0f1717; --surface: #162120; --code-bg: #0b1212; --fg: #e4eeec; --muted: #9db0ab;
-    --line: #2a3b39; --accent: #5cc9bd; --accent-soft: #17302d; --warn: #f0b667; --warn-soft: #2e2415;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #0f1717; --surface: #162120; --code-bg: #0b1212; --fg: #e4eeec; --muted: #9db0ab;
-  --line: #2a3b39; --accent: #5cc9bd; --accent-soft: #17302d; --warn: #f0b667; --warn-soft: #2e2415;
-  color-scheme: dark;
-}
+
 * { box-sizing: border-box; }
 body {
   background: var(--bg); color: var(--fg);
@@ -79,9 +69,51 @@ th { font-size: 12.5px; letter-spacing: .04em; color: var(--muted); background: 
 .check li::before { content: "□"; color: var(--accent); font-family: var(--font-mono); }
 footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
 </style>
+<style id="unified">
+/* ===== 공통 디자인 (모든 노트 페이지 공유) ===== */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --fg:#1d2421; --muted:#5d6965; --line:#dde2de;
+  --accent:#0d6b5a; --accent-soft:#dff1ec; --accent-fg:#ffffff;
+  --good:#1f7a3d; --good-soft:#e1f3e6; --bad:#b3322b; --bad-soft:#fbe6e3;
+  --warn:#8a4b00; --warn-soft:#fbeedb;
+  --code-bg:#eef1ee; --code-fg:#1d2421; --code-dim:#5d6965; --code-line:#dde2de; --code-muted:#5d6965;
+  --code-kw:#7a3fb0; --code-str:#2a7a2e; --code-type:#0b6f78;
+  --code-mark-bg:rgba(255,226,122,.6); --code-mark-fg:#3a2e00; --mark-bg:#ffe27a; --mark-fg:#3a2e00;
+  --c-key:#7a3fb0; --c-type:#0b6f78; --c-str:#2a7a2e; --c-com:#6b7a75; --c-tag:#b0431f;
+  --t-kw:#7a3fb0; --t-str:#2a7a2e; --t-num:#8a5a00; --t-cm:#6b7a75; --t-arrow:#0d6b5a;
+  --font-body:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-display:var(--font-body); --font-sans:var(--font-body);
+  --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace; --font-code:var(--font-mono);
+  color-scheme:light;
+}
+:root body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.75;word-break:keep-all;overflow-wrap:break-word}
+:root body :is(h1,h2,h3,h4){font-family:var(--font-body);font-weight:700;color:var(--fg);text-wrap:balance}
+:root body h1{font-size:clamp(28px,5.6vw,38px);line-height:1.3;letter-spacing:-.02em}
+:root body h2{font-size:24px;line-height:1.35;letter-spacing:-.01em}
+:root body h3{font-size:17px;line-height:1.45;letter-spacing:0}
+:root body .eyebrow{font-family:var(--font-body);font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+:root body :is(.lead,.lede){font-size:17px;line-height:1.7;color:var(--muted)}
+:root body :is(.wrap,.page):not(.shell>.wrap){max-width:760px;margin-left:auto;margin-right:auto}
+:root body main:not(.shell main){max-width:760px;margin-left:auto;margin-right:auto}
+:root body pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--line);border-radius:6px;font-family:var(--font-mono);font-size:13.5px;line-height:1.65}
+:root body pre code{background:none;color:inherit;border:0;padding:0;font-size:inherit}
+:root body :not(pre)>code{background:var(--code-bg);color:var(--fg);font-family:var(--font-mono);font-size:.88em;padding:1px 6px;border-radius:4px}
+:root body :is(.callout,.key,.thesis){background:var(--accent-soft);color:var(--fg);border:0;border-radius:6px;padding:16px 20px}
+:root body :is(.tablewrap,.table-wrap){background:var(--surface);border:1px solid var(--line);border-radius:6px}
+:root body :is(.tablewrap,.table-wrap) th{background:var(--code-bg);color:var(--muted);font-size:12.5px;letter-spacing:.04em}
+:root body :is(.tablewrap,.table-wrap) :is(th,td){border-bottom:1px solid var(--line)}
+:root body .toc a{background:var(--surface);border:1px solid var(--line);color:var(--fg);border-radius:999px;font-size:13.5px}
+:root body .toc a:hover{border-color:var(--accent);color:var(--accent)}
+:root body :is(.err,details,.summary){border-radius:6px}
+:root body a:focus-visible,:root body summary:focus-visible,:root body button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.back-nav{max-width:760px;margin:0 auto 24px;font-size:14px;line-height:1.4}
+.back-nav a{color:var(--accent);text-decoration:none;font-weight:500}
+.back-nav a:hover{text-decoration:underline;text-underline-offset:3px}
+</style>
 
 </head>
 <body>
+<div class="back-nav"><a href="%EB%A6%AC%EC%95%A1%ED%8A%B8%20%EB%85%B8%ED%8A%B8%20%EB%AA%A8%EC%9D%8C.html">← 리액트 노트 모음</a></div>
 <main>
   <header>
     <div class="eyebrow">React · TypeScript · Vite</div>
@@ -109,7 +141,7 @@ footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line)
     <div class="flow" aria-label="동작 순서">
       <span>URL 입력/클릭</span><i>→</i><span>router 객체에서 일치하는 라우트 찾기</span><i>→</i><span>RootLayout의 Outlet 자리에 페이지 렌더링</span>
     </div>
-    <div class="note">
+    <div class="callout note">
       <b>v7 import 규칙</b>
       v7에서는 패키지가 <code>react-router</code> 하나입니다. <code>createBrowserRouter</code>, <code>Link</code>, <code>Outlet</code>, 각종 훅은 <code>react-router</code>에서, <code>RouterProvider</code>만 <code>react-router/dom</code>에서 가져옵니다. <code>react-router-dom</code>은 더 이상 쓰지 않아도 됩니다.
     </div>

@@ -1,7 +1,8 @@
 <!doctype html><html lang="ko"><head>
 <title>리액트 노트 모음</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="color-scheme" content="light">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 /* Layout: 한 칼럼 목록. 날짜 | 제목과 요약 | 태그 순서의 행으로 쌓고, 위에 검색칸을 둔다. 새 노트는 목록 맨 위에 행을 추가한다. */
 :root {
@@ -76,6 +77,47 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
   .row { grid-template-columns: minmax(0, 1fr); }
   .date { padding-top: 0; }
 }
+</style>
+<style id="unified">
+/* ===== 공통 디자인 (모든 노트 페이지 공유) ===== */
+:root{
+  --bg:#f6f7f5; --surface:#ffffff; --fg:#1d2421; --muted:#5d6965; --line:#dde2de;
+  --accent:#0d6b5a; --accent-soft:#dff1ec; --accent-fg:#ffffff;
+  --good:#1f7a3d; --good-soft:#e1f3e6; --bad:#b3322b; --bad-soft:#fbe6e3;
+  --warn:#8a4b00; --warn-soft:#fbeedb;
+  --code-bg:#eef1ee; --code-fg:#1d2421; --code-dim:#5d6965; --code-line:#dde2de; --code-muted:#5d6965;
+  --code-kw:#7a3fb0; --code-str:#2a7a2e; --code-type:#0b6f78;
+  --code-mark-bg:rgba(255,226,122,.6); --code-mark-fg:#3a2e00; --mark-bg:#ffe27a; --mark-fg:#3a2e00;
+  --c-key:#7a3fb0; --c-type:#0b6f78; --c-str:#2a7a2e; --c-com:#6b7a75; --c-tag:#b0431f;
+  --t-kw:#7a3fb0; --t-str:#2a7a2e; --t-num:#8a5a00; --t-cm:#6b7a75; --t-arrow:#0d6b5a;
+  --font-body:"Noto Sans KR",system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-display:var(--font-body); --font-sans:var(--font-body);
+  --font-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace; --font-code:var(--font-mono);
+  color-scheme:light;
+}
+:root body{background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:16px;line-height:1.75;word-break:keep-all;overflow-wrap:break-word}
+:root body :is(h1,h2,h3,h4){font-family:var(--font-body);font-weight:700;color:var(--fg);text-wrap:balance}
+:root body h1{font-size:clamp(28px,5.6vw,38px);line-height:1.3;letter-spacing:-.02em}
+:root body h2{font-size:24px;line-height:1.35;letter-spacing:-.01em}
+:root body h3{font-size:17px;line-height:1.45;letter-spacing:0}
+:root body .eyebrow{font-family:var(--font-body);font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+:root body :is(.lead,.lede){font-size:17px;line-height:1.7;color:var(--muted)}
+:root body :is(.wrap,.page):not(.shell>.wrap){max-width:760px;margin-left:auto;margin-right:auto}
+:root body main:not(.shell main){max-width:760px;margin-left:auto;margin-right:auto}
+:root body pre{background:var(--code-bg);color:var(--code-fg);border:1px solid var(--line);border-radius:6px;font-family:var(--font-mono);font-size:13.5px;line-height:1.65}
+:root body pre code{background:none;color:inherit;border:0;padding:0;font-size:inherit}
+:root body :not(pre)>code{background:var(--code-bg);color:var(--fg);font-family:var(--font-mono);font-size:.88em;padding:1px 6px;border-radius:4px}
+:root body :is(.callout,.key,.thesis){background:var(--accent-soft);color:var(--fg);border:0;border-radius:6px;padding:16px 20px}
+:root body :is(.tablewrap,.table-wrap){background:var(--surface);border:1px solid var(--line);border-radius:6px}
+:root body :is(.tablewrap,.table-wrap) th{background:var(--code-bg);color:var(--muted);font-size:12.5px;letter-spacing:.04em}
+:root body :is(.tablewrap,.table-wrap) :is(th,td){border-bottom:1px solid var(--line)}
+:root body .toc a{background:var(--surface);border:1px solid var(--line);color:var(--fg);border-radius:999px;font-size:13.5px}
+:root body .toc a:hover{border-color:var(--accent);color:var(--accent)}
+:root body :is(.err,details,.summary){border-radius:6px}
+:root body a:focus-visible,:root body summary:focus-visible,:root body button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.back-nav{max-width:760px;margin:0 auto 24px;font-size:14px;line-height:1.4}
+.back-nav a{color:var(--accent);text-decoration:none;font-weight:500}
+.back-nav a:hover{text-decoration:underline;text-underline-offset:3px}
 </style>
 
 <div class="wrap">
