@@ -1,5 +1,5 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>리액트 노트 모음</title>
+<!doctype html><html lang="ko"><head>
+<title>리액트 노트 모음</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
@@ -88,12 +88,42 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
   <div class="tools">
     <label for="q" hidden>노트 검색</label>
     <input id="q" class="search" type="search" placeholder="제목, 내용, 태그로 검색" autocomplete="off">
-    <span id="count" class="count">노트 8개</span>
+    <span id="count" class="count">노트 11개</span>
   </div>
 
   <ul id="list" class="list">
+    <li data-search="React Router 세팅 노트 라우터 react-router routerprovider createbrowserrouter outlet 별칭 vite lazy link 404">
+      <a class="row" href="React%20Router%20%EC%84%B8%ED%8C%85%20%EB%85%B8%ED%8A%B8.html">
+        <span class="date">2026-11-10</span>
+        <span class="body">
+          <span class="name">React Router 세팅 노트</span>
+          <span class="sum">React Router v7 설치부터 <code>@</code> 별칭, RootLayout과 Outlet, <code>router.tsx</code>, 라우트 추가, Link, 404 처리까지 세팅 순서대로 정리했어요.</span>
+          <span class="tags"><span class="tag">라우터</span><span class="tag">React Router</span><span class="tag">Vite</span></span>
+        </span>
+      </a>
+    </li>
+    <li data-search="리액트 라우터 노트 라우터 react-router link usenavigate lazy 파라미터 404">
+      <a class="row" href="%EB%A6%AC%EC%95%A1%ED%8A%B8%20%EB%9D%BC%EC%9A%B0%ED%84%B0%20%EB%85%B8%ED%8A%B8.html">
+        <span class="date">2026-11-10</span>
+        <span class="body">
+          <span class="name">리액트 라우터 노트</span>
+          <span class="sum">URL에 따라 화면을 바꾸는 라우터를 <code>App.tsx</code>, <code>router.tsx</code>, RootLayout 구조 기준으로 세팅부터 페이지 추가까지 정리했어요. Link와 useNavigate, 주소 변수, lazy 로딩, 막혔을 때 확인할 것도 다뤄요.</span>
+          <span class="tags"><span class="tag">라우터</span><span class="tag">Link</span><span class="tag">lazy</span></span>
+        </span>
+      </a>
+    </li>
+    <li data-search="type과 interface 노트 타입 인터페이스 extends 교차 타입 선언 병합 유니온 튜플 props typescript 타입스크립트">
+      <a class="row" href="type%EA%B3%BC%20interface%20%EB%85%B8%ED%8A%B8.html">
+        <span class="date">2026-11-10</span>
+        <span class="body">
+          <span class="name">type과 interface 노트</span>
+          <span class="sum">props 타입을 정의할 때 type과 interface가 같은 점과 다른 점을 정리했어요. 이어받기(<code>extends</code>와 <code>&amp;</code>), 선언 병합, 유니온 표현 범위를 코드로 비교하고 고르는 기준과 연습 문제를 담았어요.</span>
+          <span class="tags"><span class="tag">type</span><span class="tag">interface</span><span class="tag">props</span><span class="tag">TypeScript</span></span>
+        </span>
+      </a>
+    </li>
     <li data-search="스프레드 연산자 노트 스프레드 spread rest 덮어쓰기 순서 props 전달 state 업데이트 배열 객체 복사 불변성 hxbutton 연습문제">
-      <a class="row" href="https://claude.ai/artifact/EcK2xcTK5qgvTRgGVctNN1" target="_blank" rel="noopener">
+      <a class="row" href="%EC%8A%A4%ED%94%84%EB%A0%88%EB%93%9C%20%EC%97%B0%EC%82%B0%EC%9E%90%20%EB%85%B8%ED%8A%B8.html">
         <span class="date">2026-11-10</span>
         <span class="body">
           <span class="name">스프레드 연산자 노트</span>
@@ -103,7 +133,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="퍼블리셔용 구조분해 튜토리얼 구조분해 destructuring props html 속성 퍼블리셔 기본값 이름 바꾸기 rest children typescript 타입">
-      <a class="row" href="https://claude.ai/artifact/4mT39TVogRK5MhxMDM5bLY" target="_blank" rel="noopener">
+      <a class="row" href="%ED%8D%BC%EB%B8%94%EB%A6%AC%EC%85%94%EC%9A%A9%20%EA%B5%AC%EC%A1%B0%EB%B6%84%ED%95%B4%20%ED%8A%9C%ED%86%A0%EB%A6%AC%EC%96%BC.html">
         <span class="date">2026-11-09</span>
         <span class="body">
           <span class="name">퍼블리셔용 구조분해 튜토리얼</span>
@@ -113,7 +143,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="props 타입 지정 입문 typescript 타입 buttonprops 선택 props 유니온 children 함수 props 에러 메시지 읽기 기본값">
-      <a class="row" href="https://claude.ai/artifact/6vhJd1xFUAgKT4uDj8JXVG" target="_blank" rel="noopener">
+      <a class="row" href="props%20%ED%83%80%EC%9E%85%20%EC%A7%80%EC%A0%95%20%EC%9E%85%EB%AC%B8.html">
         <span class="date">2026-11-09</span>
         <span class="body">
           <span class="name">props 타입 지정 입문</span>
@@ -123,7 +153,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="리액트 렌더링과 useeffect 렌더링 usestate 함수형 업데이트 의존성 배열 cleanup 옛날 값 타이머 setinterval strictmode">
-      <a class="row" href="https://claude.ai/artifact/EqRRm9K9ypxh3KRTSj8fKC" target="_blank" rel="noopener">
+      <a class="row" href="%EB%A6%AC%EC%95%A1%ED%8A%B8%20%EB%A0%8C%EB%8D%94%EB%A7%81%EA%B3%BC%20useEffect.html">
         <span class="date">2026-10-15</span>
         <span class="body">
           <span class="name">리액트 렌더링과 useEffect</span>
@@ -133,7 +163,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="리액트 클로저 노트 클로저 closure 렌더링 usestate 옛날 값 setTimeout 가방 함수형 업데이트 useref">
-      <a class="row" href="https://claude.ai/artifact/HbFyDhfjBfvUDcrY4gxDC7" target="_blank" rel="noopener">
+      <a class="row" href="%EB%A6%AC%EC%95%A1%ED%8A%B8%20%ED%81%B4%EB%A1%9C%EC%A0%80%20%EB%85%B8%ED%8A%B8.html">
         <span class="date">2026-10-15</span>
         <span class="body">
           <span class="name">리액트 클로저 노트</span>
@@ -143,7 +173,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="구조분해와 스프레드 노트 구조분해 스프레드 rest 나머지 연산자 배열 객체 복사 props usestate 불변성 얕은 복사 예제 연습문제">
-      <a class="row" href="https://claude.ai/artifact/FBRZjzeje9TYqCc7kuPAxC" target="_blank" rel="noopener">
+      <a class="row" href="%EA%B5%AC%EC%A1%B0%EB%B6%84%ED%95%B4%EC%99%80%20%EC%8A%A4%ED%94%84%EB%A0%88%EB%93%9C%20%EB%85%B8%ED%8A%B8.html">
         <span class="date">2026-10-15</span>
         <span class="body">
           <span class="name">구조분해와 스프레드 노트</span>
@@ -153,7 +183,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="리액트 함수 넘기기 노트 onclick 괄호 함수 호출 setstate 함수형 업데이트 렌더링 타이밍 usestate 배칭">
-      <a class="row" href="https://claude.ai/artifact/CwgRf3f8WvHJLF5aaJxMLN" target="_blank" rel="noopener">
+      <a class="row" href="%EB%A6%AC%EC%95%A1%ED%8A%B8%20%ED%95%A8%EC%88%98%20%EB%84%98%EA%B8%B0%EA%B8%B0%20%EB%85%B8%ED%8A%B8.html">
         <span class="date">2026-10-15</span>
         <span class="body">
           <span class="name">리액트 함수 넘기기 노트</span>
@@ -163,7 +193,7 @@ h1 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.3rem); font-weight: 700; letter-
       </a>
     </li>
     <li data-search="화살표 함수 예제집 화살표 함수 arrow function 기본 문법 map filter reduce this 비동기 async promise 커링 매개변수 객체 메서드 생성자">
-      <a class="row" href="https://claude.ai/artifact/291kruoCdb6Q4FAmhB6XJp" target="_blank" rel="noopener">
+      <a class="row" href="%ED%99%94%EC%82%B4%ED%91%9C%20%ED%95%A8%EC%88%98%20%EC%98%88%EC%A0%9C%EC%A7%91.html">
         <span class="date">2026-10-13</span>
         <span class="body">
           <span class="name">화살표 함수 예제집</span>

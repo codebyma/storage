@@ -1,0 +1,418 @@
+<!doctype html><html lang="ko"><head>
+<title>퍼블리셔용 구조분해 튜토리얼</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: 단일 읽기 컬럼. 코드 블록 속 "꺼낸 이름"은 형광펜(mark)으로 표시하는 것이 이 페이지의 유일한 강조 장치. */
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --fg: #16202b;
+  --muted: #566372;
+  --line: #d9dfe6;
+  --accent: #0b7a6b;
+  --accent-soft: #e0f1ee;
+  --mark-bg: #ffe27a;
+  --mark-fg: #3a2e00;
+  --code-bg: #0f1720;
+  --code-fg: #d6dee7;
+  --code-dim: #7c8a99;
+  --code-kw: #8cc8ff;
+  --code-str: #f2b880;
+  --code-type: #7fd9c9;
+  --code-mark-bg: rgba(255, 226, 122, 0.24);
+  --code-mark-fg: #ffe27a;
+  --warn: #b4401f;
+  --warn-soft: #fbe9e3;
+  --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f141a;
+    --surface: #171e26;
+    --fg: #e6ebf0;
+    --muted: #9aa7b4;
+    --line: #2a3440;
+    --accent: #4fd1bc;
+    --accent-soft: #14312d;
+    --mark-bg: #5a4b10;
+    --mark-fg: #ffe9a0;
+    --code-bg: #0a0f15;
+    --warn: #ff9a78;
+    --warn-soft: #3a1f17;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f141a;
+  --surface: #171e26;
+  --fg: #e6ebf0;
+  --muted: #9aa7b4;
+  --line: #2a3440;
+  --accent: #4fd1bc;
+  --accent-soft: #14312d;
+  --mark-bg: #5a4b10;
+  --mark-fg: #ffe9a0;
+  --code-bg: #0a0f15;
+  --warn: #ff9a78;
+  --warn-soft: #3a1f17;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  padding-block: 40px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.eyebrow { font-size: 13px; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
+h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.25; margin: 6px 0 12px; font-weight: 700; text-wrap: balance; letter-spacing: -0.02em; }
+h2 { font-size: 24px; line-height: 1.35; margin: 0; font-weight: 700; text-wrap: balance; letter-spacing: -0.01em; }
+h3 { font-size: 17px; margin: 0; font-weight: 700; }
+p { margin: 0; max-width: 65ch; }
+.lead { font-size: 18px; color: var(--muted); max-width: 60ch; }
+ul, ol { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; max-width: 65ch; }
+
+code.i, mark {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+code.i { background: var(--accent-soft); color: var(--accent); }
+mark { background: var(--mark-bg); color: var(--mark-fg); }
+
+/* code blocks */
+.code { background: var(--code-bg); border-radius: 8px; overflow: hidden; min-width: 0; }
+.code .cap {
+  font-family: var(--font-mono); font-size: 12px; color: var(--code-dim);
+  padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.code pre { margin: 0; padding: 14px 16px; overflow-x: auto; }
+.code code { font-family: var(--font-mono); font-size: 14px; line-height: 1.7; color: var(--code-fg); white-space: pre; }
+.k { color: var(--code-kw); }
+.s { color: var(--code-str); }
+.c { color: var(--code-dim); }
+.t { color: var(--code-type); }
+.h { background: var(--code-mark-bg); color: var(--code-mark-fg); border-radius: 3px; padding: 0 2px; }
+
+/* mapping table */
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 13px; color: var(--muted); font-weight: 500; white-space: nowrap; }
+td code { font-family: var(--font-mono); font-size: 13.5px; white-space: nowrap; }
+
+/* notes */
+.note { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; max-width: 65ch; }
+.note.warn { background: var(--warn-soft); border-color: transparent; }
+.note strong.t { color: var(--accent); }
+.note.warn strong.t { color: var(--warn); }
+
+/* steps */
+.steps { display: flex; flex-direction: column; gap: 20px; }
+.step { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.step .lab { font-size: 14px; color: var(--muted); }
+
+/* variants */
+.variants { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 16px; }
+.variant { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.variant p { font-size: 15px; }
+
+/* demo */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { position: relative; }
+.chip input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+.chip span {
+  display: inline-block; font-family: var(--font-mono); font-size: 14px;
+  padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg);
+}
+.chip input:checked + span { background: var(--mark-bg); color: var(--mark-fg); border-color: transparent; }
+.chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 15px; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+.toggle input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.st-ok { color: var(--accent); font-weight: 500; }
+.st-rest { color: var(--fg); font-weight: 500; }
+.st-no { color: var(--warn); font-weight: 500; }
+
+/* quiz */
+.quiz { display: flex; flex-direction: column; gap: 10px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
+summary { cursor: pointer; padding: 12px 0; font-weight: 500; }
+summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+details[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+details .ans { padding-bottom: 14px; display: flex; flex-direction: column; gap: 8px; }
+details .q-code { font-family: var(--font-mono); font-size: 13.5px; background: var(--accent-soft); color: var(--accent); padding: 8px 10px; border-radius: 6px; display: block; overflow-x: auto; white-space: pre; margin-bottom: 4px; }
+
+.summary-list { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 8px 20px; max-width: none; list-style: none; }
+.summary-list li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+.summary-list li:last-child { border-bottom: 0; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .chip span { transition: background 0.15s, color 0.15s; }
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="eyebrow">REACT 학습 노트 · 퍼블리셔 편</div>
+  <h1>구조분해, HTML 속성에서 출발하면 쉬워요</h1>
+  <p class="lead"><code class="i">({ label, disabled }: ButtonProps)</code> 처럼 생긴 코드가 낯설다면, 컴포넌트에 넘기는 속성이 어떻게 객체가 되는지부터 보면 금방 풀립니다.</p>
+</header>
+
+<section id="props">
+  <h2>1. 먼저 HTML 속성처럼 생각해보기</h2>
+  <p>퍼블리싱할 때 <code class="i">&lt;button disabled&gt;</code> 처럼 태그에 속성을 붙이죠. 리액트 컴포넌트도 똑같이 속성을 붙여 쓰고, 그 속성들은 <mark>객체 하나로 묶여서</mark> 컴포넌트 함수의 첫 번째 인자로 들어옵니다. 이 객체를 보통 <code class="i">props</code>라고 불러요.</p>
+  <div class="code"><div class="cap">사용하는 쪽</div><pre><code><span class="c">// JSX에서 속성을 붙여 호출</span>
+&lt;<span class="t">Button</span> label=<span class="s">"저장"</span> disabled={<span class="k">true</span>} size=<span class="s">"lg"</span> /&gt;</code></pre></div>
+  <div class="scroll"><table>
+    <thead><tr><th>JSX 속성</th><th>props 객체의 키</th><th>값</th></tr></thead>
+    <tbody>
+      <tr><td><code>label="저장"</code></td><td><code>label</code></td><td><code>"저장"</code></td></tr>
+      <tr><td><code>disabled={true}</code></td><td><code>disabled</code></td><td><code>true</code></td></tr>
+      <tr><td><code>size="lg"</code></td><td><code>size</code></td><td><code>"lg"</code></td></tr>
+    </tbody>
+  </table></div>
+  <p>즉 Button 함수는 <code class="i">{ label: "저장", disabled: true, size: "lg" }</code> 라는 객체를 받습니다. 이제 남은 건 "이 객체에서 값을 어떻게 꺼내 쓰느냐"뿐이에요.</p>
+</section>
+
+<section id="what">
+  <h2>2. 구조분해는 객체에서 값을 꺼내 변수로 만드는 문법</h2>
+  <p>CSS에서 <code class="i">var(--color)</code>로 값을 꺼내 쓰는 것처럼, 객체에서도 이름으로 값을 꺼냅니다. 매번 <code class="i">props.label</code>이라고 쓰는 게 번거로우니, 필요한 것만 한 번에 변수로 만들어두는 거예요.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="lab">하나씩 꺼내기</div>
+      <div class="code"><pre><code><span class="k">const</span> props = { label: <span class="s">"저장"</span>, disabled: <span class="k">true</span> };
+
+<span class="k">const</span> label = props.label;
+<span class="k">const</span> disabled = props.disabled;</code></pre></div>
+    </div>
+    <div class="step">
+      <div class="lab">구조분해로 한 번에 꺼내기 (위와 완전히 같은 결과)</div>
+      <div class="code"><pre><code><span class="k">const</span> { <span class="h">label</span>, <span class="h">disabled</span> } = props;</code></pre></div>
+    </div>
+  </div>
+  <div class="note"><strong class="t">기억할 규칙.</strong> 왼쪽의 <code class="i">{ }</code>는 객체를 만드는 게 아니라 <mark>꺼낼 이름 목록</mark>입니다. 이름은 객체의 키와 똑같이 써야 하고, 순서는 상관없어요.</div>
+</section>
+
+<section id="param">
+  <h2>3. 매개변수 자리에서 바로 꺼내기</h2>
+  <p>컴포넌트 함수는 props를 첫 번째 인자로 받으니, 인자 자리에서 곧바로 구조분해할 수 있습니다. 이게 처음 질문하신 코드의 정체예요. 세 단계로 줄어드는 과정을 보세요.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="lab">1단계. props를 통째로 받고 점(.)으로 접근</div>
+      <div class="code"><pre><code><span class="k">const</span> Button = (props: <span class="t">ButtonProps</span>) =&gt; {
+  <span class="k">return</span> &lt;button disabled={props.disabled}&gt;{props.label}&lt;/button&gt;;
+};</code></pre></div>
+    </div>
+    <div class="step">
+      <div class="lab">2단계. 함수 안에서 구조분해</div>
+      <div class="code"><pre><code><span class="k">const</span> Button = (props: <span class="t">ButtonProps</span>) =&gt; {
+  <span class="k">const</span> { <span class="h">label</span>, <span class="h">disabled</span> } = props;
+  <span class="k">return</span> &lt;button disabled={disabled}&gt;{label}&lt;/button&gt;;
+};</code></pre></div>
+    </div>
+    <div class="step">
+      <div class="lab">3단계. 매개변수 자리에서 바로 구조분해 (실무에서 가장 많이 쓰는 형태)</div>
+      <div class="code"><pre><code><span class="k">const</span> Button = ({ <span class="h">label</span>, <span class="h">disabled</span> }: <span class="t">ButtonProps</span>) =&gt; {
+  <span class="k">return</span> &lt;button disabled={disabled}&gt;{label}&lt;/button&gt;;
+};</code></pre></div>
+    </div>
+  </div>
+  <p>3단계에서는 <code class="i">props</code>라는 이름이 아예 사라지는 점을 기억해두세요. 뒤의 실습에서 다시 나옵니다.</p>
+</section>
+
+<section id="ts">
+  <h2>4. 타입스크립트에서 타입은 어디에 붙나요</h2>
+  <p><code class="i">: ButtonProps</code>는 <code class="i">label</code>이나 <code class="i">disabled</code> 하나하나의 타입이 아니라, <mark>구조분해하기 전의 객체 전체</mark>에 붙는 타입입니다. 괄호 <code class="i">{ }</code> 전체에 타입 하나를 붙이는 거예요.</p>
+  <div class="code"><div class="cap">Button.tsx</div><pre><code><span class="k">interface</span> <span class="t">ButtonProps</span> {
+  label: <span class="t">string</span>;
+  disabled?: <span class="t">boolean</span>;
+}
+
+<span class="k">const</span> Button = ({ <span class="h">label</span>, <span class="h">disabled</span> }: <span class="t">ButtonProps</span>) =&gt; { <span class="c">/* ... */</span> };
+<span class="c">//             └ 꺼낼 이름 목록 ┘   └ 객체 전체의 타입 ┘</span></code></pre></div>
+  <p>인터페이스를 따로 만들지 않고 그 자리에 바로 쓸 수도 있습니다.</p>
+  <div class="code"><pre><code><span class="k">const</span> Button = ({ label, disabled }: { label: <span class="t">string</span>; disabled?: <span class="t">boolean</span> }) =&gt; { <span class="c">/* ... */</span> };</code></pre></div>
+  <div class="note warn"><strong class="t">자주 하는 실수.</strong> 구조분해 안쪽에 타입을 쓰면 타입 지정이 아니라 <mark>이름 바꾸기</mark>가 됩니다.
+    <div class="code" style="margin-top:10px"><pre><code><span class="c">// label 값을 "string"이라는 변수에, disabled 값을 "boolean"이라는 변수에 담는다는 뜻</span>
+<span class="k">const</span> Button = ({ label: string, disabled: boolean }) =&gt; { <span class="c">/* ... */</span> };</code></pre></div>
+  </div>
+</section>
+
+<section id="variants">
+  <h2>5. 실무에서 자주 만나는 변형 네 가지</h2>
+  <div class="variants">
+    <div class="variant">
+      <h3>기본값 주기</h3>
+      <p>속성을 안 넘겼을 때 쓸 값입니다. 값이 <code class="i">undefined</code>일 때만 적용돼요. <code class="i">false</code>나 <code class="i">null</code>을 넘기면 기본값이 쓰이지 않습니다.</p>
+      <div class="code"><pre><code>({ label, <span class="h">disabled = <span class="k">false</span></span> }: <span class="t">ButtonProps</span>)</code></pre></div>
+    </div>
+    <div class="variant">
+      <h3>이름 바꾸기</h3>
+      <p>콜론 앞이 객체의 키, 뒤가 새로 만들 변수 이름입니다. 이 경우 <code class="i">text</code>만 변수가 되고 <code class="i">label</code>이라는 변수는 생기지 않아요.</p>
+      <div class="code"><pre><code>({ <span class="h">label: text</span> }: <span class="t">ButtonProps</span>)
+<span class="c">// text === props.label</span></code></pre></div>
+    </div>
+    <div class="variant">
+      <h3>나머지 모으기 (...rest)</h3>
+      <p>꺼내지 않은 나머지 속성을 객체 하나로 모읍니다. <code class="i">class</code>, <code class="i">aria-label</code> 같은 HTML 속성을 그대로 태그에 넘길 때 유용해요.</p>
+      <div class="code"><pre><code><span class="k">const</span> Button = ({ label, <span class="h">...rest</span> }: <span class="t">ButtonProps</span>) =&gt; (
+  &lt;button {...rest}&gt;{label}&lt;/button&gt;
+);</code></pre></div>
+    </div>
+    <div class="variant">
+      <h3>children 꺼내기</h3>
+      <p>여는 태그와 닫는 태그 사이의 내용은 <code class="i">children</code>이라는 키로 들어옵니다. 퍼블리싱의 "내용이 들어갈 자리"와 비슷해요.</p>
+      <div class="code"><pre><code><span class="k">const</span> Card = ({ <span class="h">children</span> }: <span class="t">CardProps</span>) =&gt; (
+  &lt;div className=<span class="s">"card"</span>&gt;{children}&lt;/div&gt;
+);</code></pre></div>
+    </div>
+  </div>
+</section>
+
+<section id="lab">
+  <h2>6. 직접 눌러보기</h2>
+  <p>아래 props 객체에서 꺼낼 이름을 골라보세요. 코드가 바뀌고, 각 속성을 컴포넌트 안에서 쓸 수 있는지도 같이 표시됩니다.</p>
+  <div class="demo">
+    <div class="chips" role="group" aria-label="꺼낼 속성 선택" id="chips"></div>
+    <label class="toggle" for="rest"><input type="checkbox" id="rest"> <span>나머지를 <code class="i">...rest</code>로 모으기</span></label>
+    <div class="code"><div class="cap">생성된 코드</div><pre><code id="out"></code></pre></div>
+    <div class="scroll"><table>
+      <thead><tr><th>props 속성</th><th>값</th><th>컴포넌트 안에서</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p id="msg" style="font-size:15px;color:var(--muted)"></p>
+  </div>
+</section>
+
+<section id="quiz">
+  <h2>7. 확인 문제</h2>
+  <div class="quiz">
+    <details>
+      <summary>Q1. <code class="i">const { a, b } = obj;</code> 에서 obj에 <code class="i">b</code>가 없으면 b는 어떻게 되나요?</summary>
+      <div class="ans"><p><code class="i">undefined</code>가 됩니다. 에러가 나지 않아요. 그래서 선택 속성에 기본값을 주는 문법(<code class="i">b = 0</code>)이 의미가 있습니다.</p></div>
+    </details>
+    <details>
+      <summary>Q2. <code class="i">({ label: text }: ButtonProps)</code> 에서 컴포넌트 안에서 쓸 수 있는 변수 이름은?</summary>
+      <div class="ans"><p><code class="i">text</code>만 쓸 수 있습니다. 콜론 앞의 <code class="i">label</code>은 "어느 키에서 꺼낼지"를 가리킬 뿐이고, 변수로는 만들어지지 않아요.</p></div>
+    </details>
+    <details>
+      <summary>Q3. <code class="i">({ label }: ButtonProps)</code> 로 받았을 때 함수 안에서 <code class="i">props.size</code>로 접근할 수 있나요?</summary>
+      <div class="ans"><p>없습니다. 인자 자리에서 구조분해하면 <code class="i">props</code>라는 이름 자체가 생기지 않아요. size가 필요하면 <code class="i">({ label, size })</code>처럼 꺼내거나 <code class="i">...rest</code>로 받아야 합니다.</p></div>
+    </details>
+  </div>
+</section>
+
+<section id="summary">
+  <h2>한 장 요약</h2>
+  <ul class="summary-list">
+    <li>JSX 속성은 props 객체 하나로 묶여 함수의 첫 번째 인자로 들어옵니다.</li>
+    <li><code class="i">{ a, b }</code> 는 객체에서 <mark>같은 이름의 키</mark>를 꺼내 변수로 만듭니다.</li>
+    <li><code class="i">: ButtonProps</code> 는 구조분해 전의 <mark>객체 전체</mark>에 붙는 타입입니다.</li>
+    <li>기본값은 <code class="i">a = 값</code>, 이름 바꾸기는 <code class="i">a: b</code>, 나머지 모으기는 <code class="i">...rest</code> 입니다.</li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+(function () {
+  var props = [
+    { key: "label", val: '"저장"' },
+    { key: "disabled", val: "false" },
+    { key: "size", val: '"lg"' },
+    { key: "className", val: '"btn-primary"' }
+  ];
+  var picked = { label: true, disabled: true, size: false, className: false };
+  var chips = document.getElementById("chips");
+  var restBox = document.getElementById("rest");
+  var out = document.getElementById("out");
+  var rows = document.getElementById("rows");
+  var msg = document.getElementById("msg");
+
+  props.forEach(function (p) {
+    var wrap = document.createElement("label");
+    wrap.className = "chip";
+    var input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = "chip-" + p.key;
+    input.checked = picked[p.key];
+    input.addEventListener("change", function () { picked[p.key] = input.checked; render(); });
+    var span = document.createElement("span");
+    span.textContent = p.key;
+    wrap.appendChild(input);
+    wrap.appendChild(span);
+    chips.appendChild(wrap);
+  });
+  restBox.addEventListener("change", render);
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  function render() {
+    var names = props.filter(function (p) { return picked[p.key]; }).map(function (p) { return p.key; });
+    var useRest = restBox.checked;
+
+    out.textContent = "";
+    out.appendChild(el("span", "k", "const"));
+    out.appendChild(document.createTextNode(" Button = ({ "));
+    names.forEach(function (n, i) {
+      out.appendChild(el("span", "h", n));
+      if (i < names.length - 1 || useRest) out.appendChild(document.createTextNode(", "));
+    });
+    if (useRest) out.appendChild(el("span", "h", "...rest"));
+    if (!names.length && !useRest) out.appendChild(document.createTextNode(" "));
+    out.appendChild(document.createTextNode(" }: "));
+    out.appendChild(el("span", "t", "ButtonProps"));
+    out.appendChild(document.createTextNode(") => { /* ... */ };"));
+
+    rows.textContent = "";
+    props.forEach(function (p) {
+      var tr = document.createElement("tr");
+      var td1 = document.createElement("td"); td1.appendChild(el("code", null, p.key));
+      var td2 = document.createElement("td"); td2.appendChild(el("code", null, p.val));
+      var td3 = document.createElement("td");
+      if (picked[p.key]) {
+        td3.appendChild(el("span", "st-ok", "변수 " + p.key + " 로 바로 사용"));
+      } else if (useRest) {
+        td3.appendChild(el("span", "st-rest", "rest." + p.key + " 에 들어 있음"));
+      } else {
+        td3.appendChild(el("span", "st-no", "접근할 방법이 없음"));
+      }
+      tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+      rows.appendChild(tr);
+    });
+
+    var lost = props.filter(function (p) { return !picked[p.key]; }).length;
+    if (!useRest && lost > 0) {
+      msg.textContent = "인자 자리에서 구조분해하면 props 변수가 없어서, 꺼내지 않은 속성은 함수 안에서 읽을 수 없어요. 필요하면 이름을 추가하거나 ...rest를 켜세요.";
+    } else if (useRest) {
+      msg.textContent = "...rest에는 꺼내지 않은 속성만 담깁니다. 그대로 <button {...rest}> 처럼 태그에 펼쳐 넣을 수 있어요.";
+    } else {
+      msg.textContent = "모든 속성을 꺼냈습니다.";
+    }
+  }
+  render();
+})();
+</script>
+
+</body></html>

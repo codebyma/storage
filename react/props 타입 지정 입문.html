@@ -1,0 +1,475 @@
+<!doctype html><html lang="ko"><head>
+<title>props 타입 지정 입문</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* 레이아웃: 한 줄 폭 720px의 학습 노트. 위에서 아래로 순서대로 읽는 튜토리얼이라 단계 번호가 실제 순서를 뜻한다. */
+  :root {
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --fg: #17202B;
+    --muted: #586374;
+    --line: #DCE1E8;
+    --accent: #2A55C9;
+    --accent-soft: #E6ECFB;
+    --code-bg: #EDF0F5;
+    --code-fg: #1D2733;
+    --c-key: #8A3FC2;
+    --c-type: #0B7A85;
+    --c-str: #2F7D32;
+    --c-com: #7A8596;
+    --c-tag: #B4462A;
+    --good: #1E7F47;
+    --good-soft: #E2F3E8;
+    --bad: #B8322A;
+    --bad-soft: #FBE7E4;
+    --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151C; --surface: #171E27; --fg: #E5E9EF; --muted: #98A3B3; --line: #2A3441;
+      --accent: #84A8FF; --accent-soft: #1D2A47; --code-bg: #0C1117; --code-fg: #DCE3EC;
+      --c-key: #C79BF2; --c-type: #5CCBD6; --c-str: #8FD18F; --c-com: #7D8999; --c-tag: #F0987D;
+      --good: #6CCB91; --good-soft: #17301F; --bad: #FF8A80; --bad-soft: #3A1B19;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10151C; --surface: #171E27; --fg: #E5E9EF; --muted: #98A3B3; --line: #2A3441;
+    --accent: #84A8FF; --accent-soft: #1D2A47; --code-bg: #0C1117; --code-fg: #DCE3EC;
+    --c-key: #C79BF2; --c-type: #5CCBD6; --c-str: #8FD18F; --c-com: #7D8999; --c-tag: #F0987D;
+    --good: #6CCB91; --good-soft: #17301F; --bad: #FF8A80; --bad-soft: #3A1B19;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.75;
+    padding-block: 40px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.25; letter-spacing: -.02em; margin: 0; text-wrap: balance; font-weight: 700; }
+  .lede { color: var(--muted); font-size: 17px; margin: 0; max-width: 60ch; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; }
+  .toc a { display: block; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13.5px; color: var(--fg); text-decoration: none; background: var(--surface); }
+  .toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+  section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .step { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .06em; color: var(--muted); }
+  h2 { font-size: 26px; line-height: 1.35; letter-spacing: -.01em; margin: 0; text-wrap: balance; font-weight: 700; }
+  p { margin: 0; max-width: 65ch; }
+  p.note { color: var(--muted); font-size: 15px; }
+  strong { font-weight: 600; }
+  :not(pre) > code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; word-break: break-all; }
+
+  .code { display: flex; flex-direction: column; min-width: 0; }
+  .code .cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 0 2px 6px; }
+  pre { margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: 8px; padding: 16px 18px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; tab-size: 2; }
+  pre code { font-family: inherit; }
+  .k { color: var(--c-key); } .t { color: var(--c-type); } .s { color: var(--c-str); } .c { color: var(--c-com); font-style: italic; } .g { color: var(--c-tag); }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .pair > * { min-width: 0; }
+  @media (max-width: 620px) { .pair { grid-template-columns: 1fr; } }
+
+  .tag { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 1px 9px; border-radius: 999px; margin-right: 6px; }
+  .tag.ok { background: var(--good-soft); color: var(--good); }
+  .tag.no { background: var(--bad-soft); color: var(--bad); }
+
+  .callout { background: var(--accent-soft); border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+  .callout b { font-weight: 600; }
+  .callout p { max-width: none; }
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12.5px; letter-spacing: .04em; color: var(--muted); font-weight: 600; background: var(--code-bg); }
+  tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+
+  .errs { display: flex; flex-direction: column; gap: 12px; }
+  .err { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .err .msg { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--bad); background: var(--bad-soft); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  .err p { font-size: 15px; }
+
+  /* 놀이터 */
+  .lab { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .field label { font-size: 13px; font-weight: 600; color: var(--muted); }
+  .field input[type="text"], .field select { font: inherit; font-family: var(--font-mono); font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); min-width: 0; }
+  .field .check { display: flex; align-items: center; gap: 8px; font-size: 14.5px; color: var(--fg); font-weight: 400; padding: 8px 0; }
+  input:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .status { border-radius: 8px; padding: 10px 14px; font-size: 14.5px; display: flex; flex-direction: column; gap: 2px; }
+  .status.ok { background: var(--good-soft); color: var(--good); }
+  .status.no { background: var(--bad-soft); color: var(--bad); }
+  .status .m { font-family: var(--font-mono); font-size: 12.5px; word-break: break-word; }
+  .stage { border: 1px dashed var(--line); border-radius: 8px; min-height: 84px; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .pv { font: inherit; font-weight: 600; border: 0; border-radius: 6px; background: var(--accent); color: #fff; cursor: default; }
+  :root[data-theme="dark"] .pv { color: #0B1220; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pv { color: #0B1220; } }
+  .pv.ghost { background: transparent; color: var(--accent); box-shadow: inset 0 0 0 1.5px var(--accent); }
+  :root[data-theme="dark"] .pv.ghost { color: var(--accent); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .pv.ghost { color: var(--accent); } }
+  .pv.sm { font-size: 13px; padding: 5px 12px; }
+  .pv.md { font-size: 15px; padding: 9px 18px; }
+  .pv.lg { font-size: 18px; padding: 13px 26px; }
+  .pv[disabled] { opacity: .4; }
+  .pv.bad { background: var(--bad-soft); color: var(--bad); box-shadow: inset 0 0 0 1.5px var(--bad); }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
+  summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+  details[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  details .code { padding-bottom: 16px; }
+
+  ul.check { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  ul.check li { display: flex; gap: 10px; align-items: baseline; }
+  ul.check li::before { content: "✓"; color: var(--good); font-weight: 700; flex: none; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">React + TypeScript 학습 노트</div>
+    <h1>props 타입 지정, 처음부터</h1>
+    <p class="lede">HTML 속성(attribute)을 다뤄 본 퍼블리셔 기준으로 설명합니다. 컴포넌트에 넘기는 값에 "어떤 값이 올 수 있는지" 약속을 거는 방법을 8단계로 익힙니다.</p>
+    <ul class="toc">
+      <li><a href="#s1">1 props란</a></li>
+      <li><a href="#s2">2 왜 타입이 필요한가</a></li>
+      <li><a href="#s3">3 기본 형태</a></li>
+      <li><a href="#s4">4 자주 쓰는 타입</a></li>
+      <li><a href="#s5">5 선택 props</a></li>
+      <li><a href="#s6">6 정해진 값 중 하나</a></li>
+      <li><a href="#s7">7 children과 함수</a></li>
+      <li><a href="#s8">8 에러 읽기</a></li>
+      <li><a href="#s9">연습 문제</a></li>
+    </ul>
+  </header>
+
+  <section id="s1">
+    <div class="step">1단계</div>
+    <h2>props는 컴포넌트의 속성입니다</h2>
+    <p>HTML에서 <code>&lt;a href="/home" target="_blank"&gt;</code>의 <code>href</code>, <code>target</code>이 속성이듯, 리액트 컴포넌트에 넘기는 <code>size</code>, <code>onClick</code> 같은 값을 <strong>props</strong>(properties)라고 부릅니다.</p>
+    <div class="code">
+      <pre><code>// HTML 속성
+&lt;a href="/home" target="_blank"&gt;홈&lt;/a&gt;
+
+// 컴포넌트 props
+&lt;Button label="저장" size="sm" disabled={false} /&gt;</code></pre>
+    </div>
+    <div class="callout">
+      <b>퍼블리셔가 먼저 알아둘 규칙</b>
+      <p>값이 <strong>문자열</strong>이면 따옴표 <code>"..."</code>, 그 밖의 값(숫자, true/false, 배열, 함수)은 중괄호 <code>{...}</code>로 넘깁니다.</p>
+    </div>
+  </section>
+
+  <section id="s2">
+    <div class="step">2단계</div>
+    <h2>타입이 없으면 실수를 아무도 알려주지 않습니다</h2>
+    <p>자바스크립트는 props에 무엇이 들어오든 그대로 실행합니다. <code>label</code>을 <code>lable</code>로 잘못 써도, 숫자를 넣어도 화면이 조용히 이상해질 뿐입니다. 타입스크립트는 코드를 쓰는 순간 에디터에서 빨간 줄로 알려줍니다.</p>
+    <div class="pair">
+      <div class="code">
+        <div class="cap"><span class="tag no">타입 없음</span>JS</div>
+        <pre><code>&lt;Button lable="저장" /&gt;
+// 오타인데도 에러가 없고
+// 버튼이 빈 채로 나옵니다</code></pre>
+      </div>
+      <div class="code">
+        <div class="cap"><span class="tag ok">타입 있음</span>TS</div>
+        <pre><code>&lt;Button lable="저장" /&gt;
+// 바로 빨간 줄:
+// 'lable' 속성이 없습니다</code></pre>
+      </div>
+    </div>
+    <p class="note">props 타입은 "이 컴포넌트는 이런 값을 받습니다"라는 설명서이면서, 동시에 오타를 잡아주는 검사기입니다.</p>
+  </section>
+
+  <section id="s3">
+    <div class="step">3단계</div>
+    <h2>기본 형태는 세 줄이면 됩니다</h2>
+    <p>① <code>type</code>으로 props의 모양을 정의하고, ② 컴포넌트에서 구조분해로 받고, ③ 콜론 뒤에 그 타입을 붙입니다.</p>
+    <div class="code">
+      <pre><code>// ① props의 모양을 정의합니다
+type ButtonProps = {
+  label: string;
+  disabled: boolean;
+};
+
+// ②③ 받으면서 타입을 연결합니다
+const Button = ({ label, disabled }: ButtonProps) =&gt; {
+  return &lt;button disabled={disabled}&gt;{label}&lt;/button&gt;;
+};
+
+// 사용
+&lt;Button label="저장" disabled={false} /&gt;</code></pre>
+    </div>
+    <p>타입 이름은 <code>컴포넌트이름Props</code>로 짓는 것이 관례입니다. 이름은 자유지만 이 규칙을 따르면 다른 사람 코드도 바로 읽힙니다.</p>
+  </section>
+
+  <section id="s4">
+    <div class="step">4단계</div>
+    <h2>자주 쓰는 타입 일곱 가지</h2>
+    <p>실무 컴포넌트의 props는 대부분 아래 일곱 가지로 끝납니다.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>넘기는 값</th><th>타입</th><th>쓰는 모습</th></tr></thead>
+        <tbody>
+          <tr><td>글자</td><td><code>string</code></td><td><code>label="저장"</code></td></tr>
+          <tr><td>숫자</td><td><code>number</code></td><td><code>count={3}</code></td></tr>
+          <tr><td>참 / 거짓</td><td><code>boolean</code></td><td><code>disabled={true}</code> 또는 <code>disabled</code></td></tr>
+          <tr><td>배열</td><td><code>string[]</code></td><td><code>tags={["신규", "할인"]}</code></td></tr>
+          <tr><td>객체</td><td><code>{ title: string }</code></td><td><code>popup={{ title: "공지" }}</code></td></tr>
+          <tr><td>함수</td><td><code>() =&gt; void</code></td><td><code>onClick={() =&gt; {}}</code></td></tr>
+          <tr><td>화면 요소</td><td><code>React.ReactNode</code></td><td>태그 사이에 넣은 내용 (7단계)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code">
+      <pre><code>type CardProps = {
+  title: string;
+  price: number;
+  soldOut: boolean;
+  tags: string[];
+  badge: { text: string; color: string };
+  onBuy: () =&gt; void;
+};</code></pre>
+    </div>
+  </section>
+
+  <section id="s5">
+    <div class="step">5단계</div>
+    <h2>안 넘겨도 되는 props는 물음표</h2>
+    <p>이름 뒤에 <code>?</code>를 붙이면 선택 props가 됩니다. 넘기지 않으면 값이 <code>undefined</code>이므로, 받는 쪽에서 <strong>기본값</strong>을 정해 두면 편합니다.</p>
+    <div class="code">
+      <pre><code>type ButtonProps = {
+  label: string;      // 필수
+  disabled?: boolean; // 선택
+};
+
+const Button = ({ label, disabled = false }: ButtonProps) =&gt; (
+  &lt;button disabled={disabled}&gt;{label}&lt;/button&gt;
+);
+
+&lt;Button label="저장" /&gt;                  // 정상, disabled는 false
+&lt;Button label="저장" disabled /&gt;         // 정상</code></pre>
+    </div>
+    <p class="note">기본값은 <code>= false</code>처럼 구조분해 자리에서 정합니다. 타입 쪽에는 쓰지 않습니다.</p>
+  </section>
+
+  <section id="s6">
+    <div class="step">6단계</div>
+    <h2>정해진 값 중 하나만 받게 하기</h2>
+    <p>크기(sm, md, lg)나 색상(primary, ghost)처럼 "고정된 선택지 중 하나"인 props가 퍼블리싱에서는 가장 많습니다. 값을 <code>|</code>로 이어 쓰면 그 값만 허용됩니다. 이를 <strong>유니온 타입</strong>이라고 합니다.</p>
+    <div class="code">
+      <pre><code>type ButtonProps = {
+  label: string;
+  size?: "sm" | "md" | "lg";
+  variant?: "primary" | "ghost";
+};
+
+const Button = ({ label, size = "md", variant = "primary" }: ButtonProps) =&gt; (
+  &lt;button className={`btn btn-${size} btn-${variant}`}&gt;{label}&lt;/button&gt;
+);</code></pre>
+    </div>
+    <p>아래에서 직접 값을 바꿔 보세요. <code>size</code> 칸에 <code>mid</code>처럼 목록에 없는 값을 입력하면 타입스크립트가 어떻게 막는지 볼 수 있습니다.</p>
+
+    <div class="lab" aria-label="props 놀이터">
+      <div class="controls">
+        <div class="field">
+          <label for="sizeInput">size 값 입력</label>
+          <input type="text" id="sizeInput" value="md" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="field">
+          <label for="variantSel">variant</label>
+          <select id="variantSel">
+            <option value="primary">primary</option>
+            <option value="ghost">ghost</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="disabledChk">disabled</label>
+          <span class="check"><input type="checkbox" id="disabledChk"><span>넘기기</span></span>
+        </div>
+      </div>
+      <div class="code"><div class="cap">작성한 코드</div><pre><code id="labCode"></code></pre></div>
+      <div id="labStatus" class="status ok" role="status"></div>
+      <div class="stage"><button id="labBtn" class="pv md" type="button">저장</button></div>
+    </div>
+  </section>
+
+  <section id="s7">
+    <div class="step">7단계</div>
+    <h2>children과 함수 props</h2>
+    <p><strong>children</strong>은 컴포넌트 태그 사이에 넣은 내용입니다. 타입은 <code>React.ReactNode</code>로 쓰며, 글자와 태그를 모두 받을 수 있습니다. 받은 뒤 화면에 보이려면 <code>{children}</code>로 직접 출력해야 합니다.</p>
+    <div class="code">
+      <pre><code>type CardProps = {
+  title: string;
+  children: React.ReactNode;
+};
+
+const Card = ({ title, children }: CardProps) =&gt; (
+  &lt;div className="card"&gt;
+    &lt;h3&gt;{title}&lt;/h3&gt;
+    {children}
+  &lt;/div&gt;
+);
+
+&lt;Card title="공지"&gt;
+  &lt;p&gt;점검 안내입니다.&lt;/p&gt;
+&lt;/Card&gt;</code></pre>
+    </div>
+    <p><strong>함수 props</strong>는 "어떤 값을 받아서 무엇을 돌려주는 함수인가"를 화살표 모양으로 씁니다. 돌려주는 값이 없으면 <code>void</code>입니다.</p>
+    <div class="code">
+      <pre><code>type SearchBoxProps = {
+  onClick: () =&gt; void;                // 받는 값 없음
+  onSearch: (keyword: string) =&gt; void; // 글자 하나를 받음
+};
+
+&lt;SearchBox
+  onClick={() =&gt; console.log("click")}
+  onSearch={(keyword) =&gt; console.log(keyword)}
+/&gt;</code></pre>
+    </div>
+  </section>
+
+  <section id="s8">
+    <div class="step">8단계</div>
+    <h2>빨간 줄이 뜨면 이렇게 읽습니다</h2>
+    <p>에러 문구는 영어지만 패턴은 네 가지뿐입니다. 아래 코드는 앞에서 만든 <code>ButtonProps</code>(label 필수, size는 sm | md | lg)를 기준으로 합니다.</p>
+    <div class="errs">
+      <div class="err">
+        <div class="code"><pre><code>&lt;Button /&gt;</code></pre></div>
+        <div class="msg">Property 'label' is missing in type '{}' but required in type 'ButtonProps'.</div>
+        <p><strong>필수 props를 빠뜨렸습니다.</strong> 문구의 <code>label</code>이 빠진 이름입니다.</p>
+      </div>
+      <div class="err">
+        <div class="code"><pre><code>&lt;Button label={3} /&gt;</code></pre></div>
+        <div class="msg">Type 'number' is not assignable to type 'string'.</div>
+        <p><strong>타입이 다릅니다.</strong> 숫자를 넣었는데 글자를 기대하는 자리입니다. "A는 B에 넣을 수 없다"로 읽으면 됩니다.</p>
+      </div>
+      <div class="err">
+        <div class="code"><pre><code>&lt;Button label="저장" size="mid" /&gt;</code></pre></div>
+        <div class="msg">Type '"mid"' is not assignable to type '"sm" | "md" | "lg"'.</div>
+        <p><strong>허용하지 않는 값입니다.</strong> 문구 뒷부분에 쓸 수 있는 값 목록이 그대로 나옵니다.</p>
+      </div>
+      <div class="err">
+        <div class="code"><pre><code>&lt;Button lable="저장" /&gt;</code></pre></div>
+        <div class="msg">Property 'lable' does not exist on type 'IntrinsicAttributes &amp; ButtonProps'.</div>
+        <p><strong>정의하지 않은 이름입니다.</strong> 대부분 오타이므로 type에 적은 이름과 글자 단위로 비교해 보세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s9">
+    <div class="step">연습 문제</div>
+    <h2>Badge 컴포넌트의 props 타입 만들기</h2>
+    <p>아래 조건을 만족하는 <code>BadgeProps</code>를 직접 써 보고, 답과 비교해 보세요.</p>
+    <div class="callout">
+      <p><strong>조건 1.</strong> <code>text</code>: 글자, 반드시 넘겨야 함</p>
+      <p><strong>조건 2.</strong> <code>color</code>: <code>"blue"</code>, <code>"red"</code>, <code>"gray"</code> 중 하나, 안 넘기면 <code>"gray"</code></p>
+      <p><strong>조건 3.</strong> <code>onClose</code>: 받는 값이 없는 함수, 안 넘겨도 됨</p>
+    </div>
+    <details>
+      <summary>정답 보기</summary>
+      <div class="code">
+        <pre><code>type BadgeProps = {
+  text: string;
+  color?: "blue" | "red" | "gray";
+  onClose?: () =&gt; void;
+};
+
+const Badge = ({ text, color = "gray", onClose }: BadgeProps) =&gt; (
+  &lt;span className={`badge badge-${color}`}&gt;
+    {text}
+    {onClose &amp;&amp; &lt;button onClick={onClose}&gt;닫기&lt;/button&gt;}
+  &lt;/span&gt;
+);</code></pre>
+      </div>
+      <p class="note" style="padding-bottom:16px">선택 props인 <code>onClose</code>는 안 넘기면 <code>undefined</code>이므로, <code>onClose &amp;&amp; ...</code>로 있을 때만 버튼을 그렸습니다.</p>
+    </details>
+  </section>
+
+  <section>
+    <div class="step">정리</div>
+    <h2>이 일곱 가지만 기억하세요</h2>
+    <ul class="check">
+      <li><span><code>type 컴포넌트이름Props = { ... }</code>로 모양을 정의하고 <code>: 컴포넌트이름Props</code>로 연결한다</span></li>
+      <li><span>문자열은 따옴표, 나머지 값은 중괄호로 넘긴다</span></li>
+      <li><span>기본 타입은 <code>string</code>, <code>number</code>, <code>boolean</code>, 배열, 객체, 함수</span></li>
+      <li><span>안 넘겨도 되면 <code>?</code>를 붙이고, 기본값은 구조분해 자리에서 정한다</span></li>
+      <li><span>고정된 선택지는 <code>"sm" | "md" | "lg"</code>처럼 유니온으로 쓴다</span></li>
+      <li><span>태그 사이 내용은 <code>children: React.ReactNode</code>로 받고 <code>{children}</code>로 출력한다</span></li>
+      <li><span>에러는 "A는 B에 넣을 수 없다" 패턴으로 읽는다</span></li>
+    </ul>
+    <p class="note">다음 단계로는 <code>button</code>, <code>input</code>의 기본 속성(placeholder, disabled 등)을 그대로 이어받는 <code>React.ComponentProps&lt;"button"&gt;</code>를 보시면 됩니다. 디자인 시스템 컴포넌트를 만들 때 자주 쓰입니다.</p>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 코드 하이라이트: 실패해도 일반 텍스트로 그대로 읽힙니다.
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var RE = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`[^`]*`)|\b(const|type|return|let|function|interface|export|import|from)\b|\b(string|number|boolean|void|undefined|React|ReactNode)\b|(&lt;\/?[A-Z][A-Za-z]*)/g;
+  function hl(text) {
+    return esc(text).replace(RE, function (m, com, str, key, typ, tag) {
+      if (com) return '<span class="c">' + com + '</span>';
+      if (str) return '<span class="s">' + str + '</span>';
+      if (key) return '<span class="k">' + key + '</span>';
+      if (typ) return '<span class="t">' + typ + '</span>';
+      if (tag) return '<span class="g">' + tag + '</span>';
+      return m;
+    });
+  }
+  function run(root) {
+    var list = (root || document).querySelectorAll("pre code");
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].id === "labCode") continue;
+      list[i].innerHTML = hl(list[i].textContent);
+    }
+  }
+  try { run(); } catch (e) {}
+
+  // 놀이터
+  var input = document.getElementById("sizeInput");
+  var variantSel = document.getElementById("variantSel");
+  var dis = document.getElementById("disabledChk");
+  var code = document.getElementById("labCode");
+  var status = document.getElementById("labStatus");
+  var btn = document.getElementById("labBtn");
+  var OK = ["sm", "md", "lg"];
+
+  function update() {
+    var size = input.value.trim();
+    var variant = variantSel.value;
+    var valid = OK.indexOf(size) !== -1;
+    var line = '<Button label="저장" size="' + size + '" variant="' + variant + '"' + (dis.checked ? " disabled" : "") + " />";
+    try { code.innerHTML = hl(line); } catch (e) { code.textContent = line; }
+    status.className = "status " + (valid ? "ok" : "no");
+    if (valid) {
+      status.innerHTML = '<strong>정상</strong><span class="m"></span>';
+      status.querySelector(".m").textContent = '"' + size + '"은(는) "sm" | "md" | "lg" 중 하나입니다.';
+    } else {
+      status.innerHTML = '<strong>빨간 줄이 뜹니다</strong><span class="m"></span>';
+      status.querySelector(".m").textContent = "Type '\"" + size + "\"' is not assignable to type '\"sm\" | \"md\" | \"lg\"'.";
+    }
+    btn.className = "pv " + (valid ? size : "md") + (variant === "ghost" ? " ghost" : "") + (valid ? "" : " bad");
+    btn.disabled = dis.checked;
+  }
+  input.addEventListener("input", update);
+  variantSel.addEventListener("change", update);
+  dis.addEventListener("change", update);
+  update();
+})();
+</script>
+
+</body></html>

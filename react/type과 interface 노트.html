@@ -1,0 +1,350 @@
+<!doctype html><html lang="ko"><head>
+<title>type과 interface 노트</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* 레이아웃: 폭 720px 한 줄 학습 노트. 결론을 먼저 말하고, 같은 코드를 나란히 놓고 비교하는 순서로 읽는다. */
+  :root {
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --fg: #17202B;
+    --muted: #586374;
+    --line: #DCE1E8;
+    --accent: #2A55C9;
+    --accent-soft: #E6ECFB;
+    --code-bg: #EDF0F5;
+    --code-fg: #1D2733;
+    --c-key: #8A3FC2;
+    --c-type: #0B7A85;
+    --c-str: #2F7D32;
+    --c-com: #7A8596;
+    --c-tag: #B4462A;
+    --good: #1E7F47;
+    --good-soft: #E2F3E8;
+    --bad: #B8322A;
+    --bad-soft: #FBE7E4;
+    --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151C; --surface: #171E27; --fg: #E5E9EF; --muted: #98A3B3; --line: #2A3441;
+      --accent: #84A8FF; --accent-soft: #1D2A47; --code-bg: #0C1117; --code-fg: #DCE3EC;
+      --c-key: #C79BF2; --c-type: #5CCBD6; --c-str: #8FD18F; --c-com: #7D8999; --c-tag: #F0987D;
+      --good: #6CCB91; --good-soft: #17301F; --bad: #FF8A80; --bad-soft: #3A1B19;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10151C; --surface: #171E27; --fg: #E5E9EF; --muted: #98A3B3; --line: #2A3441;
+    --accent: #84A8FF; --accent-soft: #1D2A47; --code-bg: #0C1117; --code-fg: #DCE3EC;
+    --c-key: #C79BF2; --c-type: #5CCBD6; --c-str: #8FD18F; --c-com: #7D8999; --c-tag: #F0987D;
+    --good: #6CCB91; --good-soft: #17301F; --bad: #FF8A80; --bad-soft: #3A1B19;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.75;
+    padding-block: 40px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+  .wrap > * { min-width: 0; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.25; letter-spacing: -.02em; margin: 0; text-wrap: balance; font-weight: 700; }
+  .lede { color: var(--muted); font-size: 17px; margin: 0; max-width: 60ch; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; }
+  .toc a { display: block; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13.5px; color: var(--fg); text-decoration: none; background: var(--surface); }
+  .toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+  section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .step { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .06em; color: var(--muted); }
+  h2 { font-size: 26px; line-height: 1.35; letter-spacing: -.01em; margin: 0; text-wrap: balance; font-weight: 700; }
+  p { margin: 0; max-width: 65ch; }
+  p.note { color: var(--muted); font-size: 15px; }
+  strong { font-weight: 600; }
+  :not(pre) > code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; word-break: break-all; }
+
+  .code { display: flex; flex-direction: column; min-width: 0; }
+  .code .cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 0 2px 6px; }
+  pre { margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: 8px; padding: 16px 18px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; tab-size: 2; }
+  pre code { font-family: inherit; }
+  .k { color: var(--c-key); } .t { color: var(--c-type); } .s { color: var(--c-str); } .c { color: var(--c-com); font-style: italic; } .g { color: var(--c-tag); }
+
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .pair > * { min-width: 0; }
+  @media (max-width: 620px) { .pair { grid-template-columns: 1fr; } }
+
+  .tag { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 1px 9px; border-radius: 999px; margin-right: 6px; }
+  .tag.ok { background: var(--good-soft); color: var(--good); }
+  .tag.no { background: var(--bad-soft); color: var(--bad); }
+  .tag.nt { background: var(--accent-soft); color: var(--accent); }
+
+  .callout { background: var(--accent-soft); border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+  .callout b { font-weight: 600; }
+  .callout p { max-width: none; }
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 540px; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12.5px; letter-spacing: .04em; color: var(--muted); font-weight: 600; background: var(--code-bg); }
+  tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+  td.yes { color: var(--good); font-weight: 600; }
+  td.nope { color: var(--bad); font-weight: 600; }
+
+  .err { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .err .msg { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--bad); background: var(--bad-soft); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  .err p { font-size: 15px; }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
+  summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+  details[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  details > p { padding-bottom: 16px; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  ul.check { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  ul.check li { display: flex; gap: 10px; align-items: baseline; }
+  ul.check li::before { content: "✓"; color: var(--good); font-weight: 700; flex: none; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">React + TypeScript 학습 노트</div>
+    <h1>type과 interface, 무엇이 다른가</h1>
+    <p class="lede">props 타입을 정의할 때 둘 중 무엇을 써야 하는지 헷갈릴 때 보는 노트입니다. 같은 코드를 나란히 놓고 차이가 생기는 지점만 짚습니다.</p>
+    <ul class="toc">
+      <li><a href="#s1">결론</a></li>
+      <li><a href="#s2">같은 모양</a></li>
+      <li><a href="#s3">차이 한눈에</a></li>
+      <li><a href="#s4">확장</a></li>
+      <li><a href="#s5">선언 병합</a></li>
+      <li><a href="#s6">type만 되는 것</a></li>
+      <li><a href="#s7">고르는 기준</a></li>
+      <li><a href="#s8">연습 문제</a></li>
+    </ul>
+  </header>
+
+  <section id="s1">
+    <div class="step">먼저 결론</div>
+    <h2>props 하나를 정의하는 일이라면 둘 다 됩니다</h2>
+    <p>컴포넌트가 받는 값의 모양을 적는 용도로는 <code>type</code>과 <code>interface</code>가 거의 똑같이 동작합니다. 차이가 생기는 곳은 세 군데입니다.</p>
+    <div class="callout">
+      <p><strong>1.</strong> 다른 타입을 이어받는 문법이 다릅니다 (<code>extends</code> 대 <code>&amp;</code>).</p>
+      <p><strong>2.</strong> 같은 이름을 두 번 쓰면 <code>interface</code>는 합쳐지고 <code>type</code>은 에러가 납니다.</p>
+      <p><strong>3.</strong> <code>"sm" | "md"</code> 같은 유니온은 <code>type</code>으로만 쓸 수 있습니다.</p>
+    </div>
+  </section>
+
+  <section id="s2">
+    <div class="step">같은 모양</div>
+    <h2>객체 모양은 두 방식으로 똑같이 씁니다</h2>
+    <p><code>type</code>은 이름에 <code>=</code>를 붙이고, <code>interface</code>는 <code>=</code> 없이 바로 중괄호를 엽니다. 받는 쪽 컴포넌트 코드는 완전히 같습니다.</p>
+    <div class="pair">
+      <div class="code">
+        <div class="cap"><span class="tag nt">type</span></div>
+        <pre><code>type ButtonProps = {
+  label: string;
+  disabled?: boolean;
+};</code></pre>
+      </div>
+      <div class="code">
+        <div class="cap"><span class="tag nt">interface</span></div>
+        <pre><code>interface ButtonProps {
+  label: string;
+  disabled?: boolean;
+}</code></pre>
+      </div>
+    </div>
+    <div class="code">
+      <div class="cap">어느 쪽으로 정의해도 받는 코드는 동일</div>
+      <pre><code>const Button = ({ label, disabled }: ButtonProps) =&gt; (
+  &lt;button disabled={disabled}&gt;{label}&lt;/button&gt;
+);</code></pre>
+    </div>
+  </section>
+
+  <section id="s3">
+    <div class="step">차이 한눈에</div>
+    <h2>할 수 있는 일을 표로 비교합니다</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>할 수 있는 일</th><th>type</th><th>interface</th></tr></thead>
+        <tbody>
+          <tr><td>객체 모양 정의</td><td class="yes">가능</td><td class="yes">가능</td></tr>
+          <tr><td>다른 타입 이어받기</td><td><code>&amp;</code>로 합침</td><td><code>extends</code></td></tr>
+          <tr><td>같은 이름 다시 선언</td><td class="nope">에러</td><td>자동으로 합쳐짐</td></tr>
+          <tr><td>유니온 <code>"sm" | "md"</code></td><td class="yes">가능</td><td class="nope">불가능</td></tr>
+          <tr><td>튜플 <code>[string, number]</code></td><td class="yes">가능</td><td class="nope">불가능</td></tr>
+          <tr><td><code>string</code> 같은 기본 타입에 별명 붙이기</td><td class="yes">가능</td><td class="nope">불가능</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">정리하면 <code>type</code>이 표현할 수 있는 범위가 더 넓고, <code>interface</code>는 객체 모양 전용이면서 합쳐지는 성질이 있습니다.</p>
+  </section>
+
+  <section id="s4">
+    <div class="step">차이 1</div>
+    <h2>다른 타입을 이어받는 방법</h2>
+    <p>공통 props를 만들어 두고 거기에 몇 개만 더하는 일은 자주 합니다. 결과는 같고 문법만 다릅니다.</p>
+    <div class="pair">
+      <div class="code">
+        <div class="cap"><span class="tag nt">type</span>&amp;로 합치기</div>
+        <pre><code>type BaseProps = {
+  id: string;
+  className?: string;
+};
+
+type CardProps = BaseProps &amp; {
+  title: string;
+};</code></pre>
+      </div>
+      <div class="code">
+        <div class="cap"><span class="tag nt">interface</span>extends로 잇기</div>
+        <pre><code>interface BaseProps {
+  id: string;
+  className?: string;
+}
+
+interface CardProps extends BaseProps {
+  title: string;
+}</code></pre>
+      </div>
+    </div>
+    <p>button의 기본 속성(<code>onClick</code>, <code>type</code> 등)을 그대로 물려받을 때도 같은 패턴입니다.</p>
+    <div class="pair">
+      <div class="code">
+        <div class="cap"><span class="tag nt">type</span></div>
+        <pre><code>type ButtonProps =
+  React.ComponentProps&lt;"button"&gt; &amp; {
+    variant?: "primary" | "ghost";
+  };</code></pre>
+      </div>
+      <div class="code">
+        <div class="cap"><span class="tag nt">interface</span></div>
+        <pre><code>interface ButtonProps
+  extends React.ComponentProps&lt;"button"&gt; {
+  variant?: "primary" | "ghost";
+}</code></pre>
+      </div>
+    </div>
+    <p class="note">같은 이름의 속성이 서로 다른 타입으로 겹치면, <code>extends</code>는 그 자리에서 바로 에러를 알려 줍니다. <code>&amp;</code>는 에러 없이 합쳐서 쓸 수 없는 타입(<code>never</code>)을 만들 수 있어서, 문제를 나중에 발견하기 쉽습니다.</p>
+  </section>
+
+  <section id="s5">
+    <div class="step">차이 2</div>
+    <h2>같은 이름을 두 번 쓰면 생기는 일</h2>
+    <p><code>interface</code>는 같은 이름으로 다시 선언하면 두 선언이 하나로 <strong>합쳐집니다</strong>. 이를 선언 병합이라고 합니다. <code>type</code>은 같은 이름을 두 번 쓸 수 없습니다.</p>
+    <div class="pair">
+      <div class="code">
+        <div class="cap"><span class="tag ok">interface</span>합쳐짐</div>
+        <pre><code>interface User { name: string }
+interface User { age: number }
+
+// User는 { name, age } 둘 다 가짐</code></pre>
+      </div>
+      <div class="code">
+        <div class="cap"><span class="tag no">type</span>에러</div>
+        <pre><code>type User = { name: string };
+type User = { age: number };</code></pre>
+      </div>
+    </div>
+    <div class="err">
+      <div class="msg">Duplicate identifier 'User'.</div>
+      <p>type 쪽에서 나오는 에러입니다. "이미 같은 이름이 있다"는 뜻입니다.</p>
+    </div>
+    <p>병합은 라이브러리가 정의한 타입에 내 속성을 덧붙일 때 쓰는 기능입니다(예: <code>window</code>에 전역 값 추가). 컴포넌트 props에서는 쓸 일이 거의 없고, 오히려 다른 파일에서 같은 이름을 우연히 또 쓰면 에러 없이 조용히 합쳐져 버리는 점이 함정입니다.</p>
+  </section>
+
+  <section id="s6">
+    <div class="step">차이 3</div>
+    <h2>유니온은 type으로만 씁니다</h2>
+    <p>버튼 크기처럼 "정해진 값 중 하나"를 타입으로 만들려면 <code>type</code>이 필요합니다. <code>interface</code>는 객체 모양만 만들 수 있기 때문입니다.</p>
+    <div class="code">
+      <pre><code>type Size = "sm" | "md" | "lg";          // type만 가능
+type Pair = [string, number];            // 튜플도 type만 가능
+
+type ButtonProps = {
+  size?: Size;                           // props 안에서 가져다 씀
+};</code></pre>
+    </div>
+    <p>props의 모양 자체가 유니온인 경우(예: 링크 버튼이거나 일반 버튼인 컴포넌트)도 <code>type</code>으로만 표현됩니다.</p>
+  </section>
+
+  <section id="s7">
+    <div class="step">고르는 기준</div>
+    <h2>실무에서는 이렇게 정합니다</h2>
+    <p>어느 쪽이 정답이라기보다 <strong>한 프로젝트 안에서 하나로 통일</strong>하는 것이 가장 중요합니다. 섞어 쓰면 읽는 사람이 매번 "이건 왜 interface지?"를 생각해야 합니다.</p>
+    <ul class="check">
+      <li><span>유니온, 튜플이 필요하면 그 부분은 <code>type</code>입니다. 그래서 <code>type</code> 하나로 통일하는 팀이 많습니다.</span></li>
+      <li><span>외부에 공개하는 라이브러리 타입이라 사용자가 속성을 덧붙일 수 있어야 하면 <code>interface</code>를 씁니다.</span></li>
+      <li><span>컴포넌트 props는 어느 쪽이든 문제없습니다. 팀 컨벤션을 따르세요.</span></li>
+      <li><span>섞어서 쓰게 되더라도 객체 모양은 <code>interface</code>, 그 밖은 <code>type</code>처럼 규칙을 정해 두면 헷갈리지 않습니다.</span></li>
+    </ul>
+  </section>
+
+  <section id="s8">
+    <div class="step">연습 문제</div>
+    <h2>interface로 바꿀 수 없는 것은?</h2>
+    <p>아래 세 가지 중 <code>interface</code>로 바꿔 쓸 수 <strong>없는</strong> 것을 모두 고르세요.</p>
+    <div class="code">
+      <pre><code>// A
+type Size = "sm" | "md" | "lg";
+
+// B
+type CardProps = { title: string; price: number };
+
+// C
+type Pair = [string, number];</code></pre>
+    </div>
+    <details>
+      <summary>정답 보기</summary>
+      <p><strong>A와 C</strong>입니다. A는 유니온, C는 튜플이라 <code>interface</code>로 표현할 수 없습니다. B는 평범한 객체 모양이라 <code>interface CardProps { title: string; price: number }</code>로 바꿔도 똑같이 동작합니다.</p>
+    </details>
+  </section>
+
+  <section>
+    <div class="step">정리</div>
+    <h2>기억할 다섯 가지</h2>
+    <ul class="check">
+      <li><span>객체 모양 정의는 <code>type</code>과 <code>interface</code> 둘 다 같은 결과를 냅니다.</span></li>
+      <li><span>이어받기는 <code>type</code>이 <code>&amp;</code>, <code>interface</code>가 <code>extends</code>입니다.</span></li>
+      <li><span>같은 이름을 다시 선언하면 <code>interface</code>는 합쳐지고 <code>type</code>은 에러입니다.</span></li>
+      <li><span>유니온과 튜플은 <code>type</code>으로만 만듭니다.</span></li>
+      <li><span>무엇을 쓰든 한 프로젝트 안에서는 기준을 정해 통일합니다.</span></li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 코드 하이라이트: 실패해도 일반 텍스트로 그대로 읽힙니다.
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var RE = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`[^`]*`)|\b(const|type|return|let|function|interface|extends|export|import|from)\b|\b(string|number|boolean|void|undefined|React|ReactNode)\b|(&lt;\/?[A-Z][A-Za-z]*)/g;
+  function hl(text) {
+    return esc(text).replace(RE, function (m, com, str, key, typ, tag) {
+      if (com) return '<span class="c">' + com + '</span>';
+      if (str) return '<span class="s">' + str + '</span>';
+      if (key) return '<span class="k">' + key + '</span>';
+      if (typ) return '<span class="t">' + typ + '</span>';
+      if (tag) return '<span class="g">' + tag + '</span>';
+      return m;
+    });
+  }
+  try {
+    var list = document.querySelectorAll("pre code");
+    for (var i = 0; i < list.length; i++) list[i].innerHTML = hl(list[i].textContent);
+  } catch (e) {}
+})();
+</script>
+
+</body></html>

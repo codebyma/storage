@@ -1,0 +1,497 @@
+<!doctype html><html lang="ko"><head>
+<title>리액트 라우터 노트</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* 레이아웃: 폭 720px 한 줄 학습 노트. 결론, 설치, 파일 4개 세팅, 직접 눌러 보기, 자주 나는 문제 순서로 읽는다. */
+  :root {
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --fg: #17202B;
+    --muted: #586374;
+    --line: #DCE1E8;
+    --accent: #2A55C9;
+    --accent-soft: #E6ECFB;
+    --code-bg: #EDF0F5;
+    --code-fg: #1D2733;
+    --c-key: #8A3FC2;
+    --c-type: #0B7A85;
+    --c-str: #2F7D32;
+    --c-com: #7A8596;
+    --c-tag: #B4462A;
+    --good: #1E7F47;
+    --good-soft: #E2F3E8;
+    --bad: #B8322A;
+    --bad-soft: #FBE7E4;
+    --font-body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #10151C; --surface: #171E27; --fg: #E5E9EF; --muted: #98A3B3; --line: #2A3441;
+      --accent: #84A8FF; --accent-soft: #1D2A47; --code-bg: #0C1117; --code-fg: #DCE3EC;
+      --c-key: #C79BF2; --c-type: #5CCBD6; --c-str: #8FD18F; --c-com: #7D8999; --c-tag: #F0987D;
+      --good: #6CCB91; --good-soft: #17301F; --bad: #FF8A80; --bad-soft: #3A1B19;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #10151C; --surface: #171E27; --fg: #E5E9EF; --muted: #98A3B3; --line: #2A3441;
+    --accent: #84A8FF; --accent-soft: #1D2A47; --code-bg: #0C1117; --code-fg: #DCE3EC;
+    --c-key: #C79BF2; --c-type: #5CCBD6; --c-str: #8FD18F; --c-com: #7D8999; --c-tag: #F0987D;
+    --good: #6CCB91; --good-soft: #17301F; --bad: #FF8A80; --bad-soft: #3A1B19;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.75;
+    padding-block: 40px 72px;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+  .wrap > * { min-width: 0; }
+  header { display: flex; flex-direction: column; gap: 14px; }
+  .eyebrow { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.25; letter-spacing: -.02em; margin: 0; text-wrap: balance; font-weight: 700; }
+  .lede { color: var(--muted); font-size: 17px; margin: 0; max-width: 60ch; }
+
+  .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; }
+  .toc a { display: block; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: 13.5px; color: var(--fg); text-decoration: none; background: var(--surface); }
+  .toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+  section { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .step { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .06em; color: var(--muted); }
+  h2 { font-size: 26px; line-height: 1.35; letter-spacing: -.01em; margin: 0; text-wrap: balance; font-weight: 700; }
+  p { margin: 0; max-width: 65ch; }
+  p.note { color: var(--muted); font-size: 15px; }
+  strong { font-weight: 600; }
+  :not(pre) > code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 2px 6px; border-radius: 4px; word-break: break-all; }
+
+  .code { display: flex; flex-direction: column; min-width: 0; }
+  .code .cap { font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding: 0 2px 6px; }
+  pre { margin: 0; background: var(--code-bg); color: var(--code-fg); border-radius: 8px; padding: 16px 18px; overflow-x: auto; font-family: var(--font-mono); font-size: 13.5px; line-height: 1.7; tab-size: 2; }
+  pre code { font-family: inherit; }
+  .k { color: var(--c-key); } .t { color: var(--c-type); } .s { color: var(--c-str); } .c { color: var(--c-com); font-style: italic; } .g { color: var(--c-tag); }
+
+  .tag { display: inline-block; font-size: 12.5px; font-weight: 600; padding: 1px 9px; border-radius: 999px; margin-right: 6px; }
+  .tag.ok { background: var(--good-soft); color: var(--good); }
+  .tag.no { background: var(--bad-soft); color: var(--bad); }
+  .tag.nt { background: var(--accent-soft); color: var(--accent); }
+
+  .callout { background: var(--accent-soft); border-radius: 8px; padding: 14px 18px; display: flex; flex-direction: column; gap: 6px; }
+  .callout p { max-width: none; }
+
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 540px; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12.5px; letter-spacing: .04em; color: var(--muted); font-weight: 600; background: var(--code-bg); }
+  tr:last-child td { border-bottom: 0; }
+  td code { white-space: nowrap; }
+
+  .err { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .err .msg { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--bad); background: var(--bad-soft); border-radius: 6px; padding: 8px 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+  .err p { font-size: 15px; max-width: none; }
+
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 0 16px; }
+  summary { cursor: pointer; padding: 12px 0; font-weight: 600; }
+  details[open] summary { border-bottom: 1px solid var(--line); margin-bottom: 14px; }
+  details > p { padding-bottom: 16px; }
+  a:focus-visible, summary:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  ul.check { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  ul.check li { display: flex; gap: 10px; align-items: baseline; }
+  ul.check li::before { content: "✓"; color: var(--good); font-weight: 700; flex: none; }
+
+  /* 직접 눌러 보기 */
+  .demo { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+  .urls { display: flex; flex-wrap: wrap; gap: 8px; }
+  .urls button { font: inherit; font-family: var(--font-mono); font-size: 13px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+  .urls button:hover { border-color: var(--accent); }
+  .urls button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+  .addr { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+  .addr b { color: var(--fg); font-weight: 500; }
+  .match { font-size: 15px; max-width: none; }
+  .box { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px 14px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .box > .lbl { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  .box.outer { background: var(--code-bg); }
+  .box.slot { border-style: dashed; border-color: var(--accent); background: var(--surface); }
+  .box.page { background: var(--accent-soft); border-color: var(--accent-soft); color: var(--accent); font-weight: 600; padding: 12px 14px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">React Router v7 학습 노트</div>
+    <h1>리액트 라우터, 세팅부터 페이지 추가까지</h1>
+    <p class="lede">URL에 따라 다른 화면을 보여 주는 라우터를 처음 붙이는 순서대로 정리한 노트입니다. 지금 쓰는 <code>App.tsx</code>, <code>router.tsx</code>, <code>RootLayout</code> 구조를 기준으로 설명합니다.</p>
+    <ul class="toc">
+      <li><a href="#s1">결론</a></li>
+      <li><a href="#s2">설치</a></li>
+      <li><a href="#s3">파일 구조</a></li>
+      <li><a href="#s4">세팅 따라하기</a></li>
+      <li><a href="#s5">라우트 읽는 법</a></li>
+      <li><a href="#s6">눌러 보기</a></li>
+      <li><a href="#s7">이동하기</a></li>
+      <li><a href="#s8">동적 경로</a></li>
+      <li><a href="#s9">lazy 로딩</a></li>
+      <li><a href="#s10">페이지 추가</a></li>
+      <li><a href="#s11">자주 나는 문제</a></li>
+      <li><a href="#s12">연습 문제</a></li>
+    </ul>
+  </header>
+
+  <section id="s1">
+    <div class="step">먼저 결론</div>
+    <h2>라우터는 URL을 보고 보여 줄 화면을 고릅니다</h2>
+    <p>라우터를 붙이려면 서로 다른 세 조각이 필요합니다. 각각 파일이 따로 있어서, 어느 파일이 무슨 일을 하는지만 알면 구조가 읽힙니다.</p>
+    <div class="callout">
+      <p><strong>1. router 객체</strong> (<code>router.tsx</code>): "이 URL이면 이 화면"을 적은 대응표입니다.</p>
+      <p><strong>2. RouterProvider</strong> (<code>App.tsx</code>): 그 대응표를 앱 전체에 연결합니다.</p>
+      <p><strong>3. Outlet과 Link</strong> (<code>RootLayout</code>과 각 화면): 자식 화면이 나올 자리, 그리고 화면을 옮기는 링크입니다.</p>
+    </div>
+  </section>
+
+  <section id="s2">
+    <div class="step">설치</div>
+    <h2>패키지는 react-router 하나입니다</h2>
+    <p>v7부터는 <code>react-router</code> 하나에 필요한 기능이 모두 들어 있습니다. 예전에 쓰던 <code>react-router-dom</code>은 따로 설치하지 않아도 됩니다.</p>
+    <div class="code">
+      <div class="cap">터미널</div>
+      <pre><code>npm install react-router</code></pre>
+    </div>
+    <p class="note">이미 설치되어 있다면 <code>package.json</code>의 <code>react-router</code> 버전이 7 이상인지만 확인하세요. 가져오는 경로는 <code>react-router</code>로 통일하고, <code>RouterProvider</code>만 <code>react-router/dom</code>에서 가져옵니다.</p>
+  </section>
+
+  <section id="s3">
+    <div class="step">파일 구조</div>
+    <h2>어느 파일이 무슨 일을 하는지 먼저 봅니다</h2>
+    <div class="code">
+      <div class="cap">src 폴더</div>
+      <pre><code>src/
+├── main.tsx                  // 앱 시작점
+├── App.tsx                   // RouterProvider 연결
+├── app/
+│   ├── layout/RootLayout.tsx // 모든 페이지가 공유하는 틀
+│   └── routes/router.tsx     // URL과 페이지의 대응표
+└── pages/
+    └── style-guide/
+        ├── index.ts          // 이 페이지 묶음의 공개 출입구
+        └── ui/StyleGuidePage.tsx</code></pre>
+    </div>
+    <p>브라우저에서 주소를 열면 화면이 나오기까지 다음 순서로 흘러갑니다.</p>
+    <div class="code">
+      <pre><code>주소 입력 (/style-guide)
+   ↓
+App.tsx 의 RouterProvider 가 router 를 받음
+   ↓
+router.tsx 에서 일치하는 라우트를 찾음
+   ↓
+RootLayout 을 먼저 그림
+   ↓
+RootLayout 안의 &lt;Outlet /&gt; 자리에 StyleGuidePage 를 그림</code></pre>
+    </div>
+  </section>
+
+  <section id="s4">
+    <div class="step">세팅 따라하기</div>
+    <h2>파일 4개를 순서대로 만듭니다</h2>
+    <p><strong>1단계. main.tsx</strong>는 <code>App</code>을 화면에 올리는 보통의 시작점입니다. 라우터와 관련된 내용은 없습니다.</p>
+    <div class="code">
+      <div class="cap">src/main.tsx</div>
+      <pre><code>import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+
+createRoot(document.getElementById('root')!).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;
+);</code></pre>
+    </div>
+    <p><strong>2단계. App.tsx</strong>는 <code>router</code>를 <code>RouterProvider</code>에 넘기기만 합니다. 앱이 얇게 유지됩니다.</p>
+    <div class="code">
+      <div class="cap">src/App.tsx</div>
+      <pre><code>import { RouterProvider } from 'react-router/dom';
+import { router } from '@/app/routes/router';
+
+function App() {
+  return &lt;RouterProvider router={router} /&gt;;
+}
+
+export default App;</code></pre>
+    </div>
+    <p><strong>3단계. router.tsx</strong>에 대응표를 만듭니다. 처음에는 lazy 없이 가장 단순하게 시작합니다.</p>
+    <div class="code">
+      <div class="cap">src/app/routes/router.tsx</div>
+      <pre><code>import { createBrowserRouter } from 'react-router';
+import { RootLayout } from '@/app/layout/RootLayout';
+import { HomePage } from '@/pages/home';
+import { StyleGuidePage } from '@/pages/style-guide';
+
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: &lt;RootLayout /&gt;,
+    children: [
+      { index: true, element: &lt;HomePage /&gt; },                  // /
+      { path: 'style-guide', element: &lt;StyleGuidePage /&gt; },     // /style-guide
+    ],
+  },
+]);</code></pre>
+    </div>
+    <p><strong>4단계. RootLayout</strong>에 <code>Outlet</code>을 둡니다. 자식 라우트의 화면은 이 자리에 나옵니다.</p>
+    <div class="code">
+      <div class="cap">src/app/layout/RootLayout.tsx</div>
+      <pre><code>import { Outlet } from 'react-router';
+
+export const RootLayout = () =&gt; {
+  return (
+    &lt;div&gt;
+      &lt;header&gt;공통 헤더&lt;/header&gt;
+      &lt;main&gt;
+        &lt;Outlet /&gt;   {/* 여기에 index, style-guide 화면이 들어옴 */}
+      &lt;/main&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+    </div>
+    <p class="note">여기까지 하고 <code>npm run dev</code>로 열면 <code>/</code>와 <code>/style-guide</code>가 각각 다른 화면으로 보입니다.</p>
+  </section>
+
+  <section id="s5">
+    <div class="step">라우트 읽는 법</div>
+    <h2>라우트 객체의 속성은 다섯 개면 충분합니다</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>속성</th><th>뜻</th><th>예</th></tr></thead>
+        <tbody>
+          <tr><td><code>path</code></td><td>이 라우트가 맡는 주소 조각</td><td><code>'style-guide'</code></td></tr>
+          <tr><td><code>element</code></td><td>주소가 맞을 때 그릴 화면</td><td><code>&lt;StyleGuidePage /&gt;</code></td></tr>
+          <tr><td><code>children</code></td><td>이 라우트 안에 들어가는 자식 라우트</td><td><code>[ ... ]</code></td></tr>
+          <tr><td><code>index</code></td><td>부모 주소와 딱 맞을 때 보여 줄 기본 화면</td><td><code>index: true</code></td></tr>
+          <tr><td><code>path: '*'</code></td><td>어떤 라우트와도 맞지 않을 때 (404 화면)</td><td><code>'*'</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>자식의 <code>path</code>는 부모 주소 뒤에 이어 붙는 상대 경로입니다. 맨 앞에 <code>/</code>를 쓰지 않습니다. 부모가 <code>'/'</code>이고 자식이 <code>'style-guide'</code>면 최종 주소는 <code>/style-guide</code>입니다.</p>
+  </section>
+
+  <section id="s6">
+    <div class="step">직접 눌러 보기</div>
+    <h2>주소에 따라 어떤 화면이 어디에 나오는지 확인합니다</h2>
+    <p>아래 주소를 눌러 보세요. 같은 <code>RootLayout</code> 안에서 <code>&lt;Outlet /&gt;</code> 자리만 바뀝니다. 예시 라우트는 <code>index</code>, <code>style-guide</code>, <code>style-guide/colors</code>, <code>*</code> 네 개입니다.</p>
+    <div class="demo">
+      <div class="urls" role="group" aria-label="접속할 주소 고르기">
+        <button type="button" data-url="/" aria-pressed="false">/</button>
+        <button type="button" data-url="/style-guide" aria-pressed="true">/style-guide</button>
+        <button type="button" data-url="/style-guide/colors" aria-pressed="false">/style-guide/colors</button>
+        <button type="button" data-url="/abc" aria-pressed="false">/abc</button>
+      </div>
+      <div class="addr">접속 주소 <b id="addr">/style-guide</b></div>
+      <p class="match" id="match">일치한 라우트는 <code>path: 'style-guide'</code>이고 <code>StyleGuidePage</code>를 그립니다.</p>
+      <div class="box outer">
+        <span class="lbl">RootLayout (부모 라우트의 element)</span>
+        <div class="box slot">
+          <span class="lbl">&lt;Outlet /&gt; 자리</span>
+          <div class="box page" id="page">StyleGuidePage</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="s7">
+    <div class="step">이동하기</div>
+    <h2>링크는 Link, 코드로 이동은 useNavigate</h2>
+    <p>라우트를 정의했다고 링크가 자동으로 생기지는 않습니다. 화면 안에서 직접 이동 수단을 넣어야 합니다.</p>
+    <div class="code">
+      <div class="cap">링크 만들기</div>
+      <pre><code>import { Link, NavLink, useNavigate } from 'react-router';
+
+// 1. 일반 링크
+&lt;Link to="/style-guide/colors"&gt;색상 가이드&lt;/Link&gt;
+
+// 2. 현재 주소와 맞으면 스타일을 바꾸고 싶은 메뉴
+&lt;NavLink
+  to="/style-guide"
+  className={({ isActive }) =&gt; (isActive ? 'menu on' : 'menu')}
+&gt;
+  스타일 가이드
+&lt;/NavLink&gt;
+
+// 3. 버튼을 눌렀을 때 코드에서 이동
+const navigate = useNavigate();
+&lt;button onClick={() =&gt; navigate('/style-guide')}&gt;이동&lt;/button&gt;</code></pre>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>방법</th><th>언제 쓰나</th></tr></thead>
+        <tbody>
+          <tr><td><code>Link</code></td><td>클릭하면 이동하는 일반 링크</td></tr>
+          <tr><td><code>NavLink</code></td><td>메뉴처럼 "지금 보는 곳"을 표시해야 할 때</td></tr>
+          <tr><td><code>useNavigate</code></td><td>폼 제출 후 이동처럼 코드가 이동을 결정할 때</td></tr>
+          <tr><td><code>&lt;a href&gt;</code></td><td>외부 사이트로 나갈 때만. 내부 이동에 쓰면 페이지 전체가 새로고침됩니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="s8">
+    <div class="step">동적 경로</div>
+    <h2>주소 일부를 변수로 받을 수 있습니다</h2>
+    <p><code>path</code>에 콜론(<code>:</code>)을 붙이면 그 자리가 변수가 됩니다. 글 상세 페이지처럼 모양은 같고 값만 다른 화면에 씁니다.</p>
+    <div class="code">
+      <pre><code>// router.tsx
+{ path: 'posts/:id', element: &lt;PostPage /&gt; }
+
+// PostPage.tsx
+import { useParams } from 'react-router';
+
+export const PostPage = () =&gt; {
+  const { id } = useParams();   // /posts/42 로 들어오면 id 는 "42"
+  return &lt;div&gt;{id}번 글&lt;/div&gt;;
+};</code></pre>
+    </div>
+    <p class="note"><code>id</code>는 항상 문자열입니다. 숫자로 쓰려면 <code>Number(id)</code>로 바꿔야 합니다.</p>
+  </section>
+
+  <section id="s9">
+    <div class="step">lazy 로딩</div>
+    <h2>페이지를 필요할 때만 불러옵니다</h2>
+    <p>지금 프로젝트처럼 <code>lazy</code>와 <code>Suspense</code>를 쓰면 해당 주소에 들어갈 때 그 페이지 코드를 따로 내려받습니다. 첫 화면이 가벼워집니다.</p>
+    <div class="code">
+      <pre><code>import { lazy, Suspense } from 'react';
+
+const StyleGuidePage = lazy(() =&gt;
+  import('@/pages/style-guide').then((m) =&gt; ({ default: m.StyleGuidePage }))
+);
+
+const withSuspense = (element: React.ReactNode) =&gt; (
+  &lt;Suspense fallback={&lt;div&gt;로딩중...&lt;/div&gt;}&gt;{element}&lt;/Suspense&gt;
+);
+
+// children 안에서
+{ path: 'style-guide', element: withSuspense(&lt;StyleGuidePage /&gt;) }</code></pre>
+    </div>
+    <p><code>lazy</code>는 default export를 기대합니다. 페이지가 named export라서 <code>.then</code>으로 <code>{ default: ... }</code> 모양으로 바꿔 줍니다. default export라면 <code>lazy(() =&gt; import('./StyleGuideHome'))</code>처럼 바로 쓸 수 있습니다.</p>
+  </section>
+
+  <section id="s10">
+    <div class="step">페이지 추가</div>
+    <h2>새 페이지를 붙일 때 고칠 곳은 네 군데입니다</h2>
+    <ul class="check">
+      <li><span><code>pages/이름/ui/</code> 안에 페이지 컴포넌트를 만듭니다.</span></li>
+      <li><span><code>pages/이름/index.ts</code>에서 그 컴포넌트를 export 합니다.</span></li>
+      <li><span><code>router.tsx</code>에 <code>lazy</code> import를 추가합니다.</span></li>
+      <li><span><code>router.tsx</code>의 <code>children</code>에 <code>{ path, element }</code> 한 줄을 추가합니다.</span></li>
+    </ul>
+    <p>이동 링크가 필요하면 <code>Link</code>를 별도로 넣습니다. 위 네 가지만으로는 주소창에서 직접 접속할 때만 열립니다.</p>
+  </section>
+
+  <section id="s11">
+    <div class="step">자주 나는 문제</div>
+    <h2>막혔을 때 먼저 확인할 네 가지</h2>
+    <div class="err">
+      <div class="msg">페이지는 열리는데 본문이 비어 있음</div>
+      <p><code>RootLayout</code>에 <code>&lt;Outlet /&gt;</code>이 없는지 확인하세요. 자식 화면은 <code>Outlet</code> 자리에만 그려집니다.</p>
+    </div>
+    <div class="err">
+      <div class="msg">Module '"./StyleGuideHome"' has no exported member 'StyleGuideHome'.</div>
+      <p>export 방식과 import 방식이 다릅니다. <code>export default</code>는 <code>import X from</code>으로, <code>export const</code>는 <code>import { X } from</code>으로 가져옵니다. default를 named로 내보내려면 <code>index.ts</code>에 <code>export { default as X } from './ui/X'</code>를 씁니다.</p>
+    </div>
+    <div class="err">
+      <div class="msg">배포 후 /style-guide 에서 새로고침하면 404</div>
+      <p>개발 서버는 알아서 처리하지만, 배포한 서버는 <code>/style-guide</code>라는 실제 파일을 찾습니다. 모든 주소를 <code>index.html</code>로 돌려주도록 호스팅 설정(rewrite, <code>try_files</code> 등)을 해야 합니다.</p>
+    </div>
+    <div class="err">
+      <div class="msg">react-router 와 react-router-dom 이 파일마다 섞여 있음</div>
+      <p>동작은 하지만 하나로 통일하는 편이 안전합니다. v7이라면 <code>react-router</code>에서 가져오고, <code>RouterProvider</code>만 <code>react-router/dom</code>에서 가져옵니다.</p>
+    </div>
+  </section>
+
+  <section id="s12">
+    <div class="step">연습 문제</div>
+    <h2>왜 /style-guide/colors 가 404일까요?</h2>
+    <p>아래처럼 만들었더니 <code>/colors</code>로는 열리는데 <code>/style-guide/colors</code>는 404입니다. 이유를 생각해 보세요.</p>
+    <div class="code">
+      <pre><code>{
+  path: '/',
+  element: &lt;RootLayout /&gt;,
+  children: [
+    { path: 'style-guide', element: &lt;StyleGuidePage /&gt; },
+    { path: 'colors', element: &lt;ColorGuidePage /&gt; },
+  ],
+}</code></pre>
+    </div>
+    <details>
+      <summary>정답 보기</summary>
+      <p>자식의 <code>path</code>는 부모 주소 뒤에 이어 붙습니다. 부모가 <code>'/'</code>이므로 <code>'colors'</code>는 <code>/colors</code>가 됩니다. <code>/style-guide/colors</code>로 열고 싶다면 <code>path: 'style-guide/colors'</code>로 쓰거나, <code>style-guide</code> 라우트 안에 <code>children</code>을 만들어 <code>{ path: 'colors' }</code>를 넣으면 됩니다.</p>
+    </details>
+  </section>
+
+  <section>
+    <div class="step">정리</div>
+    <h2>기억할 다섯 가지</h2>
+    <ul class="check">
+      <li><span>라우터는 <code>router</code> 객체(대응표), <code>RouterProvider</code>(연결), <code>Outlet</code>(자식 자리) 세 조각입니다.</span></li>
+      <li><span>자식 라우트의 <code>path</code>는 부모 뒤에 붙는 상대 경로이고, 맨 앞에 <code>/</code>를 쓰지 않습니다.</span></li>
+      <li><span><code>/</code>에 화면을 두려면 <code>index: true</code>를 씁니다.</span></li>
+      <li><span>이동은 <code>Link</code>, <code>NavLink</code>, <code>useNavigate</code>로 하고, 라우트 정의만으로는 링크가 생기지 않습니다.</span></li>
+      <li><span>새 페이지는 컴포넌트, <code>index.ts</code>, <code>lazy</code> import, <code>children</code> 한 줄 순서로 붙입니다.</span></li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  // 코드 하이라이트: 실패해도 일반 텍스트로 그대로 읽힙니다.
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  var RE = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|'(?:[^'\\\n]|\\.)*'|`[^`]*`)|\b(const|type|return|let|function|interface|extends|export|import|from|default)\b|\b(string|number|boolean|void|undefined|React|ReactNode)\b|(&lt;\/?[A-Z][A-Za-z]*)/g;
+  function hl(text) {
+    return esc(text).replace(RE, function (m, com, str, key, typ, tag) {
+      if (com) return '<span class="c">' + com + '</span>';
+      if (str) return '<span class="s">' + str + '</span>';
+      if (key) return '<span class="k">' + key + '</span>';
+      if (typ) return '<span class="t">' + typ + '</span>';
+      if (tag) return '<span class="g">' + tag + '</span>';
+      return m;
+    });
+  }
+  try {
+    var list = document.querySelectorAll("pre code");
+    for (var i = 0; i < list.length; i++) list[i].innerHTML = hl(list[i].textContent);
+  } catch (e) {}
+
+  // 직접 눌러 보기
+  var MAP = {
+    "/": { rule: "index: true", page: "HomePage" },
+    "/style-guide": { rule: "path: 'style-guide'", page: "StyleGuidePage" },
+    "/style-guide/colors": { rule: "path: 'style-guide/colors'", page: "ColorGuidePage" },
+    "/abc": { rule: "path: '*'", page: "NotFoundPage" }
+  };
+  var buttons = document.querySelectorAll(".urls button");
+  var addr = document.getElementById("addr");
+  var match = document.getElementById("match");
+  var page = document.getElementById("page");
+  function show(url) {
+    var r = MAP[url];
+    if (!r) return;
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].setAttribute("aria-pressed", buttons[i].getAttribute("data-url") === url ? "true" : "false");
+    }
+    addr.textContent = url;
+    match.innerHTML = "일치한 라우트는 <code>" + r.rule + "</code>이고 <code>" + r.page + "</code>를 그립니다.";
+    page.textContent = r.page;
+  }
+  for (var j = 0; j < buttons.length; j++) {
+    buttons[j].addEventListener("click", function (e) { show(e.currentTarget.getAttribute("data-url")); });
+  }
+})();
+</script>
+
+</body></html>

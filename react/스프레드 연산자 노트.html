@@ -1,0 +1,384 @@
+<!doctype html><html lang="ko"><head>
+<title>스프레드 연산자 노트</title><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: one 760px reading column, numbered by topic only where order teaches (sections 1-7), cheat sheet + quiz at the end */
+:root {
+  --bg: #f4f7f7;
+  --surface: #ffffff;
+  --fg: #14201f;
+  --muted: #55696a;
+  --line: #d6e0e0;
+  --accent: #0b7a75;
+  --accent-soft: #dcf0ee;
+  --code-bg: #eaf1f1;
+  --warn: #8f5200;
+  --warn-soft: #fbeed8;
+  --font-body: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1616;
+    --surface: #132020;
+    --fg: #e2eceb;
+    --muted: #93a9a8;
+    --line: #25393a;
+    --accent: #4cc9bd;
+    --accent-soft: #12342f;
+    --code-bg: #0f1b1b;
+    --warn: #f0b45a;
+    --warn-soft: #2d2410;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1616;
+  --surface: #132020;
+  --fg: #e2eceb;
+  --muted: #93a9a8;
+  --line: #25393a;
+  --accent: #4cc9bd;
+  --accent-soft: #12342f;
+  --code-bg: #0f1b1b;
+  --warn: #f0b45a;
+  --warn-soft: #2d2410;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.page { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+.page > * { min-width: 0; }
+
+header { display: flex; flex-direction: column; gap: 14px; }
+.eyebrow { font-size: 13px; letter-spacing: 0.08em; color: var(--accent); font-weight: 700; }
+h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.25; margin: 0; font-weight: 700; text-wrap: balance; }
+h1 code { font-family: var(--font-mono); color: var(--accent); font-weight: 600; }
+.lede { margin: 0; font-size: 18px; color: var(--muted); text-wrap: pretty; }
+
+nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+nav a {
+  display: inline-block; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px;
+  color: var(--fg); text-decoration: none; font-size: 14px; background: var(--surface);
+}
+nav a:hover { border-color: var(--accent); color: var(--accent); }
+a:focus-visible, summary:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+section { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 16px; }
+h2 { font-size: 24px; line-height: 1.35; margin: 0; font-weight: 700; text-wrap: balance; }
+h3 { font-size: 18px; margin: 8px 0 0; font-weight: 700; }
+p { margin: 0; text-wrap: pretty; }
+ul.plain, ol.plain { margin: 0; padding-left: 1.3em; display: flex; flex-direction: column; gap: 6px; }
+
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--code-bg); padding: 0.1em 0.4em; border-radius: 4px; }
+pre {
+  margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px;
+  padding: 14px 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 14px; line-height: 1.65;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+.c { color: var(--muted); }
+.k { color: var(--accent); font-weight: 600; }
+
+.callout { border-radius: 8px; padding: 14px 16px; background: var(--accent-soft); display: flex; flex-direction: column; gap: 6px; }
+.callout.warn { background: var(--warn-soft); }
+.callout strong { font-size: 14px; letter-spacing: 0.02em; color: var(--accent); }
+.callout.warn strong { color: var(--warn); }
+
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.demo-title { font-weight: 700; font-size: 15px; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px; }
+.seg button {
+  font: inherit; font-size: 14px; font-family: var(--font-mono); cursor: pointer;
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+}
+.seg button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.demo-grid > div { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.demo-grid .label { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); font-weight: 700; }
+#demo-result .win { color: var(--accent); font-weight: 600; }
+@media (max-width: 560px) { .demo-grid { grid-template-columns: 1fr; } }
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 14.5px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; letter-spacing: 0.06em; color: var(--muted); background: var(--code-bg); }
+tr:last-child td { border-bottom: none; }
+td code { white-space: nowrap; }
+
+.quiz { display: flex; flex-direction: column; gap: 10px; }
+details { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
+summary { cursor: pointer; font-weight: 500; }
+details[open] summary { margin-bottom: 12px; }
+details .ans { display: flex; flex-direction: column; gap: 10px; }
+
+footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="page">
+  <header>
+    <div class="eyebrow">리액트 학습 노트</div>
+    <h1>스프레드 연산자 <code>...</code></h1>
+    <p class="lede">배열이나 객체를 그 자리에 하나씩 펼쳐 넣는 문법이에요. 점 세 개 하나로 복사, 합치기, props 전달, state 업데이트를 모두 처리합니다.</p>
+    <nav aria-label="목차">
+      <ul>
+        <li><a href="#basic">기본 개념</a></li>
+        <li><a href="#array">배열</a></li>
+        <li><a href="#object">객체</a></li>
+        <li><a href="#react">리액트에서</a></li>
+        <li><a href="#rest">rest와 구분</a></li>
+        <li><a href="#caution">주의할 점</a></li>
+        <li><a href="#cheat">한눈에 정리</a></li>
+        <li><a href="#quiz">연습 문제</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section id="basic">
+    <h2>1. 한마디로, 펼치기</h2>
+    <p>묶음 안에 든 값을 꺼내 낱개로 풀어놓는다고 생각하면 됩니다. 상자째 들고 있던 과일을 책상 위에 하나씩 꺼내놓는 것과 같아요.</p>
+<pre><code><span class="k">const</span> nums = [1, 2, 3];
+
+console.log(nums);      <span class="c">// [1, 2, 3]   배열 하나</span>
+console.log(...nums);   <span class="c">// 1 2 3       낱개 값 세 개</span></code></pre>
+    <p>두 번째 줄은 <code>console.log(1, 2, 3)</code>과 같습니다. 펼친 값은 그 자리에 직접 적은 것처럼 동작해요.</p>
+  </section>
+
+  <section id="array">
+    <h2>2. 배열 스프레드</h2>
+    <h3>복사</h3>
+<pre><code><span class="k">const</span> a = [1, 2, 3];
+<span class="k">const</span> b = [...a];   <span class="c">// 새 배열. a와 별개</span>
+
+b.push(4);
+console.log(a);   <span class="c">// [1, 2, 3]  그대로</span>
+console.log(b);   <span class="c">// [1, 2, 3, 4]</span></code></pre>
+    <p><code>const b = a</code>로 대입하면 같은 배열을 가리키게 돼서 <code>b</code>를 고치면 <code>a</code>도 바뀝니다. 스프레드는 새 배열을 만들어요.</p>
+
+    <h3>합치기와 중간에 끼워 넣기</h3>
+<pre><code><span class="k">const</span> front = ['A', 'B'];
+<span class="k">const</span> back  = ['E', 'F'];
+
+[...front, ...back];            <span class="c">// ['A', 'B', 'E', 'F']</span>
+[...front, 'C', 'D', ...back];  <span class="c">// ['A', 'B', 'C', 'D', 'E', 'F']</span>
+['0', ...front];                <span class="c">// ['0', 'A', 'B']  맨 앞에 추가</span></code></pre>
+  </section>
+
+  <section id="object">
+    <h2>3. 객체 스프레드</h2>
+    <h3>복사와 병합</h3>
+<pre><code><span class="k">const</span> user = { name: '민지', age: 28 };
+
+<span class="k">const</span> copy = { ...user };                  <span class="c">// { name: '민지', age: 28 }</span>
+<span class="k">const</span> next = { ...user, city: '서울' };      <span class="c">// { name: '민지', age: 28, city: '서울' }</span></code></pre>
+
+    <h3>같은 키가 겹치면 뒤에 오는 값이 이깁니다</h3>
+    <p>왼쪽에서 오른쪽으로 차례로 채워 넣기 때문에, 같은 키가 또 나오면 나중 값이 앞의 값을 덮어써요. 질문하신 <code>&lt;HxButton {...button} buttonSize="..." /&gt;</code>에서 <code>buttonSize</code>가 우선하는 이유도 이것입니다.</p>
+
+    <div class="demo" aria-label="덮어쓰기 순서 실습">
+      <div class="demo-title">직접 눌러보기: 순서를 바꾸면 결과가 달라져요</div>
+      <div class="demo-grid">
+        <div>
+          <span class="label">base</span>
+<pre><code>{
+  label: '저장',
+  variant: 'primary',
+  buttonSize: 'small'
+}</code></pre>
+        </div>
+        <div>
+          <span class="label">override</span>
+<pre><code>{
+  buttonSize: 'large'
+}</code></pre>
+        </div>
+      </div>
+      <div class="seg" role="group" aria-label="스프레드 순서 선택">
+        <button type="button" id="order-a" aria-pressed="true">{ ...base, ...override }</button>
+        <button type="button" id="order-b" aria-pressed="false">{ ...override, ...base }</button>
+      </div>
+      <div>
+        <span class="demo-grid" style="display:block"><span class="label" style="font-size:12px;letter-spacing:0.06em;color:var(--muted);font-weight:700">결과</span></span>
+<pre id="demo-result"><code></code></pre>
+      </div>
+      <p id="demo-note" style="font-size:14.5px;color:var(--muted)"></p>
+    </div>
+  </section>
+
+  <section id="react">
+    <h2>4. 리액트에서 자주 쓰는 세 가지 자리</h2>
+
+    <h3>① props 한꺼번에 넘기기</h3>
+<pre><code><span class="k">const</span> buttons = [
+  { id: 1, label: '저장', variant: 'primary' },
+  { id: 2, label: '취소', variant: 'secondary' },
+];
+
+{buttons.map(button =&gt; (
+  &lt;HxButton key={button.id} {...button} buttonSize="large" /&gt;
+))}</code></pre>
+    <p>객체의 속성 하나하나가 props가 됩니다. 위 코드는 <code>id</code>, <code>label</code>, <code>variant</code>도 함께 넘겨요.</p>
+
+    <h3>② state 객체의 일부만 바꾸기</h3>
+<pre><code><span class="k">const</span> [form, setForm] = useState({ name: '', email: '' });
+
+<span class="k">const</span> handleName = (e) =&gt; {
+  setForm(prev =&gt; ({ ...prev, name: e.target.value }));
+  <span class="c">// email은 그대로 두고 name만 새 값으로 덮어씀</span>
+};</code></pre>
+
+    <h3>③ state 배열 추가, 삭제, 수정</h3>
+<pre><code><span class="k">const</span> [todos, setTodos] = useState([]);
+
+<span class="c">// 추가</span>
+setTodos(prev =&gt; [...prev, { id: Date.now(), text: '장보기', done: false }]);
+
+<span class="c">// 삭제</span>
+setTodos(prev =&gt; prev.filter(t =&gt; t.id !== targetId));
+
+<span class="c">// 수정 (해당 항목만 새 객체로)</span>
+setTodos(prev =&gt; prev.map(t =&gt; t.id === targetId ? { ...t, done: true } : t));</code></pre>
+
+    <div class="callout">
+      <strong>왜 굳이 새로 만들까요?</strong>
+      <p>리액트는 state의 참조(주소)가 바뀌었는지 보고 다시 렌더링할지 결정합니다. <code>todos.push(...)</code>처럼 기존 배열을 직접 고치면 주소가 같아서 화면이 갱신되지 않을 수 있어요. 스프레드로 새 배열이나 객체를 만들어 넘기는 것이 기본 습관입니다.</p>
+    </div>
+  </section>
+
+  <section id="rest">
+    <h2>5. rest와 구분하기</h2>
+    <p>점 세 개는 같은데 쓰이는 자리에 따라 반대 역할을 합니다. 펼쳐서 풀어놓으면 스프레드, 남은 것을 모아 담으면 rest예요.</p>
+<pre><code><span class="c">// rest: 구조분해에서 "나머지"를 모음</span>
+<span class="k">const</span> { buttonSize, ...rest } = props;
+<span class="c">// buttonSize는 따로 꺼내고, 나머지 속성은 rest 객체에 담김</span>
+
+<span class="c">// rest: 함수 매개변수에서 인자를 모음</span>
+<span class="k">function</span> sum(...args) { <span class="k">return</span> args.reduce((a, b) =&gt; a + b, 0); }
+
+<span class="c">// spread: 모아둔 것을 다시 펼침</span>
+&lt;button {...rest} /&gt;
+Math.max(...[3, 9, 4]);   <span class="c">// 9</span></code></pre>
+    <p>컴포넌트에서 특정 props만 직접 쓰고 나머지는 내부 요소에 그대로 넘길 때 두 가지를 함께 씁니다.</p>
+<pre><code><span class="k">function</span> HxButton({ buttonSize, children, ...rest }) {
+  <span class="k">return</span> &lt;button className={`btn btn-${buttonSize}`} {...rest}&gt;{children}&lt;/button&gt;;
+}</code></pre>
+  </section>
+
+  <section id="caution">
+    <h2>6. 주의할 점</h2>
+    <h3>얕은 복사라서 중첩 객체는 같이 바뀝니다</h3>
+<pre><code><span class="k">const</span> a = { name: '민지', address: { city: '서울' } };
+<span class="k">const</span> b = { ...a };
+
+b.address.city = '부산';
+console.log(a.address.city);   <span class="c">// '부산'  address 객체는 공유됨</span>
+
+<span class="c">// 중첩된 값을 바꿀 땐 그 단계까지 각각 펼친다</span>
+<span class="k">const</span> c = { ...a, address: { ...a.address, city: '부산' } };</code></pre>
+
+    <h3>undefined도 덮어씁니다</h3>
+<pre><code>{ ...{ size: 'large' }, size: undefined }   <span class="c">// { size: undefined }</span></code></pre>
+    <p>뒤에 같은 키가 있으면 값이 <code>undefined</code>여도 앞의 값을 지웁니다. props 기본값이 의도치 않게 사라질 수 있어요.</p>
+
+    <div class="callout warn">
+      <strong>props 스프레드를 쓸 때</strong>
+      <p>객체에 들어 있는 모든 속성이 넘어갑니다. 예를 들어 <code>&lt;button {...data} /&gt;</code>처럼 일반 DOM 요소에 쓰면 <code>data</code> 안의 낯선 키가 그대로 HTML 속성으로 전달되어 경고가 뜰 수 있어요. 어떤 props가 넘어가는지 한눈에 안 보이는 단점도 있으니, 컴포넌트가 받는 props가 정해져 있다면 필요한 것만 골라 넘기는 편이 읽기 좋습니다.</p>
+    </div>
+  </section>
+
+  <section id="cheat">
+    <h2>7. 한눈에 정리</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>하고 싶은 일</th><th>코드</th><th>결과</th></tr></thead>
+        <tbody>
+          <tr><td>배열 복사</td><td><code>[...arr]</code></td><td>새 배열</td></tr>
+          <tr><td>배열 합치기</td><td><code>[...a, ...b]</code></td><td>a 뒤에 b</td></tr>
+          <tr><td>배열 끝에 추가</td><td><code>[...arr, item]</code></td><td>새 배열</td></tr>
+          <tr><td>객체 복사</td><td><code>{ ...obj }</code></td><td>얕은 복사</td></tr>
+          <tr><td>일부만 바꾸기</td><td><code>{ ...obj, key: value }</code></td><td>key만 덮어씀</td></tr>
+          <tr><td>기본값 주고 덮어쓰기</td><td><code>{ ...defaults, ...options }</code></td><td>options 우선</td></tr>
+          <tr><td>props 한꺼번에 전달</td><td><code>&lt;Comp {...props} /&gt;</code></td><td>키마다 props 하나</td></tr>
+          <tr><td>함수 인자로 펼치기</td><td><code>fn(...args)</code></td><td>낱개 인자</td></tr>
+          <tr><td>나머지 모으기</td><td><code>const {'{'} a, ...rest {'}'} = obj</code></td><td>rest는 새 객체</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="quiz">
+    <h2>8. 연습 문제</h2>
+    <p>답을 먼저 생각해 본 다음 펼쳐서 확인해 보세요.</p>
+    <div class="quiz">
+      <details>
+        <summary>Q1. 아래 결과는 무엇일까요?</summary>
+        <div class="ans">
+<pre><code>{ ...{ a: 1, b: 2 }, b: 3, c: 4 }</code></pre>
+          <p><code>{ a: 1, b: 3, c: 4 }</code><br>b는 뒤에 적은 3이 앞의 2를 덮어씁니다.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Q2. 두 코드 중 button의 <code>variant</code>가 항상 'primary'가 되는 쪽은?</summary>
+        <div class="ans">
+<pre><code>(가) &lt;HxButton {...button} variant="primary" /&gt;
+(나) &lt;HxButton variant="primary" {...button} /&gt;</code></pre>
+          <p>(가)입니다. 뒤에 적은 <code>variant="primary"</code>가 <code>button</code> 안의 <code>variant</code>를 덮어써요. (나)는 button에 variant가 있으면 그 값이 이깁니다.</p>
+        </div>
+      </details>
+      <details>
+        <summary>Q3. todos 배열에서 id가 2인 항목의 <code>done</code>만 true로 바꾸는 코드를 써보세요.</summary>
+        <div class="ans">
+<pre><code>setTodos(prev =&gt;
+  prev.map(t =&gt; t.id === 2 ? { ...t, done: true } : t)
+);</code></pre>
+          <p>바꿀 항목만 새 객체로 만들고, 나머지는 그대로 돌려줍니다. 배열은 <code>map</code>이 새로 만들어 줘요.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <footer>리액트 학습 노트 모음에 들어가는 한 장입니다.</footer>
+</div>
+
+<script>
+(function () {
+  var base = { label: '저장', variant: 'primary', buttonSize: 'small' };
+  var override = { buttonSize: 'large' };
+  var btnA = document.getElementById('order-a');
+  var btnB = document.getElementById('order-b');
+  var out = document.querySelector('#demo-result code');
+  var note = document.getElementById('demo-note');
+
+  function render(order) {
+    var merged = order === 'a' ? Object.assign({}, base, override) : Object.assign({}, override, base);
+    var lines = ['{'];
+    Object.keys(merged).forEach(function (k, i, arr) {
+      var line = '  ' + k + ": '" + merged[k] + "'" + (i < arr.length - 1 ? ',' : '');
+      lines.push(k === 'buttonSize' ? '<span class="win">' + line + '</span>' : line);
+    });
+    lines.push('}');
+    out.innerHTML = lines.join('\n');
+    btnA.setAttribute('aria-pressed', order === 'a');
+    btnB.setAttribute('aria-pressed', order === 'b');
+    note.textContent = order === 'a'
+      ? 'override가 뒤에 있으니 buttonSize가 large로 덮어써집니다.'
+      : 'base가 뒤에 있으니 buttonSize가 다시 small로 덮어써집니다.';
+  }
+  btnA.addEventListener('click', function () { render('a'); });
+  btnB.addEventListener('click', function () { render('b'); });
+  render('a');
+})();
+</script>
+
+</body></html>

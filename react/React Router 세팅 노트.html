@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>React Router 세팅 노트</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: single reading column, sticky-free; chip TOC on top, numbered setup steps, then reference tables */
+:root {
+  --bg: #f6f8f8;
+  --surface: #ffffff;
+  --code-bg: #eef2f2;
+  --fg: #16201f;
+  --muted: #55645f;
+  --line: #d5dedc;
+  --accent: #0a6a63;
+  --accent-soft: #dcefec;
+  --warn: #8a4b00;
+  --warn-soft: #fbeedb;
+  --font-body: "Noto Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1717; --surface: #162120; --code-bg: #0b1212; --fg: #e4eeec; --muted: #9db0ab;
+    --line: #2a3b39; --accent: #5cc9bd; --accent-soft: #17302d; --warn: #f0b667; --warn-soft: #2e2415;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1717; --surface: #162120; --code-bg: #0b1212; --fg: #e4eeec; --muted: #9db0ab;
+  --line: #2a3b39; --accent: #5cc9bd; --accent-soft: #17302d; --warn: #f0b667; --warn-soft: #2e2415;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.75;
+  padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 48px; }
+section { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+header { display: flex; flex-direction: column; gap: 12px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: clamp(28px, 6vw, 38px); line-height: 1.25; margin: 0; text-wrap: balance; }
+h2 { font-size: 22px; line-height: 1.35; margin: 0; text-wrap: balance; display: flex; gap: 12px; align-items: baseline; }
+h2 .n { font-family: var(--font-mono); font-size: 14px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 4px; flex: none; }
+h3 { font-size: 16px; margin: 8px 0 0; }
+p { margin: 0; }
+.lead { color: var(--muted); font-size: 17px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code { font-family: var(--font-mono); font-size: .88em; background: var(--code-bg); padding: 1px 6px; border-radius: 4px; }
+.file { font-family: var(--font-mono); font-size: 13px; color: var(--muted); margin-bottom: -6px; }
+pre { margin: 0; background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; overflow-x: auto; line-height: 1.6; }
+pre code { background: none; padding: 0; font-size: 13.5px; white-space: pre; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 0; list-style: none; }
+.toc a { display: block; font-size: 14px; text-decoration: none; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--fg); background: var(--surface); }
+.toc a:hover { border-color: var(--accent); color: var(--accent); }
+.note { border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px; border-radius: 4px; }
+.note.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.note b { display: block; font-size: 13px; letter-spacing: .02em; margin-bottom: 2px; }
+.tree { font-family: var(--font-mono); font-size: 13.5px; }
+ul.plain { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 14.5px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-size: 12.5px; letter-spacing: .04em; color: var(--muted); background: var(--code-bg); }
+.flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 13px; }
+.flow span { background: var(--surface); border: 1px solid var(--line); padding: 4px 10px; border-radius: 4px; }
+.flow i { color: var(--accent); font-style: normal; }
+.check { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.check li { display: flex; gap: 10px; }
+.check li::before { content: "□"; color: var(--accent); font-family: var(--font-mono); }
+footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+
+</head>
+<body>
+<main>
+  <header>
+    <div class="eyebrow">React · TypeScript · Vite</div>
+    <h1>React Router 세팅 노트</h1>
+    <p class="lead">설치부터 첫 페이지 연결, 라우트 추가, 링크 걸기까지. 지금 프로젝트(FSD 구조, <code>@</code> 별칭, <code>lazy</code> 페이지)에 맞춘 순서입니다.</p>
+    <ul class="toc">
+      <li><a href="#what">라우터란</a></li>
+      <li><a href="#install">설치</a></li>
+      <li><a href="#alias">@ 별칭</a></li>
+      <li><a href="#tree">폴더 구조</a></li>
+      <li><a href="#layout">RootLayout</a></li>
+      <li><a href="#page">페이지와 index.ts</a></li>
+      <li><a href="#router">router.tsx</a></li>
+      <li><a href="#mount">앱에 연결</a></li>
+      <li><a href="#add">라우트 추가</a></li>
+      <li><a href="#link">링크와 이동</a></li>
+      <li><a href="#error">404와 에러</a></li>
+      <li><a href="#trouble">자주 나는 오류</a></li>
+    </ul>
+  </header>
+
+  <section id="what">
+    <h2>라우터란</h2>
+    <p>브라우저 주소(URL)를 보고 어떤 화면을 보여줄지 정해 주는 장치입니다. 페이지를 새로 받아오지 않고 화면만 바꾸기 때문에 SPA에서 여러 화면을 나눌 때 씁니다.</p>
+    <div class="flow" aria-label="동작 순서">
+      <span>URL 입력/클릭</span><i>→</i><span>router 객체에서 일치하는 라우트 찾기</span><i>→</i><span>RootLayout의 Outlet 자리에 페이지 렌더링</span>
+    </div>
+    <div class="note">
+      <b>v7 import 규칙</b>
+      v7에서는 패키지가 <code>react-router</code> 하나입니다. <code>createBrowserRouter</code>, <code>Link</code>, <code>Outlet</code>, 각종 훅은 <code>react-router</code>에서, <code>RouterProvider</code>만 <code>react-router/dom</code>에서 가져옵니다. <code>react-router-dom</code>은 더 이상 쓰지 않아도 됩니다.
+    </div>
+  </section>
+
+  <section id="install">
+    <h2><span class="n">1</span>설치</h2>
+    <pre><code>npm install react-router</code></pre>
+    <p>설치 후 <code>package.json</code>의 <code>react-router</code> 버전이 7 이상인지 확인하세요. 예전에 <code>react-router-dom</code>을 설치했다면 제거합니다.</p>
+    <pre><code>npm uninstall react-router-dom</code></pre>
+  </section>
+
+  <section id="alias">
+    <h2><span class="n">2</span>@ 별칭 설정</h2>
+    <p><code>@/app/routes/router</code>처럼 <code>@</code>로 시작하는 경로를 쓰려면 <strong>타입스크립트 설정과 Vite 설정 두 곳</strong>을 맞춰야 합니다. tsconfig는 에디터와 타입 체크용, Vite 설정은 실제 번들용입니다.</p>
+    <div class="file">tsconfig.app.json (Vite 템플릿은 tsconfig.json에도 같은 paths를 넣어야 에디터가 인식합니다)</div>
+<pre><code>{
+  "compilerOptions": {
+    "paths": { "@/*": ["./src/*"] }
+  }
+}</code></pre>
+    <div class="file">vite.config.ts</div>
+<pre><code>import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { fileURLToPath, URL } from 'node:url';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+  },
+});</code></pre>
+    <p>설정을 바꾼 뒤에는 개발 서버를 재시작하고, 에디터가 인식하지 못하면 TS 서버를 재시작하세요.</p>
+  </section>
+
+  <section id="tree">
+    <h2><span class="n">3</span>폴더 구조</h2>
+    <pre class="tree"><code>src/
+├── main.tsx
+├── App.tsx
+├── app/
+│   ├── layout/
+│   │   └── RootLayout.tsx      공통 레이아웃 (Outlet 포함)
+│   └── routes/
+│       └── router.tsx          라우트 정의
+└── pages/
+    └── style-guide/
+        ├── index.ts            공개 API (배럴 파일)
+        └── ui/
+            ├── StyleGuidePage.tsx
+            └── StyleGuideHome.tsx</code></pre>
+    <p>라우트 정의는 <code>app/routes</code>, 화면은 <code>pages/슬라이스/ui</code>, 바깥에 공개할 것은 슬라이스의 <code>index.ts</code>에 모읍니다. <code>App.tsx</code>는 얇게 유지합니다.</p>
+  </section>
+
+  <section id="layout">
+    <h2><span class="n">4</span>RootLayout 만들기</h2>
+    <p>모든 페이지에 공통으로 붙는 틀입니다. 자식 라우트가 그려질 자리에 <code>&lt;Outlet /&gt;</code>을 꼭 넣어야 합니다.</p>
+    <div class="file">src/app/layout/RootLayout.tsx</div>
+<pre><code>import { Outlet } from 'react-router';
+
+export function RootLayout() {
+  return (
+    &lt;div&gt;
+      &lt;header&gt;공통 헤더&lt;/header&gt;
+      &lt;main&gt;
+        &lt;Outlet /&gt; {/* 자식 페이지가 여기에 렌더링됨 */}
+      &lt;/main&gt;
+    &lt;/div&gt;
+  );
+}</code></pre>
+  </section>
+
+  <section id="page">
+    <h2><span class="n">5</span>페이지와 index.ts</h2>
+    <p>페이지는 named export로 만들고, 슬라이스의 <code>index.ts</code>에서 그대로 다시 내보냅니다.</p>
+    <div class="file">src/pages/style-guide/ui/StyleGuideHome.tsx</div>
+<pre><code>export const StyleGuideHome = () =&gt; {
+  return &lt;&gt;HOME&lt;/&gt;;
+};</code></pre>
+    <div class="file">src/pages/style-guide/index.ts</div>
+<pre><code>export { StyleGuidePage } from './ui/StyleGuidePage';
+export { StyleGuideHome } from './ui/StyleGuideHome';</code></pre>
+    <h3>export 방식 한눈에</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>컴포넌트 파일</th><th>index.ts</th><th>가져오는 쪽</th></tr></thead>
+        <tbody>
+          <tr><td><code>export const Foo</code></td><td><code>export { Foo } from './ui/Foo'</code></td><td><code>import { Foo } from '@/pages/foo'</code></td></tr>
+          <tr><td><code>export default Foo</code></td><td><code>export { default as Foo } from './ui/Foo'</code></td><td><code>import { Foo } from '@/pages/foo'</code></td></tr>
+          <tr><td><code>export default Foo</code></td><td>(없이 직접)</td><td><code>import Foo from './ui/Foo'</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note warn">
+      <b>자주 하는 실수</b>
+      파일은 <code>export default</code>인데 <code>index.ts</code>에서 <code>export { Foo } from</code>으로 쓰면 <em>has no exported member</em> 오류가 납니다. default는 <code>default as</code>로 이름을 붙여 내보내야 합니다.
+    </div>
+  </section>
+
+  <section id="router">
+    <h2><span class="n">6</span>router.tsx 작성</h2>
+    <p>어떤 URL에 어떤 페이지를 보여줄지 적는 파일입니다. 페이지는 <code>lazy</code>로 불러 URL에 접근할 때 코드를 받아오게 합니다.</p>
+    <div class="file">src/app/routes/router.tsx</div>
+<pre><code>/* eslint-disable react-refresh/only-export-components */
+import { createBrowserRouter } from 'react-router';
+import { lazy, Suspense } from 'react';
+import { RootLayout } from '@/app/layout/RootLayout';
+
+const StyleGuideHome = lazy(() =&gt;
+  import('@/pages/style-guide').then((m) =&gt; ({ default: m.StyleGuideHome }))
+);
+const StyleGuidePage = lazy(() =&gt;
+  import('@/pages/style-guide').then((m) =&gt; ({ default: m.StyleGuidePage }))
+);
+
+const withSuspense = (element: React.ReactNode) =&gt; (
+  &lt;Suspense fallback={&lt;div&gt;로딩중...&lt;/div&gt;}&gt;{element}&lt;/Suspense&gt;
+);
+
+export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: &lt;RootLayout /&gt;,
+    children: [
+      { index: true, element: withSuspense(&lt;StyleGuideHome /&gt;) },        // /
+      { path: 'style-guide', element: withSuspense(&lt;StyleGuidePage /&gt;) }, // /style-guide
+    ],
+  },
+]);</code></pre>
+    <ul class="plain">
+      <li><code>children</code>의 <code>path</code>는 부모 기준 상대 경로입니다. <code>'style-guide'</code>는 <code>/style-guide</code>가 됩니다.</li>
+      <li><code>index: true</code>는 부모 경로(<code>/</code>)와 정확히 일치할 때 보여줄 페이지입니다.</li>
+      <li><code>lazy</code>는 default export를 기대하므로, named export는 <code>.then</code>으로 <code>{ default: ... }</code> 모양으로 감쌉니다.</li>
+      <li>첫 줄 eslint 주석은 이 파일이 컴포넌트가 아닌 <code>router</code> 객체를 내보내서 붙인 것입니다.</li>
+    </ul>
+  </section>
+
+  <section id="mount">
+    <h2><span class="n">7</span>앱에 연결</h2>
+    <div class="file">src/App.tsx</div>
+<pre><code>import { RouterProvider } from 'react-router/dom';
+import { router } from '@/app/routes/router';
+
+function App() {
+  return &lt;RouterProvider router={router} /&gt;;
+}
+
+export default App;</code></pre>
+    <div class="file">src/main.tsx</div>
+<pre><code>import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App';
+
+createRoot(document.getElementById('root')!).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;
+);</code></pre>
+    <p>개발 서버를 켜고 <code>/</code>와 <code>/style-guide</code>에 들어가 각각 화면이 나오면 기본 세팅은 끝입니다.</p>
+  </section>
+
+  <section id="add">
+    <h2><span class="n">8</span>라우트 추가하기</h2>
+    <h3>같은 슬라이스에 페이지 추가</h3>
+    <ul class="plain">
+      <li><code>ui/ColorGuidePage.tsx</code>를 만들고 named export로 작성</li>
+      <li><code>index.ts</code>에 <code>export { ColorGuidePage } from './ui/ColorGuidePage';</code> 추가</li>
+      <li><code>router.tsx</code>에 <code>lazy</code> 선언과 라우트 추가</li>
+    </ul>
+    <h3>URL 계층을 묶고 싶을 때 (중첩 라우트)</h3>
+<pre><code>{
+  path: 'style-guide',
+  children: [
+    { index: true, element: withSuspense(&lt;StyleGuideHome /&gt;) },     // /style-guide
+    { path: 'colors', element: withSuspense(&lt;ColorGuidePage /&gt;) },  // /style-guide/colors
+  ],
+},</code></pre>
+    <p><code>path: 'style-guide/colors'</code>처럼 한 줄로 써도 URL은 같습니다. 하위 화면이 늘어나 공통 레이아웃이 필요해지면 중첩 구조가 편합니다.</p>
+    <h3>FSD에서 슬라이스를 나눌 때</h3>
+    <p>완전히 다른 페이지(<code>home</code>, <code>login</code> 등)는 <code>pages/home</code>처럼 새 슬라이스 폴더와 <code>index.ts</code>를 만듭니다. 같은 <code>index.ts</code>를 거치는 페이지들은 같은 청크로 묶여 함께 로드될 수 있기 때문에, 코드 스플리팅을 따로 하고 싶다면 슬라이스를 나누세요.</p>
+    <h3>lazy 대안: 라우트의 lazy 속성</h3>
+<pre><code>{
+  path: 'style-guide',
+  lazy: async () =&gt; {
+    const m = await import('@/pages/style-guide');
+    return { Component: m.StyleGuidePage };
+  },
+},</code></pre>
+    <p>이 방식은 <code>Suspense</code> 래퍼 없이 라우터가 로딩을 처리합니다. 지금 쓰는 <code>React.lazy</code> 방식과 섞지 말고 한쪽으로 통일하세요.</p>
+  </section>
+
+  <section id="link">
+    <h2><span class="n">9</span>링크와 이동</h2>
+    <p>라우트를 정의한다고 링크가 자동으로 생기지는 않습니다. 클릭으로 이동하려면 화면에 <code>Link</code>를 넣습니다. <code>&lt;a href&gt;</code>와 달리 페이지 전체를 새로고침하지 않습니다.</p>
+<pre><code>import { Link, NavLink, useNavigate } from 'react-router';
+
+&lt;Link to="/style-guide/colors"&gt;색상 가이드&lt;/Link&gt;
+
+{/* 현재 주소와 맞으면 isActive가 true */}
+&lt;NavLink
+  to="/style-guide"
+  className={({ isActive }) =&gt; (isActive ? 'nav active' : 'nav')}
+&gt;
+  스타일 가이드
+&lt;/NavLink&gt;
+
+// 코드로 이동
+const navigate = useNavigate();
+navigate('/style-guide');</code></pre>
+    <p>접속하자마자 다른 경로로 보내려면 <code>{ index: true, element: &lt;Navigate to="/style-guide" replace /&gt; }</code>처럼 <code>Navigate</code>를 씁니다. <code>replace</code>를 붙이면 뒤로 가기에서 리다이렉트 루프가 생기지 않습니다.</p>
+  </section>
+
+  <section id="error">
+    <h2><span class="n">10</span>404와 에러 화면</h2>
+    <p>없는 주소로 들어왔을 때는 <code>path: '*'</code> 라우트가, 라우트 안에서 에러가 났을 때는 <code>errorElement</code>가 보여줍니다.</p>
+<pre><code>export const router = createBrowserRouter([
+  {
+    path: '/',
+    element: &lt;RootLayout /&gt;,
+    errorElement: &lt;div&gt;문제가 발생했습니다.&lt;/div&gt;,
+    children: [
+      { index: true, element: withSuspense(&lt;StyleGuideHome /&gt;) },
+      { path: '*', element: &lt;div&gt;페이지를 찾을 수 없습니다.&lt;/div&gt; },
+    ],
+  },
+]);</code></pre>
+  </section>
+
+  <section id="trouble">
+    <h2>자주 나는 오류</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead>
+        <tbody>
+          <tr><td>페이지가 아무것도 안 나옴</td><td>RootLayout에 <code>Outlet</code>이 없음</td><td>자식이 들어갈 자리에 <code>&lt;Outlet /&gt;</code> 추가</td></tr>
+          <tr><td><code>has no exported member</code></td><td>default export를 named로 가져옴</td><td><code>export { default as X } from</code> 또는 컴포넌트를 named export로 변경</td></tr>
+          <tr><td><code>@/...</code> 경로를 못 찾음</td><td>tsconfig와 vite 설정 중 한쪽만 설정</td><td>두 곳 모두 설정 후 서버, TS 서버 재시작</td></tr>
+          <tr><td><code>createBrowserRouter</code>가 없다고 나옴</td><td>react-router 버전이 낮음</td><td>v7 이상으로 설치</td></tr>
+          <tr><td>새로고침하면 404</td><td>배포 서버가 SPA 주소를 모름</td><td>모든 경로를 <code>index.html</code>로 돌리는 설정(rewrite) 추가</td></tr>
+          <tr><td>가져오는 곳마다 패키지가 다름</td><td><code>react-router</code>와 <code>react-router-dom</code> 혼용</td><td>프로젝트 전체를 <code>react-router</code>로 통일</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="checklist">
+    <h2>세팅 체크리스트</h2>
+    <ul class="check">
+      <li><span><code>react-router</code> v7 설치, <code>react-router-dom</code> 제거</span></li>
+      <li><span>tsconfig와 vite 양쪽에 <code>@</code> 별칭 설정</span></li>
+      <li><span><code>RootLayout</code>에 <code>Outlet</code> 배치</span></li>
+      <li><span>페이지 export 방식과 <code>index.ts</code> 일치</span></li>
+      <li><span><code>router.tsx</code>에 index 라우트와 페이지 라우트 등록</span></li>
+      <li><span><code>App.tsx</code>에서 <code>react-router/dom</code>의 <code>RouterProvider</code> 사용</span></li>
+      <li><span><code>Link</code>로 이동 경로 연결, 404 라우트 추가</span></li>
+    </ul>
+  </section>
+
+  <footer>React 학습 노트 · React Router v7 (라이브러리 모드 기준)</footer>
+</main>
+</body>
+</html>
