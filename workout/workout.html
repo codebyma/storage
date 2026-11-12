@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>운동 기록</title>
+<style>
+:root{--bg:#f2f3f5;--card:#fff;--tx:#222b38;--sub:#8a94a3;--in:#f2f3f5;--pr:#2f9bff;--ln:#e3e6ea;--dn:#c4cbd6;--rd:#ff4d4f;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111419;--card:#1c2027;--tx:#eef1f5;--sub:#8c95a3;--in:#262b33;--ln:#2d333c;--dn:#3a414c}}
+*{box-sizing:border-box}html{height:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:90px;max-width:560px;margin:auto}
+header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;z-index:5}
+header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.ic{font-size:22px;padding:4px 10px}
+.card{background:var(--card);border-radius:14px;margin:12px;padding:16px}
+.tot{display:flex;justify-content:space-between;font-weight:700}
+.eh{display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:17px}
+.eh i{color:var(--pr);font-style:normal;margin-right:6px}
+.meta{color:var(--sub);font-size:14px;margin:8px 0}
+.prev{background:var(--in);border-radius:10px;padding:12px;color:var(--sub);font-size:14px;line-height:1.6}
+.row{display:grid;grid-template-columns:48px 1fr 1fr 64px;gap:8px;margin-top:8px;align-items:center;text-align:center}
+.row.h{color:var(--sub);font-size:14px}
+.row span{background:var(--in);border-radius:8px;padding:12px 0;color:var(--sub);font-weight:700}
+.row input{width:100%;padding:11px 0;text-align:center;font-size:17px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx)}
+.ck{background:var(--dn);color:#fff;border-radius:8px;padding:11px 0;font-size:18px}.ck.on{background:var(--pr)}
+.acts{display:flex;justify-content:space-around;margin-top:16px;color:var(--pr)}.acts .g{color:var(--sub)}
+.chip{border:1px solid var(--ln);color:var(--pr);border-radius:16px;padding:6px 12px;font-size:14px;margin-left:6px}
+.bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;background:var(--card);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
+.bar .b{flex:1;padding:16px;border-radius:10px;background:var(--in);font-weight:700}.bar .p{flex:2;background:var(--pr);color:#fff}
+.tm{flex:1.4;display:flex;background:var(--in);border-radius:10px;align-items:center;justify-content:space-around;text-align:center;font-size:11px;color:var(--sub)}
+.tm div b{display:block;font-size:20px;color:var(--pr)}.tm div:last-child b{color:var(--sub)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:20}
+.pop{background:var(--card);border-radius:22px;width:84%;max-width:380px;text-align:center;padding:22px 20px 0;overflow:hidden}
+.big{font-size:64px;font-weight:800;color:var(--pr);margin:10px 0 0}.pop small{font-size:30px;color:var(--sub)}
+.nx{background:var(--in);border-radius:10px;padding:12px;text-align:left;color:var(--sub);margin:16px 0 10px;line-height:1.5}
+.two{display:flex;gap:10px}.two button{flex:1;background:var(--in);padding:14px;border-radius:10px;font-size:18px}
+.foot{display:flex;margin:18px -20px 0;border-top:1px solid var(--ln)}.foot button{flex:1;padding:16px;font-size:17px}
+.sheet{position:fixed;inset:0;background:var(--card);z-index:15;overflow:auto;max-width:560px;margin:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:90px}
+.tabs{display:flex;border-bottom:1px solid var(--ln);position:sticky;top:0;background:var(--card)}
+.tabs button{flex:1;padding:14px;color:var(--sub)}.tabs .on{color:var(--tx);font-weight:700;border-bottom:2px solid var(--tx)}
+.cats{display:flex;overflow-x:auto;gap:4px;padding:6px 12px}.cats button{padding:10px;color:var(--sub);white-space:nowrap}.cats .on{color:var(--tx);font-weight:700;border-bottom:2px solid var(--tx)}
+.s{margin:12px 16px;width:calc(100% - 32px);padding:12px;border-radius:10px;border:0;background:var(--in);color:var(--tx);font-size:16px}
+.li{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--ln)}.li .n{flex:1}.li em{color:var(--sub);font-style:normal}
+.li input{width:22px;height:22px}.star{font-size:22px;color:var(--dn)}.star.on{color:var(--pr)}
+.sb{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);display:flex;gap:10px;z-index:16}
+.sb button{flex:1;padding:16px;border-radius:10px;background:var(--pr);color:#fff;font-weight:700}.sb button:disabled{background:var(--dn)}
+.empty{text-align:center;color:var(--sub);padding:60px 0}
+</style></head><body>
+<header><button class="ic" id="pv">‹</button><b id="dt" style="cursor:pointer"></b><button class="ic" id="mn">⋯</button></header>
+<input type="date" id="dp" style="position:absolute;opacity:0;pointer-events:none">
+<div id="app"></div><div class="bar" id="bar"></div><div id="layer"></div>
+<script>
+const DB={하체:["레그 익스텐션","레그 프레스","레그 컬","스쿼트","런지"],가슴:["체스트 프레스 머신","펙덱 플라이 머신","딥스","어시스트 딥스 머신","푸시업","인클라인 체스트 프레스 머신","인클라인 덤벨 벤치프레스","벤치프레스"],등:["랫풀다운","시티드 케이블 로우","시티드 로우 머신","케이블 암 풀다운","티바 로우 머신","백 익스텐션","덤벨 로우","정지 바벨 로우"],어깨:["숄더 프레스 머신","리어 델토이드 플라이 머신","덤벨 레터럴 레이즈","스미스머신 오버헤드 프레스","덤벨 숄더 프레스","레터럴 레이즈 머신","케이블 레터럴 레이즈","시티드 덤벨 숄더 프레스"],팔:["프리쳐 컬 머신","케이블 로프 푸시 다운","케이블 푸시 다운","이지바 리버스 컬","이지바 리스트 컬","이지바 스파이더 컬","이지바 트라이셉 익스텐션"],역도:["데드리프트","스내치","클린 앤 저크"],복근:["복근 크런치 머신","플랭크","크런치","바이시클 크런치","싯업","케틀벨 사이드 벤드","케틀벨 윈드밀","크로스 바디 크런치"]};
+const CATS=Object.keys(DB),catOf=n=>CATS.find(c=>DB[c].includes(n))||(S.custom[n]||"기타");
+let S={days:{},routines:[],stars:[],freq:{},custom:{},rest:60};
+try{const x=localStorage.getItem("wk1");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+const save=()=>{try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}};
+const $=s=>document.querySelector(s),W="일월화수목금토";
+const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+let cur=fmt(new Date());
+const day=()=>S.days[cur]||(S.days[cur]={ex:[],start:null});
+const vol=e=>e.sets.reduce((a,s)=>a+(+s.kg||0)*(+s.reps||0),0);
+const mmss=t=>{t=Math.max(0,t);return String(t/60|0).padStart(2,"0")+":"+String(t%60).padStart(2,"0")};
+const lastRec=n=>{const ks=Object.keys(S.days).filter(k=>k<cur).sort().reverse();for(const k of ks){const e=S.days[k].ex.find(x=>x.name==n);if(e)return{k,e}}};
+const dlabel=k=>{const[y,m,d]=k.split("-");return y.slice(2)+"-"+m+"-"+d+" "+W[new Date(k+"T00:00").getDay()]};
+function render(){
+ const d=day(),m=cur.split("-");$("#dt").textContent=+m[1]+"월 "+ +m[2]+"일";
+ let h=`<div class="card tot"><span>전체 볼륨</span><span>${d.ex.reduce((a,e)=>a+vol(e),0).toLocaleString()}kg</span></div>`;
+ if(!d.ex.length)h+=`<div class="empty">아래 ‘운동 추가’ 버튼으로 운동을 골라보세요</div>`;
+ d.ex.forEach((e,i)=>{const l=lastRec(e.name);
+ h+=`<div class="card"><div class="eh"><span><i>${i+1}</i>${e.cat} | ${e.name}</span><button data-a="del" data-i="${i}">⋮</button></div>
+ <div class="meta">종목 볼륨 ${vol(e).toLocaleString()}kg · ⏱ ${mmss(e.rest)}</div>
+ ${l?`<div class="prev">${dlabel(l.k)}<br>${l.e.sets.map(s=>s.kg+"×"+s.reps).join(", ")}</div><div style="text-align:right;margin:12px 0 4px"><button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button><button class="chip" data-a="rest" data-i="${i}">⏱ 휴식시간</button></div>`:`<div style="text-align:right;margin:8px 0"><button class="chip" data-a="rest" data-i="${i}">⏱ 휴식시간</button></div>`}
+ <div class="row h"><div>세트</div><div>kg</div><div>회</div><div>완료</div></div>
+ ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}</span><input type="number" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="number" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}">✓</button></div>`).join("")}
+ <div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
+ $("#app").innerHTML=h;bar()}
+function bar(){const d=day();
+ $("#bar").innerHTML=d.start?`<div class="tm"><div><b id="rt">${rEnd?mmss(Math.ceil((rEnd-Date.now())/1000)):"00:00"}</b>휴식 타이머</div><div><b id="wt">${mmss((Date.now()-d.start)/1000|0)}</b>운동 시간</div></div><button class="b p" data-a="fin">운동 완료</button>`:`<button class="b" data-a="addx">운동 추가</button><button class="b p" data-a="go">운동 시작</button>`}
+let rEnd=0,rTot=60,rInt=null,rNext="";
+function nextSet(i,j){const d=day();for(let a=i;a<d.ex.length;a++){const e=d.ex[a];for(let b=(a==i?j+1:0);b<e.sets.length;b++)if(!e.sets[b].done)return e.cat+" | "+e.name+"<br>"+e.sets[b].kg+"kg X "+e.sets[b].reps+"회"}return "모든 세트 완료!"}
+function timer(sec,nx){rTot=sec;rEnd=Date.now()+sec*1000;rNext=nx;clearInterval(rInt);popup();rInt=setInterval(tick,250)}
+function tick(){const l=Math.ceil((rEnd-Date.now())/1000);const a=$("#pc"),b=$("#rt");if(a)a.textContent=mmss(l);if(b)b.textContent=mmss(l);
+ const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0);
+ if(l<=0){clearInterval(rInt);rEnd=0;try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}closePop();bar()}}
+function popup(){$("#layer").innerHTML=`<div class="ov"><div class="pop"><b style="font-size:20px">휴식 타이머</b><div style="margin-top:10px">고생하셨어요! 👏<br>이제 호흡을 안정시켜볼까요?</div><div class="big" id="pc">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><small>${mmss(rTot)}</small>
+ <div class="nx">다음 세트<br>${rNext}</div><div class="two"><button data-a="m15">-15초</button><button data-a="p15">+15초</button></div>
+ <div class="foot"><button style="color:var(--rd)" data-a="skip">건너뛰기</button><button style="color:var(--sub)" data-a="close">닫기</button></div></div></div>`}
+function closePop(){$("#layer").innerHTML=""}
+setInterval(()=>{if(!rEnd){const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0)}},1000);
+// 운동 추가 시트
+let sh={tab:0,cat:"전체",q:"",sel:[]};
+function sheet(){
+ let h=`<div class="sheet"><div class="tabs">${["직접 추가","내 루틴","불러오기"].map((t,i)=>`<button class="${sh.tab==i?"on":""}" data-a="tab" data-i="${i}">${t}</button>`).join("")}</div>`;
+ if(sh.tab==0){
+  const cats=["전체",...CATS];let list=sh.cat=="전체"?CATS.flatMap(c=>DB[c]):DB[sh.cat];
+  Object.keys(S.custom).forEach(n=>{if(sh.cat=="전체"||sh.cat==S.custom[n])list.push(n)});
+  list=[...new Set(list)].filter(n=>n.includes(sh.q)).sort((a,b)=>(S.freq[b]||0)-(S.freq[a]||0));
+  h+=`<input class="s" id="q" placeholder="찾으시는 운동을 검색해보세요." value="${sh.q}"><div class="cats">${cats.map(c=>`<button class="${sh.cat==c?"on":""}" data-a="cat" data-c="${c}">${c}</button>`).join("")}</div>`;
+  h+=list.map(n=>`<div class="li"><input type="checkbox" data-a="sel" data-n="${n}" ${sh.sel.includes(n)?"checked":""}><span class="n">${n}</span><em>${S.freq[n]||""}</em><button class="star ${S.stars.includes(n)?"on":""}" data-a="star" data-n="${n}">★</button></div>`).join("")}
+  <div class="li" data-a="cust" style="color:var(--pr);cursor:pointer">＋ 직접 운동 만들기</div>`;
+ }else if(sh.tab==1){
+  h+=S.routines.length?S.routines.map((r,i)=>`<div class="card"><div class="eh"><span>${r.name}</span><button data-a="rdel" data-i="${i}">🗑</button></div><div class="meta">${r.items.map(x=>x.name).join(", ")}</div><button class="chip" data-a="radd" data-i="${i}" style="margin:0">오늘 운동에 추가</button></div>`).join(""):`<div class="empty">저장된 루틴이 없어요</div>`;
+  h+=`<div class="li" data-a="rsave" style="color:var(--pr);cursor:pointer">＋ 오늘 운동을 루틴으로 저장</div>`;
+ }else{
+  const ks=Object.keys(S.days).filter(k=>k!=cur&&S.days[k].ex.length).sort().reverse();
+  h+=ks.length?ks.map(k=>`<div class="card"><b>${dlabel(k)}</b>${S.days[k].ex.map((e,i)=>`<div class="li" style="padding:10px 0;border:0;align-items:flex-start"><input type="checkbox" data-a="hsel" data-k="${k}" data-i="${i}" ${sh.sel.includes(k+"|"+i)?"checked":""}><span class="n">${e.cat} | ${e.name}<br><em>${e.sets.map(s=>s.kg+"kg "+s.reps+"회").join(" · ")}</em></span></div>`).join("")}</div>`).join(""):`<div class="empty">이전 운동 기록이 없어요</div>`;
+ }
+ h+=`</div><div class="sb"><button style="background:var(--in);color:var(--tx);flex:.4" data-a="shut">닫기</button><button data-a="done" ${sh.sel.length?"":"disabled"}>${sh.sel.length?sh.sel.length+"개 운동 추가":"운동을 선택해주세요"}</button></div>`;
+ const keep=document.querySelector(".sheet");const sc=keep?keep.scrollTop:0;
+ $("#layer").innerHTML=h;const n=$(".sheet");if(n)n.scrollTop=sc;
+ const q=$("#q");if(q)q.oninput=e=>{sh.q=e.target.value;const p=e.target.selectionStart;sheet();const z=$("#q");z.focus();z.setSelectionRange(p,p)}}
+const mk=(name,sets)=>({name,cat:catOf(name),rest:S.rest,sets:sets||[{kg:"",reps:"",done:false},{kg:"",reps:"",done:false},{kg:"",reps:"",done:false}]});
+document.addEventListener("click",ev=>{
+ const t=ev.target.closest("[data-a]");if(!t)return;const a=t.dataset.a,i=+t.dataset.i,j=+t.dataset.j,d=day();
+ if(a=="ck"){const s=d.ex[i].sets[j];s.done=!s.done;save();if(s.done){if(!d.start)d.start=Date.now();render();timer(d.ex[i].rest,nextSet(i,j))}else render()}
+ else if(a=="add"){const e=d.ex[i],l=e.sets[e.sets.length-1]||{kg:"",reps:""};e.sets.push({kg:l.kg,reps:l.reps,done:false});save();render()}
+ else if(a=="rm"){d.ex[i].sets.pop();save();render()}
+ else if(a=="del"){if(confirm(d.ex[i].name+" 운동을 삭제할까요?")){d.ex.splice(i,1);save();render()}}
+ else if(a=="load"){const l=lastRec(d.ex[i].name);if(l){d.ex[i].sets=l.e.sets.map(s=>({kg:s.kg,reps:s.reps,done:false}));save();render()}}
+ else if(a=="rest"){const v=prompt("이 운동의 휴식시간(초)",d.ex[i].rest);if(v&&+v>0){d.ex[i].rest=+v;S.rest=+v;save();render()}}
+ else if(a=="go"){d.start=Date.now();save();bar()}
+ else if(a=="fin"){if(confirm("운동을 완료할까요? ("+mmss((Date.now()-d.start)/1000|0)+")")){d.ex.forEach(e=>S.freq[e.name]=(S.freq[e.name]||0)+1);d.start=null;rEnd=0;clearInterval(rInt);save();render()}}
+ else if(a=="addx"){sh={tab:0,cat:"전체",q:"",sel:[]};sheet()}
+ else if(a=="m15"){rEnd-=15000;rTot=Math.max(0,rTot-15);popup()}
+ else if(a=="p15"){rEnd+=15000;rTot+=15;popup()}
+ else if(a=="skip"){rEnd=0;clearInterval(rInt);closePop();bar()}
+ else if(a=="close"){closePop()}
+ else if(a=="shut"){closePop()}
+ else if(a=="tab"){sh.tab=i;sh.sel=[];sheet()}
+ else if(a=="cat"){sh.cat=t.dataset.c;sheet()}
+ else if(a=="sel"){const n=t.dataset.n;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
+ else if(a=="hsel"){const n=t.dataset.k+"|"+i;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
+ else if(a=="star"){const n=t.dataset.n;S.stars=S.stars.includes(n)?S.stars.filter(x=>x!=n):[...S.stars,n];save();sheet()}
+ else if(a=="cust"){const n=prompt("운동 이름");if(n){const c=prompt("부위 ("+CATS.join("/")+")","가슴");S.custom[n]=CATS.includes(c)?c:"기타";save();sheet()}}
+ else if(a=="rsave"){if(!d.ex.length)return alert("오늘 추가된 운동이 없어요");const n=prompt("루틴 이름");if(n){S.routines.unshift({name:n,items:d.ex.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:s.kg,reps:s.reps}))}))});save();sheet()}}
+ else if(a=="rdel"){if(confirm("루틴을 삭제할까요?")){S.routines.splice(i,1);save();sheet()}}
+ else if(a=="radd"){S.routines[i].items.forEach(x=>d.ex.push(mk(x.name,x.sets.map(s=>({kg:s.kg,reps:s.reps,done:false})))));save();closePop();render()}
+ else if(a=="done"){if(sh.tab==0)sh.sel.forEach(n=>d.ex.push(mk(n)));else sh.sel.forEach(x=>{const[k,n]=x.split("|"),e=S.days[k].ex[+n];d.ex.push(mk(e.name,e.sets.map(s=>({kg:s.kg,reps:s.reps,done:false}))))});save();closePop();render()}
+});
+document.addEventListener("change",ev=>{const t=ev.target;if(t.dataset.f){day().ex[+t.dataset.i].sets[+t.dataset.j][t.dataset.f]=t.value;save();render()}});
+const mv=n=>{const d=new Date(cur+"T00:00");d.setDate(d.getDate()+n);cur=fmt(d);render()};
+$("#pv").onclick=()=>mv(-1);
+$("#dt").onclick=()=>{const p=$("#dp");p.value=cur;try{p.showPicker()}catch(e){const v=prompt("날짜 (YYYY-MM-DD)",cur);if(/^\d{4}-\d{2}-\d{2}$/.test(v||"")){cur=v;render()}}};
+$("#dp").onchange=e=>{if(e.target.value){cur=e.target.value;render()}};
+$("#mn").onclick=()=>{const c=prompt("1: 다음날  2: 오늘  3: 이 날짜 기록 삭제","2");if(c==1)mv(1);else if(c==2){cur=fmt(new Date());render()}else if(c==3&&confirm("이 날짜 기록을 모두 삭제할까요?")){delete S.days[cur];save();render()}};
+render();
+</script></body></html>
