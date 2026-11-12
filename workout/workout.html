@@ -96,7 +96,7 @@ function sheet(){
   Object.keys(S.custom).forEach(n=>{if(sh.cat=="전체"||sh.cat==S.custom[n])list.push(n)});
   list=[...new Set(list)].filter(n=>n.includes(sh.q)).sort((a,b)=>(S.freq[b]||0)-(S.freq[a]||0));
   h+=`<input class="s" id="q" placeholder="찾으시는 운동을 검색해보세요." value="${sh.q}"><div class="cats">${cats.map(c=>`<button class="${sh.cat==c?"on":""}" data-a="cat" data-c="${c}">${c}</button>`).join("")}</div>`;
-  h+=list.map(n=>`<div class="li"><input type="checkbox" data-a="sel" data-n="${n}" ${sh.sel.includes(n)?"checked":""}><span class="n">${n}</span><em>${S.freq[n]||""}</em><button class="star ${S.stars.includes(n)?"on":""}" data-a="star" data-n="${n}">★</button></div>`).join("")}
+  h+=list.map(n=>`<div class="li"><input type="checkbox" data-a="sel" data-n="${n}" ${sh.sel.includes(n)?"checked":""}><span class="n">${n}</span><em>${S.freq[n]||""}</em><button class="star ${S.stars.includes(n)?"on":""}" data-a="star" data-n="${n}">★</button></div>`).join("")+`
   <div class="li" data-a="cust" style="color:var(--pr);cursor:pointer">＋ 직접 운동 만들기</div>`;
  }else if(sh.tab==1){
   h+=S.routines.length?S.routines.map((r,i)=>`<div class="card"><div class="eh"><span>${r.name}</span><button data-a="rdel" data-i="${i}">🗑</button></div><div class="meta">${r.items.map(x=>x.name).join(", ")}</div><button class="chip" data-a="radd" data-i="${i}" style="margin:0">오늘 운동에 추가</button></div>`).join(""):`<div class="empty">저장된 루틴이 없어요</div>`;
