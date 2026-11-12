@@ -45,8 +45,7 @@ header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:no
 .sb button{flex:1;padding:16px;border-radius:10px;background:var(--pr);color:#fff;font-weight:700}.sb button:disabled{background:var(--dn)}
 .empty{text-align:center;color:var(--sub);padding:60px 0}
 </style></head><body>
-<header><button class="ic" id="pv">‹</button><b id="dt" style="cursor:pointer"></b><button class="ic" id="mn">⋯</button></header>
-<input type="date" id="dp" style="position:absolute;opacity:0;pointer-events:none">
+<header><button class="ic" id="pv">‹</button><label style="position:relative;cursor:pointer;padding:6px 12px"><b id="dt"></b> ▾<input type="date" id="dp" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label><button class="ic" id="mn">›</button></header>
 <div id="app"></div><div class="bar" id="bar"></div><div id="layer"></div>
 <script>
 const DB={하체:["레그 익스텐션","레그 프레스","레그 컬","스쿼트","런지"],가슴:["체스트 프레스 머신","펙덱 플라이 머신","딥스","어시스트 딥스 머신","푸시업","인클라인 체스트 프레스 머신","인클라인 덤벨 벤치프레스","벤치프레스"],등:["랫풀다운","시티드 케이블 로우","시티드 로우 머신","케이블 암 풀다운","티바 로우 머신","백 익스텐션","덤벨 로우","정지 바벨 로우"],어깨:["숄더 프레스 머신","리어 델토이드 플라이 머신","덤벨 레터럴 레이즈","스미스머신 오버헤드 프레스","덤벨 숄더 프레스","레터럴 레이즈 머신","케이블 레터럴 레이즈","시티드 덤벨 숄더 프레스"],팔:["프리쳐 컬 머신","케이블 로프 푸시 다운","케이블 푸시 다운","이지바 리버스 컬","이지바 리스트 컬","이지바 스파이더 컬","이지바 트라이셉 익스텐션"],역도:["데드리프트","스내치","클린 앤 저크"],복근:["복근 크런치 머신","플랭크","크런치","바이시클 크런치","싯업","케틀벨 사이드 벤드","케틀벨 윈드밀","크로스 바디 크런치"]};
@@ -63,7 +62,7 @@ const mmss=t=>{t=Math.max(0,t);return String(t/60|0).padStart(2,"0")+":"+String(
 const lastRec=n=>{const ks=Object.keys(S.days).filter(k=>k<cur).sort().reverse();for(const k of ks){const e=S.days[k].ex.find(x=>x.name==n);if(e)return{k,e}}};
 const dlabel=k=>{const[y,m,d]=k.split("-");return y.slice(2)+"-"+m+"-"+d+" "+W[new Date(k+"T00:00").getDay()]};
 function render(){
- const d=day(),m=cur.split("-");$("#dt").textContent=+m[1]+"월 "+ +m[2]+"일";
+ const d=day(),m=cur.split("-");$("#dt").textContent=m[0]+"년 "+ +m[1]+"월 "+ +m[2]+"일 ("+W[new Date(cur+"T00:00").getDay()]+")";$("#dp").value=cur;
  let h=`<div class="card tot"><span>전체 볼륨</span><span>${d.ex.reduce((a,e)=>a+vol(e),0).toLocaleString()}kg</span></div>`;
  if(!d.ex.length)h+=`<div class="empty">아래 ‘운동 추가’ 버튼으로 운동을 골라보세요</div>`;
  d.ex.forEach((e,i)=>{const l=lastRec(e.name);
@@ -96,7 +95,7 @@ function sheet(){
   Object.keys(S.custom).forEach(n=>{if(sh.cat=="전체"||sh.cat==S.custom[n])list.push(n)});
   list=[...new Set(list)].filter(n=>n.includes(sh.q)).sort((a,b)=>(S.freq[b]||0)-(S.freq[a]||0));
   h+=`<input class="s" id="q" placeholder="찾으시는 운동을 검색해보세요." value="${sh.q}"><div class="cats">${cats.map(c=>`<button class="${sh.cat==c?"on":""}" data-a="cat" data-c="${c}">${c}</button>`).join("")}</div>`;
-  h+=list.map(n=>`<div class="li"><input type="checkbox" data-a="sel" data-n="${n}" ${sh.sel.includes(n)?"checked":""}><span class="n">${n}</span><em>${S.freq[n]||""}</em><button class="star ${S.stars.includes(n)?"on":""}" data-a="star" data-n="${n}">★</button></div>`).join("")+`
+  h+=list.map(n=>`<div class="li"><input type="checkbox" data-a="sel" data-n="${n}" ${sh.sel.includes(n)?"checked":""}><span class="n">${n}</span><em>${S.freq[n]||""}</em>${S.custom[n]?`<button class="star" data-a="cdel" data-n="${n}">🗑</button>`:""}</div>`).join("")+`
   <div class="li" data-a="cust" style="color:var(--pr);cursor:pointer">＋ 직접 운동 만들기</div>`;
  }else if(sh.tab==1){
   h+=S.routines.length?S.routines.map((r,i)=>`<div class="card"><div class="eh"><span>${r.name}</span><button data-a="rdel" data-i="${i}">🗑</button></div><div class="meta">${r.items.map(x=>x.name).join(", ")}</div><button class="chip" data-a="radd" data-i="${i}" style="margin:0">오늘 운동에 추가</button></div>`).join(""):`<div class="empty">저장된 루틴이 없어요</div>`;
@@ -130,7 +129,7 @@ document.addEventListener("click",ev=>{
  else if(a=="cat"){sh.cat=t.dataset.c;sheet()}
  else if(a=="sel"){const n=t.dataset.n;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
  else if(a=="hsel"){const n=t.dataset.k+"|"+i;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
- else if(a=="star"){const n=t.dataset.n;S.stars=S.stars.includes(n)?S.stars.filter(x=>x!=n):[...S.stars,n];save();sheet()}
+ else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
  else if(a=="cust"){const n=prompt("운동 이름");if(n){const c=prompt("부위 ("+CATS.join("/")+")","가슴");S.custom[n]=CATS.includes(c)?c:"기타";save();sheet()}}
  else if(a=="rsave"){if(!d.ex.length)return alert("오늘 추가된 운동이 없어요");const n=prompt("루틴 이름");if(n){S.routines.unshift({name:n,items:d.ex.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:s.kg,reps:s.reps}))}))});save();sheet()}}
  else if(a=="rdel"){if(confirm("루틴을 삭제할까요?")){S.routines.splice(i,1);save();sheet()}}
@@ -140,8 +139,7 @@ document.addEventListener("click",ev=>{
 document.addEventListener("change",ev=>{const t=ev.target;if(t.dataset.f){day().ex[+t.dataset.i].sets[+t.dataset.j][t.dataset.f]=t.value;save();render()}});
 const mv=n=>{const d=new Date(cur+"T00:00");d.setDate(d.getDate()+n);cur=fmt(d);render()};
 $("#pv").onclick=()=>mv(-1);
-$("#dt").onclick=()=>{const p=$("#dp");p.value=cur;try{p.showPicker()}catch(e){const v=prompt("날짜 (YYYY-MM-DD)",cur);if(/^\d{4}-\d{2}-\d{2}$/.test(v||"")){cur=v;render()}}};
 $("#dp").onchange=e=>{if(e.target.value){cur=e.target.value;render()}};
-$("#mn").onclick=()=>{const c=prompt("1: 다음날  2: 오늘  3: 이 날짜 기록 삭제","2");if(c==1)mv(1);else if(c==2){cur=fmt(new Date());render()}else if(c==3&&confirm("이 날짜 기록을 모두 삭제할까요?")){delete S.days[cur];save();render()}};
+$("#mn").onclick=()=>mv(1);
 render();
 </script></body></html>
