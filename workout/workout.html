@@ -7,7 +7,7 @@
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111419;--card:#1c2027;--tx:#eef1f5;--sub:#8c95a3;--in:#262b33;--ln:#2d333c;--dn:#3a414c}}
 *{box-sizing:border-box}html{height:100%}
-body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:90px;max-width:560px;margin:auto}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:150px;max-width:560px;margin:auto}
 header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;z-index:5}
 header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
 .ic{font-size:22px;padding:4px 10px}
@@ -44,6 +44,11 @@ header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:no
 .li input{width:22px;height:22px}.star{font-size:22px;color:var(--dn)}.star.on{color:var(--pr)}
 .sb{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));background:var(--card);display:flex;gap:10px;z-index:16}
 .sb button{flex:1;padding:16px;border-radius:10px;background:var(--pr);color:#fff;font-weight:700}.sb button:disabled{background:var(--dn)}
+.rr{display:flex;align-items:center;gap:6px;padding:14px 16px;border-bottom:1px solid var(--ln);background:var(--card)}.rr .n{flex:1}
+.rr .hd{font-size:22px;color:var(--sub);padding:6px 10px;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+.rr.drag{background:var(--in);box-shadow:0 4px 14px rgba(0,0,0,.25);position:relative;z-index:2}.rr.mv{transition:transform .18s}
+.bs{background:var(--card);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));position:relative;min-height:70vh;display:flex;flex-direction:column}
+.vb{background:var(--in);border-radius:12px;padding:14px 16px}.pb{width:100%;padding:16px;border-radius:12px;background:var(--pr);color:#fff;font-weight:700;font-size:17px;margin-top:16px}
 .empty{text-align:center;color:var(--sub);padding:60px 0}
 </style></head><body>
 <header><div style="display:flex;align-items:center"><button class="ic" id="pv">‹</button><label style="position:relative;cursor:pointer;padding:6px 12px"><b id="dt"></b> ▾<input type="date" id="dp" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label><button class="ic" id="mn">›</button></div><button class="ic" id="hs">📋</button></header>
@@ -75,9 +80,9 @@ function render(){
  <div class="row h"><div>세트</div><div>kg</div><div>회</div><div>완료</div></div>
  ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}">✓</button></div>`).join("")}
  <div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
- $("#app").innerHTML=h;bar()}
+ h+=`<div style="display:flex;gap:10px;margin:12px"><button class="card" data-a="addx" style="flex:1;margin:0;color:var(--pr);font-weight:700;font-size:16px">＋ 운동 추가</button>${d.ex.length>1?`<button class="card" data-a="rord" style="flex:1;margin:0;color:var(--sub);font-weight:700;font-size:16px">↕ 순서 변경</button>`:""}</div>`;$("#app").innerHTML=h;bar()}
 function bar(){const d=day();
- $("#bar").innerHTML=d.start?`<div class="tm"><div><b id="rt">${rEnd?mmss(Math.ceil((rEnd-Date.now())/1000)):"00:00"}</b>휴식 타이머</div><div><b id="wt">${mmss((Date.now()-d.start)/1000|0)}</b>운동 시간</div></div><button class="b p" data-a="fin">운동 완료</button>`:`<button class="b" data-a="addx">운동 추가</button><button class="b p" data-a="go">운동 시작</button>`}
+ $("#bar").innerHTML=d.start?`<div class="tm"><div><b id="rt">${rEnd?mmss(Math.ceil((rEnd-Date.now())/1000)):"00:00"}</b>휴식 타이머</div><div><b id="wt">${mmss((Date.now()-d.start)/1000|0)}</b>운동 시간</div></div><button class="b p" data-a="fin">운동 완료</button>`:`<button class="b p" data-a="go">운동 시작</button>`}
 let rEnd=0,rTot=60,rInt=null,rNext="";
 function nextSet(i,j){const d=day();for(let a=i;a<d.ex.length;a++){const e=d.ex[a];for(let b=(a==i?j+1:0);b<e.sets.length;b++)if(!e.sets[b].done)return e.cat+" | "+e.name+"<br>"+e.sets[b].kg+"kg X "+e.sets[b].reps+"회"}return "모든 세트 완료!"}
 function timer(sec,nx){rTot=sec;rEnd=Date.now()+sec*1000;rNext=nx;clearInterval(rInt);popup();rInt=setInterval(tick,250)}
@@ -120,7 +125,7 @@ document.addEventListener("click",ev=>{
  else if(a=="add"){const e=d.ex[i],l=e.sets[e.sets.length-1]||{kg:"",reps:""};e.sets.push({kg:l.kg,reps:l.reps,done:false});save();render()}
  else if(a=="rm"){d.ex[i].sets.pop();save();render()}
  else if(a=="del"){if(confirm(d.ex[i].name+" 운동을 삭제할까요?")){d.ex.splice(i,1);save();render()}}
- else if(a=="load"){const l=lastRec(d.ex[i].name);if(l){d.ex[i].sets=l.e.sets.map(s=>({kg:s.kg,reps:s.reps,done:false}));save();render()}}
+ else if(a=="load"){const nm=d.ex[i].name,list=Object.keys(S.days).filter(k=>k!=cur&&S.days[k].ex.some(x=>x.name==nm&&dset(x).length)).sort().reverse();if(list.length){lh={i,list,p:0};lsheet()}}else if(a=="lp"){lh.p++;lsheet()}else if(a=="ln"){lh.p--;lsheet()}else if(a=="lx"){closePop()}else if(a=="lok"){const e=day().ex[lh.i],r=S.days[lh.list[lh.p]].ex.find(x=>x.name==e.name&&dset(x).length);e.sets=dset(r).map(s=>({kg:s.kg,reps:s.reps,done:false}));save();closePop();render()}
  else if(a=="rest"){const v=prompt("이 운동의 휴식시간(초)",d.ex[i].rest);if(v&&+v>0){d.ex[i].rest=+v;S.rest=+v;save();render()}}
  else if(a=="go"){d.start=Date.now();save();bar()}
  else if(a=="fin"){if(confirm("운동을 완료할까요? ("+mmss((Date.now()-d.start)/1000|0)+")")){d.ex.forEach(e=>S.freq[e.name]=(S.freq[e.name]||0)+1);d.start=null;rEnd=0;clearInterval(rInt);save();render()}}
@@ -134,7 +139,7 @@ document.addEventListener("click",ev=>{
  else if(a=="cat"){sh.cat=t.dataset.c;sheet()}
  else if(a=="sel"){const n=t.dataset.n;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
  else if(a=="hsel"){const n=t.dataset.k+"|"+i;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
- else if(a=="hgo"){cur=t.dataset.k;closePop();render()}else if(a=="hshut"){closePop()}else if(a=="hopen"){sh.open[t.dataset.k]=!sh.open[t.dataset.k];sheet()}else if(a=="hall"){const k=t.dataset.k,ids=rec(k).map(x=>k+"|"+x.i),all=ids.every(x=>sh.sel.includes(x));sh.sel=all?sh.sel.filter(x=>!ids.includes(x)):[...new Set([...sh.sel,...ids])];sheet()}else if(a=="hm"){hm.m+=i;if(hm.m<0){hm.m=11;hm.y--}if(hm.m>11){hm.m=0;hm.y++}hist()}else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
+ else if(a=="hgo"){cur=t.dataset.k;closePop();render()}else if(a=="hshut"){closePop()}else if(a=="rord"){reorder()}else if(a=="rrm"){ro.splice(i,1);rlist()}else if(a=="rok"){day().ex=ro;save();closePop();render()}else if(a=="hopen"){sh.open[t.dataset.k]=!sh.open[t.dataset.k];sheet()}else if(a=="hall"){const k=t.dataset.k,ids=rec(k).map(x=>k+"|"+x.i),all=ids.every(x=>sh.sel.includes(x));sh.sel=all?sh.sel.filter(x=>!ids.includes(x)):[...new Set([...sh.sel,...ids])];sheet()}else if(a=="hm"){hm.m+=i;if(hm.m<0){hm.m=11;hm.y--}if(hm.m>11){hm.m=0;hm.y++}hist()}else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
  else if(a=="cust"){const n=prompt("운동 이름");if(n){const c=prompt("부위 ("+CATS.join("/")+")","가슴");S.custom[n]=CATS.includes(c)?c:"기타";save();sheet()}}
  else if(a=="rsave"){if(!d.ex.length)return alert("오늘 추가된 운동이 없어요");const n=prompt("루틴 이름");if(n){S.routines.unshift({name:n,items:d.ex.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:s.kg,reps:s.reps}))}))});save();sheet()}}
  else if(a=="rdel"){if(confirm("루틴을 삭제할까요?")){S.routines.splice(i,1);save();sheet()}}
@@ -149,6 +154,20 @@ const mv=n=>{const d=new Date(cur+"T00:00");d.setDate(d.getDate()+n);cur=fmt(d);
 $("#pv").onclick=()=>mv(-1);
 $("#dp").onchange=e=>{if(e.target.value){cur=e.target.value;render()}};
 $("#mn").onclick=()=>mv(1);
+let lh=null;
+function lsheet(){const e=day().ex[lh.i],k=lh.list[lh.p],r=S.days[k].ex.find(x=>x.name==e.name&&dset(x).length),ss=dset(r),ago=Math.round((new Date(cur+"T00:00")-new Date(k+"T00:00"))/864e5),ds=k.slice(0,4)+"년 "+ +k.slice(5,7)+"월 "+ +k.slice(8)+"일  ("+(ago>0?ago+"일 전":-ago+"일 후")+")",older=lh.p<lh.list.length-1,newer=lh.p>0;
+ $("#layer").innerHTML=`<div class="ov" style="align-items:flex-end"><div style="position:absolute;inset:0" data-a="lx"></div><div class="bs"><div style="width:40px;height:4px;border-radius:2px;background:var(--dn);margin:0 auto 14px"></div><div style="display:flex;justify-content:space-between;align-items:center"><span style="width:40px"></span><b style="font-size:18px">${e.name} 기록</b><button class="ic" data-a="lx">✕</button></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;margin:26px 0 16px"><button class="ic" style="color:${older?"var(--tx)":"var(--dn)"}" ${older?'data-a="lp"':""}>‹</button><span>${ds}</span><button class="ic" style="color:${newer?"var(--tx)":"var(--dn)"}" ${newer?'data-a="ln"':""}>›</button></div>
+ <div class="vb" style="display:flex;justify-content:space-between;font-weight:700"><span style="font-weight:400">종목 볼륨</span><span>${dvol(r).toLocaleString()}kg</span></div>
+ <div class="vb" style="margin-top:12px">${ss.map((s,j)=>`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;padding:9px 6px;text-align:right"><b style="color:var(--sub);text-align:left">${j+1}</b><span>${s.kg||0}kg</span><span>${s.reps||0}회</span></div>`).join("")}</div>
+ <div style="flex:1"></div><button class="pb" data-a="lok">불러오기</button></div></div>`}
+let ro=[],dg=null;
+function reorder(){ro=day().ex.slice();$("#layer").innerHTML=`<div class="sheet"><div style="text-align:center;font-weight:700;padding:16px">운동 순서 이동</div><div id="rl"></div></div><div class="sb"><button style="background:var(--in);color:var(--tx);flex:.4" data-a="shut">취소</button><button data-a="rok">확인</button></div>`;rlist()}
+function rlist(){$("#rl").innerHTML=ro.map((e,i)=>`<div class="rr"><span class="n">${e.cat} | ${e.name}</span><button class="ic" data-a="rrm" data-i="${i}">🗑</button><span class="hd">≡</span></div>`).join("")}
+document.addEventListener("pointerdown",ev=>{const h=ev.target.closest&&ev.target.closest(".hd");if(!h)return;const row=h.parentElement,rows=[...$("#rl").children],f=rows.indexOf(row);dg={row,rows,from:f,idx:f,y0:ev.clientY,hh:row.offsetHeight};row.classList.add("drag");rows.forEach(r=>{if(r!=row)r.classList.add("mv")});try{h.setPointerCapture(ev.pointerId)}catch(e){}ev.preventDefault()});
+document.addEventListener("pointermove",ev=>{if(!dg)return;const dy=ev.clientY-dg.y0,n=Math.max(0,Math.min(dg.rows.length-1,dg.from+Math.round(dy/dg.hh)));dg.idx=n;dg.row.style.transform=`translateY(${dy}px)`;dg.rows.forEach((r,k)=>{if(r==dg.row)return;let s=0;if(dg.from<n&&k>dg.from&&k<=n)s=-dg.hh;if(dg.from>n&&k<dg.from&&k>=n)s=dg.hh;r.style.transform=s?`translateY(${s}px)`:""})});
+const endDrag=()=>{if(!dg)return;const{from,idx}=dg;dg=null;if(from!=idx){const[m]=ro.splice(from,1);ro.splice(idx,0,m)}rlist()};
+document.addEventListener("pointerup",endDrag);document.addEventListener("pointercancel",endDrag);
 let hm=null;
 $("#hs").onclick=()=>{hm=null;hist()};
 function hist(){
