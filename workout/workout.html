@@ -19,6 +19,7 @@ header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:no
 .prev{background:var(--in);border-radius:10px;padding:12px;color:var(--sub);font-size:14px;line-height:1.6}
 .row{display:grid;grid-template-columns:48px 1fr 1fr 64px;gap:8px;margin-top:8px;align-items:center;text-align:center}
 .row.h{color:var(--sub);font-size:14px}
+.row input::placeholder{color:var(--sub);opacity:.6}
 .row span{background:var(--in);border-radius:8px;padding:12px 0;color:var(--sub);font-weight:700}
 .row input{width:100%;padding:11px 0;text-align:center;font-size:17px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx)}
 .ck{background:var(--dn);color:#fff;border-radius:8px;padding:11px 0;font-size:18px}.ck.on{background:var(--pr)}
@@ -83,8 +84,8 @@ function timer(sec,nx){rTot=sec;rEnd=Date.now()+sec*1000;rNext=nx;clearInterval(
 function tick(){const l=Math.ceil((rEnd-Date.now())/1000);const a=$("#pc"),b=$("#rt");if(a)a.textContent=mmss(l);if(b)b.textContent=mmss(l);
  const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0);
  if(l<=0){clearInterval(rInt);rEnd=0;try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}closePop();bar()}}
-function popup(){$("#layer").innerHTML=`<div class="ov"><div class="pop"><b style="font-size:20px">휴식 타이머</b><div style="margin-top:10px">고생하셨어요! 👏<br>이제 호흡을 안정시켜볼까요?</div><div class="big" id="pc">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><small>${mmss(rTot)}</small>
- <div class="nx">다음 세트<br>${rNext}</div><div class="two"><button data-a="m15">-15초</button><button data-a="p15">+15초</button></div>
+function popup(){$("#layer").innerHTML=`<div class="ov"><div class="pop"><b style="font-size:20px">휴식 타이머</b><div class="big" id="pc">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><small>${mmss(rTot)}</small>
+ <div class="two" style="margin-top:20px"><button data-a="m15">-15초</button><button data-a="p15">+15초</button></div>
  <div class="foot"><button style="color:var(--rd)" data-a="skip">건너뛰기</button><button style="color:var(--sub)" data-a="close">닫기</button></div></div></div>`}
 function closePop(){$("#layer").innerHTML=""}
 setInterval(()=>{if(!rEnd){const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0)}},1000);
@@ -141,8 +142,9 @@ document.addEventListener("click",ev=>{
  else if(a=="done"){if(sh.tab==0)sh.sel.forEach(n=>d.ex.push(mk(n)));else sh.sel.forEach(x=>{const[k,n]=x.split("|"),e=S.days[k].ex[+n];d.ex.push(mk(e.name,dset(e).map(s=>({kg:s.kg,reps:s.reps,done:false}))))});save();closePop();render()}
 });
 function vols(){const d=day(),a=$("#tv");if(a)a.textContent=d.ex.reduce((x,e)=>x+vol(e),0).toLocaleString()+"kg";d.ex.forEach((e,i)=>{const n=document.querySelector(`[data-ev="${i}"]`);if(n)n.textContent=vol(e).toLocaleString()})}
-document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f){const i=+t.dataset.i,j=+t.dataset.j,f=t.dataset.f,ss=day().ex[i].sets;for(let k=j;k<ss.length;k++){ss[k][f]=t.value;if(k>j){const el=document.querySelector(`input[data-f="${f}"][data-i="${i}"][data-j="${k}"]`);if(el)el.value=t.value}}save();vols()}});
-document.addEventListener("focusin",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f)setTimeout(()=>{try{t.select();t.setSelectionRange(0,t.value.length)}catch(e){}},0)});
+document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f){t.dataset.touched=1;const i=+t.dataset.i,j=+t.dataset.j,f=t.dataset.f,ss=day().ex[i].sets;for(let k=j;k<ss.length;k++){ss[k][f]=t.value;if(k>j){const el=document.querySelector(`input[data-f="${f}"][data-i="${i}"][data-j="${k}"]`);if(el)el.value=t.value}}save();vols()}});
+document.addEventListener("focusin",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f&&t.value!==""){t.dataset.old=t.value;t.placeholder=t.value;delete t.dataset.touched;t.value=""}});
+document.addEventListener("focusout",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f&&t.value===""&&!t.dataset.touched&&t.dataset.old!==undefined){t.value=t.dataset.old}});
 const mv=n=>{const d=new Date(cur+"T00:00");d.setDate(d.getDate()+n);cur=fmt(d);render()};
 $("#pv").onclick=()=>mv(-1);
 $("#dp").onchange=e=>{if(e.target.value){cur=e.target.value;render()}};
