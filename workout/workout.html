@@ -79,8 +79,8 @@ function render(){
  if(!d.ex.length)h+=`<div class="empty">아래 ‘운동 추가’ 버튼으로 운동을 골라보세요</div>`;
  d.ex.forEach((e,i)=>{const l=lastRec(e.name);
  h+=`<div class="card"><div class="eh"><span><i>${i+1}</i>${e.cat} | ${e.name}</span><button data-a="del" data-i="${i}">⋮</button></div>
- <div class="meta">종목 볼륨 <span data-ev="${i}">${vol(e).toLocaleString()}</span>kg · ⏱ ${mmss(e.rest)}</div>
- ${l?`<div class="prev">${dlabel(l.k)}<br>${l.e.sets.map(s=>(s.kg||0)+"×"+(s.reps||0)).join(", ")}</div><div style="text-align:right;margin:12px 0 4px"><button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button><button class="chip" data-a="rest" data-i="${i}">⏱ 휴식시간</button></div>`:`<div style="text-align:right;margin:8px 0"><button class="chip" data-a="rest" data-i="${i}">⏱ 휴식시간</button></div>`}
+ <div class="meta">종목 볼륨 <span data-ev="${i}">${vol(e).toLocaleString()}</span>kg</div>
+ ${l?`<div class="prev">${dlabel(l.k)}<br>${l.e.sets.map(s=>(s.kg||0)+"×"+(s.reps||0)).join(", ")}</div><div style="text-align:right;margin:12px 0 4px"><button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button></div>`:""}
  <div class="row h"><div>세트</div><div>kg</div><div>회</div><div>완료</div></div>
  ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}">✓</button></div>`).join("")}
  <div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
@@ -93,7 +93,7 @@ function timer(sec,nx){rTot=sec;rEnd=Date.now()+sec*1000;rNext=nx;clearInterval(
 function tick(){const l=Math.ceil((rEnd-Date.now())/1000);const a=$("#pc"),b=$("#rt");if(a)a.textContent=mmss(l);if(b)b.textContent=mmss(l);
  const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0);
  if(l<=0){clearInterval(rInt);rEnd=0;try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}closePop();bar()}}
-function popup(){$("#layer").innerHTML=`<div class="ov"><div class="pop"><b style="font-size:20px">휴식 타이머</b><div class="big" id="pc">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><small>${mmss(rTot)}</small>
+function popup(){$("#layer").innerHTML=`<div class="ov"><div class="pop"><div style="position:relative"><b style="font-size:20px">휴식 타이머</b><button data-a="rset" style="position:absolute;right:0;top:-4px;font-size:22px;color:var(--sub)">⚙</button></div><div class="big" id="pc">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><small>${mmss(rTot)}</small>
  <div class="two" style="margin-top:20px"><button data-a="m15">-15초</button><button data-a="p15">+15초</button></div>
  <div class="foot"><button style="color:var(--rd)" data-a="skip">건너뛰기</button><button style="color:var(--sub)" data-a="close">닫기</button></div></div></div>`}
 function closePop(){$("#layer").innerHTML=""}
@@ -125,12 +125,12 @@ function sheet(){
 const mk=(name,sets)=>({name,cat:catOf(name),rest:S.rest,sets:sets||(l=>l?l.e.sets.map(s=>({kg:s.kg,reps:s.reps,done:false})):[{kg:"",reps:"",done:false},{kg:"",reps:"",done:false},{kg:"",reps:"",done:false}])(lastRec(name))});
 document.addEventListener("click",ev=>{
  const t=ev.target.closest("[data-a]");if(!t)return;const a=t.dataset.a,i=+t.dataset.i,j=+t.dataset.j,d=day();
- if(a=="ck"){const s=d.ex[i].sets[j];s.done=!s.done;if(s.done)for(let k=0;k<j;k++)d.ex[i].sets[k].done=true;save();if(s.done){if(!d.start&&!d.fin)d.start=Date.now();render();timer(d.ex[i].rest,nextSet(i,j))}else render()}
+ if(a=="ck"){const s=d.ex[i].sets[j];s.done=!s.done;if(s.done)for(let k=0;k<j;k++)d.ex[i].sets[k].done=true;save();if(s.done){if(!d.start&&!d.fin)d.start=Date.now();render();timer(S.rest,nextSet(i,j))}else render()}
  else if(a=="add"){const e=d.ex[i],l=e.sets[e.sets.length-1]||{kg:"",reps:""};e.sets.push({kg:l.kg,reps:l.reps,done:false});save();render()}
  else if(a=="rm"){d.ex[i].sets.pop();save();render()}
  else if(a=="del"){if(confirm(d.ex[i].name+" 운동을 삭제할까요?")){d.ex.splice(i,1);save();render()}}
  else if(a=="load"){const nm=d.ex[i].name,list=Object.keys(S.days).filter(k=>k!=cur&&S.days[k].ex.some(x=>x.name==nm&&dset(x).length)).sort().reverse();if(list.length){lh={i,list,p:0};lsheet()}}else if(a=="lp"){lh.p++;lsheet()}else if(a=="ln"){lh.p--;lsheet()}else if(a=="lx"){closePop()}else if(a=="lok"){const e=day().ex[lh.i],r=S.days[lh.list[lh.p]].ex.find(x=>x.name==e.name&&dset(x).length);e.sets=dset(r).map(s=>({kg:s.kg,reps:s.reps,done:false}));save();closePop();render()}
- else if(a=="rest"){const v=prompt("이 운동의 휴식시간(초)",d.ex[i].rest);if(v&&+v>0){d.ex[i].rest=+v;S.rest=+v;save();render()}}
+ else if(a=="rset"){const v=prompt("휴식시간(초)",S.rest);if(v&&+v>0){S.rest=+v;save();rTot=+v;rEnd=Date.now()+v*1000;popup()}}
  else if(a=="go"){if(d.fin)return;d.start=Date.now();save();bar()}else if(a=="rst"){if(confirm("운동 완료를 초기화할까요?")){d.ex.forEach(e=>S.freq[e.name]=Math.max(0,(S.freq[e.name]||0)-1));d.fin=false;d.dur=null;d.start=null;save();render()}}
  else if(a=="fin"){if(confirm("운동을 완료할까요? ("+mmss((Date.now()-d.start)/1000|0)+")")){d.dur=(Date.now()-d.start)/1000|0;d.fin=true;d.ex.forEach(e=>S.freq[e.name]=(S.freq[e.name]||0)+1);d.start=null;rEnd=0;clearInterval(rInt);save();render()}}
  else if(a=="addx"){sh={tab:0,cat:"전체",q:"",sel:[]};sheet()}
@@ -147,8 +147,8 @@ document.addEventListener("click",ev=>{
  else if(a=="cust"){const n=prompt("운동 이름");if(n){const c=prompt("부위 ("+CATS.join("/")+")","가슴");S.custom[n]=CATS.includes(c)?c:"기타";save();sheet()}}
  else if(a=="rsave"){if(!d.ex.length)return alert("오늘 추가된 운동이 없어요");const n=prompt("루틴 이름");if(n){S.routines.unshift({name:n,items:d.ex.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:s.kg,reps:s.reps}))}))});save();sheet()}}
  else if(a=="rdel"){if(confirm("루틴을 삭제할까요?")){S.routines.splice(i,1);save();sheet()}}
- else if(a=="radd"){S.routines[i].items.forEach(x=>d.ex.push(mk(x.name,x.sets.map(s=>({kg:s.kg,reps:s.reps,done:false})))));save();closePop();render()}
- else if(a=="done"){if(sh.tab==0)sh.sel.forEach(n=>d.ex.push(mk(n)));else sh.sel.forEach(x=>{const[k,n]=x.split("|"),e=S.days[k].ex[+n];d.ex.push(mk(e.name,dset(e).map(s=>({kg:s.kg,reps:s.reps,done:false}))))});save();closePop();render()}
+ else if(a=="radd"){S.routines[i].items.forEach(x=>{if(!d.ex.some(e=>e.name==x.name))d.ex.push(mk(x.name,x.sets.map(s=>({kg:s.kg,reps:s.reps,done:false}))))});save();closePop();render()}
+ else if(a=="done"){if(sh.tab==0)sh.sel.forEach(n=>{if(!d.ex.some(e=>e.name==n))d.ex.push(mk(n))});else sh.sel.forEach(x=>{const[k,n]=x.split("|"),e=S.days[k].ex[+n];if(!d.ex.some(y=>y.name==e.name))d.ex.push(mk(e.name,dset(e).map(s=>({kg:s.kg,reps:s.reps,done:false}))))});save();closePop();render()}
 });
 function vols(){const d=day(),a=$("#tv");if(a)a.textContent=d.ex.reduce((x,e)=>x+vol(e),0).toLocaleString()+"kg";d.ex.forEach((e,i)=>{const n=document.querySelector(`[data-ev="${i}"]`);if(n)n.textContent=vol(e).toLocaleString()})}
 document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f){t.dataset.touched=1;const i=+t.dataset.i,j=+t.dataset.j,f=t.dataset.f,ss=day().ex[i].sets;for(let k=j;k<ss.length;k++){ss[k][f]=t.value;if(k>j){const el=document.querySelector(`input[data-f="${f}"][data-i="${i}"][data-j="${k}"]`);if(el)el.value=t.value}}save();vols()}});
