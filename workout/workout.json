@@ -113,79 +113,10 @@
    "start": null
   },
   "2026-11-16": {
-   "ex": [
-    {
-     "name": "레그 컬",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "5",
-       "reps": "5",
-       "done": true
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": true
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": true
-      }
-     ]
-    },
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "레그 컬",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "5",
-       "reps": "5",
-       "done": false
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": false
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": false
-      }
-     ]
-    }
-   ],
-   "start": null,
-   "dur": 11,
-   "fin": true
+   "ex": [],
+   "start": 1794955040080,
+   "dur": null,
+   "fin": false
   },
   "2026-11-15": {
    "ex": [],
@@ -277,8 +208,8 @@
  "routines": [],
  "stars": [],
  "freq": {
-  "레그 익스텐션": 6,
-  "레그 컬": 4,
+  "레그 익스텐션": 5,
+  "레그 컬": 2,
   "스쿼트": 3,
   "런지": 3,
   "푸시업": 0
