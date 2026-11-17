@@ -54,14 +54,14 @@ input[type=checkbox]:checked{background:var(--pr);border-color:var(--pr)}
 input[type=checkbox]:checked::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .empty{text-align:center;color:var(--sub);padding:60px 0}
 </style></head><body>
-<header><div style="display:flex;align-items:center"><button class="ic" id="pv">‹</button><label style="position:relative;cursor:pointer;padding:6px 12px"><b id="dt"></b> ▾<input type="date" id="dp" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label><button class="ic" id="mn">›</button></div><button class="ic" id="hs">📋</button></header>
+<header><div style="display:flex;align-items:center"><button class="ic" id="pv">‹</button><label style="position:relative;cursor:pointer;padding:6px 12px"><b id="dt"></b> ▾<input type="date" id="dp" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label><button class="ic" id="mn">›</button></div><span><button class="ic" id="gh">☁</button><button class="ic" id="hs">📋</button></span></header>
 <div id="app"></div><div class="bar" id="bar"></div><div id="layer"></div>
 <script>
 const DB={하체:["레그 익스텐션","레그 프레스","레그 컬","스쿼트","런지"],가슴:["체스트 프레스 머신","펙덱 플라이 머신","딥스","어시스트 딥스 머신","푸시업","인클라인 체스트 프레스 머신","인클라인 덤벨 벤치프레스","벤치프레스"],등:["랫풀다운","시티드 케이블 로우","시티드 로우 머신","케이블 암 풀다운","티바 로우 머신","백 익스텐션","덤벨 로우","정지 바벨 로우"],어깨:["숄더 프레스 머신","리어 델토이드 플라이 머신","덤벨 레터럴 레이즈","스미스머신 오버헤드 프레스","덤벨 숄더 프레스","레터럴 레이즈 머신","케이블 레터럴 레이즈","시티드 덤벨 숄더 프레스"],팔:["프리쳐 컬 머신","케이블 로프 푸시 다운","케이블 푸시 다운","이지바 리버스 컬","이지바 리스트 컬","이지바 스파이더 컬","이지바 트라이셉 익스텐션"],역도:["데드리프트","스내치","클린 앤 저크"],복근:["복근 크런치 머신","플랭크","크런치","바이시클 크런치","싯업","케틀벨 사이드 벤드","케틀벨 윈드밀","크로스 바디 크런치"]};
 const CATS=Object.keys(DB),catOf=n=>CATS.find(c=>DB[c].includes(n))||(S.custom[n]||"기타");
 let S={days:{},routines:[],stars:[],freq:{},custom:{},rest:60};
 try{const x=localStorage.getItem("wk1");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
-const save=()=>{try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}ghAuto()};
 const $=s=>document.querySelector(s),W="일월화수목금토";
 const fmt=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 let cur=fmt(new Date());
@@ -143,7 +143,7 @@ document.addEventListener("click",ev=>{
  else if(a=="cat"){sh.cat=t.dataset.c;sheet()}
  else if(a=="sel"){const n=t.dataset.n;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
  else if(a=="hsel"){const n=t.dataset.k+"|"+i;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
- else if(a=="hgo"){cur=t.dataset.k;closePop();render()}else if(a=="hshut"){closePop()}else if(a=="rord"){reorder()}else if(a=="rrm"){ro.splice(i,1);rlist()}else if(a=="rok"){day().ex=ro;save();closePop();render()}else if(a=="hopen"){sh.open[t.dataset.k]=!sh.open[t.dataset.k];sheet()}else if(a=="hall"){const k=t.dataset.k,ids=rec(k).map(x=>k+"|"+x.i),all=ids.every(x=>sh.sel.includes(x));sh.sel=all?sh.sel.filter(x=>!ids.includes(x)):[...new Set([...sh.sel,...ids])];sheet()}else if(a=="hm"){hm.m+=i;if(hm.m<0){hm.m=11;hm.y--}if(hm.m>11){hm.m=0;hm.y++}hist()}else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
+ else if(a=="hgo"){cur=t.dataset.k;closePop();render()}else if(a=="hshut"){closePop()}else if(a=="ghsave"){ghRead();ghMsg("설정을 저장했어요")}else if(a=="ghpush"){ghRead();ghMsg("커밋 중...");ghPush().then(()=>ghMsg("커밋 완료 "+tm())).catch(e=>{ghIcon(false);ghMsg("오류: "+e.message)})}else if(a=="ghpull"){ghRead();if(!confirm("GitHub 데이터로 이 기기의 데이터를 덮어쓸까요?"))return;ghMsg("불러오는 중...");ghPull().then(o=>{S=Object.assign({days:{},routines:[],stars:[],freq:{},custom:{},rest:60},o);try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}render();ghMsg("복원 완료 "+tm())}).catch(e=>{ghIcon(false);ghMsg("오류: "+e.message)})}else if(a=="rord"){reorder()}else if(a=="rrm"){ro.splice(i,1);rlist()}else if(a=="rok"){day().ex=ro;save();closePop();render()}else if(a=="hopen"){sh.open[t.dataset.k]=!sh.open[t.dataset.k];sheet()}else if(a=="hall"){const k=t.dataset.k,ids=rec(k).map(x=>k+"|"+x.i),all=ids.every(x=>sh.sel.includes(x));sh.sel=all?sh.sel.filter(x=>!ids.includes(x)):[...new Set([...sh.sel,...ids])];sheet()}else if(a=="hm"){hm.m+=i;if(hm.m<0){hm.m=11;hm.y--}if(hm.m>11){hm.m=0;hm.y++}hist()}else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
  else if(a=="cust"){const n=prompt("운동 이름");if(n){const c=prompt("부위 ("+CATS.join("/")+")","가슴");S.custom[n]=CATS.includes(c)?c:"기타";save();sheet()}}
  else if(a=="rsave"){if(!d.ex.length)return alert("오늘 추가된 운동이 없어요");const n=prompt("루틴 이름");if(n){S.routines.unshift({name:n,items:d.ex.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:s.kg,reps:s.reps}))}))});save();sheet()}}
  else if(a=="rdel"){if(confirm("루틴을 삭제할까요?")){S.routines.splice(i,1);save();sheet()}}
@@ -172,6 +172,32 @@ document.addEventListener("pointerdown",ev=>{const h=ev.target.closest&&ev.targe
 document.addEventListener("pointermove",ev=>{if(!dg)return;const dy=ev.clientY-dg.y0,n=Math.max(0,Math.min(dg.rows.length-1,dg.from+Math.round(dy/dg.hh)));dg.idx=n;dg.row.style.transform=`translateY(${dy}px)`;dg.rows.forEach((r,k)=>{if(r==dg.row)return;let s=0;if(dg.from<n&&k>dg.from&&k<=n)s=-dg.hh;if(dg.from>n&&k<dg.from&&k>=n)s=dg.hh;r.style.transform=s?`translateY(${s}px)`:""})});
 const endDrag=()=>{if(!dg)return;const{from,idx}=dg;dg=null;if(from!=idx){const[m]=ro.splice(from,1);ro.splice(idx,0,m)}rlist()};
 document.addEventListener("pointerup",endDrag);document.addEventListener("pointercancel",endDrag);
+let GH={token:"",repo:"",path:"workout-data.json",branch:"main",auto:false},ghLast="",ghT=null;
+try{Object.assign(GH,JSON.parse(localStorage.getItem("wk1gh")||"{}"))}catch(e){}
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;"),tm=()=>new Date().toTimeString().slice(0,5);
+const ghMsg=t=>{ghLast=t;const n=document.querySelector("#ghs");if(n)n.textContent=t};
+const ghIcon=ok=>{const n=document.querySelector("#gh");if(n)n.textContent=ok?"☁":"☁⚠"};
+const ghU=()=>`https://api.github.com/repos/${GH.repo}/contents/${GH.path.split("/").map(encodeURIComponent).join("/")}`,ghH=()=>({Authorization:"Bearer "+GH.token,Accept:"application/vnd.github+json"}),b64=s=>btoa(unescape(encodeURIComponent(s)));
+const ghRead=()=>{GH.token=$("#gt").value.trim();GH.repo=$("#gr").value.trim();GH.path=$("#gp").value.trim()||"workout-data.json";GH.branch=$("#gb").value.trim()||"main";GH.auto=$("#ga").checked;try{localStorage.setItem("wk1gh",JSON.stringify(GH))}catch(e){}};
+async function ghPush(){if(!GH.token||!GH.repo)throw new Error("토큰과 저장소를 먼저 입력하세요");clearTimeout(ghT);
+ const q="?ref="+encodeURIComponent(GH.branch),r=await fetch(ghU()+q,{headers:ghH(),cache:"no-store"});let sha;
+ if(r.ok)sha=(await r.json()).sha;else if(r.status!=404)throw new Error("조회 실패 ("+r.status+")");
+ const body={message:"workout "+fmt(new Date())+" "+tm(),content:b64(JSON.stringify(S,null,1)),branch:GH.branch};if(sha)body.sha=sha;
+ const p=await fetch(ghU(),{method:"PUT",headers:Object.assign({"Content-Type":"application/json"},ghH()),body:JSON.stringify(body)});
+ if(!p.ok)throw new Error("커밋 실패 ("+p.status+")");ghIcon(true);return true}
+async function ghPull(){if(!GH.token||!GH.repo)throw new Error("토큰과 저장소를 먼저 입력하세요");
+ const r=await fetch(ghU()+"?ref="+encodeURIComponent(GH.branch),{headers:ghH(),cache:"no-store"});if(r.status==404)throw new Error("파일이 아직 없어요 (먼저 커밋하세요)");if(!r.ok)throw new Error("불러오기 실패 ("+r.status+")");
+ const j=await r.json();return JSON.parse(decodeURIComponent(escape(atob(j.content.replace(/\s/g,"")))))}
+function ghAuto(){if(!GH.auto||!GH.token||!GH.repo)return;clearTimeout(ghT);ghT=setTimeout(()=>ghPush().then(()=>ghMsg("자동 커밋 완료 "+tm())).catch(e=>{ghIcon(false);ghMsg("자동 커밋 오류: "+e.message)}),10000)}
+function ghsheet(){const g=GH,G='class="s" style="margin:4px 0;width:100%"';$("#layer").innerHTML=`<div class="sheet"><div class="tabs" style="justify-content:space-between;align-items:center"><button style="flex:0 0 auto" data-a="hshut">‹ 닫기</button><b>GitHub 백업</b><span style="width:64px"></span></div>
+ <div class="card"><div class="meta" style="margin-top:0">토큰 (Contents 읽기/쓰기 권한)</div><input ${G} id="gt" type="password" value="${esc(g.token)}" placeholder="github_pat_...">
+ <div class="meta">저장소 (계정/저장소)</div><input ${G} id="gr" value="${esc(g.repo)}" placeholder="codebyma/저장소이름">
+ <div class="meta">파일 경로</div><input ${G} id="gp" value="${esc(g.path)}">
+ <div class="meta">브랜치</div><input ${G} id="gb" value="${esc(g.branch)}">
+ <label class="li" style="border:0;padding:14px 0 0"><input type="checkbox" id="ga" ${g.auto?"checked":""}><span>변경 후 자동 커밋 (10초 뒤)</span></label>
+ <button class="pb" data-a="ghsave">설정 저장</button><button class="pb" data-a="ghpush" style="background:var(--in);color:var(--tx)">지금 커밋하기</button><button class="pb" data-a="ghpull" style="background:var(--in);color:var(--tx)">GitHub에서 불러오기 (복원)</button>
+ <div class="meta" id="ghs">${esc(ghLast)}</div></div></div>`}
+$("#gh").onclick=ghsheet;
 let hm=null;
 $("#hs").onclick=()=>{hm=null;hist()};
 function hist(){
