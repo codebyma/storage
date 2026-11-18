@@ -256,12 +256,42 @@
    "start": null,
    "dur": 24,
    "fin": true
+  },
+  "2026-11-19": {
+   "ex": [
+    {
+     "name": "레그 익스텐션",
+     "cat": "하체",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "50",
+       "reps": "10",
+       "done": true
+      },
+      {
+       "kg": "50",
+       "reps": "10",
+       "done": true
+      },
+      {
+       "kg": "50",
+       "reps": "10",
+       "done": true
+      }
+     ],
+     "lv": "u"
+    }
+   ],
+   "start": null,
+   "dur": 5,
+   "fin": true
   }
  },
  "routines": [],
  "stars": [],
  "freq": {
-  "레그 익스텐션": 6,
+  "레그 익스텐션": 7,
   "레그 컬": 3,
   "스쿼트": 3,
   "런지": 3,
