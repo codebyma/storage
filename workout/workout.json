@@ -262,28 +262,6 @@
      ]
     },
     {
-     "name": "케이블 로프 푸시 다운",
-     "cat": "팔",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    },
-    {
      "name": "케이블 푸시 다운",
      "cat": "팔",
      "rest": 60,
