@@ -42,74 +42,7 @@
    "start": null
   },
   "2026-11-14": {
-   "ex": [
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "레그 프레스",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "레그 컬",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    }
-   ],
+   "ex": [],
    "start": null
   },
   "2026-11-16": {
@@ -123,83 +56,10 @@
    "start": null
   },
   "2026-11-17": {
-   "ex": [
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": true
-      },
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": true
-      },
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": true
-      }
-     ],
-     "lv": "u"
-    },
-    {
-     "name": "레그 컬",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "5",
-       "reps": "5",
-       "done": true
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": true
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": true
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": true
-      }
-     ]
-    },
-    {
-     "name": "푸시업",
-     "cat": "가슴",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "50",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "50",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "50",
-       "reps": "12",
-       "done": true
-      }
-     ]
-    }
-   ],
-   "start": null,
-   "dur": 81527,
-   "fin": true
+   "ex": [],
+   "start": 1794908576310,
+   "dur": null,
+   "fin": false
   },
   "2026-11-18": {
    "ex": [
@@ -227,38 +87,14 @@
     }
    ],
    "start": null,
-   "dur": 2653,
-   "fin": true
+   "dur": null,
+   "fin": false
   },
   "2026-11-19": {
-   "ex": [
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": true
-      },
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": true
-      },
-      {
-       "kg": "50",
-       "reps": "10",
-       "done": true
-      }
-     ],
-     "lv": "u"
-    }
-   ],
-   "start": null,
-   "dur": 5,
-   "fin": true
+   "ex": [],
+   "start": 1794990110042,
+   "dur": null,
+   "fin": false
   },
   "2026-11-20": {
    "ex": [
@@ -291,11 +127,11 @@
  "routines": [],
  "stars": [],
  "freq": {
-  "레그 익스텐션": 8,
-  "레그 컬": 4,
+  "레그 익스텐션": 7,
+  "레그 컬": 3,
   "스쿼트": 3,
   "런지": 3,
-  "푸시업": 1
+  "푸시업": 0
  },
  "custom": {
   "테스트": "가슴"
