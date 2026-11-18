@@ -224,33 +224,6 @@
        "done": false
       }
      ]
-    },
-    {
-     "name": "레그 컬",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "5",
-       "reps": "5",
-       "done": false
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": false
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": false
-      },
-      {
-       "kg": "10",
-       "reps": "5",
-       "done": false
-      }
-     ]
     }
    ],
    "start": 1794987339237,
