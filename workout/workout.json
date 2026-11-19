@@ -440,17 +440,17 @@
      "rest": 60,
      "sets": [
       {
-       "kg": "50",
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
        "reps": "10",
        "done": false
       },
       {
-       "kg": "50",
-       "reps": "10",
-       "done": false
-      },
-      {
-       "kg": "50",
+       "kg": "40",
        "reps": "10",
        "done": false
       }
