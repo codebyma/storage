@@ -457,9 +457,10 @@
       {
        "kg": "40",
        "reps": "12",
-       "done": false
+       "done": true
       }
-     ]
+     ],
+     "lv": "u"
     },
     {
      "name": "레그 컬",
