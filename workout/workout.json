@@ -580,6 +580,11 @@
       {
        "kg": "40",
        "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "40",
+       "reps": "12",
        "done": false
       }
      ]
