@@ -595,35 +595,7 @@
    "fin": true
   },
   "2026-11-20": {
-   "ex": [
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    }
-   ],
+   "ex": [],
    "start": null
   }
  },
