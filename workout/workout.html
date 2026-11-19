@@ -3,9 +3,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>운동 기록</title>
 <style>
-:root{--bg:#f2f3f5;--card:#fff;--tx:#222b38;--sub:#8a94a3;--in:#f2f3f5;--pr:#2f9bff;--ln:#e3e6ea;--dn:#c4cbd6;--rd:#ff4d4f;
+:root{--bg:#f2f3f5;--card:#fff;--tx:#222b38;--sub:#8a94a3;--in:#f2f3f5;--pr:#5f7898;--ln:#e3e6ea;--dn:#c4cbd6;--rd:#ff4d4f;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111419;--card:#1c2027;--tx:#eef1f5;--sub:#8c95a3;--in:#262b33;--ln:#2d333c;--dn:#3a414c}}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111419;--card:#1c2027;--tx:#eef1f5;--sub:#8c95a3;--in:#262b33;--ln:#2d333c;--dn:#3a414c;--pr:#6a86a8}}
 *{box-sizing:border-box}html{height:100%}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;padding-bottom:150px;max-width:560px;margin:auto}
 header{position:sticky;top:env(safe-area-inset-top,0px);background:var(--card);display:flex;align-items:center;justify-content:space-between;padding:12px 16px;z-index:5}
@@ -54,6 +54,7 @@ input[type=checkbox]:checked{background:var(--pr);border-color:var(--pr)}
 input[type=checkbox]:checked::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
 .m{fill:var(--dn);opacity:.55}.m.on{fill:var(--pr);opacity:1}.nb{fill:var(--dn);opacity:.3}.nt{fill:var(--sub);font-size:10px}
 .lvb.on{background:var(--pr);color:#fff;border-color:var(--pr)}
+.gl{background:rgba(255,255,255,.05);color:rgba(255,255,255,.28);padding:12px 22px;border-radius:12px;font-size:16px}
 .empty{text-align:center;color:var(--sub);padding:60px 0}
 </style></head><body>
 <header><div style="display:flex;align-items:center"><button class="ic" id="pv">‹</button><label style="position:relative;cursor:pointer;padding:6px 12px"><b id="dt"></b> ▾<input type="date" id="dp" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer"></label><button class="ic" id="mn">›</button></div><span><button class="ic" id="gh">☁</button><button class="ic" id="hs">📋</button></span></header>
@@ -91,16 +92,16 @@ function render(){sn=null;
  ${lvBar(e,i)}<div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
  h+=`<div style="display:flex;gap:10px;margin:12px"><button class="card" data-a="addx" style="flex:1;margin:0;color:var(--pr);font-weight:700;font-size:16px">＋ 운동 추가</button>${d.ex.length>1?`<button class="card" data-a="rord" style="flex:1;margin:0;color:var(--sub);font-weight:700;font-size:16px">↕ 순서 변경</button>`:""}</div>`;$("#app").innerHTML=h;bar()}
 function bar(){const d=day();
- $("#bar").innerHTML=d.fin?`<div class="b" style="flex:1.7;text-align:center">✔ 운동 완료 <span style="color:var(--pr)">${dur(d.dur||0)}</span></div><button class="b" data-a="rsave2">＋ 루틴 추가</button><button class="b" data-a="rst" title="초기화" style="flex:0 0 52px;padding:16px 0">↺</button>`:d.start?`<div class="tm"><div><b id="rt">${rEnd?mmss(Math.ceil((rEnd-Date.now())/1000)):"00:00"}</b>휴식 타이머</div><div><b id="wt">${mmss((Date.now()-d.start)/1000|0)}</b>운동 시간</div></div><button class="b p" data-a="fin">운동 완료</button>`:`<button class="b p" data-a="go">운동 시작</button>`}
+ $("#bar").innerHTML=d.fin?`<div class="b" style="flex:1.7;text-align:center">운동 완료 <span style="color:var(--pr)">${dur(d.dur||0)}</span></div><button class="b" data-a="rsave2">루틴 추가</button><button class="b" data-a="rst" title="초기화" style="flex:0 0 52px;padding:16px 0">↺</button>`:d.start?`<div class="tm"><div><b id="rt">${rEnd?mmss(Math.ceil((rEnd-Date.now())/1000)):"00:00"}</b>휴식 타이머</div><div><b id="wt">${mmss((Date.now()-d.start)/1000|0)}</b>운동 시간</div></div><button class="b p" data-a="fin">운동 완료</button>`:`<button class="b p" data-a="go">운동 시작</button>`}
 let rEnd=0,rTot=60,rInt=null,rNext="";
 function nextSet(i,j){const d=day();for(let a=i;a<d.ex.length;a++){const e=d.ex[a];for(let b=(a==i?j+1:0);b<e.sets.length;b++)if(!e.sets[b].done)return e.cat+"("+e.name+")<br>"+e.sets[b].kg+"kg X "+e.sets[b].reps+"회"}return "모든 세트 완료!"}
 function timer(sec,nx){rTot=sec;rEnd=Date.now()+sec*1000;rNext=nx;clearInterval(rInt);popup();rInt=setInterval(tick,250)}
 function tick(){const l=Math.ceil((rEnd-Date.now())/1000);const a=$("#pc"),b=$("#rt");if(a)a.textContent=mmss(l);if(b)b.textContent=mmss(l);
  const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0);
  if(l<=0){clearInterval(rInt);rEnd=0;try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}closePop();bar()}}
-function popup(){$("#layer").innerHTML=`<div class="ov"><div class="pop"><div style="position:relative"><b style="font-size:20px">휴식 타이머</b><button data-a="rset" style="position:absolute;right:0;top:-4px;font-size:22px;color:var(--sub)">⚙</button></div><div class="big" id="pc">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><small>${mmss(rTot)}</small>
- <div class="two" style="margin-top:20px"><button data-a="m15">-15초</button><button data-a="p15">+15초</button></div>
- <div class="foot"><button style="color:var(--rd)" data-a="skip">건너뛰기</button><button style="color:var(--sub)" data-a="close">닫기</button></div></div></div>`}
+function popup(){$("#layer").innerHTML=`<div class="ov" data-a="close" style="background:rgba(0,0,0,.84);flex-direction:column"><button data-a="rset" style="position:absolute;top:calc(env(safe-area-inset-top,0px) + 14px);right:18px;font-size:24px;color:rgba(255,255,255,.22)">⚙</button><div style="color:rgba(255,255,255,.2);font-size:15px">휴식 타이머</div><div id="pc" style="font-size:88px;font-weight:800;color:rgba(255,255,255,.18);margin:8px 0">${mmss(Math.ceil((rEnd-Date.now())/1000))}</div><div style="color:rgba(255,255,255,.12);font-size:18px">${mmss(rTot)}</div>
+ <div style="display:flex;gap:12px;margin-top:30px"><button class="gl" data-a="m15">-15초</button><button class="gl" data-a="p15">+15초</button></div>
+ <div style="display:flex;gap:12px;margin-top:12px"><button class="gl" style="color:rgba(255,138,138,.4)" data-a="skip">건너뛰기</button><button class="gl" data-a="close">닫기</button></div></div>`}
 function closePop(){$("#layer").innerHTML=""}
 setInterval(()=>{if(!rEnd){const w=$("#wt"),d=day();if(w&&d.start)w.textContent=mmss((Date.now()-d.start)/1000|0)}},1000);
 // 운동 추가 시트
