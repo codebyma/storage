@@ -446,17 +446,17 @@
       },
       {
        "kg": "40",
-       "reps": "10",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "40",
+       "reps": "12",
        "done": false
       },
       {
        "kg": "40",
-       "reps": "10",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "10",
+       "reps": "12",
        "done": false
       }
      ]
