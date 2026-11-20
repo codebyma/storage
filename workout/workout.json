@@ -1,38 +1,5 @@
 {
  "days": {
-  "2026-11-12": {
-   "ex": [
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": []
-    },
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    }
-   ],
-   "start": null
-  },
   "2026-11-11": {
    "ex": [],
    "start": null
@@ -595,6 +562,10 @@
    "fin": true
   },
   "2026-11-20": {
+   "ex": [],
+   "start": null
+  },
+  "2026-11-12": {
    "ex": [],
    "start": null
   }
