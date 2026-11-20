@@ -24,9 +24,9 @@
   },
   "2026-11-17": {
    "ex": [],
-   "start": 1794908576310,
-   "dur": null,
-   "fin": false
+   "start": null,
+   "dur": 230928,
+   "fin": true
   },
   "2026-11-19": {
    "ex": [
@@ -315,8 +315,8 @@
   "2026-11-20": {
    "ex": [],
    "start": null,
-   "dur": 1,
-   "fin": true
+   "dur": null,
+   "fin": false
   },
   "2026-11-12": {
    "ex": [],
