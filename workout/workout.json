@@ -300,22 +300,22 @@
      "rest": 60,
      "sets": [
       {
-       "kg": "35",
+       "kg": "30",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "30",
        "reps": "12",
        "done": false
       },
       {
-       "kg": "35",
+       "kg": "30",
        "reps": "12",
        "done": false
       },
       {
-       "kg": "35",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "35",
+       "kg": "30",
        "reps": "12",
        "done": false
       }
