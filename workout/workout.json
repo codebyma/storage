@@ -323,33 +323,6 @@
      "lv": "h"
     },
     {
-     "name": "시티드 케이블 로우",
-     "cat": "등",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
      "name": "체스트 프레스 머신",
      "cat": "가슴",
      "rest": 60,
@@ -377,6 +350,60 @@
       }
      ],
      "lv": "h"
+    },
+    {
+     "name": "시티드 케이블 로우",
+     "cat": "등",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "사이드 레터럴 레이즈",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "3",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "3",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "3",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "3",
+       "reps": "12",
+       "done": false
+      }
+     ]
     },
     {
      "name": "펙덱 플라이 머신",
@@ -564,33 +591,6 @@
       },
       {
        "kg": "40",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "사이드 레터럴 레이즈",
-     "cat": "어깨",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "3",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "3",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "3",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "3",
        "reps": "12",
        "done": false
       }
