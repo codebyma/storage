@@ -379,9 +379,10 @@
       {
        "kg": "3",
        "reps": "12",
-       "done": false
+       "done": true
       }
-     ]
+     ],
+     "lv": "u"
     },
     {
      "name": "레그 익스텐션",
