@@ -430,12 +430,12 @@
       },
       {
        "kg": "20",
-       "reps": "12",
-       "done": false
+       "reps": "8",
+       "done": true
       },
       {
        "kg": "20",
-       "reps": "12",
+       "reps": "8",
        "done": false
       }
      ]
