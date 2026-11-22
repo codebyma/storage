@@ -414,6 +414,28 @@
      "lv": "h"
     },
     {
+     "name": "숄더 프레스 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
      "name": "시티드 케이블 로우",
      "cat": "등",
      "rest": 60,
@@ -487,28 +509,6 @@
     {
      "name": "레그 컬",
      "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "숄더 프레스 머신",
-     "cat": "어깨",
      "rest": 60,
      "sets": [
       {
