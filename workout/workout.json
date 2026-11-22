@@ -352,33 +352,6 @@
      "lv": "h"
     },
     {
-     "name": "시티드 케이블 로우",
-     "cat": "등",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
      "name": "사이드 레터럴 레이즈",
      "cat": "어깨",
      "rest": 60,
@@ -400,6 +373,60 @@
       },
       {
        "kg": "3",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "레그 익스텐션",
+     "cat": "하체",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "시티드 케이블 로우",
+     "cat": "등",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
        "reps": "12",
        "done": false
       }
@@ -445,33 +472,6 @@
       {
        "kg": "",
        "reps": "",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "레그 익스텐션",
-     "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "45",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "45",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "45",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "45",
-       "reps": "12",
        "done": false
       }
      ]
