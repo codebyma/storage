@@ -414,6 +414,28 @@
      "lv": "h"
     },
     {
+     "name": "리어 델토이드 플라이 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
      "name": "숄더 프레스 머신",
      "cat": "어깨",
      "rest": 60,
@@ -509,28 +531,6 @@
     {
      "name": "레그 컬",
      "cat": "하체",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      },
-      {
-       "kg": "",
-       "reps": "",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "리어 델토이드 플라이 머신",
-     "cat": "어깨",
      "rest": 60,
      "sets": [
       {
