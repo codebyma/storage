@@ -22,7 +22,7 @@ header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:no
 .row input::placeholder{color:var(--sub);opacity:.6}
 .row span{background:var(--in);border-radius:8px;padding:12px 0;color:var(--sub);font-weight:700}
 .row input{width:100%;padding:11px 0;text-align:center;font-size:17px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx)}
-.ck{background:var(--in);color:var(--dn);border-radius:5px;padding:11px 0;font-size:18px}.ck.on{background:var(--cta);color:var(--ctx)}
+.ck{width:34px;height:34px;padding:0;border-radius:50%;background:transparent;border:2px solid var(--dn);justify-self:center;transition:background .15s,border-color .15s}.ck.on{background:var(--cta);border-color:var(--cta)}
 .acts{display:flex;justify-content:space-around;margin-top:16px;color:var(--pr)}.acts .g{color:var(--sub)}
 .chip{border:1px solid var(--ln);color:var(--pr);border-radius:16px;padding:6px 12px;font-size:14px;margin-left:6px}
 .bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;background:var(--card);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
@@ -64,6 +64,7 @@ const DB={하체:["레그 익스텐션","레그 프레스","레그 컬","스쿼�
 const CATS=Object.keys(DB),catOf=n=>CATS.find(c=>DB[c].includes(n))||(S.custom[n]||"기타");
 let S={days:{},routines:[],stars:[],freq:{},custom:{},rest:60,inc:2.5};
 try{const x=localStorage.getItem("wk1");if(x)S=Object.assign(S,JSON.parse(x))}catch(e){}
+const fixLv=()=>Object.values(S.days||{}).forEach(d=>(d.ex||[]).forEach(e=>{if(e.lv&&!LV[e.lv])e.lv=""}));
 const save=()=>{try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}ghAuto()};
 const bump=(kg,lv)=>{const x=+kg,i=+S.inc;return lv=="u"&&i>0&&x>0?String(Math.round((x+i)*100)/100):kg};
 const $=s=>document.querySelector(s),W="일월화수목금토";
@@ -78,8 +79,8 @@ const dur=t=>{const h=t/3600|0;return (h?h+":":"")+mmss(t%3600)};
 const reopen=d=>{if(d.fin){d.fin=false;d.start=Date.now()-(d.dur||0)*1000;d.dur=null;d.ex.forEach(e=>S.freq[e.name]=Math.max(0,(S.freq[e.name]||0)-1))}};
 const lastRec=n=>{const ks=Object.keys(S.days).filter(k=>k<cur).sort().reverse();for(const k of ks){const e=S.days[k].ex.find(x=>x.name==n&&dset(x).length);if(e)return{k,e:{...e,sets:dset(e)}}}}
 const dlabel=k=>{const[y,m,d]=k.split("-");return y.slice(2)+"."+m+"."+d+"("+W[new Date(k+"T00:00").getDay()]+")"};
-const LV={h:{i:"🔴",t:"유지",n:"이 무게 유지",m:"지난번에 힘들었어요. 이 무게를 유지하세요."},m:{i:"🟡",t:"애매",n:"애매해요",m:"지난번에는 애매했어요. 같은 무게로 한 번 더 해보고 판단하세요."},u:{i:"🟢",t:"상향",n:"올려도 돼요",m:"지난번에 여유 있었어요. 무게를 올려보세요."}};
-const lvBar=(e,i)=>e.sets.length&&e.sets.every(s=>s.done)?`<div style="display:flex;gap:8px;margin-top:14px">${["h","m","u"].map(k=>`<button class="chip lvb${e.lv==k?" on":""}" style="flex:1;margin:0;padding:10px 4px" data-a="lv" data-i="${i}" data-v="${k}">${LV[k].i} ${LV[k].n}</button>`).join("")}</div>`:"";
+const LV={h:{i:"🔴",t:"유지",n:"이 무게 유지",m:"지난번에 힘들었어요. 이 무게를 유지하세요."},u:{i:"🟢",t:"상향",n:"올려도 돼요",m:"지난번에 여유 있었어요. 무게를 올려보세요."}};
+const lvBar=(e,i)=>e.sets.length&&e.sets.every(s=>s.done)?`<div style="display:flex;gap:8px;margin-top:14px">${["h","u"].map(k=>`<button class="chip lvb${e.lv==k?" on":""}" style="flex:1;margin:0;padding:10px 4px" data-a="lv" data-i="${i}" data-v="${k}">${LV[k].i} ${LV[k].n}</button>`).join("")}</div>`:"";
 function render(){sn=null;
  const d=day(),m=cur.split("-");$("#dt").textContent=dlabel(cur);$("#dp").value=cur;
  let h=`<div class="card tot"><span>전체 볼륨</span><span id="tv">${d.ex.reduce((a,e)=>a+vol(e),0).toLocaleString()}kg</span></div>`;
@@ -89,7 +90,7 @@ function render(){sn=null;
  <div class="meta">종목 볼륨 <span data-ev="${i}">${vol(e).toLocaleString()}</span>kg</div>
  ${l?`<div class="prev">${dlabel(l.k)}${l.e.lv?" "+LV[l.e.lv].i+" "+LV[l.e.lv].t:""}<br>${l.e.sets.map(s=>(s.kg||0)+"kg×"+(s.reps||0)).join(", ")}${l.e.lv=="u"&&+S.inc>0?``:""}</div><div style="text-align:right;margin:12px 0 4px">${l.e.lv=="u"&&+S.inc>0?`<button class="chip lvb on" data-a="bup" data-i="${i}">🟢 +${S.inc}kg 적용</button> `:""}<button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button></div>`:""}
  <div class="row h"><div>세트</div><div>kg</div><div>회</div><div>완료</div></div>
- ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}${s.pr?"🏆":""}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}">✓</button></div>`).join("")}
+ ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}${s.pr?"🏆":""}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}" aria-label="세트 완료"></button></div>`).join("")}
  ${lvBar(e,i)}<div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
  h+=`<div style="display:flex;gap:10px;margin:12px"><button class="card" data-a="addx" style="flex:1;margin:0;color:var(--pr);font-weight:700;font-size:16px">＋ 운동 추가</button>${d.ex.length>1?`<button class="card" data-a="rord" style="flex:1;margin:0;color:var(--sub);font-weight:700;font-size:16px">↕ 순서 변경</button>`:""}</div>${d.ex.length?`<div style="text-align:center;margin:4px 12px 12px"><button data-a="clr" style="color:var(--sub);padding:10px 16px;font-size:14px">운동 전체 초기화</button></div>`:""}`;$("#app").innerHTML=h;bar()}
 function bar(){const d=day();
@@ -150,7 +151,7 @@ document.addEventListener("click",ev=>{
  else if(a=="cat"){sh.cat=t.dataset.c;sheet()}
  else if(a=="sel"){const n=t.dataset.n;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
  else if(a=="hsel"){const n=t.dataset.k+"|"+i;sh.sel=sh.sel.includes(n)?sh.sel.filter(x=>x!=n):[...sh.sel,n];sheet()}
- else if(a=="hgo"){cur=t.dataset.k;closePop();render()}else if(a=="hshut"){closePop()}else if(a=="ghsave"){ghRead();ghMsg("설정을 저장했어요")}else if(a=="ghpush"){ghRead();ghMsg("커밋 중...");ghPush().then(()=>ghMsg("커밋 완료 "+tm())).catch(e=>{ghIcon(false);ghMsg("오류: "+e.message)})}else if(a=="ghpull"){ghRead();if(!confirm("GitHub 데이터로 이 기기의 데이터를 덮어쓸까요?"))return;ghMsg("불러오는 중...");ghPull().then(o=>{S=Object.assign({days:{},routines:[],stars:[],freq:{},custom:{},rest:60,inc:2.5},o);try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}render();ghMsg("복원 완료 "+tm())}).catch(e=>{ghIcon(false);ghMsg("오류: "+e.message)})}else if(a=="rord"){reorder()}else if(a=="rrm"){ro.splice(i,1);rlist()}else if(a=="rok"){day().ex=ro;save();closePop();render()}else if(a=="hopen"){sh.open[t.dataset.k]=!sh.open[t.dataset.k];sheet()}else if(a=="hall"){const k=t.dataset.k,ids=rec(k).map(x=>k+"|"+x.i),all=ids.every(x=>sh.sel.includes(x));sh.sel=all?sh.sel.filter(x=>!ids.includes(x)):[...new Set([...sh.sel,...ids])];sheet()}else if(a=="hm"){hm.m+=i;if(hm.m<0){hm.m=11;hm.y--}if(hm.m>11){hm.m=0;hm.y++}hist()}else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];if(S.ci)delete S.ci[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
+ else if(a=="hgo"){cur=t.dataset.k;closePop();render()}else if(a=="hshut"){closePop()}else if(a=="ghsave"){ghRead();ghMsg("설정을 저장했어요")}else if(a=="ghpush"){ghRead();ghMsg("커밋 중...");ghPush().then(()=>ghMsg("커밋 완료 "+tm())).catch(e=>{ghIcon(false);ghMsg("오류: "+e.message)})}else if(a=="ghpull"){ghRead();if(!confirm("GitHub 데이터로 이 기기의 데이터를 덮어쓸까요?"))return;ghMsg("불러오는 중...");ghPull().then(o=>{S=Object.assign({days:{},routines:[],stars:[],freq:{},custom:{},rest:60,inc:2.5},o);fixLv();try{localStorage.setItem("wk1",JSON.stringify(S))}catch(e){}render();ghMsg("복원 완료 "+tm())}).catch(e=>{ghIcon(false);ghMsg("오류: "+e.message)})}else if(a=="rord"){reorder()}else if(a=="rrm"){ro.splice(i,1);rlist()}else if(a=="rok"){day().ex=ro;save();closePop();render()}else if(a=="hopen"){sh.open[t.dataset.k]=!sh.open[t.dataset.k];sheet()}else if(a=="hall"){const k=t.dataset.k,ids=rec(k).map(x=>k+"|"+x.i),all=ids.every(x=>sh.sel.includes(x));sh.sel=all?sh.sel.filter(x=>!ids.includes(x)):[...new Set([...sh.sel,...ids])];sheet()}else if(a=="hm"){hm.m+=i;if(hm.m<0){hm.m=11;hm.y--}if(hm.m>11){hm.m=0;hm.y++}hist()}else if(a=="cdel"){const n=t.dataset.n;if(confirm(n+" 운동을 삭제할까요?")){delete S.custom[n];if(S.ci)delete S.ci[n];sh.sel=sh.sel.filter(x=>x!=n);save();sheet()}}
  else if(a=="cust"){const n=prompt("운동 이름");if(n){const c=prompt("부위 ("+CATS.join("/")+")","가슴"),t=prompt("자극 부위 (예: 가슴·삼두)\n사용 가능: 대퇴사두, 햄스트링, 둔근, 가슴, 삼두, 이두, 전완, 광배, 등, 어깨, 복근, 복사근","")||"",ds=prompt("운동 방법 설명 (비워도 돼요)","")||"";S.custom[n]=CATS.includes(c)?c:"기타";(S.ci=S.ci||{})[n]={t,d:ds};save();sheet()}}
  else if(a=="rsave"){if(!d.ex.length)return alert("오늘 추가된 운동이 없어요");const n=prompt("루틴 이름");if(n){S.routines.unshift({name:n,items:d.ex.map(e=>({name:e.name,sets:e.sets.map(s=>({kg:s.kg,reps:s.reps}))}))});save();sheet()}}
  else if(a=="rdel"){if(confirm("루틴을 삭제할까요?")){S.routines.splice(i,1);save();sheet()}}
@@ -158,7 +159,7 @@ document.addEventListener("click",ev=>{
  else if(a=="done"){if(sh.tab==0)sh.sel.forEach(n=>{if(!d.ex.some(e=>e.name==n))d.ex.push(mk(n))});else sh.sel.forEach(x=>{const[k,n]=x.split("|"),e=S.days[k].ex[+n];if(!d.ex.some(y=>y.name==e.name))d.ex.push(mk(e.name,dset(e).map(s=>({kg:bump(s.kg,e.lv),reps:s.reps,done:false}))))});save();closePop();render()}
 });
 function vols(){const d=day(),a=$("#tv");if(a)a.textContent=d.ex.reduce((x,e)=>x+vol(e),0).toLocaleString()+"kg";d.ex.forEach((e,i)=>{const n=document.querySelector(`[data-ev="${i}"]`);if(n)n.textContent=vol(e).toLocaleString()})}
-document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f){t.dataset.touched=1;if(day().fin){reopen(day());bar()}const i=+t.dataset.i,j=+t.dataset.j,f=t.dataset.f,ss=day().ex[i].sets;if(!sn||sn.i!=i||sn.j!=j||sn.f!=f)sn={i,j,f,vals:ss.slice(j+1).map(s=>s[f])};ss[j][f]=t.value;delete ss[j].pr;for(let k=j+1;k<ss.length;k++){const o=sn.vals[k-j-1],n=t.value;let v;if(n==="")v=o;else if(o===""||o==null||isNaN(+o)||+n<+o)v=n;else v=o;if(ss[k][f]!==v)delete ss[k].pr;ss[k][f]=v;const el=document.querySelector(`input[data-f="${f}"][data-i="${i}"][data-j="${k}"]`);if(el)el.value=v}save();vols()}});
+document.addEventListener("input",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f){t.dataset.touched=1;if(day().fin){reopen(day());bar()}const i=+t.dataset.i,j=+t.dataset.j,f=t.dataset.f,ss=day().ex[i].sets;if(!sn||sn.i!=i||sn.j!=j||sn.f!=f)sn={i,j,f,vals:ss.slice(j+1).map(s=>s[f])};ss[j][f]=t.value;delete ss[j].pr;for(let k=j+1;k<ss.length;k++){const o=sn.vals[k-j-1],n=t.value;let v;if(n==="")v=o;else if(o===""||o==null||isNaN(+o)||+n<+o)v=n;else v=o;if(ss[k][f]!==v)delete ss[k].pr;ss[k][f]=v;const el=document.querySelector(`input[data-f="${f}"][data-i="${i}"][data-j="${k}"]`);if(el)el.value=v}{const nm=day().ex[i].name;for(let k=j;k<ss.length;k++){const o=ss[k];if(o.done){const p=prCheck(nm,o);if(p)o.pr=p.t;else delete o.pr}else delete o.pr;const el=document.querySelector(`input[data-f="kg"][data-i="${i}"][data-j="${k}"]`),sp=el&&el.parentElement.firstElementChild;if(sp)sp.textContent=(k+1)+(o.pr?"🏆":"")}}save();vols()}});
 document.addEventListener("focusin",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f){sn=null;if(t.value!==""){t.dataset.old=t.value;t.placeholder=t.value;delete t.dataset.touched;t.value=""}}});
 document.addEventListener("focusout",ev=>{const t=ev.target;if(t.dataset&&t.dataset.f&&t.value===""&&!t.dataset.touched&&t.dataset.old!==undefined){t.value=t.dataset.old}});
 const mv=n=>{const d=new Date(cur+"T00:00");d.setDate(d.getDate()+n);cur=fmt(d);render()};
@@ -181,7 +182,7 @@ document.addEventListener("input",ev=>{const t=ev.target;if(t.id=="nt"){(S.notes
 let pm="w",inf="";
 const e1=(kg,r)=>{kg=+kg||0;r=+r||0;return r<=1?kg:kg*(1+r/30)},r1=v=>Math.round(v*10)/10;
 function prCheck(n,s){const kg=+s.kg||0,r=+s.reps||0;if(!(kg>0&&r>0))return null;let w=0,e=0,v=0,any=false;
- Object.keys(S.days).forEach(k=>S.days[k].ex.forEach(x=>{if(x.name!=n)return;dset(x).forEach(o=>{if(o===s)return;any=true;const a=+o.kg||0,b=+o.reps||0;w=Math.max(w,a);e=Math.max(e,e1(a,b));v=Math.max(v,a*b)})}));
+ Object.keys(S.days).forEach(k=>S.days[k].ex.forEach(x=>{if(x.name!=n)return;const me=x.sets.indexOf(s);x.sets.forEach((o,q)=>{if(!o.done||o===s||(me>=0&&q>me))return;any=true;const a=+o.kg||0,b=+o.reps||0;w=Math.max(w,a);e=Math.max(e,e1(a,b));v=Math.max(v,a*b)})}));
  if(!any)return null;
  if(kg>w)return{t:"w",m:"최고 무게 신기록! "+r1(kg)+"kg"};
  if(r1(e1(kg,r))>r1(e))return{t:"r",m:"예상 1RM 신기록! "+r1(e1(kg,r))+"kg"};
@@ -268,5 +269,5 @@ function hist(){
  <div class="card" style="display:flex;justify-content:space-between;align-items:center"><span>🟢 상향 시 무게 증가량</span><button class="chip" data-a="inc" style="margin:0">${+S.inc>0?"+"+S.inc+"kg":"끄기"} ✎</button></div>${wk()}<div class="card"><div class="eh"><button data-a="hm" data-i="-1" class="ic">‹</button><span>${hm.y}년 ${hm.m+1}월</span><button data-a="hm" data-i="1" class="ic">›</button></div><div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-top:10px">${cal}</div></div>`;
  h+=inM.length?inM.map(k=>`<div class="card" data-a="hgo" data-k="${k}" style="cursor:pointer"><div class="eh"><span>${dlabel(k)}</span><span style="color:var(--pr)">${dv(k).toLocaleString()}kg</span></div>${rec(k).map(({e})=>`<div style="display:flex;gap:8px;margin-top:10px;line-height:1.5"><span style="color:var(--sub)">•</span><div><div>${e.cat}(${e.name})${e.lv?" "+LV[e.lv].i:""}${dset(e).some(s=>s.pr)?" 🏆":""}</div><div class="meta" style="margin:2px 0 0">${dset(e).map(s=>(s.kg||0)+"kg×"+(s.reps||0)).join(", ")}</div></div></div>`).join("")}</div>`).join(""):`<div class="empty">이 달에는 운동 기록이 없어요</div>`;
  $("#layer").innerHTML=h+`</div>`}
-render();
+fixLv();render();
 </script></body></html>
