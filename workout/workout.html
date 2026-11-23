@@ -22,7 +22,7 @@ header b{font-size:18px}button{font:inherit;color:inherit;border:0;background:no
 .row input::placeholder{color:var(--sub);opacity:.6}
 .row span{background:var(--in);border-radius:8px;padding:12px 0;color:var(--sub);font-weight:700}
 .row input{width:100%;padding:11px 0;text-align:center;font-size:17px;border:1px solid var(--ln);border-radius:8px;background:var(--card);color:var(--tx)}
-.ck{width:34px;height:34px;padding:0;border-radius:50%;background:transparent;border:2px solid var(--dn);justify-self:center;transition:background .15s,border-color .15s}.ck.on{background:var(--cta);border-color:var(--cta)}
+.ck{background:var(--in);color:var(--dn);border-radius:5px;padding:11px 0;font-size:18px}.ck.on{background:var(--cta);color:var(--ctx)}
 .acts{display:flex;justify-content:space-around;margin-top:16px;color:var(--pr)}.acts .g{color:var(--sub)}
 .chip{border:1px solid var(--ln);color:var(--pr);border-radius:16px;padding:6px 12px;font-size:14px;margin-left:6px}
 .bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:560px;background:var(--card);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:10px}
@@ -90,7 +90,7 @@ function render(){sn=null;
  <div class="meta">종목 볼륨 <span data-ev="${i}">${vol(e).toLocaleString()}</span>kg</div>
  ${l?`<div class="prev">${dlabel(l.k)}${l.e.lv?" "+LV[l.e.lv].i+" "+LV[l.e.lv].t:""}<br>${l.e.sets.map(s=>(s.kg||0)+"kg×"+(s.reps||0)).join(", ")}${l.e.lv=="u"&&+S.inc>0?``:""}</div><div style="text-align:right;margin:12px 0 4px">${l.e.lv=="u"&&+S.inc>0?`<button class="chip lvb on" data-a="bup" data-i="${i}">🟢 +${S.inc}kg 적용</button> `:""}<button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button></div>`:""}
  <div class="row h"><div>세트</div><div>kg</div><div>회</div><div>완료</div></div>
- ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}${s.pr?"🏆":""}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}" aria-label="세트 완료"></button></div>`).join("")}
+ ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}${s.pr?"🏆":""}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}">✓</button></div>`).join("")}
  ${lvBar(e,i)}<div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
  h+=`<div style="display:flex;gap:10px;margin:12px"><button class="card" data-a="addx" style="flex:1;margin:0;color:var(--pr);font-weight:700;font-size:16px">＋ 운동 추가</button>${d.ex.length>1?`<button class="card" data-a="rord" style="flex:1;margin:0;color:var(--sub);font-weight:700;font-size:16px">↕ 순서 변경</button>`:""}</div>${d.ex.length?`<div style="text-align:center;margin:4px 12px 12px"><button data-a="clr" style="color:var(--sub);padding:10px 16px;font-size:14px">운동 전체 초기화</button></div>`:""}`;$("#app").innerHTML=h;bar()}
 function bar(){const d=day();
