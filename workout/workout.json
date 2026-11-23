@@ -613,6 +613,324 @@
    "start": null,
    "dur": 3536,
    "fin": true
+  },
+  "2026-11-23": {
+   "ex": [],
+   "start": null
+  },
+  "2026-11-24": {
+   "ex": [
+    {
+     "name": "랫풀다운",
+     "cat": "등",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "체스트 프레스 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "사이드 레터럴 레이즈",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "레그 익스텐션",
+     "cat": "하체",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "리어 델토이드 플라이 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "숄더 프레스 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "시티드 케이블 로우",
+     "cat": "등",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "펙덱 플라이 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "어시스트 딥스 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "레그 컬",
+     "cat": "하체",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "케이블 푸시 다운",
+     "cat": "팔",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "15",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "15",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "15",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "15",
+       "reps": "10",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "복근 크런치 머신",
+     "cat": "복근",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    }
+   ],
+   "start": null
   }
  },
  "routines": [
