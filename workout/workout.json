@@ -660,9 +660,10 @@
       {
        "kg": "45",
        "reps": "12",
-       "done": false
+       "done": true
       }
-     ]
+     ],
+     "lv": "u"
     },
     {
      "name": "랫풀다운",
