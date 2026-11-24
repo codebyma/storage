@@ -777,6 +777,33 @@
        "done": false
       }
      ]
+    },
+    {
+     "name": "리어 델토이드 플라이 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      }
+     ]
     }
    ],
    "start": 1795517081640
