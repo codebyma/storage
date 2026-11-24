@@ -621,26 +621,27 @@
   "2026-11-24": {
    "ex": [
     {
-     "name": "체스트 프레스 머신",
-     "cat": "가슴",
+     "name": "랫풀다운",
+     "cat": "등",
      "rest": 60,
      "sets": [
       {
-       "kg": "40",
+       "kg": "30",
        "reps": "12",
-       "done": false
+       "done": true
       },
       {
-       "kg": "40",
+       "kg": "30",
        "reps": "12",
-       "done": false
+       "done": true
       },
       {
-       "kg": "40",
+       "kg": "30",
        "reps": "12",
-       "done": false
+       "done": true
       }
-     ]
+     ],
+     "lv": "u"
     },
     {
      "name": "레그 익스텐션",
@@ -666,27 +667,48 @@
      "lv": "u"
     },
     {
-     "name": "랫풀다운",
-     "cat": "등",
+     "name": "인클라인 체스트 프레스 머신",
+     "cat": "가슴",
      "rest": 60,
      "sets": [
       {
-       "kg": "30",
+       "kg": "25",
        "reps": "12",
        "done": true
       },
       {
-       "kg": "30",
+       "kg": "25",
        "reps": "12",
-       "done": true
+       "done": false
       },
       {
-       "kg": "30",
+       "kg": "25",
        "reps": "12",
-       "done": true
+       "done": false
       }
-     ],
-     "lv": "u"
+     ]
+    },
+    {
+     "name": "체스트 프레스 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      }
+     ]
     },
     {
      "name": "사이드 레터럴 레이즈",
@@ -754,28 +776,6 @@
       },
       {
        "kg": "40",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "인클라인 체스트 프레스 머신",
-     "cat": "가슴",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "25",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "25",
        "reps": "12",
        "done": false
       }
