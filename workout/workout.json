@@ -758,6 +758,28 @@
        "done": false
       }
      ]
+    },
+    {
+     "name": "인클라인 체스트 프레스 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "25",
+       "reps": "12",
+       "done": false
+      }
+     ]
     }
    ],
    "start": 1795517081640
