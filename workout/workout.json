@@ -730,14 +730,10 @@
       {
        "kg": "20",
        "reps": "8",
-       "done": false
-      },
-      {
-       "kg": "20",
-       "reps": "8",
-       "done": false
+       "done": true
       }
-     ]
+     ],
+     "lv": "h"
     },
     {
      "name": "체스트 프레스 머신",
