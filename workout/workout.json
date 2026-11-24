@@ -736,8 +736,52 @@
      "lv": "h"
     },
     {
+     "name": "프리쳐 컬 머신",
+     "cat": "팔",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": true
+      },
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": true
+      }
+     ]
+    },
+    {
      "name": "체스트 프레스 머신",
      "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "복근 크런치 머신",
+     "cat": "복근",
      "rest": 60,
      "sets": [
       {
@@ -776,50 +820,6 @@
        "kg": "15",
        "reps": "12",
        "done": false
-      }
-     ]
-    },
-    {
-     "name": "복근 크런치 머신",
-     "cat": "복근",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "프리쳐 컬 머신",
-     "cat": "팔",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "20",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "20",
-       "reps": "12",
-       "done": true
-      },
-      {
-       "kg": "20",
-       "reps": "12",
-       "done": true
       }
      ]
     }
