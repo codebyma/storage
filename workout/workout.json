@@ -619,7 +619,62 @@
    "start": null
   },
   "2026-11-24": {
-   "ex": [],
+   "ex": [
+    {
+     "name": "체스트 프레스 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "레그 익스텐션",
+     "cat": "하체",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "45",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    }
+   ],
    "start": null
   }
  },
