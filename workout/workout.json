@@ -673,6 +673,119 @@
        "done": false
       }
      ]
+    },
+    {
+     "name": "랫풀다운",
+     "cat": "등",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "사이드 레터럴 레이즈",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "8",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "케이블 푸시 다운",
+     "cat": "팔",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "15",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "15",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "15",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "15",
+       "reps": "10",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "복근 크런치 머신",
+     "cat": "복근",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      }
+     ]
     }
    ],
    "start": null
