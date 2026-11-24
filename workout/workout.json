@@ -690,28 +690,6 @@
      "lv": "h"
     },
     {
-     "name": "체스트 프레스 머신",
-     "cat": "가슴",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "40",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
      "name": "사이드 레터럴 레이즈",
      "cat": "어깨",
      "rest": 60,
@@ -731,6 +709,55 @@
        "kg": "4",
        "reps": "11",
        "done": true
+      }
+     ]
+    },
+    {
+     "name": "리어 델토이드 플라이 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": true
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "8",
+       "done": false
+      }
+     ]
+    },
+    {
+     "name": "체스트 프레스 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "40",
+       "reps": "12",
+       "done": false
       }
      ]
     },
@@ -774,33 +801,6 @@
       {
        "kg": "40",
        "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "리어 델토이드 플라이 머신",
-     "cat": "어깨",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "20",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "20",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "20",
-       "reps": "8",
-       "done": false
-      },
-      {
-       "kg": "20",
-       "reps": "8",
        "done": false
       }
      ]
