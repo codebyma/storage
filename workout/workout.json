@@ -800,6 +800,28 @@
        "done": false
       }
      ]
+    },
+    {
+     "name": "프리쳐 컬 머신",
+     "cat": "팔",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "20",
+       "reps": "12",
+       "done": false
+      }
+     ]
     }
    ],
    "start": 1795517081640
