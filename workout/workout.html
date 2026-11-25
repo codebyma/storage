@@ -216,7 +216,7 @@ function prCheck(n,s){const kg=+s.kg||0,r=+s.reps||0;if(!(kg>0&&r>0))return null
  return null}
 function prog(n){const pts=Object.keys(S.days).sort().map(k=>{const s=S.days[k].ex.filter(x=>x.name==n).flatMap(dset);if(!s.length)return null;let b=s[0];s.forEach(a=>{if(e1(a.kg,a.reps)>e1(b.kg,b.reps))b=a});return{k,w:Math.max(...s.map(a=>+a.kg||0)),e:r1(e1(b.kg,b.reps)),b}}).filter(Boolean);
  if(!pts.length)return `<div class="vb" style="margin-top:12px"><b style="color:var(--pr)">내 기록</b> <span class="meta">아직 완료한 기록이 없어요</span></div>`;
- const K=pm=="e"?"e":"w",pr=pts.reduce((a,p)=>p[K]>a[K]?p:a,pts[0]),last=pts.slice(-12),mx=Math.max(...last.map(p=>p[K])),mn=Math.min(...last.map(p=>p[K])),W2=260,H=90,x=i=>last.length>1?10+i*(W2-20)/(last.length-1):W2/2,y=w=>mx==mn?H/2:H-10-(w-mn)*(H-20)/(mx-mn);
+ const K=pm=="e"?"e":"w",pr=pts.reduce((a,p)=>p[K]>a[K]?p:a,pts[0]),last=pts.slice(-12),mx=Math.max(...last.map(p=>p[K])),mn=Math.min(...last.map(p=>p[K])),W2=260,H=90,x=i=>last.length>1?20+i*(W2-40)/(last.length-1):W2/2,y=w=>mx==mn?H/2:H-10-(w-mn)*(H-36)/(mx-mn);
  const line=last.map((p,i)=>(i?"L":"M")+x(i)+" "+y(p[K])).join(" ");
  const tg=`<div style="display:flex;gap:8px;margin:8px 0"><button class="chip lvb${K=="w"?" on":""}" style="margin:0" data-a="pm" data-v="w">최고 무게</button><button class="chip lvb${K=="e"?" on":""}" style="margin:0" data-a="pm" data-v="e">예상 1RM</button></div>`;
  const sm=K=="w"?`🏆 최고 무게 ${pr.w}kg · ${dlabel(pr.k)} · 총 ${pts.length}회 수행`:`🏆 최고 예상 1RM ${pr.e}kg (${pr.b.kg||0}kg×${pr.b.reps||0}회) · ${dlabel(pr.k)} · 총 ${pts.length}회 수행`;
