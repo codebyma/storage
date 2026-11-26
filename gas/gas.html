@@ -1,1 +1,247 @@
-q
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>가스 계량기 기록</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--tx:#1d2330;--sub:#6b7280;--pri:#e8590c;--bd:#e5e7eb;--up:#d9480f;--down:#1971c2}
+@media(prefers-color-scheme:dark){:root{--bg:#14161a;--card:#1e2128;--tx:#e8eaed;--sub:#9aa0aa;--bd:#2d313a;--up:#ff8a5b;--down:#74b0f5}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Noto Sans KR",sans-serif;padding:12px;max-width:640px;margin:auto}
+h1{font-size:20px;margin:8px 0 12px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.card h2{font-size:15px;margin:0 0 10px}
+label{display:block;font-size:12px;color:var(--sub);margin:8px 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+input[type=date]{display:block;line-height:24px}
+input::-webkit-date-and-time-value{text-align:left}
+input,select,textarea{width:100%;min-width:0;height:44px;-webkit-appearance:none;appearance:none;text-align:left;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:16px}
+.row{display:flex;gap:8px;align-items:flex-start}.row>*{flex:1;min-width:0}
+button{padding:10px 14px;border:0;border-radius:8px;background:var(--pri);color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+button.g{background:var(--bd);color:var(--tx)}
+button.s{padding:5px 9px;font-size:12px}
+.big{font-size:26px;font-weight:700;color:var(--pri)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.grid div small{display:block;color:var(--sub);font-size:12px}
+.grid div b{font-size:18px}
+.item{border-top:1px solid var(--bd);padding:12px 0}
+.l1{display:flex;align-items:center;gap:10px}
+.l1 .d{font-weight:700;min-width:42px}
+.l1 .v{font-size:14px}
+.l1 .df{margin-left:auto;text-align:right;white-space:nowrap}
+.l1 .bt{display:flex;gap:6px;margin-left:6px}
+.l2{margin-top:6px;font-size:13px;color:var(--sub);line-height:1.7}
+.item:first-child{border-top:0}
+.item small{color:var(--sub)}
+.tag{display:inline-block;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:1px 7px;font-size:12px;margin-right:4px}
+.up{color:var(--up)}.down{color:var(--down)}
+#msg{font-size:12px;color:var(--sub);margin-top:6px;min-height:16px}
+</style>
+</head>
+<body>
+<h1>🔥 가스 계량기 기록</h1>
+
+<div class="card">
+  <h2>오늘 기록</h2>
+  <div class="row">
+    <div><label>날짜</label><input type="date" id="date"></div>
+    <div><label>계량기 수치 (㎥)</label><input type="number" id="reading" step="0.01" inputmode="decimal" placeholder="예: 1234.56"></div>
+  </div>
+  <div class="row">
+    <div><label>평균기온 (℃) <span id="tAuto"></span></label><input type="number" id="temp" step="0.1" inputmode="decimal" placeholder="자동"></div>
+    <div><label>최저 / 최고</label><input id="range" readonly placeholder="-"></div>
+  </div>
+  <label>난방</label>
+  <select id="heat">
+    <option value="">사용 안 함</option>
+    <option>난방 ON (지속)</option>
+    <option>외출 모드</option>
+    <option>예약 운전</option>
+    <option>온수만 사용</option>
+  </select>
+  <div class="row">
+    <div><label>설정온도 (℃)</label><input type="number" id="setT" step="0.5" inputmode="decimal"></div>
+    <div><label>난방 시간 (h)</label><input type="number" id="hours" step="0.5" inputmode="decimal"></div>
+  </div>
+  <label>메모</label>
+  <input id="memo" placeholder="예: 저녁 6시~11시 거실만">
+  <div class="row" style="margin-top:12px">
+    <button id="save">저장</button>
+    <button class="g" id="fetchT">기온 다시 불러오기</button>
+  </div>
+  <div id="msg"></div>
+</div>
+
+<div class="card">
+  <h2>청구 기간 (17일 ~ 17일)</h2>
+  <select id="period"></select>
+  <div id="psum" style="margin-top:12px"></div>
+  <label>청구 요금 (원) — 직접 입력</label>
+  <input type="number" id="fee" inputmode="numeric" placeholder="예: 52300">
+  <div style="margin-top:10px"><small style="color:var(--sub)">1㎥당 요금</small><div class="big" id="unit">-</div></div>
+</div>
+
+<div class="card">
+  <h2>일별 기록</h2>
+  <div id="list"></div>
+</div>
+
+<div class="card">
+  <h2>설정 / 백업</h2>
+  <div class="row">
+    <div><label>위도</label><input type="number" id="lat" step="0.0001"></div>
+    <div><label>경도</label><input type="number" id="lon" step="0.0001"></div>
+  </div>
+  <div class="row" style="margin-top:10px">
+    <button class="g" id="geo">현재 위치 사용</button>
+    <button class="g" id="exp">내보내기</button>
+    <button class="g" id="imp">불러오기</button>
+  </div>
+  <input type="file" id="file" accept=".json" hidden>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='gasMeterV1';
+let db={records:{},fees:{},loc:{lat:37.5665,lon:126.978}};
+try{const s=localStorage.getItem(KEY);if(s)db=Object.assign(db,JSON.parse(s))}catch(e){}
+const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){$('msg').textContent='저장소 사용 불가 — 내보내기로 백업하세요'}};
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const num=v=>v===''||v==null?null:Number(v);
+const r2=n=>Math.round(n*100)/100;
+
+$('date').value=fmt(new Date());
+$('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
+
+/* ----- 기온 ----- */
+async function fetchTemp(date){
+  const {lat,lon}=db.loc;
+  const q=`latitude=${lat}&longitude=${lon}&daily=temperature_2m_mean,temperature_2m_min,temperature_2m_max&timezone=auto&start_date=${date}&end_date=${date}`;
+  const urls=[`https://api.open-meteo.com/v1/forecast?${q}`,`https://archive-api.open-meteo.com/v1/archive?${q}`];
+  for(const u of urls){
+    try{
+      const j=await (await fetch(u)).json();
+      const d=j.daily;
+      if(d&&d.temperature_2m_mean&&d.temperature_2m_mean[0]!=null)
+        return{avg:r2(d.temperature_2m_mean[0]),min:d.temperature_2m_min[0],max:d.temperature_2m_max[0]};
+    }catch(e){}
+  }
+  return null;
+}
+async function loadTemp(){
+  $('tAuto').textContent='(조회중)';
+  const t=await fetchTemp($('date').value);
+  if(t){$('temp').value=t.avg;$('range').value=t.min+' / '+t.max;$('tAuto').textContent='(자동)';}
+  else{$('tAuto').textContent='(실패)';$('range').value='';}
+}
+
+/* ----- 폼 ----- */
+function fillForm(){
+  const r=db.records[$('date').value];
+  $('reading').value=r?r.reading:'';
+  $('heat').value=r?r.heat||'':'';
+  $('setT').value=r&&r.setT!=null?r.setT:'';
+  $('hours').value=r&&r.hours!=null?r.hours:'';
+  $('memo').value=r?r.memo||'':'';
+  if(r&&r.temp!=null){$('temp').value=r.temp;$('range').value=r.min!=null?r.min+' / '+r.max:'';$('tAuto').textContent='';}
+  else{$('temp').value='';loadTemp();}
+}
+$('date').onchange=fillForm;
+$('fetchT').onclick=loadTemp;
+$('save').onclick=()=>{
+  const date=$('date').value,reading=num($('reading').value);
+  if(!date||reading==null){$('msg').textContent='날짜와 수치를 입력하세요';return}
+  const [mn,mx]=$('range').value.split('/').map(s=>num(s.trim()));
+  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:num($('setT').value),hours:num($('hours').value),memo:$('memo').value.trim()};
+  persist();$('msg').textContent='저장됨 ✓';render();
+};
+
+/* ----- 기간 계산 ----- */
+const sorted=()=>Object.keys(db.records).sort();
+function periodOf(startStr){ // startStr: 해당 월 17일
+  const s=new Date(startStr+'T00:00:00');
+  const e=new Date(s.getFullYear(),s.getMonth()+1,17);
+  return[fmt(s),fmt(e)];
+}
+function buildPeriods(){
+  const keys=sorted();const today=new Date();
+  let first=keys.length?new Date(keys[0]+'T00:00:00'):today;
+  let y=first.getFullYear(),m=first.getMonth()+(first.getDate()<17?-1:0);
+  const cur=today.getDate()<17?new Date(today.getFullYear(),today.getMonth()-1,17):new Date(today.getFullYear(),today.getMonth(),17);
+  const opts=[];
+  for(let d=new Date(y,m,17);d<=cur;d=new Date(d.getFullYear(),d.getMonth()+1,17))opts.push(fmt(d));
+  const sel=$('period'),prev=sel.value;
+  sel.innerHTML=opts.reverse().map(s=>{const[a,b]=periodOf(s);return`<option value="${s}">${a.slice(5)} ~ ${b.slice(5)} (${a.slice(0,4)})</option>`}).join('');
+  sel.value=prev&&opts.includes(prev)?prev:opts[0];
+}
+function renderPeriod(){
+  const s=$('period').value;if(!s){$('psum').innerHTML='<small>기록이 없습니다</small>';return}
+  const[a,b]=periodOf(s);
+  const ks=sorted().filter(k=>k>=a&&k<=b);
+  if(ks.length<2){$('psum').innerHTML='<small>기간 내 기록이 2개 이상 필요합니다</small>';$('unit').textContent='-';$('fee').value=db.fees[s]??'';return}
+  const f=ks[0],l=ks[ks.length-1];
+  const use=r2(db.records[l].reading-db.records[f].reading);
+  const days=Math.round((new Date(l)-new Date(f))/864e5);
+  const temps=ks.map(k=>db.records[k].temp).filter(v=>v!=null);
+  const avgT=temps.length?r2(temps.reduce((x,y)=>x+y,0)/temps.length):'-';
+  const heatDays=ks.filter(k=>db.records[k].heat&&db.records[k].heat!=='').length;
+  const warn=(f!==a||l!==b)?`<small style="color:var(--sub)">※ ${f.slice(5)} ~ ${l.slice(5)} 기록 기준 (17일 당일 기록이 없으면 가장 가까운 날 기준)</small>`:'';
+  $('psum').innerHTML=`<div class="grid">
+    <div><small>기간 사용량</small><b>${use} ㎥</b></div>
+    <div><small>일평균</small><b>${days?r2(use/days):'-'} ㎥</b></div>
+    <div><small>평균기온</small><b>${avgT} ℃</b></div>
+    <div><small>난방 기록일</small><b>${heatDays}일</b></div></div>${warn}`;
+  $('fee').value=db.fees[s]??'';
+  calcUnit(use);
+  $('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist();calcUnit(use)};
+}
+function calcUnit(use){
+  const v=num($('fee').value);
+  $('unit').textContent=(v&&use>0)?Math.round(v/use).toLocaleString()+' 원/㎥':'-';
+}
+$('period').onchange=renderPeriod;
+
+/* ----- 목록 ----- */
+function renderList(){
+  const ks=sorted();
+  if(!ks.length){$('list').innerHTML='<small>아직 기록이 없습니다</small>';return}
+  $('list').innerHTML=ks.slice().reverse().map(k=>{
+    const i=ks.indexOf(k),r=db.records[k];
+    let diff='<small>-</small>',gapTxt='';
+    if(i>0){
+      const p=ks[i-1],gap=Math.round((new Date(k)-new Date(p))/864e5);
+      const d=r2(r.reading-db.records[p].reading);
+      diff=`<b class="${d>0?'up':'down'}">${d>0?'+':''}${d} ㎥</b>`;
+      if(gap>1)gapTxt=`<span class="tag">${gap}일간</span>`;
+    }
+    const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hours}h</span>`:'');
+    const info=[(r.temp!=null?r.temp+'℃'+(r.min!=null?` (${r.min}/${r.max})`:''):''),r.memo?r.memo.replace(/</g,'&lt;'):''].filter(Boolean).join(' · ');
+    return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="g s" onclick="edit('${k}')">수정</button><button class="g s" onclick="del('${k}')">삭제</button></span></div>
+    ${(tags||info)?`<div class="l2">${tags}${info}</div>`:''}</div>`;
+  }).join('');
+}
+window.edit=k=>{$('date').value=k;fillForm();scrollTo({top:0,behavior:'smooth'})};
+window.del=k=>{if(confirm(k+' 기록을 삭제할까요?')){delete db.records[k];persist();render()}};
+
+function render(){buildPeriods();renderPeriod();renderList()}
+
+/* ----- 설정 ----- */
+$('lat').onchange=$('lon').onchange=()=>{db.loc={lat:num($('lat').value),lon:num($('lon').value)};persist()};
+$('geo').onclick=()=>navigator.geolocation&&navigator.geolocation.getCurrentPosition(p=>{
+  db.loc={lat:r2(p.coords.latitude),lon:r2(p.coords.longitude)};$('lat').value=db.loc.lat;$('lon').value=db.loc.lon;persist();loadTemp();
+},()=>alert('위치 권한이 필요합니다'));
+$('exp').onclick=()=>{
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,1)],{type:'application/json'}));
+  a.download='gas-meter-'+fmt(new Date())+'.json';a.click();
+};
+$('imp').onclick=()=>$('file').click();
+$('file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const rd=new FileReader();rd.onload=()=>{try{db=Object.assign(db,JSON.parse(rd.result));persist();render();fillForm();alert('불러오기 완료')}catch(x){alert('파일 형식 오류')}};
+  rd.readAsText(f);
+};
+
+render();fillForm();
+</script>
+</body>
+</html>
