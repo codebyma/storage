@@ -890,7 +890,8 @@
       {
        "kg": "50",
        "reps": "12",
-       "done": false
+       "done": true,
+       "pr": "w"
       },
       {
        "kg": "50",
