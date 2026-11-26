@@ -973,7 +973,7 @@
      "rest": 60,
      "sets": [
       {
-       "kg": "40",
+       "kg": "45",
        "reps": "12",
        "done": false
       },
@@ -1034,7 +1034,7 @@
      ]
     }
    ],
-   "start": null
+   "start": 1795689711064
   }
  },
  "routines": [
