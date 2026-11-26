@@ -907,6 +907,28 @@
      "lv": "h"
     },
     {
+     "name": "숄더 프레스 머신",
+     "cat": "어깨",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      },
+      {
+       "kg": "",
+       "reps": "",
+       "done": false
+      }
+     ]
+    },
+    {
      "name": "인클라인 체스트 프레스 머신",
      "cat": "가슴",
      "rest": 60,
