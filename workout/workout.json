@@ -952,6 +952,28 @@
      ]
     },
     {
+     "name": "펙덱 플라이 머신",
+     "cat": "가슴",
+     "rest": 60,
+     "sets": [
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      },
+      {
+       "kg": "30",
+       "reps": "12",
+       "done": false
+      }
+     ]
+    },
+    {
      "name": "리어 델토이드 플라이 머신",
      "cat": "어깨",
      "rest": 60,
@@ -1056,28 +1078,6 @@
       },
       {
        "kg": "25",
-       "reps": "12",
-       "done": false
-      }
-     ]
-    },
-    {
-     "name": "펙덱 플라이 머신",
-     "cat": "가슴",
-     "rest": 60,
-     "sets": [
-      {
-       "kg": "30",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "30",
-       "reps": "12",
-       "done": false
-      },
-      {
-       "kg": "30",
        "reps": "12",
        "done": false
       }
