@@ -981,8 +981,9 @@
      "sets": [
       {
        "kg": "20",
-       "reps": "8",
-       "done": false
+       "reps": "15",
+       "done": true,
+       "pr": "r"
       },
       {
        "kg": "20",
