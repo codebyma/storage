@@ -203,7 +203,7 @@ function sessions(n){if(smN!==n){sm=10;smN=n}
  const tw=Math.max(...L.map(x=>topW(x.e))),te=r1(Math.max(...L.flatMap(x=>dset(x.e).map(o=>e1(o.kg,o.reps))))),tv=L.reduce((a,x)=>a+dvol(x.e),0);
  const cell=(t,v)=>`<div style="background:var(--card);border-radius:8px;padding:10px"><div class="meta" style="margin:0">${t}</div><b>${v}</b></div>`;
  return `<div class="vb" style="margin-top:12px"><b style="color:var(--pr)">상세 기록</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0">${cell("수행 횟수",L.length+"회")}${cell("총 볼륨",tv.toLocaleString()+"kg")}${cell("최고 무게",tw+"kg")}${cell("최고 예상 1RM",te+"kg")}</div>`+
- L.slice(0,sm).map(({k,e})=>`<div style="border-top:1px solid var(--ld);padding:10px 0"><div style="display:flex;justify-content:space-between"><span style="font-weight:600"><span style="color:var(--sub);margin-right:8px">•</span>${dlabel(k)}${e.lv&&LV[e.lv]?" "+LV[e.lv].i:""}${dset(e).some(o=>o.pr)?" 🏆":""}</span><span class="meta" style="margin:0">${dvol(e).toLocaleString()}kg</span></div>${sTbl(dset(e))}</div>`).join("")+
+ L.slice(0,sm).map(({k,e})=>`<div style="padding:12px 0"><div style="display:flex;justify-content:space-between"><span style="font-weight:600"><span style="color:var(--sub);margin-right:8px">•</span>${dlabel(k)}${e.lv&&LV[e.lv]?" "+LV[e.lv].i:""}${dset(e).some(o=>o.pr)?" 🏆":""}</span><span class="meta" style="margin:0">${dvol(e).toLocaleString()}kg</span></div>${sTbl(dset(e))}</div>`).join("")+
  (L.length>sm?`<button class="chip" style="margin:8px 0 0" data-a="smore">더보기 (${L.length-sm}회 더)</button>`:"")+`</div>`}
 let pm="w",inf="",rName="";const incLbD=()=>+S.dinc>0?"+"+S.dinc+"kg":"끄기";
 const e1=(kg,r)=>{kg=+kg||0;r=+r||0;return r<=1?kg:kg*(1+r/30)},r1=v=>Math.round(v*10)/10;
