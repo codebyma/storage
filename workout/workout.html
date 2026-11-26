@@ -79,6 +79,8 @@ const rec=k=>S.days[k].ex.map((e,i)=>({e,i})).filter(x=>dset(x.e).length),recAll
 const mmss=t=>{t=Math.max(0,t);return String(t/60|0).padStart(2,"0")+":"+String(t%60).padStart(2,"0")};
 const dur=t=>{const h=t/3600|0;return (h?h+":":"")+mmss(t%3600)};
 const reopen=d=>{if(d.fin){d.fin=false;d.start=Date.now()-(d.dur||0)*1000;d.dur=null;d.ex.forEach(e=>S.freq[e.name]=Math.max(0,(S.freq[e.name]||0)-1))}};
+const stayN=e=>{const ks=Object.keys(S.days).filter(k=>k<cur).sort(),sig=x=>x.map(s=>(+s.kg||0)+"x"+(+s.reps||0)).join(","),arr=[];ks.forEach(k=>{const x=S.days[k].ex.filter(y=>y.name==e.name&&dset(y).length).pop();if(x)arr.push(dset(x))});const incl=e.sets.length>0&&e.sets.every(s=>s.done);if(incl)arr.push(dset(e));if(!arr.length)return null;const last=arr[arr.length-1],sg=sig(last);if(!last.some(s=>+s.kg>0))return null;let c=0;for(let i=arr.length-1;i>=0&&sig(arr[i])==sg;i--)c++;return{n:c,incl,sets:last}},
+stay=e=>{const r=stayN(e);return r&&r.n>=3?`<div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--in);box-shadow:inset 3px 0 0 #f5b301;font-size:14px;line-height:1.6">📌 <b>${r.n}번 연속</b> 같은 세팅이에요<br><span style="color:var(--sub)">무게를 올려볼까요?</span></div>`:""};
 const lastRec=n=>{const ks=Object.keys(S.days).filter(k=>k<cur).sort().reverse();for(const k of ks){const e=S.days[k].ex.find(x=>x.name==n&&dset(x).length);if(e)return{k,e:{...e,sets:dset(e)}}}}
 const dlabel=k=>{const[y,m,d]=k.split("-");return y.slice(2)+"."+m+"."+d+"("+W[new Date(k+"T00:00").getDay()]+")"};
 const LV={h:{i:"🔴",t:"유지",n:"이 무게 유지",m:"지난번에 힘들었어요. 이 무게를 유지하세요."},u:{i:"🟢",t:"상향",n:"올려도 돼요",m:"지난번에 여유 있었어요. 무게를 올려보세요."}};
@@ -90,7 +92,7 @@ function render(){sn=null;
  d.ex.forEach((e,i)=>{const l=lastRec(e.name);
  h+=`<div class="card"><div class="eh"><span><i>${i+1}</i>${e.cat}(${e.name})</span><span><button class="ic" data-a="info" data-i="${i}">ⓘ</button><button data-a="del" data-i="${i}">⋮</button></span></div>
  <div class="meta">종목 볼륨 <span data-ev="${i}">${vol(e).toLocaleString()}</span>kg</div>
- ${l?`<div class="prev">${dlabel(l.k)}${l.e.lv?" "+LV[l.e.lv].i+" "+LV[l.e.lv].t:""}<br>${l.e.sets.map(s=>(s.kg||0)+"kg×"+(s.reps||0)).join(", ")}</div><div style="text-align:right;margin:12px 0 4px">${l.e.lv=="u"&&incOf(e.name)>0?`<button class="chip lvb on" data-a="bup" data-i="${i}">🟢 +${incOf(e.name)}kg 적용</button> `:""}<button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button></div>`:""}
+ ${l?`<div class="prev">${dlabel(l.k)}${l.e.lv?" "+LV[l.e.lv].i+" "+LV[l.e.lv].t:""}<br>${l.e.sets.map(s=>(s.kg||0)+"kg×"+(s.reps||0)).join(", ")}</div>${stay(e)}<div style="text-align:right;margin:12px 0 4px">${l.e.lv=="u"&&incOf(e.name)>0?`<button class="chip lvb on" data-a="bup" data-i="${i}">🟢 +${incOf(e.name)}kg 적용</button> `:""}<button class="chip" data-a="load" data-i="${i}">↺ 불러오기</button></div>`:""}
  <div class="row h"><div>세트</div><div>kg</div><div>회</div><div>완료</div></div>
  ${e.sets.map((s,j)=>`<div class="row"><span>${j+1}${s.pr?"🏆":""}</span><input type="text" inputmode="decimal" value="${s.kg}" data-f="kg" data-i="${i}" data-j="${j}"><input type="text" inputmode="numeric" value="${s.reps}" data-f="reps" data-i="${i}" data-j="${j}"><button class="ck ${s.done?"on":""}" data-a="ck" data-i="${i}" data-j="${j}">✓</button></div>`).join("")}
  ${lvBar(e,i)}<div class="acts"><button class="g" data-a="rm" data-i="${i}">— 세트삭제</button><button data-a="add" data-i="${i}">＋ 세트추가</button></div></div>`});
@@ -137,7 +139,7 @@ function sheet(){
 const mk=(name,sets)=>({name,cat:catOf(name),rest:S.rest,sets:sets||(l=>l?l.e.sets.map(s=>({kg:bump(s.kg,l.e.lv,name),reps:s.reps,done:false})):[{kg:"",reps:"",done:false},{kg:"",reps:"",done:false},{kg:"",reps:"",done:false}])(lastRec(name))});
 document.addEventListener("click",ev=>{
  const t=ev.target.closest("[data-a]");if(!t)return;const a=t.dataset.a,i=+t.dataset.i,j=+t.dataset.j,d=day();if(d.fin&&["ck","add","rm","lok","done","rok","radd"].includes(a))reopen(d);
- if(a=="ck"){const s=d.ex[i].sets[j];s.done=!s.done;if(s.done)for(let k=0;k<j;k++)d.ex[i].sets[k].done=true;let pk=null;if(s.done){pk=prCheck(d.ex[i].name,s);if(pk)s.pr=pk.t;else delete s.pr}else delete s.pr;save();if(s.done){if(!d.start&&!d.fin)d.start=Date.now();render();rName=d.ex[i].name;timer(restOf(rName),nextSet(i,j));if(pk)toast("🏆 "+pk.m,3200,true)}else render()}
+ if(a=="ck"){const s=d.ex[i].sets[j];s.done=!s.done;if(s.done)for(let k=0;k<j;k++)d.ex[i].sets[k].done=true;let pk=null;if(s.done){pk=prCheck(d.ex[i].name,s);if(pk)s.pr=pk.t;else delete s.pr}else delete s.pr;save();if(s.done){if(!d.start&&!d.fin)d.start=Date.now();render();rName=d.ex[i].name;timer(restOf(rName),nextSet(i,j));if(pk)toast("🏆 "+pk.m,3200,true);else{const sy=stayN(d.ex[i]);if(sy&&sy.incl&&sy.n>=3)toast("📌 "+sy.n+"번 연속 같은 세팅이에요. 무게를 올려볼까요?",3600,true)}}else render()}
  else if(a=="add"){const e=d.ex[i],l=e.sets[e.sets.length-1]||{kg:"",reps:""};e.sets.push({kg:l.kg,reps:l.reps,done:false});save();render()}
  else if(a=="rm"){d.ex[i].sets.pop();save();render()}
  else if(a=="del"){if(confirm(d.ex[i].name+" 운동을 삭제할까요?")){d.ex.splice(i,1);reopen(d);save();render()}}
