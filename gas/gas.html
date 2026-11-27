@@ -58,9 +58,9 @@ details.cd[open]>summary{margin-bottom:8px}
 details.mp>summary{margin:0 -10px;padding:12px 10px;border-left:3px solid transparent;border-radius:0}
 details.mp[open]>summary{background:var(--hl);border-left-color:var(--pri)}
 details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)}
-.grid.g3{grid-template-columns:repeat(3,1fr);gap:8px}
-.grid.g3 b{font-size:16px}
-.grid.g3 small{margin-bottom:2px}
+.grid.g4{grid-template-columns:repeat(4,1fr);gap:6px}
+.grid.g4 b{font-size:16px;white-space:nowrap}
+.grid.g4 small{margin-bottom:2px;white-space:nowrap}
 .note{display:flex;gap:4px;font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:4px}
 .tsel{display:flex;gap:6px}.tsel select{padding:10px 6px;text-align:center;text-align-last:center}
 .mp .ml b small.pr{display:inline;margin-left:6px;font-weight:400}
@@ -114,7 +114,6 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
   <div id="psum" style="margin-top:12px"></div>
   <label style="margin-top:12px;margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
   <input type="number" id="fee" inputmode="numeric" placeholder="예: 52300">
-  <div style="margin-top:12px;font-size:16px"><b id="unit">-</b><span style="margin-left:2px">(1㎥당 요금)</span></div>
 </div>
 
 <details class="card cd"><summary><h2>월별 청구 내역</h2></summary><div id="monthly"></div></details>
@@ -290,14 +289,14 @@ function buildPeriods(){
   const opts=[];
   for(let d=new Date(y,m,17);d<=cur;d=new Date(d.getFullYear(),d.getMonth()+1,17))opts.push(fmt(d));
   const sel=$('period'),prev=sel.value;
-  sel.innerHTML=opts.reverse().map(s=>{const[a,b]=periodOf(s);return`<option value="${s}">${a.slice(5)} ~ ${b.slice(5)} (${a.slice(0,4)})</option>`}).join('');
+  sel.innerHTML=opts.reverse().map(s=>{const[a,b]=periodOf(s);return`<option value="${s}">${Number(a.slice(5,7))}월(${a.replace(/-/g,'.')} ~ ${(a.slice(0,4)===b.slice(0,4)?b.slice(5):b).replace(/-/g,'.')})</option>`}).join('');
   sel.value=prev&&opts.includes(prev)?prev:opts[0];
 }
 function renderPeriod(){
   const s=$('period').value;if(!s){$('psum').innerHTML='<small>기록이 없습니다</small>';return}
   const[a,b]=periodOf(s);
   const ks=sorted().filter(k=>k>=a&&k<=b);
-  if(ks.length<2){$('psum').innerHTML='<small>기간 내 기록이 2개 이상 필요합니다</small>';$('unit').textContent='-';$('fee').value=db.fees[s]??'';$('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist()};return}
+  if(ks.length<2){$('psum').innerHTML='<small>기간 내 기록이 2개 이상 필요합니다</small>';$('fee').value=db.fees[s]??'';$('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist()};return}
   const f=ks[0],l=ks[ks.length-1];
   const use=r2(db.records[l].reading-db.records[f].reading);
   const days=Math.round((new Date(l)-new Date(f))/864e5);
@@ -305,17 +304,19 @@ function renderPeriod(){
   const avgT=temps.length?r2(temps.reduce((x,y)=>x+y,0)/temps.length):'-';
   const heatDays=ks.filter(k=>db.records[k].heat&&db.records[k].heat!=='').length;
   const warn=(f!==a||l!==b)?`<div class="note"><span>※</span><div>${f.slice(5)} ~ ${l.slice(5)} 기록 기준<br>(17일 당일 기록이 없으면 가장 가까운 날 기준)</div></div>`:'';
-  $('psum').innerHTML=`<div class="grid g3">
+  $('psum').innerHTML=`<div class="grid g4">
     <div><small>기간 사용량</small><b>${use} ㎥</b></div>
     <div><small>일평균</small><b>${days?r2(use/days):'-'} ㎥</b></div>
-    <div><small>난방 기록일</small><b>${heatDays}일</b></div></div>${warn}`;
+    <div><small>난방 기록일</small><b>${heatDays}일</b></div>
+    <div><small>1㎥당 요금</small><b id="unit">-</b></div></div>${warn}`;
   $('fee').value=db.fees[s]??'';
   calcUnit(use);
   $('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist();calcUnit(use)};
 }
 function calcUnit(use){
   const v=num($('fee').value);
-  $('unit').textContent=(v&&use>0)?Math.round(v/use).toLocaleString()+' 원':'-';
+  if(!$('unit'))return;
+  $('unit').textContent=(v&&use>0)?Math.round(v/use).toLocaleString()+'원':'-';
 }
 $('period').onchange=renderPeriod;
 
