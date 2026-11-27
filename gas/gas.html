@@ -57,10 +57,13 @@ details.cd[open]>summary{margin-bottom:8px}
 details.mp>summary{margin:0 -10px;padding:12px 10px;border-left:3px solid transparent;border-radius:0}
 details.mp[open]>summary{background:var(--hl);border-left-color:var(--pri)}
 details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)}
+.grid.g3{grid-template-columns:repeat(3,1fr);gap:8px}
+.grid.g3 b{font-size:16px}
+.note{display:flex;gap:4px;font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:4px}
 </style>
 </head>
 <body>
-<h1>🔥 가스 계량기 기록</h1>
+<h1>가스 계량기 기록</h1>
 
 <div class="card">
   <h2>오늘 기록</h2>
@@ -97,7 +100,7 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
   <h2>청구 기간 (17일 ~ 17일)</h2>
   <select id="period"></select>
   <div id="psum" style="margin-top:12px"></div>
-  <label>청구 요금 (원) — 직접 입력</label>
+  <label style="margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
   <input type="number" id="fee" inputmode="numeric" placeholder="예: 52300">
   <div style="margin-top:10px"><small style="color:var(--sub)">1㎥당 요금</small><div class="big" id="unit">-</div></div>
 </div>
@@ -230,11 +233,10 @@ function renderPeriod(){
   const temps=ks.map(k=>db.records[k].temp).filter(v=>v!=null);
   const avgT=temps.length?r2(temps.reduce((x,y)=>x+y,0)/temps.length):'-';
   const heatDays=ks.filter(k=>db.records[k].heat&&db.records[k].heat!=='').length;
-  const warn=(f!==a||l!==b)?`<small style="color:var(--sub)">※ ${f.slice(5)} ~ ${l.slice(5)} 기록 기준 (17일 당일 기록이 없으면 가장 가까운 날 기준)</small>`:'';
-  $('psum').innerHTML=`<div class="grid">
+  const warn=(f!==a||l!==b)?`<div class="note"><span>※</span><div>${f.slice(5)} ~ ${l.slice(5)} 기록 기준<br>(17일 당일 기록이 없으면 가장 가까운 날 기준)</div></div>`:'';
+  $('psum').innerHTML=`<div class="grid g3">
     <div><small>기간 사용량</small><b>${use} ㎥</b></div>
     <div><small>일평균</small><b>${days?r2(use/days):'-'} ㎥</b></div>
-    <div><small>평균기온</small><b>${avgT} ℃</b></div>
     <div><small>난방 기록일</small><b>${heatDays}일</b></div></div>${warn}`;
   $('fee').value=db.fees[s]??'';
   calcUnit(use);
