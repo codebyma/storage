@@ -87,7 +87,11 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
   </select>
   <div class="row">
     <div><label>설정온도 (℃)</label><input type="number" id="setT" step="0.5" inputmode="decimal"></div>
-    <div><label>난방 시간 (h)</label><input type="number" id="hours" step="0.5" inputmode="decimal"></div>
+    <div><label>총 난방시간 (h)</label><input id="hours" readonly placeholder="자동 계산"></div>
+  </div>
+  <div class="row">
+    <div><label>난방 시작</label><input type="time" id="hStart"></div>
+    <div><label>난방 종료</label><input type="time" id="hEnd"></div>
   </div>
   <label>메모</label>
   <input id="memo" placeholder="예: 저녁 6시~11시 거실만">
@@ -152,7 +156,7 @@ const num=v=>v===''||v==null?null:Number(v);
 const r2=n=>Math.round(n*100)/100;
 
 $('date').value=fmt(new Date());
-if(db.loc.lat===37.5665){db.loc={lat:37.497,lon:126.861};persist()}
+if(db.loc.lat===37.5665){db.loc={lat:37.497,lon:126.861};persistLocal()}
 $('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
 
 /* ----- 기온 ----- */
@@ -178,12 +182,16 @@ async function loadTemp(){
 }
 
 /* ----- 폼 ----- */
+let formDirty=false;
 function fillForm(){
+  formDirty=false;
   const r=db.records[$('date').value];
   $('reading').value=r?r.reading:'';
   $('heat').value=r?r.heat||'':'';
   $('setT').value=r&&r.setT!=null?r.setT:'';
   $('hours').value=r&&r.hours!=null?r.hours:'';
+  $('hStart').value=r&&r.hStart?r.hStart:'';
+  $('hEnd').value=r&&r.hEnd?r.hEnd:'';
   $('memo').value=r?r.memo||'':'';
   if(r&&r.temp!=null){$('temp').value=r.temp;$('range').value=r.min!=null?r.min+' / '+r.max:'';$('tAuto').textContent='';}
   else{$('temp').value='';loadTemp();}
@@ -191,19 +199,29 @@ function fillForm(){
 }
 function syncHeat(){
   const off=$('heat').value==='';
-  if(off){$('setT').value='';$('hours').value=''}
-  $('setT').disabled=$('hours').disabled=off;
-  $('setT').style.opacity=$('hours').style.opacity=off?.5:1;
+  if(off){$('setT').value='';$('hours').value='';$('hStart').value='';$('hEnd').value=''}
+  $('setT').disabled=$('hStart').disabled=$('hEnd').disabled=off;
+  $('setT').style.opacity=$('hStart').style.opacity=$('hEnd').style.opacity=off?.5:1;
 }
 $('heat').onchange=syncHeat;
+function calcHours(){
+  const a=$('hStart').value,b=$('hEnd').value;
+  if(!a||!b){$('hours').value='';return}
+  const[ah,am]=a.split(':').map(Number),[bh,bm]=b.split(':').map(Number);
+  let d=(bh*60+bm)-(ah*60+am);if(d<=0)d+=1440;
+  $('hours').value=r2(d/60);
+}
+$('hStart').addEventListener('input',calcHours);$('hEnd').addEventListener('input',calcHours);
+$('hStart').addEventListener('change',calcHours);$('hEnd').addEventListener('change',calcHours);
 $('date').onchange=fillForm;
+['reading','temp','heat','setT','hStart','hEnd','memo'].forEach(id=>{$(id).addEventListener('input',()=>{formDirty=true});$(id).addEventListener('change',()=>{formDirty=true})});
 $('fetchT').onclick=loadTemp;
 $('save').onclick=()=>{
   const date=$('date').value,reading=num($('reading').value);
   if(!date||reading==null){$('msg').textContent='날짜와 수치를 입력하세요';return}
   const [mn,mx]=$('range').value.split('/').map(s=>num(s.trim()));
-  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:$('heat').value?num($('setT').value):null,hours:$('heat').value?num($('hours').value):null,memo:$('memo').value.trim()};
-  persist();$('msg').textContent='저장됨 ✓';render();
+  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:$('heat').value?num($('setT').value):null,hours:$('heat').value?num($('hours').value):null,hStart:$('heat').value&&$('hStart').value||null,hEnd:$('heat').value&&$('hEnd').value||null,memo:$('memo').value.trim()};
+  persist();formDirty=false;$('msg').textContent='저장됨 ✓';render();
 };
 
 /* ----- 기간 계산 ----- */
@@ -262,7 +280,7 @@ function itemHtml(k,ks){
     diff=`<b class="${d>0?'up':'down'}">${d>0?'+':''}${d} ㎥</b>`;
     if(gap>1)gapTxt=`<span class="tag">${gap}일간</span>`;
   }
-  const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hours}h</span>`:'');
+  const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hStart&&r.hEnd?r.hStart+'~'+r.hEnd+' · ':''}${r.hours}h</span>`:'');
   const info=[(r.temp!=null?r.temp+'℃'+(r.min!=null?` (${r.min}/${r.max})`:''):''),r.memo?r.memo.replace(/</g,'&lt;'):''].filter(Boolean).join(' · ');
   return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="lk" onclick="edit('${k}')">수정</button><button class="lk" onclick="del('${k}')">삭제</button></span></div>
   ${(tags||info)?`<div class="l2">${tags}${info}</div>`:''}</div>`;
@@ -367,9 +385,10 @@ async function ghPull(){
     if(r.status===404){ghSha=null;setSt('저장소에 파일이 없어요 — 저장하면 자동 생성돼요');if(Object.keys(db.records).length)await ghPush();return}
     if(!r.ok)throw new Error(r.status);
     const j=await r.json();ghSha=j.sha;
+    if(db.pending){setSt('저장 안 된 변경분을 올리는 중…');await ghPush();return}
     const d=JSON.parse(b64d(j.content));
     db.records=d.records||{};db.fees=d.fees||{};if(d.loc)db.loc=d.loc;
-    persistLocal();render();fillForm();$('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
+    persistLocal();render();if(!formDirty)fillForm();$('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
     setSt('불러오기 완료 ✓ '+nowT());
   }catch(e){setSt('불러오기 실패 ('+e.message+') — 저장소/토큰/브랜치 확인')}
 }
@@ -386,11 +405,11 @@ async function ghPush(retry=true){
       return ghPush(false);
     }
     if(!r.ok)throw new Error(r.status);
-    ghSha=(await r.json()).content.sha;
+    ghSha=(await r.json()).content.sha;db.pending=false;persistLocal();
     setSt('GitHub 저장 완료 ✓ '+nowT());
   }catch(e){setSt('저장 실패 ('+e.message+') — 다시 시도하려면 "지금 저장"')}
 }
-function schedulePush(){if(!ghOn())return;clearTimeout(pushTimer);setSt('저장 대기…');pushTimer=setTimeout(()=>ghPush(),1500)}
+function schedulePush(){if(!ghOn())return;db.pending=true;persistLocal();clearTimeout(pushTimer);setSt('저장 대기…');pushTimer=setTimeout(()=>ghPush(),1500)}
 $('ghSave').onclick=()=>{
   gh={repo:$('ghRepo').value.trim(),path:$('ghPath').value.trim()||'gas-data.json',branch:$('ghBranch').value.trim()||'main',token:$('ghToken').value.trim()};
   try{localStorage.setItem(GK,JSON.stringify(gh))}catch(e){}
