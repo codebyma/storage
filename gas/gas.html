@@ -62,6 +62,7 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
 .grid.g3 b{font-size:16px}
 .grid.g3 small{margin-bottom:2px}
 .note{display:flex;gap:4px;font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:4px}
+.tsel{display:flex;gap:6px}.tsel select{padding:10px 6px;text-align:center;text-align-last:center}
 </style>
 </head>
 <body>
@@ -87,11 +88,15 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
   </select>
   <div class="row">
     <div><label>설정온도 (℃)</label><input type="number" id="setT" step="0.5" inputmode="decimal"></div>
-    <div><label>총 난방시간 (h)</label><input id="hours" readonly placeholder="자동 계산"></div>
+    <div id="hoursBox"><label>총 난방시간</label><input id="hours" readonly placeholder="자동 계산"></div>
   </div>
-  <div class="row">
-    <div><label>난방 시작</label><input type="time" id="hStart"></div>
-    <div><label>난방 종료</label><input type="time" id="hEnd"></div>
+  <div class="row" id="rowTime">
+    <div><label>난방 시작</label><div class="tsel"><select id="hStartH"></select><select id="hStartM"></select></div><input type="hidden" id="hStart"></div>
+    <div><label>난방 종료</label><div class="tsel"><select id="hEndH"></select><select id="hEndM"></select></div><input type="hidden" id="hEnd"></div>
+  </div>
+  <div class="row" id="rowSched" style="display:none">
+    <div><label>반복 간격</label><select id="intvSel"></select></div>
+    <div><label>1회 가동시간</label><select id="runSel"></select></div>
   </div>
   <label>메모</label>
   <input id="memo" placeholder="예: 저녁 6시~11시 거실만">
@@ -189,38 +194,83 @@ function fillForm(){
   $('reading').value=r?r.reading:'';
   $('heat').value=r?r.heat||'':'';
   $('setT').value=r&&r.setT!=null?r.setT:'';
-  $('hours').value=r&&r.hours!=null?r.hours:'';
+  setHours(r&&r.hours!=null?r.hours:null);
   $('hStart').value=r&&r.hStart?r.hStart:'';
   $('hEnd').value=r&&r.hEnd?r.hEnd:'';
+  hiddenToSel('hStart');hiddenToSel('hEnd');
+  setSel($('intvSel'),r&&r.intervalMin);setSel($('runSel'),r&&r.runMin);
   $('memo').value=r?r.memo||'':'';
   if(r&&r.temp!=null){$('temp').value=r.temp;$('range').value=r.min!=null?r.min+' / '+r.max:'';$('tAuto').textContent='';}
   else{$('temp').value='';loadTemp();}
   syncHeat();
 }
+function useT(){const v=$('heat').value;return !!v&&v!=='외출 모드'&&v!=='온수만 사용'}
 function syncHeat(){
-  const off=$('heat').value==='';
-  if(off){$('setT').value='';$('hours').value='';$('hStart').value='';$('hEnd').value=''}
-  $('setT').disabled=$('hStart').disabled=$('hEnd').disabled=off;
-  $('setT').style.opacity=$('hStart').style.opacity=$('hEnd').style.opacity=off?.5:1;
+  const v=$('heat').value,off=!useT(),sched=v==='예약 운전';
+  if(off||sched){setHours(null);$('hStart').value='';$('hEnd').value='';hiddenToSel('hStart');hiddenToSel('hEnd')}
+  if(off){$('setT').value=''}
+  if(off||!sched){$('intvSel').value='';$('runSel').value=''}
+  $('rowTime').style.display=sched?'none':'';
+  $('hoursBox').style.display=sched?'none':'';
+  $('rowSched').style.display=sched?'':'none';
+  $('setT').disabled=off;
+  ['hStartH','hStartM','hEndH','hEndM'].forEach(id=>{$(id).disabled=off;$(id).style.opacity=off?.5:1});
+  $('setT').style.opacity=off?.5:1;
 }
 $('heat').onchange=syncHeat;
+function fmtH(h){const m=Math.round(h*60),hh=Math.floor(m/60),mm=m%60;return hh&&mm?`${hh}시간 ${mm}분`:hh?`${hh}시간`:`${mm}분`}
+function setHours(h){$('hours').dataset.v=h==null?'':h;$('hours').value=h==null?'':fmtH(h)}
+function getHours(){const v=$('hours').dataset.v;return v===undefined||v===''?null:Number(v)}
 function calcHours(){
   const a=$('hStart').value,b=$('hEnd').value;
-  if(!a||!b){$('hours').value='';return}
+  if(!a||!b){setHours(null);return}
   const[ah,am]=a.split(':').map(Number),[bh,bm]=b.split(':').map(Number);
-  let d=(bh*60+bm)-(ah*60+am);if(d<=0)d+=1440;
-  $('hours').value=r2(d/60);
+  let d=(bh*60+bm)-(ah*60+am);if(d<0)d+=1440;
+  setHours(d>0?d/60:null);
 }
-$('hStart').addEventListener('input',calcHours);$('hEnd').addEventListener('input',calcHours);
-$('hStart').addEventListener('change',calcHours);$('hEnd').addEventListener('change',calcHours);
+['hStartH','hEndH'].forEach(id=>{$(id).innerHTML='<option value="">시</option>'+Array.from({length:24},(_,i)=>`<option>${String(i).padStart(2,'0')}</option>`).join('')});
+['hStartM','hEndM'].forEach(id=>{$(id).innerHTML='<option value="">분</option>'+[0,10,20,30,40,50].map(i=>`<option>${String(i).padStart(2,'0')}</option>`).join('')});
+const mkOpts=(el,ph,arr)=>{el.innerHTML=`<option value="">${ph}</option>`+arr.map(m=>`<option value="${m}">${fmtH(m/60)}</option>`).join('')};
+mkOpts($('intvSel'),'선택',Array.from({length:24},(_,i)=>(i+1)*30));
+mkOpts($('runSel'),'선택',Array.from({length:18},(_,i)=>(i+1)*10));
+function setSel(el,v){
+  if(!v){el.value='';return}
+  if(!Array.from(el.options).some(o=>o.value==v)){const o=document.createElement('option');o.value=v;o.textContent=fmtH(v/60);el.appendChild(o)}
+  el.value=v;
+}
+function selToHidden(p){
+  const h=$(p+'H').value,m=$(p+'M').value;
+  $(p).value=(h!==''&&m!=='')?h+':'+m:'';
+  calcHours();
+}
+function hiddenToSel(p){
+  const v=$(p).value;
+  if(!v){$(p+'H').value='';$(p+'M').value='';return}
+  const[h,m]=v.split(':');
+  $(p+'H').value=h;
+  if(!Array.from($(p+'M').options).some(o=>o.value===m)){const o=document.createElement('option');o.textContent=m;$(p+'M').appendChild(o)}
+  $(p+'M').value=m;
+}
+['hStart','hEnd'].forEach(p=>{
+  [p+'H',p+'M'].forEach(id=>{
+    $(id).addEventListener('focus',()=>{
+      if(!$(p).value){ // 처음 누르면 12:00으로 세팅
+        if($(p+'H').value==='')$(p+'H').value='12';
+        if($(p+'M').value==='')$(p+'M').value='00';
+        selToHidden(p);formDirty=true;
+      }
+    });
+    $(id).addEventListener('change',()=>{selToHidden(p);formDirty=true});
+  });
+});
 $('date').onchange=fillForm;
-['reading','temp','heat','setT','hStart','hEnd','memo'].forEach(id=>{$(id).addEventListener('input',()=>{formDirty=true});$(id).addEventListener('change',()=>{formDirty=true})});
+['reading','temp','heat','setT','memo','intvSel','runSel'].forEach(id=>{$(id).addEventListener('input',()=>{formDirty=true});$(id).addEventListener('change',()=>{formDirty=true})});
 $('fetchT').onclick=loadTemp;
 $('save').onclick=()=>{
   const date=$('date').value,reading=num($('reading').value);
   if(!date||reading==null){$('msg').textContent='날짜와 수치를 입력하세요';return}
   const [mn,mx]=$('range').value.split('/').map(s=>num(s.trim()));
-  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:$('heat').value?num($('setT').value):null,hours:$('heat').value?num($('hours').value):null,hStart:$('heat').value&&$('hStart').value||null,hEnd:$('heat').value&&$('hEnd').value||null,memo:$('memo').value.trim()};
+  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:useT()?num($('setT').value):null,hours:useT()?getHours():null,hStart:useT()&&$('hStart').value||null,intervalMin:$('heat').value==='예약 운전'?num($('intvSel').value):null,runMin:$('heat').value==='예약 운전'?num($('runSel').value):null,hEnd:useT()&&$('hEnd').value||null,memo:$('memo').value.trim()};
   persist();formDirty=false;$('msg').textContent='저장됨 ✓';render();
 };
 
@@ -280,7 +330,7 @@ function itemHtml(k,ks){
     diff=`<b class="${d>0?'up':'down'}">${d>0?'+':''}${d} ㎥</b>`;
     if(gap>1)gapTxt=`<span class="tag">${gap}일간</span>`;
   }
-  const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hStart&&r.hEnd?r.hStart+'~'+r.hEnd+' · ':''}${r.hours}h</span>`:'');
+  const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.intervalMin&&r.runMin?`<span class="tag">${fmtH(r.intervalMin/60)}마다 ${fmtH(r.runMin/60)}</span>`:'')+(r.hours!=null?`<span class="tag">${r.hStart&&r.hEnd?r.hStart+'~'+r.hEnd+' · ':''}${fmtH(r.hours)}</span>`:'');
   const info=[(r.temp!=null?r.temp+'℃'+(r.min!=null?` (${r.min}/${r.max})`:''):''),r.memo?r.memo.replace(/</g,'&lt;'):''].filter(Boolean).join(' · ');
   return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="lk" onclick="edit('${k}')">수정</button><button class="lk" onclick="del('${k}')">삭제</button></span></div>
   ${(tags||info)?`<div class="l2">${tags}${info}</div>`:''}</div>`;
