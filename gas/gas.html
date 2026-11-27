@@ -36,6 +36,16 @@ button.s{padding:5px 9px;font-size:12px}
 .tag{display:inline-block;background:var(--bg);border:1px solid var(--bd);border-radius:6px;padding:1px 7px;font-size:12px;margin-right:4px}
 .up{color:var(--up)}.down{color:var(--down)}
 #msg{font-size:12px;color:var(--sub);margin-top:6px;min-height:16px}
+details.mp{border-top:1px solid var(--bd)}
+details.mp:first-of-type{border-top:0}
+details.mp summary{list-style:none;display:flex;align-items:center;gap:8px;padding:12px 0;cursor:pointer}
+details.mp summary::-webkit-details-marker{display:none}
+details.mp summary::after{content:"›";font-size:20px;color:var(--sub);transition:transform .2s;margin-left:4px}
+details.mp[open] summary::after{transform:rotate(90deg)}
+.mp .ml{flex:1;min-width:0}.mp .ml b{display:block;font-size:15px}.mp .ml small{color:var(--sub);font-size:12px}
+.mp .mr{text-align:right}.mp .mr b{display:block;font-size:15px}.mp .mr small{color:var(--sub);font-size:12px}
+.mp .body{padding:2px 0 14px}
+.mp .none{color:var(--sub)}
 </style>
 </head>
 <body>
@@ -82,8 +92,30 @@ button.s{padding:5px 9px;font-size:12px}
 </div>
 
 <div class="card">
+  <h2>월별 청구 내역</h2>
+  <div id="monthly"></div>
+</div>
+
+<div class="card">
   <h2>일별 기록</h2>
   <div id="list"></div>
+</div>
+
+<div class="card">
+  <h2>GitHub 저장</h2>
+  <label>저장소 (아이디/저장소명)</label>
+  <input id="ghRepo" placeholder="예: myid/gas-data" autocapitalize="off" autocorrect="off">
+  <div class="row">
+    <div><label>파일 경로</label><input id="ghPath" autocapitalize="off"></div>
+    <div><label>브랜치</label><input id="ghBranch" autocapitalize="off"></div>
+  </div>
+  <label>토큰 (이 기기에만 저장)</label>
+  <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off">
+  <div class="row" style="margin-top:12px">
+    <button id="ghSave">연결 후 불러오기</button>
+    <button class="g" id="ghNow">지금 저장</button>
+  </div>
+  <div id="gh" style="font-size:12px;color:var(--sub);margin-top:8px;min-height:16px"></div>
 </div>
 
 <div class="card">
@@ -103,14 +135,16 @@ button.s{padding:5px 9px;font-size:12px}
 <script>
 const $=id=>document.getElementById(id);
 const KEY='gasMeterV1';
-let db={records:{},fees:{},loc:{lat:37.5665,lon:126.978}};
+let db={records:{},fees:{},loc:{lat:37.497,lon:126.861}};
 try{const s=localStorage.getItem(KEY);if(s)db=Object.assign(db,JSON.parse(s))}catch(e){}
-const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){$('msg').textContent='저장소 사용 불가 — 내보내기로 백업하세요'}};
+const persistLocal=()=>{try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){$('msg').textContent='저장소 사용 불가 — 내보내기로 백업하세요'}};
+const persist=()=>{persistLocal();schedulePush();if(typeof renderMonthly==='function')renderMonthly()};
 const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const num=v=>v===''||v==null?null:Number(v);
 const r2=n=>Math.round(n*100)/100;
 
 $('date').value=fmt(new Date());
+if(db.loc.lat===37.5665){db.loc={lat:37.497,lon:126.861};persist()}
 $('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
 
 /* ----- 기온 ----- */
@@ -178,7 +212,7 @@ function renderPeriod(){
   const s=$('period').value;if(!s){$('psum').innerHTML='<small>기록이 없습니다</small>';return}
   const[a,b]=periodOf(s);
   const ks=sorted().filter(k=>k>=a&&k<=b);
-  if(ks.length<2){$('psum').innerHTML='<small>기간 내 기록이 2개 이상 필요합니다</small>';$('unit').textContent='-';$('fee').value=db.fees[s]??'';return}
+  if(ks.length<2){$('psum').innerHTML='<small>기간 내 기록이 2개 이상 필요합니다</small>';$('unit').textContent='-';$('fee').value=db.fees[s]??'';$('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist()};return}
   const f=ks[0],l=ks[ks.length-1];
   const use=r2(db.records[l].reading-db.records[f].reading);
   const days=Math.round((new Date(l)-new Date(f))/864e5);
@@ -223,7 +257,47 @@ function renderList(){
 window.edit=k=>{$('date').value=k;fillForm();scrollTo({top:0,behavior:'smooth'})};
 window.del=k=>{if(confirm(k+' 기록을 삭제할까요?')){delete db.records[k];persist();render()}};
 
-function render(){buildPeriods();renderPeriod();renderList()}
+function render(){buildPeriods();renderPeriod();renderList();renderMonthly()}
+/* ----- 월별 청구 아코디언 ----- */
+const openP=new Set();
+function pStats(st){
+  const[a,b]=periodOf(st);
+  const ks=sorted().filter(k=>k>=a&&k<=b);
+  if(ks.length<2)return{a,b,n:ks.length};
+  const f=ks[0],l=ks[ks.length-1];
+  const use=r2(db.records[l].reading-db.records[f].reading);
+  const days=Math.round((new Date(l)-new Date(f))/864e5);
+  const t=ks.map(k=>db.records[k].temp).filter(v=>v!=null);
+  return{a,b,n:ks.length,f,l,use,days,avgT:t.length?r2(t.reduce((x,y)=>x+y,0)/t.length):null,heat:ks.filter(k=>db.records[k].heat).length};
+}
+function renderMonthly(){
+  const box=$('monthly');if(!box)return;
+  const ps=Array.from($('period').options).map(o=>o.value);
+  if(!ps.length){box.innerHTML='<small class="none">기록이 없습니다</small>';return}
+  box.innerHTML=ps.map(st=>{
+    const p=pStats(st),fee=db.fees[st];
+    const label=p.a.slice(5).replace('-','/')+' ~ '+p.b.slice(5).replace('-','/');
+    const unit=(fee&&p.use>0)?Math.round(fee/p.use).toLocaleString()+'원/㎥':'';
+    const feeTxt=fee?Number(fee).toLocaleString()+'원':'<span class="none">요금 미입력</span>';
+    const sub=p.use!=null?p.use+' ㎥ 사용':'기록 부족';
+    const body=p.use!=null?`<div class="grid">
+      <div><small>사용량</small><b>${p.use} ㎥</b></div>
+      <div><small>일평균</small><b>${p.days?r2(p.use/p.days):'-'} ㎥</b></div>
+      <div><small>평균기온</small><b>${p.avgT!=null?p.avgT+' ℃':'-'}</b></div>
+      <div><small>난방 기록일</small><b>${p.heat}일</b></div>
+      <div><small>청구 요금</small><b>${fee?Number(fee).toLocaleString()+'원':'-'}</b></div>
+      <div><small>㎥당 요금</small><b>${unit||'-'}</b></div></div>
+      <small style="color:var(--sub)">${p.f.slice(5)} ~ ${p.l.slice(5)} 기록 기준 · ${p.n}개</small>`
+      :`<small class="none">기간 내 기록이 ${p.n}개예요. 2개 이상이면 계산돼요.</small>`;
+    return`<details class="mp" data-p="${st}"${openP.has(st)?' open':''}><summary>
+      <div class="ml"><b>${label}</b><small>${sub}</small></div>
+      <div class="mr"><b>${feeTxt}</b><small>${unit}</small></div></summary>
+      <div class="body">${body}<div style="margin-top:10px"><button class="g s" onclick="selP('${st}')">이 기간 요금 입력/수정</button></div></div></details>`;
+  }).join('');
+  box.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{d.open?openP.add(d.dataset.p):openP.delete(d.dataset.p)}));
+}
+window.selP=st=>{$('period').value=st;renderPeriod();$('period').scrollIntoView({behavior:'smooth',block:'center'})};
+
 
 /* ----- 설정 ----- */
 $('lat').onchange=$('lon').onchange=()=>{db.loc={lat:num($('lat').value),lon:num($('lon').value)};persist()};
@@ -241,7 +315,61 @@ $('file').onchange=e=>{
   rd.readAsText(f);
 };
 
-render();fillForm();
+/* ----- GitHub 동기화 ----- */
+const GK='gasGhV1';
+let gh={repo:'',path:'gas-data.json',branch:'main',token:''};
+try{Object.assign(gh,JSON.parse(localStorage.getItem(GK)||'{}'))}catch(e){}
+let ghSha=null,pushTimer=null;
+const ghOn=()=>!!(gh.repo&&gh.token);
+const apiUrl=()=>`https://api.github.com/repos/${gh.repo}/contents/${gh.path.split('/').map(encodeURIComponent).join('/')}`;
+const hd=()=>({Authorization:'Bearer '+gh.token,Accept:'application/vnd.github+json'});
+const b64e=t=>btoa(unescape(encodeURIComponent(t)));
+const b64d=t=>decodeURIComponent(escape(atob(t.replace(/\n/g,''))));
+const setSt=t=>{$('gh').textContent=t};
+const nowT=()=>new Date().toLocaleTimeString('ko-KR');
+$('ghRepo').value=gh.repo;$('ghPath').value=gh.path;$('ghBranch').value=gh.branch;$('ghToken').value=gh.token;
+
+async function ghPull(){
+  if(!ghOn())return;
+  setSt('불러오는 중…');
+  try{
+    const r=await fetch(apiUrl()+'?ref='+encodeURIComponent(gh.branch)+'&t='+Date.now(),{headers:hd()});
+    if(r.status===404){ghSha=null;setSt('저장소에 파일이 없어요 — 저장하면 자동 생성돼요');if(Object.keys(db.records).length)await ghPush();return}
+    if(!r.ok)throw new Error(r.status);
+    const j=await r.json();ghSha=j.sha;
+    const d=JSON.parse(b64d(j.content));
+    db.records=d.records||{};db.fees=d.fees||{};if(d.loc)db.loc=d.loc;
+    persistLocal();render();fillForm();$('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
+    setSt('불러오기 완료 ✓ '+nowT());
+  }catch(e){setSt('불러오기 실패 ('+e.message+') — 저장소/토큰/브랜치 확인')}
+}
+async function ghPush(retry=true){
+  if(!ghOn())return;
+  setSt('저장 중…');
+  try{
+    const body={message:'gas data '+fmt(new Date()),content:b64e(JSON.stringify({records:db.records,fees:db.fees,loc:db.loc},null,1)),branch:gh.branch};
+    if(ghSha)body.sha=ghSha;
+    const r=await fetch(apiUrl(),{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hd()),body:JSON.stringify(body)});
+    if((r.status===409||r.status===422)&&retry){
+      const g=await fetch(apiUrl()+'?ref='+encodeURIComponent(gh.branch)+'&t='+Date.now(),{headers:hd()});
+      ghSha=g.ok?(await g.json()).sha:null;
+      return ghPush(false);
+    }
+    if(!r.ok)throw new Error(r.status);
+    ghSha=(await r.json()).content.sha;
+    setSt('GitHub 저장 완료 ✓ '+nowT());
+  }catch(e){setSt('저장 실패 ('+e.message+') — 다시 시도하려면 "지금 저장"')}
+}
+function schedulePush(){if(!ghOn())return;clearTimeout(pushTimer);setSt('저장 대기…');pushTimer=setTimeout(()=>ghPush(),1500)}
+$('ghSave').onclick=()=>{
+  gh={repo:$('ghRepo').value.trim(),path:$('ghPath').value.trim()||'gas-data.json',branch:$('ghBranch').value.trim()||'main',token:$('ghToken').value.trim()};
+  try{localStorage.setItem(GK,JSON.stringify(gh))}catch(e){}
+  if(!ghOn()){setSt('저장소와 토큰을 입력하세요');return}
+  ghSha=null;ghPull();
+};
+$('ghNow').onclick=()=>{clearTimeout(pushTimer);ghPush()};
+
+render();fillForm();ghPull();
 </script>
 </body>
 </html>
