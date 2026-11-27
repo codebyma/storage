@@ -59,6 +59,7 @@ details.mp[open]>summary{background:var(--hl);border-left-color:var(--pri)}
 details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)}
 .grid.g3{grid-template-columns:repeat(3,1fr);gap:8px}
 .grid.g3 b{font-size:16px}
+.grid.g3 small{margin-bottom:2px}
 .note{display:flex;gap:4px;font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:4px}
 </style>
 </head>
@@ -100,7 +101,7 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
   <h2>청구 기간 (17일 ~ 17일)</h2>
   <select id="period"></select>
   <div id="psum" style="margin-top:12px"></div>
-  <label style="margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
+  <label style="margin-top:12px;margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
   <input type="number" id="fee" inputmode="numeric" placeholder="예: 52300">
   <div style="margin-top:10px"><small style="color:var(--sub)">1㎥당 요금</small><div class="big" id="unit">-</div></div>
 </div>
