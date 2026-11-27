@@ -113,7 +113,7 @@ button.info{background:none;border:1.5px solid var(--sub);color:var(--sub);width
 </div>
 
 <div class="card">
-  <h2 class="th">청구 기간 (17일 ~ 16일) <button type="button" class="info" id="infoBtn" aria-label="계산 기준 안내">!</button><div class="tip" id="tip"></div></h2>
+  <h2 class="th">청구 기간 (18일 ~ 17일) <button type="button" class="info" id="infoBtn" aria-label="계산 기준 안내">!</button><div class="tip" id="tip"></div></h2>
   <select id="period"></select>
   <div id="psum" style="margin-top:12px"></div>
   <label style="margin-top:12px;margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
@@ -280,18 +280,26 @@ $('save').onclick=()=>{
 
 /* ----- 기간 계산 ----- */
 const sorted=()=>Object.keys(db.records).sort();
-function periodOf(startStr){ // startStr: 해당 월 17일 ~ 다음 달 16일
+function migrateFees(){
+  let ch=false;
+  Object.keys(db.fees||{}).forEach(k=>{
+    if(k.endsWith('-17')){const n=k.slice(0,-2)+'18';if(db.fees[n]==null)db.fees[n]=db.fees[k];delete db.fees[k];ch=true}
+  });
+  return ch;
+}
+migrateFees();
+function periodOf(startStr){ // startStr: 해당 월 18일 ~ 다음 달 17일
   const s=new Date(startStr+'T00:00:00');
-  const e=new Date(s.getFullYear(),s.getMonth()+1,16);
+  const e=new Date(s.getFullYear(),s.getMonth()+1,17);
   return[fmt(s),fmt(e)];
 }
 function buildPeriods(){
   const keys=sorted();const today=new Date();
   let first=keys.length?new Date(keys[0]+'T00:00:00'):today;
-  let y=first.getFullYear(),m=first.getMonth()+(first.getDate()<17?-1:0);
-  const cur=today.getDate()<17?new Date(today.getFullYear(),today.getMonth()-1,17):new Date(today.getFullYear(),today.getMonth(),17);
+  let y=first.getFullYear(),m=first.getMonth()+(first.getDate()<18?-1:0);
+  const cur=today.getDate()<18?new Date(today.getFullYear(),today.getMonth()-1,18):new Date(today.getFullYear(),today.getMonth(),18);
   const opts=[];
-  for(let d=new Date(y,m,17);d<=cur;d=new Date(d.getFullYear(),d.getMonth()+1,17))opts.push(fmt(d));
+  for(let d=new Date(y,m,18);d<=cur;d=new Date(d.getFullYear(),d.getMonth()+1,18))opts.push(fmt(d));
   const sel=$('period'),prev=sel.value;
   sel.innerHTML=opts.reverse().map(s=>{const[a,b]=periodOf(s);return`<option value="${s}">${Number(a.slice(5,7))}월\u2060(${a.replace(/-/g,'.')}~${(a.slice(0,4)===b.slice(0,4)?b.slice(5):b).replace(/-/g,'.')})</option>`}).join('');
   sel.value=prev&&opts.includes(prev)?prev:opts[0];
@@ -329,7 +337,7 @@ $('period').onchange=renderPeriod;
 
 /* ----- 목록 ----- */
 const openD=new Set();let openDInit=false;
-const pStart=k=>{const d=new Date(k+'T00:00:00');return fmt(d.getDate()>=17?new Date(d.getFullYear(),d.getMonth(),17):new Date(d.getFullYear(),d.getMonth()-1,17))};
+const pStart=k=>{const d=new Date(k+'T00:00:00');return fmt(d.getDate()>=18?new Date(d.getFullYear(),d.getMonth(),18):new Date(d.getFullYear(),d.getMonth()-1,18))};
 function itemHtml(k,ks){
   const i=ks.indexOf(k),r=db.records[k];
   let diff='<small>-</small>',gapTxt='';
@@ -451,6 +459,7 @@ async function ghPull(){
     if(db.pending){setSt('저장 안 된 변경분을 올리는 중…');await ghPush();return}
     const d=JSON.parse(b64d(j.content));
     db.records=d.records||{};db.fees=d.fees||{};if(d.loc)db.loc=d.loc;
+    if(migrateFees())schedulePush();
     persistLocal();render();if(!formDirty)fillForm();$('lat').value=db.loc.lat;$('lon').value=db.loc.lon;
     setSt('불러오기 완료 ✓ '+nowT());
   }catch(e){setSt('불러오기 실패 ('+e.message+') — 저장소/토큰/브랜치 확인')}
