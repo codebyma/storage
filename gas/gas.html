@@ -113,7 +113,7 @@ button.info{background:none;border:1.5px solid var(--sub);color:var(--sub);width
 </div>
 
 <div class="card">
-  <h2 class="th">청구 기간 (17일 ~ 17일) <button type="button" class="info" id="infoBtn" aria-label="계산 기준 안내">!</button><div class="tip" id="tip"></div></h2>
+  <h2 class="th">청구 기간 (17일 ~ 16일) <button type="button" class="info" id="infoBtn" aria-label="계산 기준 안내">!</button><div class="tip" id="tip"></div></h2>
   <select id="period"></select>
   <div id="psum" style="margin-top:12px"></div>
   <label style="margin-top:12px;margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
@@ -280,9 +280,9 @@ $('save').onclick=()=>{
 
 /* ----- 기간 계산 ----- */
 const sorted=()=>Object.keys(db.records).sort();
-function periodOf(startStr){ // startStr: 해당 월 17일
+function periodOf(startStr){ // startStr: 해당 월 17일 ~ 다음 달 16일
   const s=new Date(startStr+'T00:00:00');
-  const e=new Date(s.getFullYear(),s.getMonth()+1,17);
+  const e=new Date(s.getFullYear(),s.getMonth()+1,16);
   return[fmt(s),fmt(e)];
 }
 function buildPeriods(){
@@ -297,25 +297,25 @@ function buildPeriods(){
   sel.value=prev&&opts.includes(prev)?prev:opts[0];
 }
 function renderPeriod(){
-  const s=$('period').value;if(!s){$('psum').innerHTML='<small>기록이 없습니다</small>';setTip('※기록이 없습니다\n(17일 당일 기록이 없으면 가장 가까운 날 기준)');return}
-  const[a,b]=periodOf(s);
-  const ks=sorted().filter(k=>k>=a&&k<=b);
-  if(ks.length<2){$('psum').innerHTML='<small>기간 내 기록이 2개 이상 필요합니다</small>';setTip('※기간 내 기록이 2개 이상 필요해요\n(17일 당일 기록이 없으면 가장 가까운 날 기준)');$('fee').value=db.fees[s]??'';$('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist()};return}
-  const f=ks[0],l=ks[ks.length-1];
-  const use=r2(db.records[l].reading-db.records[f].reading);
-  const days=Math.round((new Date(l)-new Date(f))/864e5);
-  const temps=ks.map(k=>db.records[k].temp).filter(v=>v!=null);
-  const avgT=temps.length?r2(temps.reduce((x,y)=>x+y,0)/temps.length):'-';
-  const heatDays=ks.filter(k=>db.records[k].heat&&db.records[k].heat!=='').length;
-  setTip(`※${f.slice(5)} ~ ${l.slice(5)} 기록 기준\n(17일 당일 기록이 없으면 가장 가까운 날 기준)`);
-  $('psum').innerHTML=`<div class="grid g4">
-    <div><small>기간 사용량</small><b>${use} ㎥</b></div>
-    <div><small>일평균</small><b>${days?r2(use/days):'-'} ㎥</b></div>
-    <div><small>난방 기록일</small><b>${heatDays}일</b></div>
-    <div><small>1㎥당 요금</small><b id="unit">-</b></div></div>`;
+  const s=$('period').value;
+  const sub='(기간 시작 전 마지막 기록부터 계산해요)';
+  if(!s){$('psum').innerHTML='<small>기록이 없습니다</small>';setTip('※기록이 없습니다\n'+sub);return}
+  const p=pCalc(s);
   $('fee').value=db.fees[s]??'';
-  calcUnit(use);
-  $('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist();calcUnit(use)};
+  if(p.use==null){
+    $('psum').innerHTML='<small>계산할 기록이 부족합니다</small>';
+    setTip('※기록이 부족해요\n'+sub);
+    $('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist()};
+    return;
+  }
+  setTip(`※${p.base.slice(5)} ~ ${p.last.slice(5)} 기록 기준\n`+sub);
+  $('psum').innerHTML=`<div class="grid g4">
+    <div><small>기간 사용량</small><b>${p.use} ㎥</b></div>
+    <div><small>일평균</small><b>${p.days?r2(p.use/p.days):'-'} ㎥</b></div>
+    <div><small>난방 기록일</small><b>${p.heat}일</b></div>
+    <div><small>1㎥당 요금</small><b id="unit">-</b></div></div>`;
+  calcUnit(p.use);
+  $('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist();calcUnit(p.use)};
 }
 function setTip(t){$('tip').textContent=t}
 $('infoBtn').onclick=e=>{e.stopPropagation();$('tip').classList.toggle('on')};
@@ -368,16 +368,19 @@ window.del=k=>{if(confirm(k+' 기록을 삭제할까요?')){delete db.records[k]
 function render(){buildPeriods();renderPeriod();renderList();renderMonthly()}
 /* ----- 월별 청구 아코디언 ----- */
 const openP=new Set();
-function pStats(st){
+function pCalc(st){
   const[a,b]=periodOf(st);
-  const ks=sorted().filter(k=>k>=a&&k<=b);
-  if(ks.length<2)return{a,b,n:ks.length};
-  const f=ks[0],l=ks[ks.length-1];
-  const use=r2(db.records[l].reading-db.records[f].reading);
-  const days=Math.round((new Date(l)-new Date(f))/864e5);
+  const all=sorted();
+  const ks=all.filter(k=>k>=a&&k<=b);
+  const prev=all.filter(k=>k<a).pop();
+  const base=prev||ks[0],last=ks[ks.length-1];
+  if(!ks.length||!base||base===last)return{a,b,n:ks.length};
+  const use=r2(db.records[last].reading-db.records[base].reading);
+  const days=Math.round((new Date(last)-new Date(base))/864e5);
   const t=ks.map(k=>db.records[k].temp).filter(v=>v!=null);
-  return{a,b,n:ks.length,f,l,use,days,avgT:t.length?r2(t.reduce((x,y)=>x+y,0)/t.length):null,heat:ks.filter(k=>db.records[k].heat).length};
+  return{a,b,n:ks.length,base,last,use,days,avgT:t.length?r2(t.reduce((x,y)=>x+y,0)/t.length):null,heat:ks.filter(k=>db.records[k].heat).length};
 }
+const pStats=pCalc;
 function renderMonthly(){
   const box=$('monthly');if(!box)return;
   const ps=Array.from($('period').options).map(o=>o.value);
@@ -395,8 +398,8 @@ function renderMonthly(){
       <div><small>난방 기록일</small><b>${p.heat}일</b></div>
       <div><small>청구 요금</small><b>${fee?Number(fee).toLocaleString()+'원':'-'}</b></div>
       <div><small>㎥당 요금</small><b>${unit||'-'}</b></div></div>
-      <small style="color:var(--sub)">${p.f.slice(5)} ~ ${p.l.slice(5)} 기록 기준 · ${p.n}개</small>`
-      :`<small class="none">기간 내 기록이 ${p.n}개예요. 2개 이상이면 계산돼요.</small>`;
+      <small style="color:var(--sub)">${p.base.slice(5)} ~ ${p.last.slice(5)} 기록 기준 · 기간 내 ${p.n}개</small>`
+      :`<small class="none">계산할 기록이 부족해요 (기간 내 ${p.n}개)</small>`;
     return`<details class="mp" data-p="${st}"${openP.has(st)?' open':''}><summary>
       <div class="ml"><b>${label}</b><small>${sub}</small></div>
       <div class="mr"><b>${feeTxt}</b><small>${unit}</small></div></summary>
