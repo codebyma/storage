@@ -89,6 +89,20 @@
    "setT": null,
    "hours": null,
    "memo": ""
+  },
+  "2026-11-28": {
+   "reading": 3434,
+   "temp": 5.2,
+   "min": 1.8,
+   "max": 8.3,
+   "heat": "",
+   "setT": null,
+   "hours": null,
+   "hStart": null,
+   "intervalMin": null,
+   "runMin": null,
+   "hEnd": null,
+   "memo": ""
   }
  },
  "fees": {
