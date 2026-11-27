@@ -86,8 +86,8 @@
    "min": 7.4,
    "max": 15.3,
    "heat": "",
-   "setT": 24,
-   "hours": 5,
+   "setT": null,
+   "hours": null,
    "memo": ""
   }
  },
