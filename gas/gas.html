@@ -46,6 +46,13 @@ details.mp[open] summary::after{transform:rotate(90deg)}
 .mp .mr{text-align:right}.mp .mr b{display:block;font-size:15px}.mp .mr small{color:var(--sub);font-size:12px}
 .mp .body{padding:2px 0 14px}
 .mp .none{color:var(--sub)}
+details.cd>summary{list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+details.cd>summary::-webkit-details-marker{display:none}
+details.cd>summary h2{margin:0}
+details.cd>summary::after{content:"›";font-size:22px;color:var(--sub);transition:transform .2s}
+details.cd[open]>summary::after{transform:rotate(90deg)}
+details.cd[open]>summary{margin-bottom:8px}
+.item.in{padding:12px 0 12px 0}
 </style>
 </head>
 <body>
@@ -91,15 +98,9 @@ details.mp[open] summary::after{transform:rotate(90deg)}
   <div style="margin-top:10px"><small style="color:var(--sub)">1㎥당 요금</small><div class="big" id="unit">-</div></div>
 </div>
 
-<div class="card">
-  <h2>월별 청구 내역</h2>
-  <div id="monthly"></div>
-</div>
+<details class="card cd" open><summary><h2>월별 청구 내역</h2></summary><div id="monthly"></div></details>
 
-<div class="card">
-  <h2>일별 기록</h2>
-  <div id="list"></div>
-</div>
+<details class="card cd" open><summary><h2>일별 기록</h2></summary><div id="list"></div></details>
 
 <div class="card">
   <h2>GitHub 저장</h2>
@@ -236,23 +237,38 @@ function calcUnit(use){
 $('period').onchange=renderPeriod;
 
 /* ----- 목록 ----- */
+const openD=new Set();let openDInit=false;
+const pStart=k=>{const d=new Date(k+'T00:00:00');return fmt(d.getDate()>=17?new Date(d.getFullYear(),d.getMonth(),17):new Date(d.getFullYear(),d.getMonth()-1,17))};
+function itemHtml(k,ks){
+  const i=ks.indexOf(k),r=db.records[k];
+  let diff='<small>-</small>',gapTxt='';
+  if(i>0){
+    const p=ks[i-1],gap=Math.round((new Date(k)-new Date(p))/864e5);
+    const d=r2(r.reading-db.records[p].reading);
+    diff=`<b class="${d>0?'up':'down'}">${d>0?'+':''}${d} ㎥</b>`;
+    if(gap>1)gapTxt=`<span class="tag">${gap}일간</span>`;
+  }
+  const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hours}h</span>`:'');
+  const info=[(r.temp!=null?r.temp+'℃'+(r.min!=null?` (${r.min}/${r.max})`:''):''),r.memo?r.memo.replace(/</g,'&lt;'):''].filter(Boolean).join(' · ');
+  return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="g s" onclick="edit('${k}')">수정</button><button class="g s" onclick="del('${k}')">삭제</button></span></div>
+  ${(tags||info)?`<div class="l2">${tags}${info}</div>`:''}</div>`;
+}
 function renderList(){
   const ks=sorted();
   if(!ks.length){$('list').innerHTML='<small>아직 기록이 없습니다</small>';return}
-  $('list').innerHTML=ks.slice().reverse().map(k=>{
-    const i=ks.indexOf(k),r=db.records[k];
-    let diff='<small>-</small>',gapTxt='';
-    if(i>0){
-      const p=ks[i-1],gap=Math.round((new Date(k)-new Date(p))/864e5);
-      const d=r2(r.reading-db.records[p].reading);
-      diff=`<b class="${d>0?'up':'down'}">${d>0?'+':''}${d} ㎥</b>`;
-      if(gap>1)gapTxt=`<span class="tag">${gap}일간</span>`;
-    }
-    const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hours}h</span>`:'');
-    const info=[(r.temp!=null?r.temp+'℃'+(r.min!=null?` (${r.min}/${r.max})`:''):''),r.memo?r.memo.replace(/</g,'&lt;'):''].filter(Boolean).join(' · ');
-    return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="g s" onclick="edit('${k}')">수정</button><button class="g s" onclick="del('${k}')">삭제</button></span></div>
-    ${(tags||info)?`<div class="l2">${tags}${info}</div>`:''}</div>`;
+  const g={};ks.forEach(k=>{const st=pStart(k);(g[st]=g[st]||[]).push(k)});
+  const starts=Object.keys(g).sort().reverse();
+  if(!openDInit){openD.add(starts[0]);openDInit=true}
+  $('list').innerHTML=starts.map(st=>{
+    const[a,b]=periodOf(st);const p=pStats(st);
+    const label=a.slice(5).replace('-','/')+' ~ '+b.slice(5).replace('-','/');
+    const items=g[st].slice().reverse().map(k=>itemHtml(k,ks)).join('');
+    return`<details class="mp" data-p="${st}"${openD.has(st)?' open':''}><summary>
+      <div class="ml"><b>${label}</b><small>${g[st].length}일 기록</small></div>
+      <div class="mr"><b>${p.use!=null?p.use+' ㎥':'-'}</b><small>기간 사용량</small></div></summary>
+      <div class="body">${items}</div></details>`;
   }).join('');
+  $('list').querySelectorAll('details').forEach(d=>d.addEventListener('toggle',()=>{d.open?openD.add(d.dataset.p):openD.delete(d.dataset.p)}));
 }
 window.edit=k=>{$('date').value=k;fillForm();scrollTo({top:0,behavior:'smooth'})};
 window.del=k=>{if(confirm(k+' 기록을 삭제할까요?')){delete db.records[k];persist();render()}};
