@@ -29,7 +29,8 @@ button.s{padding:5px 9px;font-size:12px}
 .l1 .d{font-weight:700;min-width:42px}
 .l1 .v{font-size:14px}
 .l1 .df{margin-left:auto;text-align:right;white-space:nowrap}
-.l1 .bt{display:flex;gap:6px;margin-left:6px}
+.l1 .bt{display:flex;gap:12px;margin-left:6px}
+button.lk{background:none;border:0;padding:2px 0;border-radius:0;color:var(--sub);font-size:13px;font-weight:400;text-decoration:underline;text-underline-offset:3px}
 .l2{margin-top:6px;font-size:13px;color:var(--sub);line-height:1.7}
 .item:first-child{border-top:0}
 .item small{color:var(--sub)}
@@ -181,14 +182,22 @@ function fillForm(){
   $('memo').value=r?r.memo||'':'';
   if(r&&r.temp!=null){$('temp').value=r.temp;$('range').value=r.min!=null?r.min+' / '+r.max:'';$('tAuto').textContent='';}
   else{$('temp').value='';loadTemp();}
+  syncHeat();
 }
+function syncHeat(){
+  const off=$('heat').value==='';
+  if(off){$('setT').value='';$('hours').value=''}
+  $('setT').disabled=$('hours').disabled=off;
+  $('setT').style.opacity=$('hours').style.opacity=off?.5:1;
+}
+$('heat').onchange=syncHeat;
 $('date').onchange=fillForm;
 $('fetchT').onclick=loadTemp;
 $('save').onclick=()=>{
   const date=$('date').value,reading=num($('reading').value);
   if(!date||reading==null){$('msg').textContent='날짜와 수치를 입력하세요';return}
   const [mn,mx]=$('range').value.split('/').map(s=>num(s.trim()));
-  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:num($('setT').value),hours:num($('hours').value),memo:$('memo').value.trim()};
+  db.records[date]={reading,temp:num($('temp').value),min:mn??null,max:mx??null,heat:$('heat').value,setT:$('heat').value?num($('setT').value):null,hours:$('heat').value?num($('hours').value):null,memo:$('memo').value.trim()};
   persist();$('msg').textContent='저장됨 ✓';render();
 };
 
@@ -251,7 +260,7 @@ function itemHtml(k,ks){
   }
   const tags=gapTxt+(r.heat?`<span class="tag">${r.heat}</span>`:'')+(r.setT!=null?`<span class="tag">${r.setT}℃ 설정</span>`:'')+(r.hours!=null?`<span class="tag">${r.hours}h</span>`:'');
   const info=[(r.temp!=null?r.temp+'℃'+(r.min!=null?` (${r.min}/${r.max})`:''):''),r.memo?r.memo.replace(/</g,'&lt;'):''].filter(Boolean).join(' · ');
-  return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="g s" onclick="edit('${k}')">수정</button><button class="g s" onclick="del('${k}')">삭제</button></span></div>
+  return`<div class="item"><div class="l1"><span class="d">${k.slice(5)}</span><span class="v">${r.reading} ㎥</span><span class="df">${diff}</span><span class="bt"><button class="lk" onclick="edit('${k}')">수정</button><button class="lk" onclick="del('${k}')">삭제</button></span></div>
   ${(tags||info)?`<div class="l2">${tags}${info}</div>`:''}</div>`;
 }
 function renderList(){
