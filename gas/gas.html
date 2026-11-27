@@ -53,9 +53,8 @@ details.cd>summary::after{content:"›";font-size:22px;color:var(--sub);transiti
 details.cd[open]>summary::after{transform:rotate(90deg)}
 details.cd[open]>summary{margin-bottom:8px}
 .item.in{padding:12px 0 12px 0}
-details.mp{margin:0 -10px;padding:0 10px;border-radius:10px;transition:background .15s}
-details.mp[open]{background:var(--hl);box-shadow:inset 3px 0 0 var(--pri);border-top-color:transparent}
-details.mp[open]+details.mp{border-top-color:transparent}
+details.mp>summary{margin:0 -10px;padding:12px 10px;border-left:3px solid transparent;border-radius:0}
+details.mp[open]>summary{background:var(--hl);border-left-color:var(--pri)}
 </style>
 </head>
 <body>
