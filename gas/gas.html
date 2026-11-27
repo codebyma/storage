@@ -63,6 +63,7 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
 .grid.g3 small{margin-bottom:2px}
 .note{display:flex;gap:4px;font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:4px}
 .tsel{display:flex;gap:6px}.tsel select{padding:10px 6px;text-align:center;text-align-last:center}
+.mp .ml b small.pr{display:inline;margin-left:6px;font-weight:400}
 </style>
 </head>
 <body>
@@ -113,7 +114,7 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
   <div id="psum" style="margin-top:12px"></div>
   <label style="margin-top:12px;margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
   <input type="number" id="fee" inputmode="numeric" placeholder="예: 52300">
-  <div style="margin-top:10px"><small style="color:var(--sub)">1㎥당 요금</small><div class="big" id="unit">-</div></div>
+  <div style="margin-top:12px;font-size:16px"><b id="unit">-</b><span style="margin-left:2px">(1㎥당 요금)</span></div>
 </div>
 
 <details class="card cd"><summary><h2>월별 청구 내역</h2></summary><div id="monthly"></div></details>
@@ -314,7 +315,7 @@ function renderPeriod(){
 }
 function calcUnit(use){
   const v=num($('fee').value);
-  $('unit').textContent=(v&&use>0)?Math.round(v/use).toLocaleString()+' 원/㎥':'-';
+  $('unit').textContent=(v&&use>0)?Math.round(v/use).toLocaleString()+' 원':'-';
 }
 $('period').onchange=renderPeriod;
 
@@ -343,10 +344,11 @@ function renderList(){
   if(!openDInit){openD.add(starts[0]);openDInit=true}
   $('list').innerHTML=starts.map(st=>{
     const[a,b]=periodOf(st);const p=pStats(st);
-    const label=a.slice(5).replace('-','/')+' ~ '+b.slice(5).replace('-','/');
+    const mon=Number(a.slice(5,7))+'월';
+    const rng=a.replace(/-/g,'.')+' ~ '+(a.slice(0,4)===b.slice(0,4)?b.slice(5):b).replace(/-/g,'.');
     const items=g[st].slice().reverse().map(k=>itemHtml(k,ks)).join('');
     return`<details class="mp" data-p="${st}"${openD.has(st)?' open':''}><summary>
-      <div class="ml"><b>${label}</b><small>${g[st].length}일 기록</small></div>
+      <div class="ml"><b>${mon}<small class="pr">(${rng})</small></b><small>${g[st].length}일 기록</small></div>
       <div class="mr"><b>${p.use!=null?p.use+' ㎥':'-'}</b><small>기간 사용량</small></div></summary>
       <div class="body">${items}</div></details>`;
   }).join('');
