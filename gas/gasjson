@@ -1,0 +1,52 @@
+{
+ "records": {
+  "2026-07-17": {
+   "reading": 3394,
+   "temp": 26.5,
+   "min": 23.2,
+   "max": 30.5,
+   "heat": "",
+   "setT": null,
+   "hours": null,
+   "memo": ""
+  },
+  "2026-08-17": {
+   "reading": 3399,
+   "temp": 24.7,
+   "min": 23.1,
+   "max": 28.9,
+   "heat": "",
+   "setT": null,
+   "hours": null,
+   "memo": ""
+  },
+  "2026-09-17": {
+   "reading": 3403,
+   "temp": 22.6,
+   "min": 16.7,
+   "max": 27.6,
+   "heat": "",
+   "setT": null,
+   "hours": null,
+   "memo": ""
+  },
+  "2026-10-17": {
+   "reading": 3408,
+   "temp": 18,
+   "min": 12.4,
+   "max": 24.4,
+   "heat": "",
+   "setT": null,
+   "hours": null,
+   "memo": ""
+  }
+ },
+ "fees": {
+  "2026-08-17": 6590,
+  "2026-07-17": 6590
+ },
+ "loc": {
+  "lat": 37.497,
+  "lon": 126.861
+ }
+}
