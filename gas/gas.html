@@ -98,12 +98,11 @@ details.cd[open]>summary{margin-bottom:8px}
   <div style="margin-top:10px"><small style="color:var(--sub)">1㎥당 요금</small><div class="big" id="unit">-</div></div>
 </div>
 
-<details class="card cd" open><summary><h2>월별 청구 내역</h2></summary><div id="monthly"></div></details>
+<details class="card cd"><summary><h2>월별 청구 내역</h2></summary><div id="monthly"></div></details>
 
 <details class="card cd" open><summary><h2>일별 기록</h2></summary><div id="list"></div></details>
 
-<div class="card">
-  <h2>GitHub 저장</h2>
+<details class="card cd"><summary><h2>GitHub 저장</h2></summary>
   <label>저장소 (아이디/저장소명)</label>
   <input id="ghRepo" placeholder="예: myid/gas-data" autocapitalize="off" autocorrect="off">
   <div class="row">
@@ -117,10 +116,9 @@ details.cd[open]>summary{margin-bottom:8px}
     <button class="g" id="ghNow">지금 저장</button>
   </div>
   <div id="gh" style="font-size:12px;color:var(--sub);margin-top:8px;min-height:16px"></div>
-</div>
+</details>
 
-<div class="card">
-  <h2>설정 / 백업</h2>
+<details class="card cd"><summary><h2>설정 / 백업</h2></summary>
   <div class="row">
     <div><label>위도</label><input type="number" id="lat" step="0.0001"></div>
     <div><label>경도</label><input type="number" id="lon" step="0.0001"></div>
@@ -131,7 +129,7 @@ details.cd[open]>summary{margin-bottom:8px}
     <button class="g" id="imp">불러오기</button>
   </div>
   <input type="file" id="file" accept=".json" hidden>
-</div>
+</details>
 
 <script>
 const $=id=>document.getElementById(id);
