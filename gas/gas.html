@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>가스 계량기 기록</title>
 <style>
-:root{--hl:rgba(232,89,12,.09);--bg:#f5f6f8;--card:#fff;--tx:#1d2330;--sub:#6b7280;--pri:#e8590c;--bd:#e5e7eb;--up:#d9480f;--down:#1971c2}
-@media(prefers-color-scheme:dark){:root{--hl:rgba(255,138,91,.14);--bg:#14161a;--card:#1e2128;--tx:#e8eaed;--sub:#9aa0aa;--bd:#2d313a;--up:#ff8a5b;--down:#74b0f5}}
+:root{--ln:#3d4352;--hl:rgba(232,89,12,.09);--bg:#f5f6f8;--card:#fff;--tx:#1d2330;--sub:#6b7280;--pri:#e8590c;--bd:#e5e7eb;--up:#d9480f;--down:#1971c2}
+@media(prefers-color-scheme:dark){:root{--ln:#9aa0aa;--hl:rgba(255,138,91,.14);--bg:#14161a;--card:#1e2128;--tx:#e8eaed;--sub:#9aa0aa;--bd:#2d313a;--up:#ff8a5b;--down:#74b0f5}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"Noto Sans KR",sans-serif;padding:12px;max-width:640px;margin:auto}
 h1{font-size:20px;margin:8px 0 12px}
@@ -55,6 +55,7 @@ details.cd[open]>summary{margin-bottom:8px}
 .item.in{padding:12px 0 12px 0}
 details.mp>summary{margin:0 -10px;padding:12px 10px;border-left:3px solid transparent;border-radius:0}
 details.mp[open]>summary{background:var(--hl);border-left-color:var(--pri)}
+details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)}
 </style>
 </head>
 <body>
