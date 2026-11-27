@@ -71,6 +71,9 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
 button.info{background:none;border:1.5px solid var(--sub);color:var(--sub);width:18px;height:18px;min-width:18px;padding:0;border-radius:50%;font-size:11px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .tip{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:20;background:#2b303b;color:#f3f4f6;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:400;line-height:1.5;white-space:pre-line;width:max-content;max-width:100%;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .tip.on{display:block}
+.seg{display:flex;gap:6px}
+.seg button{flex:1;min-width:0;background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:11px 2px;font-size:14px;font-weight:500;white-space:nowrap;border-radius:8px}
+.seg button.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
 </style>
 </head>
 <body>
@@ -87,13 +90,12 @@ button.info{background:none;border:1.5px solid var(--sub);color:var(--sub);width
     <div><label>최저 / 최고</label><input id="range" readonly placeholder="-"></div>
   </div>
   <label>난방</label>
-  <select id="heat">
-    <option value="">사용 안 함</option>
-    <option>난방 ON (지속)</option>
-    <option>외출 모드</option>
-    <option>예약 운전</option>
-    <option>온수만 사용</option>
-  </select>
+  <input type="hidden" id="heat" value="">
+  <div class="seg" id="heatSeg">
+    <button type="button" data-v="">사용 안 함</button>
+    <button type="button" data-v="난방 ON (지속)">난방 ON (지속)</button>
+    <button type="button" data-v="예약 운전">예약 운전</button>
+  </div>
   <div class="row">
     <div><label>설정온도 (℃)</label><input type="number" id="setT" step="0.5" inputmode="decimal"></div>
     <div id="hoursBox"><label>총 난방시간</label><input id="hours" readonly placeholder="자동 계산"></div>
@@ -212,7 +214,9 @@ function fillForm(){
   syncHeat();
 }
 function useT(){const v=$('heat').value;return !!v&&v!=='외출 모드'&&v!=='온수만 사용'}
+function paintSeg(){document.querySelectorAll('#heatSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===$('heat').value))}
 function syncHeat(){
+  paintSeg();
   const v=$('heat').value,off=!useT(),sched=v==='예약 운전';
   if(off||sched){setHours(null);$('hStart').value='';$('hEnd').value='';hiddenToSel('hStart');hiddenToSel('hEnd')}
   if(off){$('setT').value=''}
@@ -224,7 +228,7 @@ function syncHeat(){
   ['hStartH','hStartM','hEndH','hEndM'].forEach(id=>{$(id).disabled=off;$(id).style.opacity=off?.5:1});
   $('setT').style.opacity=off?.5:1;
 }
-$('heat').onchange=syncHeat;
+document.querySelectorAll('#heatSeg button').forEach(b=>{b.onclick=()=>{$('heat').value=b.dataset.v;formDirty=true;syncHeat()}});
 function fmtH(h){const m=Math.round(h*60),hh=Math.floor(m/60),mm=m%60;return hh&&mm?`${hh}시간 ${mm}분`:hh?`${hh}시간`:`${mm}분`}
 function setHours(h){$('hours').dataset.v=h==null?'':h;$('hours').value=h==null?'':fmtH(h)}
 function getHours(){const v=$('hours').dataset.v;return v===undefined||v===''?null:Number(v)}
