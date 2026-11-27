@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>가스 계량기 기록</title>
-<link rel="apple-touch-icon" href="gas-icon.png?20261127">
-<link rel="icon" href="gas-icon.png?20261127">
+<link rel="apple-touch-icon" href="gas-icon.png">
+<link rel="icon" href="gas-icon.png">
 <meta name="apple-mobile-web-app-title" content="가스 계량기">
 <style>
 :root{--ln:#3d4352;--hl:rgba(232,89,12,.09);--bg:#f5f6f8;--card:#fff;--tx:#1d2330;--sub:#6b7280;--pri:#e8590c;--bd:#e5e7eb;--up:#d9480f;--down:#1971c2}
@@ -61,7 +61,7 @@ details.cd[open]>summary{margin-bottom:8px}
 details.mp>summary{margin:0 -10px;padding:12px 10px;border-left:3px solid transparent;border-radius:0}
 details.mp[open]>summary{background:var(--hl);border-left-color:var(--pri)}
 details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)}
-.grid.g4{grid-template-columns:repeat(4,1fr);gap:6px}
+.grid.g4{grid-template-columns:repeat(var(--cols,4),1fr);gap:6px}
 .grid.g4 b{font-size:16px;white-space:nowrap}
 .grid.g4 small{margin-bottom:2px;white-space:nowrap}
 .note{display:flex;gap:4px;font-size:12px;color:var(--sub);line-height:1.5;margin-bottom:4px}
@@ -324,7 +324,7 @@ function renderPeriod(){
     <div><small>기간 사용량</small><b>${p.use} ㎥</b></div>
     <div><small>일평균</small><b>${p.days?r2(p.use/p.days):'-'} ㎥</b></div>
     <div><small>난방 기록일</small><b>${p.heat}일</b></div>
-    <div><small>1㎥당 요금</small><b id="unit">-</b></div></div>`;
+    <div id="unitBox"><small>1㎥당 요금</small><b id="unit">-</b></div></div>`;
   calcUnit(p.use);
   $('fee').oninput=()=>{const v=num($('fee').value);if(v==null)delete db.fees[s];else db.fees[s]=v;persist();calcUnit(p.use)};
 }
@@ -334,7 +334,10 @@ document.addEventListener('click',e=>{if(!e.target.closest('#tip'))$('tip').clas
 function calcUnit(use){
   const v=num($('fee').value);
   if(!$('unit'))return;
-  $('unit').textContent=(v&&use>0)?Math.round(v/use).toLocaleString()+'원':'-';
+  const ok=!!(v&&use>0);
+  $('unit').textContent=ok?Math.round(v/use).toLocaleString()+'원':'-';
+  $('unitBox').style.display=ok?'':'none';
+  $('unitBox').parentElement.style.setProperty('--cols',ok?4:3);
 }
 $('period').onchange=renderPeriod;
 
