@@ -49,6 +49,16 @@
    "setT": null,
    "hours": null,
    "memo": ""
+  },
+  "2026-11-22": {
+   "reading": 3428,
+   "temp": 0.2,
+   "min": -4.2,
+   "max": 4.4,
+   "heat": "",
+   "setT": null,
+   "hours": null,
+   "memo": ""
   }
  },
  "fees": {
