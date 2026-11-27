@@ -15,7 +15,7 @@ body{margin:0;background:var(--bg);color:var(--tx);font-family:-apple-system,"No
 h1{font-size:20px;margin:8px 0 12px}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
 .card h2{font-size:15px;margin:0 0 10px}
-label{display:block;font-size:12px;color:var(--sub);margin:8px 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+label{display:block;font-size:12px;color:var(--sub);margin:8px 0 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 input[type=date]{display:block;line-height:24px}
 input::-webkit-date-and-time-value{text-align:left}
 input,select,textarea{width:100%;min-width:0;height:44px;-webkit-appearance:none;appearance:none;text-align:left;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font-size:16px}
@@ -71,7 +71,7 @@ details.mp[open]{margin:0 -10px;padding:0 10px;border-bottom:2px solid var(--ln)
 button.info{background:none;border:1.5px solid var(--sub);color:var(--sub);width:18px;height:18px;min-width:18px;padding:0;border-radius:50%;font-size:11px;font-weight:700;line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .tip{display:none;position:absolute;left:0;top:calc(100% + 8px);z-index:20;background:#2b303b;color:#f3f4f6;border-radius:10px;padding:10px 12px;font-size:12px;font-weight:400;line-height:1.5;white-space:pre-line;width:max-content;max-width:100%;box-shadow:0 4px 14px rgba(0,0,0,.3)}
 .tip.on{display:block}
-.seg{display:flex;gap:6px;margin-top:8px}
+.seg{display:flex;gap:6px}
 .seg button{flex:1;min-width:0;height:44px;background:var(--bg);color:var(--tx);border:1px solid var(--bd);padding:0 2px;font-size:14px;font-weight:500;line-height:1;white-space:nowrap;border-radius:8px}
 .seg button.on{background:var(--pri);border-color:var(--pri);color:#fff;font-weight:700}
 </style>
@@ -121,7 +121,7 @@ button.info{background:none;border:1.5px solid var(--sub);color:var(--sub);width
   <h2 class="th">청구 기간 (18일 ~ 17일) <button type="button" class="info" id="infoBtn" aria-label="계산 기준 안내">!</button><div class="tip" id="tip"></div></h2>
   <select id="period"></select>
   <div id="psum" style="margin-top:12px"></div>
-  <label style="margin-top:12px;margin-bottom:5px">청구 요금 (원) — 직접 입력</label>
+  <label style="margin-top:12px">청구 요금 (원) — 직접 입력</label>
   <input type="number" id="fee" inputmode="numeric" placeholder="예: 52300">
 </div>
 
