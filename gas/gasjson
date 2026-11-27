@@ -85,7 +85,7 @@
    "temp": 10.6,
    "min": 7.4,
    "max": 15.3,
-   "heat": "난방 ON (지속)",
+   "heat": "",
    "setT": 24,
    "hours": 5,
    "memo": ""
